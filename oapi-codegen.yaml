@@ -1,0 +1,9 @@
+package: generated
+output: internal/generated/types.go
+generate:
+  models: true
+  client: false
+  embedded-spec: false
+output-options:
+  skip-prune: false
+  skip-fmt: false

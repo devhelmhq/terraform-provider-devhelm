@@ -1,0 +1,71 @@
+name: Spec Check
+
+on:
+  repository_dispatch:
+    types: [spec_updated]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  check-compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Download latest OpenAPI spec from monorepo
+        run: |
+          gh api repos/devhelmhq/mono/contents/docs/openapi/monitoring-api.yaml \
+            -H "Accept: application/vnd.github.raw+json" \
+            -o docs/openapi/monitoring-api.json
+        env:
+          GH_TOKEN: ${{ secrets.MONOREPO_DISPATCH_TOKEN }}
+
+      - name: Install oapi-codegen
+        run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+
+      - name: Regenerate types from spec
+        run: ./scripts/typegen.sh
+
+      - run: go build ./...
+      - run: go test ./... -v -count=1
+
+      - name: Check for type changes
+        id: diff
+        run: |
+          if git diff --quiet internal/generated/types.go docs/openapi/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open PR with updated types
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          branch="chore/update-api-types-$(date +%Y%m%d%H%M%S)"
+          git checkout -b "$branch"
+          git add internal/generated/types.go docs/openapi/monitoring-api.json
+          git commit -m "chore: update generated API types from latest spec"
+          git push -u origin "$branch"
+          gh pr create \
+            --title "chore: update generated API types" \
+            --body "Auto-generated from latest OpenAPI spec in the monorepo." \
+            --base main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Report failure
+        if: failure()
+        run: |
+          gh issue create \
+            --title "API spec change broke Terraform provider build" \
+            --body "The monorepo pushed a spec update that caused CI failures.\n\nWorkflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
