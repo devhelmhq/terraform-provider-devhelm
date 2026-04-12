@@ -3,7 +3,6 @@ package resources
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
@@ -145,12 +144,4 @@ func (r *ResourceGroupMembershipResource) Delete(ctx context.Context, req resour
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error removing resource group member", err.Error())
 	}
-}
-
-func parseGroupMembershipImportID(id string) (groupID, memberID string, err error) {
-	parts := strings.SplitN(id, "/", 2)
-	if len(parts) != 2 {
-		return "", "", fmt.Errorf("import ID must be group_id/member_id, got %q", id)
-	}
-	return parts[0], parts[1], nil
 }

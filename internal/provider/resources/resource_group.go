@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -90,7 +91,8 @@ func (r *ResourceGroupResource) Schema(_ context.Context, _ resource.SchemaReque
 				Optional: true, Description: "Health threshold value",
 			},
 			"suppress_member_alerts": schema.BoolAttribute{
-				Optional: true, Description: "Suppress individual member alerts when group-level policy handles them",
+				Optional: true, Computed: true, Default: booldefault.StaticBool(false),
+				Description: "Suppress individual member alerts when group-level policy handles them",
 			},
 			"confirmation_delay_seconds": schema.Int64Attribute{
 				Optional: true, Description: "Seconds to wait before confirming a group incident",

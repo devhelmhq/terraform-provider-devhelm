@@ -19,7 +19,7 @@ fi
 
 echo "=> Generating Go types from OpenAPI spec..."
 
-go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen \
+oapi-codegen \
   -generate types \
   -package generated \
   -o "$OUTPUT" \

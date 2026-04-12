@@ -190,7 +190,7 @@ func (r *EnvironmentResource) mapToState(model *EnvironmentResourceModel, dto *g
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
 	model.IsDefault = types.BoolValue(dto.IsDefault)
-	if dto.Variables != nil && len(dto.Variables) > 0 {
+	if len(dto.Variables) > 0 {
 		elements := make(map[string]types.String)
 		for k, v := range dto.Variables {
 			elements[k] = types.StringValue(v)

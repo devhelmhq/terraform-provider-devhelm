@@ -1,6 +1,40 @@
 package resources
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"encoding/json"
+
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+// normalizeJSON strips null-valued keys from a JSON blob so the API-returned
+// config doesn't diverge from the plan due to extra null fields.
+func normalizeJSON(raw json.RawMessage) string {
+	var m map[string]any
+	if err := json.Unmarshal(raw, &m); err != nil {
+		return string(raw)
+	}
+	stripped := stripNulls(m)
+	out, err := json.Marshal(stripped)
+	if err != nil {
+		return string(raw)
+	}
+	return string(out)
+}
+
+func stripNulls(m map[string]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		if v == nil {
+			continue
+		}
+		if nested, ok := v.(map[string]any); ok {
+			out[k] = stripNulls(nested)
+		} else {
+			out[k] = v
+		}
+	}
+	return out
+}
 
 func stringPtrOrNil(v types.String) *string {
 	if v.IsNull() || v.IsUnknown() {

@@ -147,41 +147,41 @@ func (r *AlertChannelResource) buildConfig(model *AlertChannelResourceModel) (js
 	switch channelType {
 	case "slack":
 		cfg = generated.SlackChannelConfig{
-			ChannelType: "SlackChannelConfig",
+			ChannelType: "slack",
 			WebhookURL:  model.WebhookURL.ValueString(),
 			MentionText: stringPtrOrNil(model.MentionText),
 		}
 	case "discord":
 		cfg = generated.DiscordChannelConfig{
-			ChannelType:   "DiscordChannelConfig",
+			ChannelType:   "discord",
 			WebhookURL:    model.WebhookURL.ValueString(),
 			MentionRoleID: stringPtrOrNil(model.MentionRoleID),
 		}
 	case "email":
 		cfg = generated.EmailChannelConfig{
-			ChannelType: "EmailChannelConfig",
+			ChannelType: "email",
 			Recipients:  stringListToSlice(model.Recipients),
 		}
 	case "pagerduty":
 		cfg = generated.PagerDutyChannelConfig{
-			ChannelType:      "PagerDutyChannelConfig",
+			ChannelType:      "pagerduty",
 			RoutingKey:       model.RoutingKey.ValueString(),
 			SeverityOverride: stringPtrOrNil(model.SeverityOverride),
 		}
 	case "opsgenie":
 		cfg = generated.OpsGenieChannelConfig{
-			ChannelType: "OpsGenieChannelConfig",
+			ChannelType: "opsgenie",
 			APIKey:      model.APIKey.ValueString(),
 			Region:      stringPtrOrNil(model.Region),
 		}
 	case "teams":
 		cfg = generated.TeamsChannelConfig{
-			ChannelType: "TeamsChannelConfig",
+			ChannelType: "teams",
 			WebhookURL:  model.WebhookURL.ValueString(),
 		}
 	case "webhook":
 		cfg = generated.WebhookChannelConfig{
-			ChannelType:   "WebhookChannelConfig",
+			ChannelType:   "webhook",
 			URL:           model.URL.ValueString(),
 			CustomHeaders: mapToStringMap(model.CustomHeaders),
 			SigningSecret: stringPtrOrNil(model.SigningSecret),

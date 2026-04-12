@@ -6,7 +6,6 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -31,8 +30,8 @@ type NotificationPolicyModel struct {
 	Name       types.String `tfsdk:"name"`
 	Enabled    types.Bool   `tfsdk:"enabled"`
 	Priority   types.Int64  `tfsdk:"priority"`
-	MatchRules types.List   `tfsdk:"match_rules"`
-	Escalation types.List   `tfsdk:"escalation_steps"`
+	MatchRules types.List   `tfsdk:"match_rule"`
+	Escalation types.List   `tfsdk:"escalation_step"`
 	OnResolve  types.String `tfsdk:"on_resolve"`
 	OnReopen   types.String `tfsdk:"on_reopen"`
 }
@@ -45,24 +44,6 @@ func (r *NotificationPolicyResource) Metadata(_ context.Context, req resource.Me
 	resp.TypeName = req.ProviderTypeName + "_notification_policy"
 }
 
-var escalationStepObjectType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"channel_ids":             types.ListType{ElemType: types.StringType},
-		"delay_minutes":           types.Int64Type,
-		"require_ack":             types.BoolType,
-		"repeat_interval_seconds": types.Int64Type,
-	},
-}
-
-var matchRuleObjectType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"type":        types.StringType,
-		"value":       types.StringType,
-		"values":      types.ListType{ElemType: types.StringType},
-		"monitor_ids": types.ListType{ElemType: types.StringType},
-		"regions":     types.ListType{ElemType: types.StringType},
-	},
-}
 
 func (r *NotificationPolicyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
@@ -173,7 +154,7 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 	var steps []escalationStepModel
 	diags := plan.Escalation.ElementsAs(ctx, &steps, false)
 	if diags.HasError() {
-		// Parse from blocks instead — the plan may use block syntax
+		return nil, fmt.Errorf("parsing escalation steps: %s", diags.Errors()[0].Detail())
 	}
 
 	var apiSteps []generated.EscalationStep

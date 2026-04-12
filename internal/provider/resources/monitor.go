@@ -328,7 +328,7 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		return nil, err
 	}
 
-	managedBy := "terraform"
+	managedBy := "TERRAFORM"
 
 	req := &generated.CreateMonitorRequest{
 		Name:             plan.Name.ValueString(),
@@ -370,7 +370,7 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 	}
 
 	name := plan.Name.ValueString()
-	managedBy := "terraform"
+	managedBy := "TERRAFORM"
 	configJSON := json.RawMessage(plan.Config.ValueString())
 
 	req := &generated.UpdateMonitorRequest{
@@ -419,7 +419,7 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 	model.PingUrl = stringValue(dto.PingUrl)
 
 	if dto.Config != nil {
-		model.Config = types.StringValue(string(dto.Config))
+		model.Config = types.StringValue(normalizeJSON(dto.Config))
 	}
 
 	if dto.Environment != nil {
