@@ -83,13 +83,16 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				Required: true, Description: "Human-readable name for this status page",
 			},
 			"slug": schema.StringAttribute{
-				Required: true, Description: "URL slug (lowercase, hyphens, globally unique)",
+				Required:    true,
+				Description: "URL slug (lowercase, hyphens, globally unique). Changing this forces a new resource.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"description": schema.StringAttribute{
 				Optional: true, Description: "Description shown below the page header",
 			},
 			"visibility": schema.StringAttribute{
-				Optional: true, Computed: true, Description: "Page visibility: PUBLIC (default: PUBLIC)",
+				Optional: true, Computed: true,
+				Description: "Page visibility. Only PUBLIC is currently supported (default: PUBLIC)",
 				Validators: []validator.String{
 					stringvalidator.OneOf("PUBLIC"),
 				},
@@ -115,7 +118,6 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
 							Computed: true, Description: "Group ID (set after creation)",
-							PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 						},
 						"name": schema.StringAttribute{
 							Required: true, Description: "Group display name",
@@ -139,7 +141,6 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
 							Computed: true, Description: "Component ID (set after creation)",
-							PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 						},
 						"name": schema.StringAttribute{
 							Required: true, Description: "Component display name",
@@ -203,21 +204,22 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
+	// Save state immediately so the page is tracked even if sub-resource creation fails.
+	r.mapToState(&plan, page)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	pageID := page.Id.String()
 
 	groupNameToID := make(map[string]string)
 	for i, g := range plan.ComponentGroups {
 		gBody := generated.CreateStatusPageComponentGroupRequest{
-			Name:        g.Name.ValueString(),
-			Description: stringPtrOrNil(g.Description),
-			Collapsed:   boolPtrOrNil(g.Collapsed),
-			DisplayOrder: func() *int32 {
-				if g.DisplayOrder.IsNull() || g.DisplayOrder.IsUnknown() {
-					return nil
-				}
-				v := int32(g.DisplayOrder.ValueInt64())
-				return &v
-			}(),
+			Name:         g.Name.ValueString(),
+			Description:  stringPtrOrNil(g.Description),
+			Collapsed:    boolPtrOrNil(g.Collapsed),
+			DisplayOrder: int32PtrFromInt64(g.DisplayOrder),
 		}
 		created, err := api.Create[generated.StatusPageComponentGroupDto](
 			ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/groups", pageID), gBody,
@@ -232,7 +234,11 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	for i, c := range plan.Components {
-		cBody := r.buildComponentRequest(&c, groupNameToID)
+		cBody, err := r.buildComponentRequest(&c, groupNameToID)
+		if err != nil {
+			resp.Diagnostics.AddError("Error building component request", err.Error())
+			return
+		}
 		created, err := api.Create[generated.StatusPageComponentDto](
 			ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/components", pageID), cBody,
 		)
@@ -244,7 +250,6 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		plan.Components[i].DisplayOrder = types.Int64Value(int64(created.DisplayOrder))
 	}
 
-	r.mapToState(&plan, page)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -281,7 +286,7 @@ func (r *StatusPageResource) Read(ctx context.Context, req resource.ReadRequest,
 
 	r.mapToState(&state, page)
 	r.mapGroupsToState(&state, groups)
-	r.mapComponentsToState(&state, components)
+	r.mapComponentsToState(&state, components, groups)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -334,16 +339,10 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 	groupNameToID := make(map[string]string)
 	for i, g := range plan.ComponentGroups {
 		gBody := generated.CreateStatusPageComponentGroupRequest{
-			Name:        g.Name.ValueString(),
-			Description: stringPtrOrNil(g.Description),
-			Collapsed:   boolPtrOrNil(g.Collapsed),
-			DisplayOrder: func() *int32 {
-				if g.DisplayOrder.IsNull() || g.DisplayOrder.IsUnknown() {
-					return nil
-				}
-				v := int32(g.DisplayOrder.ValueInt64())
-				return &v
-			}(),
+			Name:         g.Name.ValueString(),
+			Description:  stringPtrOrNil(g.Description),
+			Collapsed:    boolPtrOrNil(g.Collapsed),
+			DisplayOrder: int32PtrFromInt64(g.DisplayOrder),
 		}
 		created, err := api.Create[generated.StatusPageComponentGroupDto](
 			ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/groups", pageID), gBody,
@@ -358,7 +357,11 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	for i, c := range plan.Components {
-		cBody := r.buildComponentRequest(&c, groupNameToID)
+		cBody, err := r.buildComponentRequest(&c, groupNameToID)
+		if err != nil {
+			resp.Diagnostics.AddError("Error building component request", err.Error())
+			return
+		}
 		created, err := api.Create[generated.StatusPageComponentDto](
 			ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/components", pageID), cBody,
 		)
@@ -388,25 +391,7 @@ func (r *StatusPageResource) Delete(ctx context.Context, req resource.DeleteRequ
 }
 
 func (r *StatusPageResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	pages, err := api.List[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages")
-	if err != nil {
-		resp.Diagnostics.AddError("Error listing status pages for import", err.Error())
-		return
-	}
-
-	for _, p := range pages {
-		if p.Slug == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), p.Id.String())...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), p.Name)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), p.Slug)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), p.Enabled)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("visibility"), string(p.Visibility))...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("incident_mode"), string(p.IncidentMode))...)
-			return
-		}
-	}
-
-	resp.Diagnostics.AddError("Status page not found", fmt.Sprintf("No status page found with slug %q", req.ID))
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
 }
 
 // ── Request builders ────────────────────────────────────────────────────
@@ -453,7 +438,7 @@ func (r *StatusPageResource) buildUpdateRequest(plan *StatusPageResourceModel) g
 	return req
 }
 
-func (r *StatusPageResource) buildComponentRequest(c *StatusPageComponentModel, groupNameToID map[string]string) generated.CreateStatusPageComponentRequest {
+func (r *StatusPageResource) buildComponentRequest(c *StatusPageComponentModel, groupNameToID map[string]string) (generated.CreateStatusPageComponentRequest, error) {
 	cType := generated.CreateStatusPageComponentRequestType(c.Type.ValueString())
 	req := generated.CreateStatusPageComponentRequest{
 		Name:               c.Name.ValueString(),
@@ -461,20 +446,17 @@ func (r *StatusPageResource) buildComponentRequest(c *StatusPageComponentModel, 
 		Description:        stringPtrOrNil(c.Description),
 		ExcludeFromOverall: boolPtrOrNil(c.ExcludeFromOverall),
 		ShowUptime:         boolPtrOrNil(c.ShowUptime),
-		DisplayOrder: func() *int32 {
-			if c.DisplayOrder.IsNull() || c.DisplayOrder.IsUnknown() {
-				return nil
-			}
-			v := int32(c.DisplayOrder.ValueInt64())
-			return &v
-		}(),
+		DisplayOrder:       int32PtrFromInt64(c.DisplayOrder),
 	}
 
 	if !c.GroupName.IsNull() && !c.GroupName.IsUnknown() {
-		if gid, ok := groupNameToID[c.GroupName.ValueString()]; ok {
-			uid := uuidFromString(gid)
-			req.GroupId = &uid
+		gName := c.GroupName.ValueString()
+		gid, ok := groupNameToID[gName]
+		if !ok {
+			return req, fmt.Errorf("component %q references group_name %q which does not match any component_group block", c.Name.ValueString(), gName)
 		}
+		uid := uuidFromString(gid)
+		req.GroupId = &uid
 	}
 	if !c.MonitorID.IsNull() && !c.MonitorID.IsUnknown() {
 		uid := uuidFromString(c.MonitorID.ValueString())
@@ -485,7 +467,7 @@ func (r *StatusPageResource) buildComponentRequest(c *StatusPageComponentModel, 
 		req.ResourceGroupId = &uid
 	}
 
-	return req
+	return req, nil
 }
 
 // ── State mapping ───────────────────────────────────────────────────────
@@ -506,6 +488,21 @@ func (r *StatusPageResource) mapGroupsToState(model *StatusPageResourceModel, gr
 		return
 	}
 
+	// If model has no groups (e.g., after import), rebuild from API response.
+	if len(model.ComponentGroups) == 0 {
+		model.ComponentGroups = make([]StatusPageComponentGroupModel, len(groups))
+		for i, g := range groups {
+			model.ComponentGroups[i] = StatusPageComponentGroupModel{
+				ID:           types.StringValue(g.Id.String()),
+				Name:         types.StringValue(g.Name),
+				Description:  stringValue(g.Description),
+				Collapsed:    types.BoolValue(g.Collapsed),
+				DisplayOrder: types.Int64Value(int64(g.DisplayOrder)),
+			}
+		}
+		return
+	}
+
 	nameToGroup := make(map[string]generated.StatusPageComponentGroupDto)
 	for _, g := range groups {
 		nameToGroup[g.Name] = g
@@ -514,6 +511,7 @@ func (r *StatusPageResource) mapGroupsToState(model *StatusPageResourceModel, gr
 	for i, mg := range model.ComponentGroups {
 		if g, ok := nameToGroup[mg.Name.ValueString()]; ok {
 			model.ComponentGroups[i].ID = types.StringValue(g.Id.String())
+			model.ComponentGroups[i].Name = types.StringValue(g.Name)
 			model.ComponentGroups[i].DisplayOrder = types.Int64Value(int64(g.DisplayOrder))
 			model.ComponentGroups[i].Collapsed = types.BoolValue(g.Collapsed)
 			model.ComponentGroups[i].Description = stringValue(g.Description)
@@ -521,8 +519,48 @@ func (r *StatusPageResource) mapGroupsToState(model *StatusPageResourceModel, gr
 	}
 }
 
-func (r *StatusPageResource) mapComponentsToState(model *StatusPageResourceModel, components []generated.StatusPageComponentDto) {
+func (r *StatusPageResource) mapComponentsToState(model *StatusPageResourceModel, components []generated.StatusPageComponentDto, groups []generated.StatusPageComponentGroupDto) {
 	if len(model.Components) == 0 && len(components) == 0 {
+		return
+	}
+
+	// Build reverse lookup: group ID → group name.
+	groupIDToName := make(map[string]string)
+	for _, g := range groups {
+		groupIDToName[g.Id.String()] = g.Name
+	}
+
+	// If model has no components (e.g., after import), rebuild from API response.
+	if len(model.Components) == 0 {
+		model.Components = make([]StatusPageComponentModel, len(components))
+		for i, c := range components {
+			model.Components[i] = StatusPageComponentModel{
+				ID:                 types.StringValue(c.Id.String()),
+				Name:               types.StringValue(c.Name),
+				Description:        stringValue(c.Description),
+				Type:               types.StringValue(string(c.Type)),
+				DisplayOrder:       types.Int64Value(int64(c.DisplayOrder)),
+				ExcludeFromOverall: types.BoolValue(c.ExcludeFromOverall),
+				ShowUptime:         types.BoolValue(c.ShowUptime),
+			}
+			if c.GroupId != nil {
+				if name, ok := groupIDToName[c.GroupId.String()]; ok {
+					model.Components[i].GroupName = types.StringValue(name)
+				}
+			} else {
+				model.Components[i].GroupName = types.StringNull()
+			}
+			if c.MonitorId != nil {
+				model.Components[i].MonitorID = types.StringValue(c.MonitorId.String())
+			} else {
+				model.Components[i].MonitorID = types.StringNull()
+			}
+			if c.ResourceGroupId != nil {
+				model.Components[i].ResourceGroupID = types.StringValue(c.ResourceGroupId.String())
+			} else {
+				model.Components[i].ResourceGroupID = types.StringNull()
+			}
+		}
 		return
 	}
 
@@ -534,9 +572,23 @@ func (r *StatusPageResource) mapComponentsToState(model *StatusPageResourceModel
 	for i, mc := range model.Components {
 		if c, ok := nameToComp[mc.Name.ValueString()]; ok {
 			model.Components[i].ID = types.StringValue(c.Id.String())
+			model.Components[i].Name = types.StringValue(c.Name)
+			model.Components[i].Description = stringValue(c.Description)
+			model.Components[i].Type = types.StringValue(string(c.Type))
 			model.Components[i].DisplayOrder = types.Int64Value(int64(c.DisplayOrder))
 			model.Components[i].ExcludeFromOverall = types.BoolValue(c.ExcludeFromOverall)
 			model.Components[i].ShowUptime = types.BoolValue(c.ShowUptime)
+			if c.MonitorId != nil {
+				model.Components[i].MonitorID = types.StringValue(c.MonitorId.String())
+			}
+			if c.ResourceGroupId != nil {
+				model.Components[i].ResourceGroupID = types.StringValue(c.ResourceGroupId.String())
+			}
+			if c.GroupId != nil {
+				if name, ok := groupIDToName[c.GroupId.String()]; ok {
+					model.Components[i].GroupName = types.StringValue(name)
+				}
+			}
 		}
 	}
 }
@@ -546,4 +598,12 @@ func (r *StatusPageResource) mapComponentsToState(model *StatusPageResourceModel
 func uuidFromString(s string) uuid.UUID {
 	u, _ := uuid.Parse(s)
 	return u
+}
+
+func int32PtrFromInt64(v types.Int64) *int32 {
+	if v.IsNull() || v.IsUnknown() {
+		return nil
+	}
+	i := int32(v.ValueInt64())
+	return &i
 }
