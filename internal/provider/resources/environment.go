@@ -100,7 +100,7 @@ func (r *EnvironmentResource) Create(ctx context.Context, req resource.CreateReq
 	body := generated.CreateEnvironmentRequest{
 		Name:      plan.Name.ValueString(),
 		Slug:      plan.Slug.ValueString(),
-		Variables: mapToStringMap(plan.Variables),
+		Variables: stringMapToPtr(plan.Variables),
 		IsDefault: boolPtrOrNil(plan.IsDefault),
 	}
 
@@ -145,7 +145,7 @@ func (r *EnvironmentResource) Update(ctx context.Context, req resource.UpdateReq
 	name := plan.Name.ValueString()
 	body := generated.UpdateEnvironmentRequest{
 		Name:      &name,
-		Variables: mapToStringMap(plan.Variables),
+		Variables: stringMapToPtr(plan.Variables),
 		IsDefault: boolPtrOrNil(plan.IsDefault),
 	}
 
@@ -179,14 +179,14 @@ func (r *EnvironmentResource) ImportState(ctx context.Context, req resource.Impo
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), env.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), env.Id.String())...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), env.Name)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), env.Slug)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("is_default"), env.IsDefault)...)
 }
 
 func (r *EnvironmentResource) mapToState(model *EnvironmentResourceModel, dto *generated.EnvironmentDto) {
-	model.ID = types.StringValue(dto.ID)
+	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
 	model.IsDefault = types.BoolValue(dto.IsDefault)

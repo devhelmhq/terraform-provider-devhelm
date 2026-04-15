@@ -63,7 +63,7 @@ func (d *EnvironmentDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	model.ID = types.StringValue(env.ID)
+	model.ID = types.StringValue(env.Id.String())
 	model.Name = types.StringValue(env.Name)
 	model.IsDefault = types.BoolValue(env.IsDefault)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)

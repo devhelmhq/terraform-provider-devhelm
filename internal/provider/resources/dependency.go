@@ -88,7 +88,7 @@ func (r *DependencyResource) Create(ctx context.Context, req resource.CreateRequ
 
 	body := generated.ServiceSubscribeRequest{
 		AlertSensitivity: stringPtrOrNil(plan.AlertSensitivity),
-		ComponentID:      stringPtrOrNil(plan.ComponentID),
+		ComponentId:      parseUUIDPtr(plan.ComponentID),
 	}
 
 	sub, err := api.Create[generated.ServiceSubscriptionDto](
@@ -101,10 +101,10 @@ func (r *DependencyResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	plan.ID = types.StringValue(sub.SubscriptionID)
+	plan.ID = types.StringValue(sub.SubscriptionId.String())
 	plan.ServiceName = types.StringValue(sub.Name)
-	plan.AlertSensitivity = stringValue(sub.AlertSensitivity)
-	plan.ComponentID = stringValue(sub.ComponentID)
+	plan.AlertSensitivity = types.StringValue(string(sub.AlertSensitivity))
+	plan.ComponentID = uuidPtrValue(sub.ComponentId)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -127,8 +127,8 @@ func (r *DependencyResource) Read(ctx context.Context, req resource.ReadRequest,
 
 	state.Service = types.StringValue(sub.Slug)
 	state.ServiceName = types.StringValue(sub.Name)
-	state.AlertSensitivity = stringValue(sub.AlertSensitivity)
-	state.ComponentID = stringValue(sub.ComponentID)
+	state.AlertSensitivity = types.StringValue(string(sub.AlertSensitivity))
+	state.ComponentID = uuidPtrValue(sub.ComponentId)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -187,7 +187,7 @@ func (r *DependencyResource) ImportState(ctx context.Context, req resource.Impor
 
 	for _, s := range subs {
 		if s.Slug == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), s.SubscriptionID)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), s.SubscriptionId.String())...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("service"), s.Slug)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("service_name"), s.Name)...)
 			return

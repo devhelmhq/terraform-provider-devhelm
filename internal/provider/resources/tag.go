@@ -92,7 +92,7 @@ func (r *TagResource) Create(ctx context.Context, req resource.CreateRequest, re
 		return
 	}
 
-	plan.ID = types.StringValue(tag.ID)
+	plan.ID = types.StringValue(tag.Id.String())
 	plan.Name = types.StringValue(tag.Name)
 	plan.Color = types.StringValue(tag.Color)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
@@ -133,8 +133,9 @@ func (r *TagResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		return
 	}
 
+	nameStr := plan.Name.ValueString()
 	body := generated.UpdateTagRequest{
-		Name:  plan.Name.ValueString(),
+		Name:  &nameStr,
 		Color: stringPtrOrNil(plan.Color),
 	}
 
@@ -172,7 +173,7 @@ func (r *TagResource) ImportState(ctx context.Context, req resource.ImportStateR
 
 	for _, tag := range tags {
 		if tag.Name == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), tag.ID)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), tag.Id.String())...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), tag.Name)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("color"), tag.Color)...)
 			return

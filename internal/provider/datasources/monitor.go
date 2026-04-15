@@ -73,8 +73,8 @@ func (d *MonitorDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	for _, m := range monitors {
 		if m.Name == model.Name.ValueString() {
-			model.ID = types.StringValue(m.ID)
-			model.Type = types.StringValue(m.Type)
+			model.ID = types.StringValue(m.Id.String())
+			model.Type = types.StringValue(string(m.Type))
 			model.FrequencySeconds = types.Int64Value(int64(m.FrequencySeconds))
 			model.Enabled = types.BoolValue(m.Enabled)
 			if m.Config != nil {

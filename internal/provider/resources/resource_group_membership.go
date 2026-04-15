@@ -6,6 +6,7 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
+	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -77,9 +78,14 @@ func (r *ResourceGroupMembershipResource) Create(ctx context.Context, req resour
 		return
 	}
 
+	memberUUID, err := uuid.Parse(plan.MemberID.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid member ID", err.Error())
+		return
+	}
 	body := generated.AddResourceGroupMemberRequest{
 		MemberType: plan.MemberType.ValueString(),
-		MemberID:   plan.MemberID.ValueString(),
+		MemberId:   memberUUID,
 	}
 
 	member, err := api.Create[generated.ResourceGroupMemberDto](
@@ -92,7 +98,7 @@ func (r *ResourceGroupMembershipResource) Create(ctx context.Context, req resour
 		return
 	}
 
-	plan.ID = types.StringValue(member.ID)
+	plan.ID = types.StringValue(member.Id.String())
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -114,10 +120,12 @@ func (r *ResourceGroupMembershipResource) Read(ctx context.Context, req resource
 	}
 
 	found := false
-	for _, m := range group.Members {
-		if m.ID == state.ID.ValueString() {
-			found = true
-			break
+	if group.Members != nil {
+		for _, m := range *group.Members {
+			if m.Id.String() == state.ID.ValueString() {
+				found = true
+				break
+			}
 		}
 	}
 

@@ -84,7 +84,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	body := generated.CreateWebhookEndpointRequest{
-		URL:              plan.URL.ValueString(),
+		Url:              plan.URL.ValueString(),
 		SubscribedEvents: stringSetToSlice(plan.SubscribedEvents),
 		Description:      stringPtrOrNil(plan.Description),
 	}
@@ -95,7 +95,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	plan.ID = types.StringValue(wh.ID)
+	plan.ID = types.StringValue(wh.Id.String())
 	plan.Enabled = types.BoolValue(wh.Enabled)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
@@ -117,7 +117,7 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	state.URL = types.StringValue(wh.URL)
+	state.URL = types.StringValue(wh.Url)
 	state.Description = stringValue(wh.Description)
 	state.Enabled = types.BoolValue(wh.Enabled)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -138,10 +138,10 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 
 	urlStr := plan.URL.ValueString()
 	body := generated.UpdateWebhookEndpointRequest{
-		URL:              &urlStr,
+		Url:              &urlStr,
 		Description:      stringPtrOrNil(plan.Description),
 		Enabled:          boolPtrOrNil(plan.Enabled),
-		SubscribedEvents: stringSetToSlice(plan.SubscribedEvents),
+		SubscribedEvents: stringSliceToPtrFromSet(plan.SubscribedEvents),
 	}
 
 	wh, err := api.Update[generated.WebhookEndpointDto](ctx, r.client, "/api/v1/webhooks/"+state.ID.ValueString(), body)
@@ -176,9 +176,9 @@ func (r *WebhookResource) ImportState(ctx context.Context, req resource.ImportSt
 	}
 
 	for _, wh := range webhooks {
-		if wh.URL == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), wh.ID)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("url"), wh.URL)...)
+		if wh.Url == req.ID {
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), wh.Id.String())...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("url"), wh.Url)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), wh.Enabled)...)
 			return
 		}

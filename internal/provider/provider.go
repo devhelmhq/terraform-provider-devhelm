@@ -100,6 +100,8 @@ func (p *DevhelmProvider) Resources(_ context.Context) []func() resource.Resourc
 		resources.NewResourceGroupMembershipResource,
 		resources.NewMonitorResource,
 		resources.NewDependencyResource,
+		resources.NewStatusPageResource,
+		resources.NewStatusPageCustomDomainResource,
 	}
 }
 
@@ -110,6 +112,7 @@ func (p *DevhelmProvider) DataSources(_ context.Context) []func() datasource.Dat
 		datasources.NewAlertChannelDataSource,
 		datasources.NewMonitorDataSource,
 		datasources.NewResourceGroupDataSource,
+		datasources.NewStatusPageDataSource,
 	}
 }
 

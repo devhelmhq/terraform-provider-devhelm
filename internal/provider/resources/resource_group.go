@@ -115,32 +115,32 @@ func (r *ResourceGroupResource) buildRequest(plan *ResourceGroupModel) generated
 	return generated.CreateResourceGroupRequest{
 		Name:                     plan.Name.ValueString(),
 		Description:              stringPtrOrNil(plan.Description),
-		AlertPolicyID:            stringPtrOrNil(plan.AlertPolicyID),
-		DefaultFrequency:         intPtrOrNil(plan.DefaultFrequency),
-		DefaultRegions:           stringListToSlice(plan.DefaultRegions),
-		DefaultAlertChannels:     stringListToSlice(plan.DefaultAlertChannels),
-		DefaultEnvironmentID:     stringPtrOrNil(plan.DefaultEnvironmentID),
-		HealthThresholdType:      stringPtrOrNil(plan.HealthThresholdType),
-		HealthThresholdValue:     float64PtrOrNil(plan.HealthThresholdValue),
+		AlertPolicyId:            parseUUIDPtr(plan.AlertPolicyID),
+		DefaultFrequency:         int32PtrOrNil(plan.DefaultFrequency),
+		DefaultRegions:           stringSliceToPtr(plan.DefaultRegions),
+		DefaultAlertChannels:     uuidSliceFromStringList(plan.DefaultAlertChannels),
+		DefaultEnvironmentId:     parseUUIDPtr(plan.DefaultEnvironmentID),
+		HealthThresholdType:      typedStringPtrOrNil[generated.CreateResourceGroupRequestHealthThresholdType](plan.HealthThresholdType),
+		HealthThresholdValue:     float32PtrOrNil(plan.HealthThresholdValue),
 		SuppressMemberAlerts:     boolPtrOrNil(plan.SuppressMemberAlerts),
-		ConfirmationDelaySeconds: intPtrOrNil(plan.ConfirmationDelaySeconds),
-		RecoveryCooldownMinutes:  intPtrOrNil(plan.RecoveryCooldownMinutes),
+		ConfirmationDelaySeconds: int32PtrOrNil(plan.ConfirmationDelaySeconds),
+		RecoveryCooldownMinutes:  int32PtrOrNil(plan.RecoveryCooldownMinutes),
 	}
 }
 
 func (r *ResourceGroupResource) mapToState(model *ResourceGroupModel, dto *generated.ResourceGroupDto) {
-	model.ID = types.StringValue(dto.ID)
+	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
 	model.Description = stringValue(dto.Description)
-	model.AlertPolicyID = stringValue(dto.AlertPolicyID)
-	model.DefaultFrequency = intValue(dto.DefaultFrequency)
-	model.DefaultEnvironmentID = stringValue(dto.DefaultEnvironmentID)
-	model.HealthThresholdType = stringValue(dto.HealthThresholdType)
-	model.HealthThresholdValue = float64Value(dto.HealthThresholdValue)
-	model.SuppressMemberAlerts = boolValue(dto.SuppressMemberAlerts)
-	model.ConfirmationDelaySeconds = intValue(dto.ConfirmationDelaySeconds)
-	model.RecoveryCooldownMinutes = intValue(dto.RecoveryCooldownMinutes)
+	model.AlertPolicyID = uuidPtrValue(dto.AlertPolicyId)
+	model.DefaultFrequency = int32Value(dto.DefaultFrequency)
+	model.DefaultEnvironmentID = uuidPtrValue(dto.DefaultEnvironmentId)
+	model.HealthThresholdType = typedStringPtrValue(dto.HealthThresholdType)
+	model.HealthThresholdValue = float32Value(dto.HealthThresholdValue)
+	model.SuppressMemberAlerts = types.BoolValue(dto.SuppressMemberAlerts)
+	model.ConfirmationDelaySeconds = int32Value(dto.ConfirmationDelaySeconds)
+	model.RecoveryCooldownMinutes = int32Value(dto.RecoveryCooldownMinutes)
 }
 
 func (r *ResourceGroupResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -228,7 +228,7 @@ func (r *ResourceGroupResource) ImportState(ctx context.Context, req resource.Im
 
 	for _, g := range groups {
 		if g.Name == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), g.ID)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), g.Id.String())...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), g.Name)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), g.Slug)...)
 			return
