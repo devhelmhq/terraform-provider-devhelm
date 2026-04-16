@@ -64,7 +64,7 @@ func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 
 	for _, t := range tags {
 		if t.Name == model.Name.ValueString() {
-			model.ID = types.StringValue(t.ID)
+			model.ID = types.StringValue(t.Id.String())
 			model.Color = types.StringValue(t.Color)
 			resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 			return

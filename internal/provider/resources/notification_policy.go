@@ -160,10 +160,10 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 	var apiSteps []generated.EscalationStep
 	for _, s := range steps {
 		apiSteps = append(apiSteps, generated.EscalationStep{
-			ChannelIDs:            stringListToSlice(s.ChannelIDs),
-			DelayMinutes:          intPtrOrNil(s.DelayMinutes),
+			ChannelIds:            uuidListToSlice(s.ChannelIDs),
+			DelayMinutes:          int32PtrOrNil(s.DelayMinutes),
 			RequireAck:            boolPtrOrNil(s.RequireAck),
-			RepeatIntervalSeconds: intPtrOrNil(s.RepeatIntervalSeconds),
+			RepeatIntervalSeconds: int32PtrOrNil(s.RepeatIntervalSeconds),
 		})
 	}
 
@@ -174,22 +174,22 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 		apiRules = append(apiRules, generated.MatchRule{
 			Type:       mr.Type.ValueString(),
 			Value:      stringPtrOrNil(mr.Value),
-			Values:     stringListToSlice(mr.Values),
-			MonitorIDs: stringListToSlice(mr.MonitorIDs),
-			Regions:    stringListToSlice(mr.Regions),
+			Values:     stringSliceToPtr(mr.Values),
+			MonitorIds: uuidSliceFromStringList(mr.MonitorIDs),
+			Regions:    stringSliceToPtr(mr.Regions),
 		})
 	}
 
 	req := &generated.CreateNotificationPolicyRequest{
 		Name:     plan.Name.ValueString(),
 		Enabled:  boolPtrOrNil(plan.Enabled),
-		Priority: intPtrOrNil(plan.Priority),
+		Priority: int32PtrOrNil(plan.Priority),
 		Escalation: generated.EscalationChain{
 			Steps:     apiSteps,
 			OnResolve: stringPtrOrNil(plan.OnResolve),
 			OnReopen:  stringPtrOrNil(plan.OnReopen),
 		},
-		MatchRules: apiRules,
+		MatchRules: &apiRules,
 	}
 	return req, nil
 }
@@ -213,7 +213,7 @@ func (r *NotificationPolicyResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
-	plan.ID = types.StringValue(policy.ID)
+	plan.ID = types.StringValue(policy.Id.String())
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -293,7 +293,7 @@ func (r *NotificationPolicyResource) ImportState(ctx context.Context, req resour
 
 	for _, p := range policies {
 		if p.Name == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), p.ID)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), p.Id.String())...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), p.Name)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), p.Enabled)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("priority"), int64(p.Priority))...)

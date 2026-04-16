@@ -148,42 +148,42 @@ func (r *AlertChannelResource) buildConfig(model *AlertChannelResourceModel) (js
 	case "slack":
 		cfg = generated.SlackChannelConfig{
 			ChannelType: "slack",
-			WebhookURL:  model.WebhookURL.ValueString(),
+			WebhookUrl:  stringPtrOrNil(model.WebhookURL),
 			MentionText: stringPtrOrNil(model.MentionText),
 		}
 	case "discord":
 		cfg = generated.DiscordChannelConfig{
 			ChannelType:   "discord",
-			WebhookURL:    model.WebhookURL.ValueString(),
-			MentionRoleID: stringPtrOrNil(model.MentionRoleID),
+			WebhookUrl:    stringPtrOrNil(model.WebhookURL),
+			MentionRoleId: stringPtrOrNil(model.MentionRoleID),
 		}
 	case "email":
 		cfg = generated.EmailChannelConfig{
 			ChannelType: "email",
-			Recipients:  stringListToSlice(model.Recipients),
+			Recipients:  emailsFromStringList(model.Recipients),
 		}
 	case "pagerduty":
 		cfg = generated.PagerDutyChannelConfig{
 			ChannelType:      "pagerduty",
-			RoutingKey:       model.RoutingKey.ValueString(),
+			RoutingKey:       stringPtrOrNil(model.RoutingKey),
 			SeverityOverride: stringPtrOrNil(model.SeverityOverride),
 		}
 	case "opsgenie":
 		cfg = generated.OpsGenieChannelConfig{
 			ChannelType: "opsgenie",
-			APIKey:      model.APIKey.ValueString(),
+			ApiKey:      stringPtrOrNil(model.APIKey),
 			Region:      stringPtrOrNil(model.Region),
 		}
 	case "teams":
 		cfg = generated.TeamsChannelConfig{
 			ChannelType: "teams",
-			WebhookURL:  model.WebhookURL.ValueString(),
+			WebhookUrl:  stringPtrOrNil(model.WebhookURL),
 		}
 	case "webhook":
 		cfg = generated.WebhookChannelConfig{
 			ChannelType:   "webhook",
-			URL:           model.URL.ValueString(),
-			CustomHeaders: mapToStringMap(model.CustomHeaders),
+			Url:           stringPtrOrNil(model.URL),
+			CustomHeaders: stringMapToPtr(model.CustomHeaders),
 			SigningSecret: stringPtrOrNil(model.SigningSecret),
 		}
 	default:
@@ -206,9 +206,15 @@ func (r *AlertChannelResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
+	var configUnion generated.CreateAlertChannelRequest_Config
+	if err := configUnion.UnmarshalJSON(config); err != nil {
+		resp.Diagnostics.AddError("Error marshaling channel config", err.Error())
+		return
+	}
+
 	body := generated.CreateAlertChannelRequest{
 		Name:   plan.Name.ValueString(),
-		Config: config,
+		Config: configUnion,
 	}
 
 	ch, err := api.Create[generated.AlertChannelDto](ctx, r.client, "/api/v1/alert-channels", body)
@@ -217,8 +223,8 @@ func (r *AlertChannelResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	plan.ID = types.StringValue(ch.ID)
-	plan.ConfigHash = types.StringValue(ch.ConfigHash)
+	plan.ID = types.StringValue(ch.Id.String())
+	plan.ConfigHash = stringValue(ch.ConfigHash)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -237,7 +243,7 @@ func (r *AlertChannelResource) Read(ctx context.Context, req resource.ReadReques
 
 	var found *generated.AlertChannelDto
 	for _, ch := range channels {
-		if ch.ID == state.ID.ValueString() {
+		if ch.Id.String() == state.ID.ValueString() {
 			found = &ch
 			break
 		}
@@ -249,8 +255,8 @@ func (r *AlertChannelResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	state.Name = types.StringValue(found.Name)
-	state.ChannelType = types.StringValue(found.ChannelType)
-	state.ConfigHash = types.StringValue(found.ConfigHash)
+	state.ChannelType = types.StringValue(string(found.ChannelType))
+	state.ConfigHash = stringValue(found.ConfigHash)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -273,9 +279,15 @@ func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
+	var configUnion generated.UpdateAlertChannelRequest_Config
+	if err := configUnion.UnmarshalJSON(config); err != nil {
+		resp.Diagnostics.AddError("Error marshaling channel config", err.Error())
+		return
+	}
+
 	body := generated.UpdateAlertChannelRequest{
 		Name:   plan.Name.ValueString(),
-		Config: config,
+		Config: configUnion,
 	}
 
 	ch, err := api.Update[generated.AlertChannelDto](ctx, r.client, "/api/v1/alert-channels/"+state.ID.ValueString(), body)
@@ -285,7 +297,7 @@ func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRe
 	}
 
 	plan.ID = state.ID
-	plan.ConfigHash = types.StringValue(ch.ConfigHash)
+	plan.ConfigHash = stringValue(ch.ConfigHash)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -311,10 +323,10 @@ func (r *AlertChannelResource) ImportState(ctx context.Context, req resource.Imp
 
 	for _, ch := range channels {
 		if ch.Name == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), ch.ID)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), ch.Id.String())...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), ch.Name)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("channel_type"), ch.ChannelType)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("config_hash"), ch.ConfigHash)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("channel_type"), string(ch.ChannelType))...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("config_hash"), stringValue(ch.ConfigHash))...)
 			return
 		}
 	}

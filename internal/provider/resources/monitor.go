@@ -249,7 +249,6 @@ func buildAssertions(ctx context.Context, list types.List) ([]generated.CreateAs
 	for _, m := range models {
 		configJSON := json.RawMessage(m.Config.ValueString())
 
-		var wrappedConfig json.RawMessage
 		typedConfig := map[string]json.RawMessage{
 			"type": json.RawMessage(fmt.Sprintf("%q", m.Type.ValueString())),
 		}
@@ -261,11 +260,16 @@ func buildAssertions(ctx context.Context, list types.List) ([]generated.CreateAs
 		for k, v := range raw {
 			typedConfig[k] = v
 		}
-		wrappedConfig, _ = json.Marshal(typedConfig)
+		wrappedConfig, _ := json.Marshal(typedConfig)
+
+		var configUnion generated.CreateAssertionRequest_Config
+		if err := configUnion.UnmarshalJSON(wrappedConfig); err != nil {
+			return nil, fmt.Errorf("assertion config unmarshal: %w", err)
+		}
 
 		req := generated.CreateAssertionRequest{
-			Config:   wrappedConfig,
-			Severity: stringPtrOrNil(m.Severity),
+			Config:   configUnion,
+			Severity: typedStringPtrOrNil[generated.CreateAssertionRequestSeverity](m.Severity),
 		}
 		result = append(result, req)
 	}
@@ -292,27 +296,27 @@ func buildIncidentPolicy(ctx context.Context, list types.List) (*generated.Updat
 	m.TriggerRules.ElementsAs(ctx, &ruleModels, false)
 	for _, rm := range ruleModels {
 		triggerRules = append(triggerRules, generated.TriggerRule{
-			Type:            rm.Type.ValueString(),
-			Severity:        rm.Severity.ValueString(),
-			Scope:           stringPtrOrNil(rm.Scope),
-			Count:           intPtrOrNil(rm.Count),
-			WindowMinutes:   intPtrOrNil(rm.WindowMinutes),
-			ThresholdMs:     intPtrOrNil(rm.ThresholdMs),
-			AggregationType: stringPtrOrNil(rm.AggregationType),
+			Type:            generated.TriggerRuleType(rm.Type.ValueString()),
+			Severity:        generated.TriggerRuleSeverity(rm.Severity.ValueString()),
+			Scope:           typedStringPtrOrNil[generated.TriggerRuleScope](rm.Scope),
+			Count:           int32PtrOrNil(rm.Count),
+			WindowMinutes:   int32PtrOrNil(rm.WindowMinutes),
+			ThresholdMs:     int32PtrOrNil(rm.ThresholdMs),
+			AggregationType: typedStringPtrOrNil[generated.TriggerRuleAggregationType](rm.AggregationType),
 		})
 	}
 
 	return &generated.UpdateIncidentPolicyRequest{
 		TriggerRules: triggerRules,
 		Confirmation: generated.ConfirmationPolicy{
-			Type:              m.ConfirmationType.ValueString(),
-			MinRegionsFailing: intPtrOrNil(m.MinRegionsFailing),
-			MaxWaitSeconds:    intPtrOrNil(m.MaxWaitSeconds),
+			Type:              generated.ConfirmationPolicyType(m.ConfirmationType.ValueString()),
+			MinRegionsFailing: int32PtrOrNil(m.MinRegionsFailing),
+			MaxWaitSeconds:    int32PtrOrNil(m.MaxWaitSeconds),
 		},
 		Recovery: generated.RecoveryPolicy{
-			ConsecutiveSuccesses: intPtrOrNil(m.ConsecutiveSuccesses),
-			MinRegionsPassing:    intPtrOrNil(m.MinRegionsPassing),
-			CooldownMinutes:      intPtrOrNil(m.CooldownMinutes),
+			ConsecutiveSuccesses: int32OrZero(m.ConsecutiveSuccesses),
+			MinRegionsPassing:    int32OrZero(m.MinRegionsPassing),
+			CooldownMinutes:      int32OrZero(m.CooldownMinutes),
 		},
 	}, nil
 }
@@ -328,30 +332,36 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		return nil, err
 	}
 
-	managedBy := "TERRAFORM"
+	var configUnion generated.CreateMonitorRequest_Config
+	if err := configUnion.UnmarshalJSON(json.RawMessage(plan.Config.ValueString())); err != nil {
+		return nil, fmt.Errorf("monitor config: %w", err)
+	}
 
 	req := &generated.CreateMonitorRequest{
 		Name:             plan.Name.ValueString(),
-		Type:             plan.Type.ValueString(),
-		Config:           json.RawMessage(plan.Config.ValueString()),
-		ManagedBy:        managedBy,
-		FrequencySeconds: intPtrOrNil(plan.FrequencySeconds),
+		Type:             generated.CreateMonitorRequestType(plan.Type.ValueString()),
+		Config:           configUnion,
+		ManagedBy:        generated.CreateMonitorRequestManagedBy("TERRAFORM"),
+		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
 		Enabled:          boolPtrOrNil(plan.Enabled),
-		Regions:          stringListToSlice(plan.Regions),
-		EnvironmentID:    stringPtrOrNil(plan.EnvironmentID),
-		Assertions:       assertions,
-		AlertChannelIds:  stringListToSlice(plan.AlertChannelIds),
+		Regions:          stringSliceToPtr(plan.Regions),
+		EnvironmentId:    parseUUIDPtr(plan.EnvironmentID),
+		Assertions:       &assertions,
+		AlertChannelIds:  uuidSliceFromStringList(plan.AlertChannelIds),
 		IncidentPolicy:   incidentPolicy,
 	}
 
 	if !plan.Auth.IsNull() && !plan.Auth.IsUnknown() {
-		authJSON := json.RawMessage(plan.Auth.ValueString())
-		req.Auth = &authJSON
+		var authUnion generated.CreateMonitorRequest_Auth
+		if err := authUnion.UnmarshalJSON(json.RawMessage(plan.Auth.ValueString())); err != nil {
+			return nil, fmt.Errorf("monitor auth: %w", err)
+		}
+		req.Auth = &authUnion
 	}
 
-	if tagIds := stringListToSlice(plan.TagIds); len(tagIds) > 0 {
+	if tagUUIDs := uuidSliceFromStringList(plan.TagIds); tagUUIDs != nil && len(*tagUUIDs) > 0 {
 		req.Tags = &generated.AddMonitorTagsRequest{
-			TagIds: tagIds,
+			TagIds: tagUUIDs,
 		}
 	}
 
@@ -370,38 +380,50 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 	}
 
 	name := plan.Name.ValueString()
-	managedBy := "TERRAFORM"
-	configJSON := json.RawMessage(plan.Config.ValueString())
+	managedBy := generated.UpdateMonitorRequestManagedBy("TERRAFORM")
+
+	var configUnion generated.UpdateMonitorRequest_Config
+	if err := configUnion.UnmarshalJSON(json.RawMessage(plan.Config.ValueString())); err != nil {
+		return nil, fmt.Errorf("monitor config: %w", err)
+	}
+
+	var ip generated.UpdateIncidentPolicyRequest
+	if incidentPolicy != nil {
+		ip = *incidentPolicy
+	}
 
 	req := &generated.UpdateMonitorRequest{
 		Name:             &name,
-		Config:           &configJSON,
+		Config:           &configUnion,
 		ManagedBy:        &managedBy,
-		FrequencySeconds: intPtrOrNil(plan.FrequencySeconds),
+		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
 		Enabled:          boolPtrOrNil(plan.Enabled),
-		Regions:          stringListToSlice(plan.Regions),
-		EnvironmentID:    stringPtrOrNil(plan.EnvironmentID),
-		Assertions:       assertions,
-		AlertChannelIds:  stringListToSlice(plan.AlertChannelIds),
-		IncidentPolicy:   incidentPolicy,
+		Regions:          stringSliceToPtr(plan.Regions),
+		EnvironmentId:    parseUUIDPtr(plan.EnvironmentID),
+		Assertions:       &assertions,
+		AlertChannelIds:  uuidSliceFromStringList(plan.AlertChannelIds),
+		IncidentPolicy:   ip,
 	}
 
 	if plan.EnvironmentID.IsNull() {
 		clearEnv := true
-		req.ClearEnvironmentID = &clearEnv
+		req.ClearEnvironmentId = &clearEnv
 	}
 
 	if !plan.Auth.IsNull() && !plan.Auth.IsUnknown() {
-		authJSON := json.RawMessage(plan.Auth.ValueString())
-		req.Auth = &authJSON
+		var authUnion generated.UpdateMonitorRequest_Auth
+		if err := authUnion.UnmarshalJSON(json.RawMessage(plan.Auth.ValueString())); err != nil {
+			return nil, fmt.Errorf("monitor auth: %w", err)
+		}
+		req.Auth = &authUnion
 	} else {
 		clearAuth := true
 		req.ClearAuth = &clearAuth
 	}
 
-	if tagIds := stringListToSlice(plan.TagIds); len(tagIds) > 0 {
-		req.Tags = &generated.AddMonitorTagsRequest{
-			TagIds: tagIds,
+	if tagUUIDs := uuidSliceFromStringList(plan.TagIds); tagUUIDs != nil && len(*tagUUIDs) > 0 {
+		req.Tags = generated.AddMonitorTagsRequest{
+			TagIds: tagUUIDs,
 		}
 	}
 
@@ -411,25 +433,29 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 // ── API → TF mapping ───────────────────────────────────────────────────
 
 func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResourceModel, dto *generated.MonitorDto) {
-	model.ID = types.StringValue(dto.ID)
+	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
-	model.Type = types.StringValue(dto.Type)
+	model.Type = types.StringValue(string(dto.Type))
 	model.FrequencySeconds = types.Int64Value(int64(dto.FrequencySeconds))
 	model.Enabled = types.BoolValue(dto.Enabled)
 	model.PingUrl = stringValue(dto.PingUrl)
 
 	if dto.Config != nil {
-		model.Config = types.StringValue(normalizeJSON(dto.Config))
+		if configBytes, err := dto.Config.MarshalJSON(); err == nil {
+			model.Config = types.StringValue(normalizeJSON(configBytes))
+		}
 	}
 
-	if dto.Environment != nil {
-		model.EnvironmentID = types.StringValue(dto.Environment.ID)
+	if dto.Environment.Id.String() != "00000000-0000-0000-0000-000000000000" {
+		model.EnvironmentID = types.StringValue(dto.Environment.Id.String())
 	} else {
 		model.EnvironmentID = types.StringNull()
 	}
 
 	if dto.Auth != nil {
-		model.Auth = types.StringValue(string(*dto.Auth))
+		if authBytes, err := dto.Auth.MarshalJSON(); err == nil {
+			model.Auth = types.StringValue(string(authBytes))
+		}
 	}
 }
 
@@ -530,13 +556,15 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 
 	for _, m := range monitors {
 		if m.Name == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), m.ID)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), m.Id.String())...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), m.Name)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("type"), m.Type)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("type"), string(m.Type))...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("frequency_seconds"), int64(m.FrequencySeconds))...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), m.Enabled)...)
 			if m.Config != nil {
-				resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("config"), string(m.Config))...)
+				if configBytes, err := m.Config.MarshalJSON(); err == nil {
+					resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("config"), string(configBytes))...)
+				}
 			}
 			return
 		}

@@ -66,7 +66,7 @@ func (d *ResourceGroupDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	for _, g := range groups {
 		if g.Name == model.Name.ValueString() {
-			model.ID = types.StringValue(g.ID)
+			model.ID = types.StringValue(g.Id.String())
 			model.Slug = types.StringValue(g.Slug)
 			if g.Description != nil {
 				model.Description = types.StringValue(*g.Description)

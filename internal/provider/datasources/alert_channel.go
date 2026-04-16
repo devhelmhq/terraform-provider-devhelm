@@ -64,8 +64,8 @@ func (d *AlertChannelDataSource) Read(ctx context.Context, req datasource.ReadRe
 
 	for _, ch := range channels {
 		if ch.Name == model.Name.ValueString() {
-			model.ID = types.StringValue(ch.ID)
-			model.ChannelType = types.StringValue(ch.ChannelType)
+			model.ID = types.StringValue(ch.Id.String())
+			model.ChannelType = types.StringValue(string(ch.ChannelType))
 			resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 			return
 		}

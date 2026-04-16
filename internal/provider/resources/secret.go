@@ -101,7 +101,7 @@ func (r *SecretResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	plan.ID = types.StringValue(secret.ID)
+	plan.ID = types.StringValue(secret.Id.String())
 	plan.ValueHash = types.StringValue(sha256Hex(plan.Value.ValueString()))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
@@ -121,7 +121,7 @@ func (r *SecretResource) Read(ctx context.Context, req resource.ReadRequest, res
 
 	var found *generated.SecretDto
 	for _, s := range secrets {
-		if s.ID == state.ID.ValueString() {
+		if s.Id.String() == state.ID.ValueString() {
 			found = &s
 			break
 		}
@@ -180,7 +180,7 @@ func (r *SecretResource) ImportState(ctx context.Context, req resource.ImportSta
 
 	for _, s := range secrets {
 		if s.Key == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), s.ID)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), s.Id.String())...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("key"), s.Key)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("value_hash"), s.ValueHash)...)
 			// value is write-only; after import, user must set it in config
