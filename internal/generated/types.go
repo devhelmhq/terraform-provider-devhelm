@@ -6785,7 +6785,7 @@ type UpdateMonitorRequest struct {
 	FrequencySeconds *int32 `json:"frequencySeconds"`
 
 	// IncidentPolicy Request body for updating an incident policy
-	IncidentPolicy UpdateIncidentPolicyRequest `json:"incidentPolicy"`
+	IncidentPolicy *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
 	// ManagedBy New management source; null preserves current
 	ManagedBy *UpdateMonitorRequestManagedBy `json:"managedBy"`
@@ -6797,7 +6797,7 @@ type UpdateMonitorRequest struct {
 	Regions *[]*string `json:"regions"`
 
 	// Tags Request body for adding tags to a monitor. Provide existing tag IDs, inline new tags, or both.
-	Tags AddMonitorTagsRequest `json:"tags"`
+	Tags *AddMonitorTagsRequest `json:"tags,omitempty"`
 }
 
 // UpdateMonitorRequest_Auth defines model for UpdateMonitorRequest.Auth.

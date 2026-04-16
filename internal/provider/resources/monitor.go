@@ -387,11 +387,6 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 		return nil, fmt.Errorf("monitor config: %w", err)
 	}
 
-	var ip generated.UpdateIncidentPolicyRequest
-	if incidentPolicy != nil {
-		ip = *incidentPolicy
-	}
-
 	req := &generated.UpdateMonitorRequest{
 		Name:             &name,
 		Config:           &configUnion,
@@ -402,7 +397,7 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 		EnvironmentId:    parseUUIDPtr(plan.EnvironmentID),
 		Assertions:       &assertions,
 		AlertChannelIds:  uuidSliceFromStringList(plan.AlertChannelIds),
-		IncidentPolicy:   ip,
+		IncidentPolicy:   incidentPolicy,
 	}
 
 	if plan.EnvironmentID.IsNull() {
@@ -422,7 +417,7 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 	}
 
 	if tagUUIDs := uuidSliceFromStringList(plan.TagIds); tagUUIDs != nil && len(*tagUUIDs) > 0 {
-		req.Tags = generated.AddMonitorTagsRequest{
+		req.Tags = &generated.AddMonitorTagsRequest{
 			TagIds: tagUUIDs,
 		}
 	}
