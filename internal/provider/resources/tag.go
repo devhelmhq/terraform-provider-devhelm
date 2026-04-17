@@ -171,14 +171,42 @@ func (r *TagResource) ImportState(ctx context.Context, req resource.ImportStateR
 		return
 	}
 
-	for _, tag := range tags {
-		if tag.Name == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), tag.Id.String())...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), tag.Name)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("color"), tag.Color)...)
+	// Accept UUID or name. Tag names should be unique within an org but the
+	// API does not enforce this for legacy tenants, so guard explicitly.
+	var matched *generated.TagDto
+	var matchedByName []*generated.TagDto
+	for i := range tags {
+		t := &tags[i]
+		if t.Id.String() == req.ID {
+			matched = t
+			matchedByName = nil
+			break
+		}
+		if t.Name == req.ID {
+			matchedByName = append(matchedByName, t)
+		}
+	}
+	if matched == nil {
+		switch len(matchedByName) {
+		case 0:
+			resp.Diagnostics.AddError("Tag not found", fmt.Sprintf("No tag found with name or ID %q", req.ID))
+			return
+		case 1:
+			matched = matchedByName[0]
+		default:
+			ids := make([]string, len(matchedByName))
+			for i, t := range matchedByName {
+				ids[i] = t.Id.String()
+			}
+			resp.Diagnostics.AddError(
+				"Ambiguous tag import",
+				fmt.Sprintf("%d tags share the name %q (ids: %v). Import by UUID instead.", len(matchedByName), req.ID, ids),
+			)
 			return
 		}
 	}
 
-	resp.Diagnostics.AddError("Tag not found", fmt.Sprintf("No tag found with name %q", req.ID))
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), matched.Id.String())...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), matched.Name)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("color"), matched.Color)...)
 }

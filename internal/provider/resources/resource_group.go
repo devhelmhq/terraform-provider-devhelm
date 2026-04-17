@@ -108,27 +108,77 @@ func (r *ResourceGroupResource) Configure(_ context.Context, req resource.Config
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type", "Expected *api.Client")
+		return
+	}
+	r.client = client
 }
 
-func (r *ResourceGroupResource) buildRequest(plan *ResourceGroupModel) generated.CreateResourceGroupRequest {
+func (r *ResourceGroupResource) buildRequest(plan *ResourceGroupModel) (generated.CreateResourceGroupRequest, error) {
+	alertPolicyID, err := parseUUIDPtrChecked(plan.AlertPolicyID, "alert_policy_id")
+	if err != nil {
+		return generated.CreateResourceGroupRequest{}, err
+	}
+	envID, err := parseUUIDPtrChecked(plan.DefaultEnvironmentID, "default_environment_id")
+	if err != nil {
+		return generated.CreateResourceGroupRequest{}, err
+	}
+	channels, err := uuidSliceFromStringListChecked(plan.DefaultAlertChannels, "default_alert_channels")
+	if err != nil {
+		return generated.CreateResourceGroupRequest{}, err
+	}
 	return generated.CreateResourceGroupRequest{
 		Name:                     plan.Name.ValueString(),
 		Description:              stringPtrOrNil(plan.Description),
-		AlertPolicyId:            parseUUIDPtr(plan.AlertPolicyID),
+		AlertPolicyId:            alertPolicyID,
 		DefaultFrequency:         int32PtrOrNil(plan.DefaultFrequency),
 		DefaultRegions:           stringSliceToPtr(plan.DefaultRegions),
-		DefaultAlertChannels:     uuidSliceFromStringList(plan.DefaultAlertChannels),
-		DefaultEnvironmentId:     parseUUIDPtr(plan.DefaultEnvironmentID),
+		DefaultAlertChannels:     channels,
+		DefaultEnvironmentId:     envID,
 		HealthThresholdType:      typedStringPtrOrNil[generated.CreateResourceGroupRequestHealthThresholdType](plan.HealthThresholdType),
 		HealthThresholdValue:     float32PtrOrNil(plan.HealthThresholdValue),
 		SuppressMemberAlerts:     boolPtrOrNil(plan.SuppressMemberAlerts),
 		ConfirmationDelaySeconds: int32PtrOrNil(plan.ConfirmationDelaySeconds),
 		RecoveryCooldownMinutes:  int32PtrOrNil(plan.RecoveryCooldownMinutes),
-	}
+	}, nil
 }
 
-func (r *ResourceGroupResource) mapToState(model *ResourceGroupModel, dto *generated.ResourceGroupDto) {
+// buildUpdateRequest targets the UpdateResourceGroupRequest DTO which uses
+// per-field null semantics ("null clears"). TF semantics align: an attribute
+// that was previously set and is now removed from config becomes null in the
+// plan, and we forward that to the API so the server clears the field.
+func (r *ResourceGroupResource) buildUpdateRequest(plan *ResourceGroupModel) (generated.UpdateResourceGroupRequest, error) {
+	alertPolicyID, err := parseUUIDPtrChecked(plan.AlertPolicyID, "alert_policy_id")
+	if err != nil {
+		return generated.UpdateResourceGroupRequest{}, err
+	}
+	envID, err := parseUUIDPtrChecked(plan.DefaultEnvironmentID, "default_environment_id")
+	if err != nil {
+		return generated.UpdateResourceGroupRequest{}, err
+	}
+	channels, err := uuidSliceFromStringListChecked(plan.DefaultAlertChannels, "default_alert_channels")
+	if err != nil {
+		return generated.UpdateResourceGroupRequest{}, err
+	}
+	return generated.UpdateResourceGroupRequest{
+		Name:                     plan.Name.ValueString(),
+		Description:              stringPtrOrNil(plan.Description),
+		AlertPolicyId:            alertPolicyID,
+		DefaultFrequency:         int32PtrOrNil(plan.DefaultFrequency),
+		DefaultRegions:           stringSliceToPtr(plan.DefaultRegions),
+		DefaultAlertChannels:     channels,
+		DefaultEnvironmentId:     envID,
+		HealthThresholdType:      typedStringPtrOrNil[generated.UpdateResourceGroupRequestHealthThresholdType](plan.HealthThresholdType),
+		HealthThresholdValue:     float32PtrOrNil(plan.HealthThresholdValue),
+		SuppressMemberAlerts:     boolPtrOrNil(plan.SuppressMemberAlerts),
+		ConfirmationDelaySeconds: int32PtrOrNil(plan.ConfirmationDelaySeconds),
+		RecoveryCooldownMinutes:  int32PtrOrNil(plan.RecoveryCooldownMinutes),
+	}, nil
+}
+
+func (r *ResourceGroupResource) mapToState(ctx context.Context, model *ResourceGroupModel, dto *generated.ResourceGroupDto) {
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
@@ -141,6 +191,9 @@ func (r *ResourceGroupResource) mapToState(model *ResourceGroupModel, dto *gener
 	model.SuppressMemberAlerts = types.BoolValue(dto.SuppressMemberAlerts)
 	model.ConfirmationDelaySeconds = int32Value(dto.ConfirmationDelaySeconds)
 	model.RecoveryCooldownMinutes = int32Value(dto.RecoveryCooldownMinutes)
+
+	model.DefaultRegions = ptrStringSliceToList(ctx, dto.DefaultRegions)
+	model.DefaultAlertChannels = ptrUUIDSliceToList(ctx, dto.DefaultAlertChannels)
 }
 
 func (r *ResourceGroupResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -150,14 +203,18 @@ func (r *ResourceGroupResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	body := r.buildRequest(&plan)
+	body, err := r.buildRequest(&plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid resource group configuration", err.Error())
+		return
+	}
 	group, err := api.Create[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups", body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating resource group", err.Error())
 		return
 	}
 
-	r.mapToState(&plan, group)
+	r.mapToState(ctx, &plan, group)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -178,7 +235,7 @@ func (r *ResourceGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	r.mapToState(&state, group)
+	r.mapToState(ctx, &state, group)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -195,14 +252,18 @@ func (r *ResourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	body := r.buildRequest(&plan)
+	body, err := r.buildUpdateRequest(&plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid resource group configuration", err.Error())
+		return
+	}
 	group, err := api.Update[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups/"+state.ID.ValueString(), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating resource group", err.Error())
 		return
 	}
 
-	r.mapToState(&plan, group)
+	r.mapToState(ctx, &plan, group)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -226,14 +287,42 @@ func (r *ResourceGroupResource) ImportState(ctx context.Context, req resource.Im
 		return
 	}
 
-	for _, g := range groups {
+	// Accept UUID, slug, or name. UUID and slug are unique per org; name may
+	// repeat, so guard against ambiguity when matching by name.
+	var matched *generated.ResourceGroupDto
+	var matchedByName []*generated.ResourceGroupDto
+	for i := range groups {
+		g := &groups[i]
+		if g.Id.String() == req.ID || g.Slug == req.ID {
+			matched = g
+			matchedByName = nil
+			break
+		}
 		if g.Name == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), g.Id.String())...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), g.Name)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), g.Slug)...)
+			matchedByName = append(matchedByName, g)
+		}
+	}
+	if matched == nil {
+		switch len(matchedByName) {
+		case 0:
+			resp.Diagnostics.AddError("Resource group not found", fmt.Sprintf("No resource group found with name, slug, or ID %q", req.ID))
+			return
+		case 1:
+			matched = matchedByName[0]
+		default:
+			ids := make([]string, len(matchedByName))
+			for i, g := range matchedByName {
+				ids[i] = g.Id.String()
+			}
+			resp.Diagnostics.AddError(
+				"Ambiguous resource group import",
+				fmt.Sprintf("%d resource groups share the name %q (ids: %v). Import by slug or UUID instead.", len(matchedByName), req.ID, ids),
+			)
 			return
 		}
 	}
 
-	resp.Diagnostics.AddError("Resource group not found", fmt.Sprintf("No resource group found with name %q", req.ID))
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), matched.Id.String())...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), matched.Name)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), matched.Slug)...)
 }

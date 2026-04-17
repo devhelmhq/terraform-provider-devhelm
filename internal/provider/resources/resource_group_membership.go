@@ -68,7 +68,12 @@ func (r *ResourceGroupMembershipResource) Configure(_ context.Context, req resou
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type", "Expected *api.Client")
+		return
+	}
+	r.client = client
 }
 
 func (r *ResourceGroupMembershipResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -131,7 +136,9 @@ func (r *ResourceGroupMembershipResource) Read(ctx context.Context, req resource
 
 	if !found {
 		resp.State.RemoveResource(ctx)
+		return
 	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *ResourceGroupMembershipResource) Update(_ context.Context, _ resource.UpdateRequest, resp *resource.UpdateResponse) {

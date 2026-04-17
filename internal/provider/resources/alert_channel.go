@@ -137,7 +137,12 @@ func (r *AlertChannelResource) Configure(_ context.Context, req resource.Configu
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type", "Expected *api.Client")
+		return
+	}
+	r.client = client
 }
 
 func (r *AlertChannelResource) buildConfig(model *AlertChannelResourceModel) (json.RawMessage, error) {
@@ -257,6 +262,11 @@ func (r *AlertChannelResource) Read(ctx context.Context, req resource.ReadReques
 	state.Name = types.StringValue(found.Name)
 	state.ChannelType = types.StringValue(string(found.ChannelType))
 	state.ConfigHash = stringValue(found.ConfigHash)
+
+	// Config fields are write-only (secrets). The API only returns a display
+	// config with non-sensitive hints plus a configHash for change detection.
+	// We preserve current state values for all config attributes so Terraform
+	// doesn't detect phantom diffs on sensitive fields.
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -321,15 +331,44 @@ func (r *AlertChannelResource) ImportState(ctx context.Context, req resource.Imp
 		return
 	}
 
-	for _, ch := range channels {
+	// Accept either a UUID (always unambiguous) or a name. Channel names are
+	// not unique within an org, so when the import ID matches multiple
+	// channels by name we surface ambiguity rather than silently picking one.
+	var matched *generated.AlertChannelDto
+	var matchedByName []*generated.AlertChannelDto
+	for i := range channels {
+		ch := &channels[i]
+		if ch.Id.String() == req.ID {
+			matched = ch
+			matchedByName = nil
+			break
+		}
 		if ch.Name == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), ch.Id.String())...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), ch.Name)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("channel_type"), string(ch.ChannelType))...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("config_hash"), stringValue(ch.ConfigHash))...)
+			matchedByName = append(matchedByName, ch)
+		}
+	}
+	if matched == nil {
+		switch len(matchedByName) {
+		case 0:
+			resp.Diagnostics.AddError("Alert channel not found", fmt.Sprintf("No alert channel found with name or ID %q", req.ID))
+			return
+		case 1:
+			matched = matchedByName[0]
+		default:
+			ids := make([]string, len(matchedByName))
+			for i, c := range matchedByName {
+				ids[i] = c.Id.String()
+			}
+			resp.Diagnostics.AddError(
+				"Ambiguous alert channel import",
+				fmt.Sprintf("%d alert channels share the name %q (ids: %v). Import by UUID instead.", len(matchedByName), req.ID, ids),
+			)
 			return
 		}
 	}
 
-	resp.Diagnostics.AddError("Alert channel not found", fmt.Sprintf("No alert channel found with name %q", req.ID))
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), matched.Id.String())...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), matched.Name)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("channel_type"), string(matched.ChannelType))...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("config_hash"), stringValue(matched.ConfigHash))...)
 }

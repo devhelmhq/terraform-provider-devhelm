@@ -66,7 +66,10 @@ func (r *DependencyResource) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"component_id": schema.StringAttribute{
 				Optional:    true,
-				Description: "Specific component ID to monitor within the service",
+				Description: "Specific component ID to monitor within the service (changes force subscription replacement)",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 		},
 	}
@@ -76,7 +79,12 @@ func (r *DependencyResource) Configure(_ context.Context, req resource.Configure
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type", "Expected *api.Client")
+		return
+	}
+	r.client = client
 }
 
 func (r *DependencyResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -86,9 +94,14 @@ func (r *DependencyResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
+	componentID, err := parseUUIDPtrChecked(plan.ComponentID, "component_id")
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid component_id", err.Error())
+		return
+	}
 	body := generated.ServiceSubscribeRequest{
 		AlertSensitivity: stringPtrOrNil(plan.AlertSensitivity),
-		ComponentId:      parseUUIDPtr(plan.ComponentID),
+		ComponentId:      componentID,
 	}
 
 	sub, err := api.Create[generated.ServiceSubscriptionDto](
@@ -185,14 +198,21 @@ func (r *DependencyResource) ImportState(ctx context.Context, req resource.Impor
 		return
 	}
 
+	// Accept either the service slug or the subscription UUID as the import ID
+	// so users can round-trip `terraform import` against IDs surfaced in the
+	// dashboard or state.
 	for _, s := range subs {
-		if s.Slug == req.ID {
+		if s.Slug == req.ID || s.SubscriptionId.String() == req.ID {
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), s.SubscriptionId.String())...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("service"), s.Slug)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("service_name"), s.Name)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("alert_sensitivity"), string(s.AlertSensitivity))...)
+			if s.ComponentId != nil {
+				resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("component_id"), s.ComponentId.String())...)
+			}
 			return
 		}
 	}
 
-	resp.Diagnostics.AddError("Dependency not found", fmt.Sprintf("No service subscription found with slug %q", req.ID))
+	resp.Diagnostics.AddError("Dependency not found", fmt.Sprintf("No service subscription found with slug or ID %q", req.ID))
 }

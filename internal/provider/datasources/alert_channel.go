@@ -46,7 +46,12 @@ func (d *AlertChannelDataSource) Configure(_ context.Context, req datasource.Con
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Data Source Configure Type", "Expected *api.Client")
+		return
+	}
+	d.client = client
 }
 
 func (d *AlertChannelDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {

@@ -101,6 +101,8 @@ func (p *DevhelmProvider) Resources(_ context.Context) []func() resource.Resourc
 		resources.NewMonitorResource,
 		resources.NewDependencyResource,
 		resources.NewStatusPageResource,
+		resources.NewStatusPageComponentGroupResource,
+		resources.NewStatusPageComponentResource,
 		resources.NewStatusPageCustomDomainResource,
 	}
 }

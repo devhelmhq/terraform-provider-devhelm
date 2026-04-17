@@ -54,8 +54,11 @@ func (r *WebhookResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Description: "Webhook URL that receives event payloads",
 			},
 			"description": schema.StringAttribute{
-				Optional:    true,
-				Description: "Human-readable description of this webhook",
+				Optional: true,
+				Description: "Human-readable description of this webhook. " +
+					"Note: the API currently treats null as 'preserve current' and does NOT support clearing the description once set " +
+					"(unlike status_page descriptions). Removing this attribute from HCL after a value has been set will leave the " +
+					"existing description on the server unchanged. Track API parity here: https://devhelm.io/docs/api/webhook-description-clear.",
 			},
 			"enabled": schema.BoolAttribute{
 				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
@@ -73,7 +76,12 @@ func (r *WebhookResource) Configure(_ context.Context, req resource.ConfigureReq
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type", "Expected *api.Client")
+		return
+	}
+	r.client = client
 }
 
 func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -96,7 +104,10 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	plan.ID = types.StringValue(wh.Id.String())
+	plan.URL = types.StringValue(wh.Url)
+	plan.Description = stringValue(wh.Description)
 	plan.Enabled = types.BoolValue(wh.Enabled)
+	plan.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -120,6 +131,7 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 	state.URL = types.StringValue(wh.Url)
 	state.Description = stringValue(wh.Description)
 	state.Enabled = types.BoolValue(wh.Enabled)
+	state.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -151,7 +163,10 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 
 	plan.ID = state.ID
+	plan.URL = types.StringValue(wh.Url)
+	plan.Description = stringValue(wh.Description)
 	plan.Enabled = types.BoolValue(wh.Enabled)
+	plan.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -176,13 +191,15 @@ func (r *WebhookResource) ImportState(ctx context.Context, req resource.ImportSt
 	}
 
 	for _, wh := range webhooks {
-		if wh.Url == req.ID {
+		if wh.Url == req.ID || wh.Id.String() == req.ID {
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), wh.Id.String())...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("url"), wh.Url)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), wh.Enabled)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("description"), stringValue(wh.Description))...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("subscribed_events"), stringSliceToSet(ctx, wh.SubscribedEvents))...)
 			return
 		}
 	}
 
-	resp.Diagnostics.AddError("Webhook not found", fmt.Sprintf("No webhook found with URL %q", req.ID))
+	resp.Diagnostics.AddError("Webhook not found", fmt.Sprintf("No webhook found with URL or ID %q", req.ID))
 }

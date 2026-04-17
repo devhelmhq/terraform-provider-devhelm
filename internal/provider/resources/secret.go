@@ -165,7 +165,7 @@ func (r *SecretResource) Delete(ctx context.Context, req resource.DeleteRequest,
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/secrets/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, "/api/v1/secrets/"+api.PathEscape(state.Key.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting secret", err.Error())
 	}
@@ -178,18 +178,28 @@ func (r *SecretResource) ImportState(ctx context.Context, req resource.ImportSta
 		return
 	}
 
-	for _, s := range secrets {
-		if s.Key == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), s.Id.String())...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("key"), s.Key)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("value_hash"), s.ValueHash)...)
-			// value is write-only; after import, user must set it in config
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("value"), "IMPORTED_PLACEHOLDER")...)
-			return
+	// Accept either UUID or key. Keys are unique within an org, so no
+	// ambiguity check is needed beyond the first hit.
+	var matched *generated.SecretDto
+	for i := range secrets {
+		s := &secrets[i]
+		if s.Id.String() == req.ID || s.Key == req.ID {
+			matched = s
+			break
 		}
 	}
+	if matched == nil {
+		resp.Diagnostics.AddError("Secret not found", fmt.Sprintf("No secret found with key or ID %q", req.ID))
+		return
+	}
 
-	resp.Diagnostics.AddError("Secret not found", fmt.Sprintf("No secret found with key %q", req.ID))
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), matched.Id.String())...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("key"), matched.Key)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("value_hash"), matched.ValueHash)...)
+	// `value` is write-only; placeholder marks the slot until the user sets it
+	// in HCL. The provider will detect drift on the next plan and prompt for a
+	// real value.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("value"), "IMPORTED_PLACEHOLDER")...)
 }
 
 func sha256Hex(input string) string {

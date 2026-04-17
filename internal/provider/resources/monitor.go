@@ -4,11 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
+	"github.com/google/uuid"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -104,7 +107,7 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			"auth": schema.StringAttribute{
 				Optional:    true,
 				Sensitive:   true,
-				Description: "Authentication configuration as JSON (BearerAuthConfig, BasicAuthConfig, ApiKeyAuthConfig, HeaderAuthConfig)",
+				Description: "Authentication configuration as JSON. Discriminator field `type` selects the auth scheme: `bearer`, `basic`, `header`, or `api_key`. Example: `jsonencode({type = \"bearer\", token = var.api_token})`",
 			},
 		},
 		Blocks: map[string]schema.Block{
@@ -114,11 +117,11 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 					Attributes: map[string]schema.Attribute{
 						"type": schema.StringAttribute{
 							Required:    true,
-							Description: "Assertion type discriminator (e.g. StatusCodeAssertion, ResponseTimeAssertion)",
+							Description: "Assertion type discriminator in snake_case wire format (e.g. `status_code`, `response_time`, `body_contains`, `header_value`, `dns_resolves`, `ssl_expiry`, `tcp_connects`). Must match an AssertionType enum value as serialized by the API.",
 						},
 						"config": schema.StringAttribute{
 							Required:    true,
-							Description: "Assertion configuration as JSON (shape depends on type)",
+							Description: "Assertion configuration as JSON; the inner `type` field is omitted (set via the sibling `type` attribute) and the rest of the shape depends on the assertion kind. Example for `status_code`: `jsonencode({expected = 200})`",
 						},
 						"severity": schema.StringAttribute{
 							Optional:    true,
@@ -203,7 +206,12 @@ func (r *MonitorResource) Configure(_ context.Context, req resource.ConfigureReq
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type", "Expected *api.Client")
+		return
+	}
+	r.client = client
 }
 
 // ── TF → API mapping ───────────────────────────────────────────────────
@@ -293,7 +301,9 @@ func buildIncidentPolicy(ctx context.Context, list types.List) (*generated.Updat
 
 	var triggerRules []generated.TriggerRule
 	var ruleModels []triggerRuleModel
-	m.TriggerRules.ElementsAs(ctx, &ruleModels, false)
+	if ruleDiags := m.TriggerRules.ElementsAs(ctx, &ruleModels, false); ruleDiags.HasError() {
+		return nil, fmt.Errorf("parsing trigger rules: %s", ruleDiags.Errors())
+	}
 	for _, rm := range ruleModels {
 		triggerRules = append(triggerRules, generated.TriggerRule{
 			Type:            generated.TriggerRuleType(rm.Type.ValueString()),
@@ -337,6 +347,15 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		return nil, fmt.Errorf("monitor config: %w", err)
 	}
 
+	envID, err := parseUUIDPtrChecked(plan.EnvironmentID, "environment_id")
+	if err != nil {
+		return nil, err
+	}
+	alertChannels, err := uuidSliceFromStringListChecked(plan.AlertChannelIds, "alert_channel_ids")
+	if err != nil {
+		return nil, err
+	}
+
 	req := &generated.CreateMonitorRequest{
 		Name:             plan.Name.ValueString(),
 		Type:             generated.CreateMonitorRequestType(plan.Type.ValueString()),
@@ -345,9 +364,9 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
 		Enabled:          boolPtrOrNil(plan.Enabled),
 		Regions:          stringSliceToPtr(plan.Regions),
-		EnvironmentId:    parseUUIDPtr(plan.EnvironmentID),
+		EnvironmentId:    envID,
 		Assertions:       &assertions,
-		AlertChannelIds:  uuidSliceFromStringList(plan.AlertChannelIds),
+		AlertChannelIds:  alertChannels,
 		IncidentPolicy:   incidentPolicy,
 	}
 
@@ -359,7 +378,11 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		req.Auth = &authUnion
 	}
 
-	if tagUUIDs := uuidSliceFromStringList(plan.TagIds); tagUUIDs != nil && len(*tagUUIDs) > 0 {
+	tagUUIDs, err := uuidSliceFromStringListChecked(plan.TagIds, "tag_ids")
+	if err != nil {
+		return nil, err
+	}
+	if tagUUIDs != nil && len(*tagUUIDs) > 0 {
 		req.Tags = &generated.AddMonitorTagsRequest{
 			TagIds: tagUUIDs,
 		}
@@ -387,6 +410,15 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 		return nil, fmt.Errorf("monitor config: %w", err)
 	}
 
+	envID, err := parseUUIDPtrChecked(plan.EnvironmentID, "environment_id")
+	if err != nil {
+		return nil, err
+	}
+	alertChannels, err := uuidSliceFromStringListChecked(plan.AlertChannelIds, "alert_channel_ids")
+	if err != nil {
+		return nil, err
+	}
+
 	req := &generated.UpdateMonitorRequest{
 		Name:             &name,
 		Config:           &configUnion,
@@ -394,9 +426,9 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
 		Enabled:          boolPtrOrNil(plan.Enabled),
 		Regions:          stringSliceToPtr(plan.Regions),
-		EnvironmentId:    parseUUIDPtr(plan.EnvironmentID),
+		EnvironmentId:    envID,
 		Assertions:       &assertions,
-		AlertChannelIds:  uuidSliceFromStringList(plan.AlertChannelIds),
+		AlertChannelIds:  alertChannels,
 		IncidentPolicy:   incidentPolicy,
 	}
 
@@ -416,13 +448,52 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 		req.ClearAuth = &clearAuth
 	}
 
-	if tagUUIDs := uuidSliceFromStringList(plan.TagIds); tagUUIDs != nil && len(*tagUUIDs) > 0 {
-		req.Tags = &generated.AddMonitorTagsRequest{
-			TagIds: tagUUIDs,
-		}
-	}
+	// NOTE: Tag add/remove reconciliation is handled outside the PUT body
+	// in (*MonitorResource).reconcileTags. PUT /monitors/{id} only supports
+	// adding tags via the embedded Tags request; removing tags (including
+	// clearing the list entirely) requires a separate DELETE call.
 
 	return req, nil
+}
+
+// ── Object type helpers for nested blocks ───────────────────────────────
+
+func assertionObjectType() types.ObjectType {
+	return types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"type":     types.StringType,
+			"config":   types.StringType,
+			"severity": types.StringType,
+		},
+	}
+}
+
+func triggerRuleObjectType() types.ObjectType {
+	return types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"type":             types.StringType,
+			"severity":         types.StringType,
+			"scope":            types.StringType,
+			"count":            types.Int64Type,
+			"window_minutes":   types.Int64Type,
+			"threshold_ms":     types.Int64Type,
+			"aggregation_type": types.StringType,
+		},
+	}
+}
+
+func incidentPolicyObjectType() types.ObjectType {
+	return types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"confirmation_type":    types.StringType,
+			"min_regions_failing":  types.Int64Type,
+			"max_wait_seconds":     types.Int64Type,
+			"consecutive_successes": types.Int64Type,
+			"min_regions_passing":  types.Int64Type,
+			"cooldown_minutes":     types.Int64Type,
+			"trigger_rule":         types.ListType{ElemType: triggerRuleObjectType()},
+		},
+	}
 }
 
 // ── API → TF mapping ───────────────────────────────────────────────────
@@ -449,8 +520,173 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 
 	if dto.Auth != nil {
 		if authBytes, err := dto.Auth.MarshalJSON(); err == nil {
-			model.Auth = types.StringValue(string(authBytes))
+			// Normalize the same way `config` is normalized so that the API echoing
+			// optional fields back as `null` does not produce a perpetual diff
+			// against a user-supplied auth blob that omits those keys.
+			model.Auth = types.StringValue(normalizeJSON(authBytes))
 		}
+	}
+
+	// Regions
+	if len(dto.Regions) > 0 {
+		regionElems := make([]types.String, len(dto.Regions))
+		for i, r := range dto.Regions {
+			regionElems[i] = types.StringValue(r)
+		}
+		model.Regions, _ = types.ListValueFrom(ctx, types.StringType, regionElems)
+	} else if !model.Regions.IsNull() {
+		model.Regions, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+	}
+
+	// Tag IDs
+	if dto.Tags != nil && len(*dto.Tags) > 0 {
+		tagElems := make([]types.String, len(*dto.Tags))
+		for i, t := range *dto.Tags {
+			tagElems[i] = types.StringValue(t.Id.String())
+		}
+		model.TagIds, _ = types.ListValueFrom(ctx, types.StringType, tagElems)
+	} else if !model.TagIds.IsNull() {
+		model.TagIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+	}
+
+	// Alert Channel IDs
+	if dto.AlertChannelIds != nil && len(*dto.AlertChannelIds) > 0 {
+		chElems := make([]types.String, len(*dto.AlertChannelIds))
+		for i, id := range *dto.AlertChannelIds {
+			chElems[i] = types.StringValue(id.String())
+		}
+		model.AlertChannelIds, _ = types.ListValueFrom(ctx, types.StringType, chElems)
+	} else if !model.AlertChannelIds.IsNull() {
+		model.AlertChannelIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+	}
+
+	// Assertions
+	if dto.Assertions != nil && len(*dto.Assertions) > 0 {
+		// Build a content-keyed lookup of the user's prior assertions so we
+		// can preserve their severity casing (e.g. "Fail" vs "fail") and
+		// their decision to leave severity null even when the API order
+		// differs from the HCL order. Matching by index is fragile because
+		// the API does not promise a stable ordering across responses, and
+		// users can reorder blocks freely in their HCL — both cases would
+		// otherwise leak server-side casing into state and produce noisy
+		// (or worse, incorrect) plans on the next run.
+		var priorAssertions []assertionModel
+		if !model.Assertions.IsNull() {
+			_ = model.Assertions.ElementsAs(ctx, &priorAssertions, false)
+		}
+
+		// Key = "<type>|<normalized-config-json>". The config is normalized
+		// the same way as the API → state mapping below so the keys produced
+		// from prior state and from the freshly-read DTO are comparable.
+		// Multiple identical assertions (same type+config) are stored in a
+		// FIFO slice so the first DTO match consumes the first prior entry.
+		priorByKey := map[string][]int{}
+		assertionKey := func(typ, cfg string) string { return typ + "|" + cfg }
+		for idx, p := range priorAssertions {
+			k := assertionKey(p.Type.ValueString(), p.Config.ValueString())
+			priorByKey[k] = append(priorByKey[k], idx)
+		}
+
+		var assertionModels []assertionModel
+		for _, a := range *dto.Assertions {
+			am := assertionModel{
+				Type: types.StringValue(string(a.AssertionType)),
+			}
+
+			// Compute normalized config first so we can use it as a lookup key.
+			cfgStr := ""
+			if a.Config != nil {
+				if cfgBytes, err := a.Config.MarshalJSON(); err == nil {
+					var raw map[string]json.RawMessage
+					if err := json.Unmarshal(cfgBytes, &raw); err == nil {
+						delete(raw, "type")
+						if stripped, err := json.Marshal(raw); err == nil {
+							// Strip null-valued keys so the API echoing optional
+							// fields back as `null` does not show as a diff
+							// against a user-supplied config that omits them.
+							cfgStr = normalizeJSON(stripped)
+							am.Config = types.StringValue(cfgStr)
+						}
+					}
+				}
+			}
+
+			// Find a content-matched prior entry (FIFO) and consume it so
+			// duplicate assertions are paired one-for-one.
+			var matched *assertionModel
+			k := assertionKey(string(a.AssertionType), cfgStr)
+			if idxs := priorByKey[k]; len(idxs) > 0 {
+				matched = &priorAssertions[idxs[0]]
+				priorByKey[k] = idxs[1:]
+			}
+
+			sev := string(a.Severity)
+			switch {
+			case matched != nil && !matched.Severity.IsNull():
+				// Preserve user-supplied casing when it matches the API value.
+				priorSev := matched.Severity.ValueString()
+				if strings.EqualFold(priorSev, sev) {
+					sev = priorSev
+				}
+				am.Severity = types.StringValue(sev)
+			case matched != nil && matched.Severity.IsNull():
+				// User omitted severity in HCL → keep state null to match the
+				// plan and avoid spurious null→value diffs.
+			default:
+				// New / imported assertion with no prior content match —
+				// populate severity so import flows produce a complete state.
+				am.Severity = types.StringValue(sev)
+			}
+
+			assertionModels = append(assertionModels, am)
+		}
+		model.Assertions, _ = types.ListValueFrom(ctx, types.ObjectType{
+			AttrTypes: assertionObjectType().AttrTypes,
+		}, assertionModels)
+	}
+
+	// Incident Policy — populate when EITHER the prior state already has a
+	// block (so we keep the regular plan/state in sync without producing a
+	// 0↔1 block-count diff) OR the API actually returned a real policy and
+	// the prior state has none, which happens during `terraform import` of
+	// a monitor that has a policy attached. The Id-zero guard is the only
+	// reliable wire-level signal: IncidentPolicyDto is a non-pointer struct
+	// in the OpenAPI types, so a missing policy still arrives as a zero-
+	// initialized struct — checking for a non-zero UUID separates "real
+	// policy" from "default zero value".
+	hasPriorPolicy := !model.IncidentPolicy.IsNull() && len(model.IncidentPolicy.Elements()) > 0
+	apiHasPolicy := dto.IncidentPolicy.Id.String() != "00000000-0000-0000-0000-000000000000"
+	if hasPriorPolicy || apiHasPolicy {
+		policyModel := incidentPolicyModel{
+			ConfirmationType:     types.StringValue(string(dto.IncidentPolicy.Confirmation.Type)),
+			MinRegionsFailing:    int32Value(dto.IncidentPolicy.Confirmation.MinRegionsFailing),
+			MaxWaitSeconds:       int32Value(dto.IncidentPolicy.Confirmation.MaxWaitSeconds),
+			ConsecutiveSuccesses: types.Int64Value(int64(dto.IncidentPolicy.Recovery.ConsecutiveSuccesses)),
+			MinRegionsPassing:    types.Int64Value(int64(dto.IncidentPolicy.Recovery.MinRegionsPassing)),
+			CooldownMinutes:      types.Int64Value(int64(dto.IncidentPolicy.Recovery.CooldownMinutes)),
+		}
+		if len(dto.IncidentPolicy.TriggerRules) > 0 {
+			var ruleModels []triggerRuleModel
+			for _, tr := range dto.IncidentPolicy.TriggerRules {
+				ruleModels = append(ruleModels, triggerRuleModel{
+					Type:            types.StringValue(string(tr.Type)),
+					Severity:        types.StringValue(string(tr.Severity)),
+					Scope:           typedStringPtrValue(tr.Scope),
+					Count:           int32Value(tr.Count),
+					WindowMinutes:   int32Value(tr.WindowMinutes),
+					ThresholdMs:     int32Value(tr.ThresholdMs),
+					AggregationType: typedStringPtrValue(tr.AggregationType),
+				})
+			}
+			policyModel.TriggerRules, _ = types.ListValueFrom(ctx, types.ObjectType{
+				AttrTypes: triggerRuleObjectType().AttrTypes,
+			}, ruleModels)
+		} else {
+			policyModel.TriggerRules = types.ListNull(types.ObjectType{AttrTypes: triggerRuleObjectType().AttrTypes})
+		}
+		model.IncidentPolicy, _ = types.ListValueFrom(ctx, types.ObjectType{
+			AttrTypes: incidentPolicyObjectType().AttrTypes,
+		}, []incidentPolicyModel{policyModel})
 	}
 }
 
@@ -519,14 +755,103 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
+	// IMPORTANT: use `state.ID` (not `plan.ID`) for the URL — `plan.ID` is
+	// `Unknown` during Update because the schema marks `id` as Computed; the
+	// only authoritative source for the existing monitor's identifier is the
+	// prior state. `mapToState` at the end of this function will overwrite
+	// `plan.ID` with the value returned by the API, which keeps state stable
+	// even if the backend ever decides to issue a new ID (currently it does
+	// not, but the contract makes the read path resilient either way).
 	monitor, err := api.Update[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString(), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating monitor", err.Error())
 		return
 	}
 
+	if err := r.reconcileTags(ctx, state.ID.ValueString(), plan.TagIds, monitor); err != nil {
+		resp.Diagnostics.AddError("Error reconciling monitor tags", err.Error())
+		return
+	}
+
+	// reconcileTags issues out-of-band POST/DELETE calls to the tags
+	// sub-resource; those mutations are NOT reflected in the DTO returned by
+	// the previous PUT. We must re-GET to capture the post-reconciliation
+	// tag set before calling mapToState, otherwise the persisted state would
+	// describe the monitor as it existed *before* the tag delta was applied.
+	monitor, err = api.Get[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError("Error re-reading monitor after tag sync", err.Error())
+		return
+	}
+
 	r.mapToState(ctx, &plan, monitor)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+}
+
+// reconcileTags brings the monitor's tag set in line with the plan:
+//   - plan has tag IDs not on the monitor → POST to add
+//   - monitor has tag IDs absent from plan → DELETE to remove
+//
+// Called after the main PUT so we operate on the latest server state. When
+// tag_ids is null in the plan we do not touch tags (preserves existing).
+// When tag_ids is an empty list we remove everything.
+func (r *MonitorResource) reconcileTags(ctx context.Context, monitorID string, planTags types.List, current *generated.MonitorDto) error {
+	if planTags.IsNull() || planTags.IsUnknown() {
+		return nil
+	}
+
+	desired := make(map[string]bool)
+	for _, el := range planTags.Elements() {
+		if s, ok := el.(types.String); ok && !s.IsNull() && !s.IsUnknown() {
+			desired[s.ValueString()] = true
+		}
+	}
+
+	existing := make(map[string]bool)
+	if current != nil && current.Tags != nil {
+		for _, t := range *current.Tags {
+			existing[t.Id.String()] = true
+		}
+	}
+
+	var toAddPtrs []*openapi_types.UUID
+	for id := range desired {
+		if !existing[id] {
+			u, err := uuid.Parse(id)
+			if err != nil {
+				return fmt.Errorf("invalid tag id %q: %w", id, err)
+			}
+			uu := u
+			toAddPtrs = append(toAddPtrs, &uu)
+		}
+	}
+
+	var toRemove []openapi_types.UUID
+	for id := range existing {
+		if !desired[id] {
+			u, err := uuid.Parse(id)
+			if err != nil {
+				return fmt.Errorf("invalid existing tag id %q: %w", id, err)
+			}
+			toRemove = append(toRemove, u)
+		}
+	}
+
+	if len(toAddPtrs) > 0 {
+		addBody := generated.AddMonitorTagsRequest{TagIds: &toAddPtrs}
+		if _, err := api.Create[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+monitorID+"/tags", addBody); err != nil {
+			return fmt.Errorf("adding tags: %w", err)
+		}
+	}
+
+	if len(toRemove) > 0 {
+		removeBody := generated.RemoveMonitorTagsRequest{TagIds: toRemove}
+		if err := api.DeleteWithBody(ctx, r.client, "/api/v1/monitors/"+monitorID+"/tags", removeBody); err != nil {
+			return fmt.Errorf("removing tags: %w", err)
+		}
+	}
+
+	return nil
 }
 
 func (r *MonitorResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -549,21 +874,56 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 		return
 	}
 
+	// Accept both name and UUID as the import ID. If the import ID matches a
+	// UUID we take it directly — UUIDs are unique. If it matches by name, we
+	// require the match to be unique: monitor names are not unique across an
+	// org, and silently picking the first match would produce a stale or
+	// arbitrary import.
+	var monitorID string
+	var matchedByName []string
 	for _, m := range monitors {
+		if m.Id.String() == req.ID {
+			monitorID = m.Id.String()
+			matchedByName = nil
+			break
+		}
 		if m.Name == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), m.Id.String())...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), m.Name)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("type"), string(m.Type))...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("frequency_seconds"), int64(m.FrequencySeconds))...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), m.Enabled)...)
-			if m.Config != nil {
-				if configBytes, err := m.Config.MarshalJSON(); err == nil {
-					resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("config"), string(configBytes))...)
-				}
-			}
+			matchedByName = append(matchedByName, m.Id.String())
+		}
+	}
+	if monitorID == "" {
+		switch len(matchedByName) {
+		case 0:
+			resp.Diagnostics.AddError("Monitor not found", fmt.Sprintf("No monitor found with name or ID %q", req.ID))
+			return
+		case 1:
+			monitorID = matchedByName[0]
+		default:
+			resp.Diagnostics.AddError(
+				"Ambiguous monitor import",
+				fmt.Sprintf("%d monitors share the name %q (ids: %v). Import by UUID instead.", len(matchedByName), req.ID, matchedByName),
+			)
 			return
 		}
 	}
 
-	resp.Diagnostics.AddError("Monitor not found", fmt.Sprintf("No monitor found with name %q", req.ID))
+	monitor, err := api.Get[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+monitorID)
+	if err != nil {
+		resp.Diagnostics.AddError("Error fetching monitor for import", err.Error())
+		return
+	}
+
+	var model MonitorResourceModel
+	// Pre-initialize lists so mapToState populates them during import
+	model.IncidentPolicy, _ = types.ListValueFrom(ctx, types.ObjectType{
+		AttrTypes: incidentPolicyObjectType().AttrTypes,
+	}, []incidentPolicyModel{})
+	model.Assertions, _ = types.ListValueFrom(ctx, types.ObjectType{
+		AttrTypes: assertionObjectType().AttrTypes,
+	}, []assertionModel{})
+	model.Regions, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+	model.TagIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+	model.AlertChannelIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+	r.mapToState(ctx, &model, monitor)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

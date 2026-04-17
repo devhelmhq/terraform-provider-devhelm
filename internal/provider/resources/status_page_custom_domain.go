@@ -88,7 +88,12 @@ func (r *StatusPageCustomDomainResource) Configure(_ context.Context, req resour
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type", "Expected *api.Client")
+		return
+	}
+	r.client = client
 }
 
 func (r *StatusPageCustomDomainResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -170,7 +175,21 @@ func (r *StatusPageCustomDomainResource) Delete(ctx context.Context, req resourc
 	}
 }
 
+// mapToState copies fields from the API DTO into the resource model.
+//
+// The StatusPageCustomDomainDto does not echo back the parent status page ID
+// (the server knows it from the URL path), so we preserve whatever
+// StatusPageID is already on the model. Callers MUST have set StatusPageID
+// before invoking mapToState — this is guaranteed for Create/Update (the
+// plan carries it), Read (the prior state carries it), and Import (the
+// importer decomposes the "<statusPageId>:<domainId>" tuple).
 func (r *StatusPageCustomDomainResource) mapToState(model *StatusPageCustomDomainResourceModel, dto *generated.StatusPageCustomDomainDto) {
+	if model.StatusPageID.IsNull() || model.StatusPageID.ValueString() == "" {
+		// This is a defensive guard: StatusPageID is schema-required, so
+		// reaching this branch indicates a provider-internal bug rather
+		// than user error.
+		panic("status_page_id missing when mapping StatusPageCustomDomain; this is a provider bug")
+	}
 	model.ID = types.StringValue(dto.Id.String())
 	model.Hostname = types.StringValue(dto.Hostname)
 	model.Status = types.StringValue(string(dto.Status))
