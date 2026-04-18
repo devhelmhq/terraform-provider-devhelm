@@ -218,7 +218,7 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						},
 						"config": schema.StringAttribute{
 							Required:    true,
-							Description: "Assertion configuration as JSON; the inner `type` field is omitted (set via the sibling `type` attribute) and the rest of the shape depends on the assertion kind. Example for `status_code`: `jsonencode({expected = 200})`",
+							Description: "Assertion configuration as JSON; the inner `type` field is omitted (set via the sibling `type` attribute) and the rest of the shape depends on the assertion kind. Field names inside the JSON are camelCase (the API wire format), e.g. `jsonencode({expected = 200, operator = \"equals\"})` for `status_code` or `jsonencode({thresholdMs = 500})` for `response_time`.",
 						},
 						"severity": schema.StringAttribute{
 							Optional:    true,

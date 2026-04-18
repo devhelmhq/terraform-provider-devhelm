@@ -24,7 +24,8 @@ resource "devhelm_status_page" "branded" {
     theme           = "light"
     logo_url        = "https://acme.com/static/logo.svg"
     favicon_url     = "https://acme.com/favicon.ico"
-    hide_powered_by = true
+    # `hide_powered_by = true` requires a Business plan or above; omit on lower
+    # tiers or the API will reject the request.
   }
 }
 
