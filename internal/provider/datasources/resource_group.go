@@ -48,7 +48,12 @@ func (d *ResourceGroupDataSource) Configure(_ context.Context, req datasource.Co
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Data Source Configure Type", "Expected *api.Client")
+		return
+	}
+	d.client = client
 }
 
 func (d *ResourceGroupDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
@@ -64,19 +69,32 @@ func (d *ResourceGroupDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	for _, g := range groups {
-		if g.Name == model.Name.ValueString() {
-			model.ID = types.StringValue(g.Id.String())
-			model.Slug = types.StringValue(g.Slug)
-			if g.Description != nil {
-				model.Description = types.StringValue(*g.Description)
-			} else {
-				model.Description = types.StringNull()
-			}
-			resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
-			return
+	matches := matchByName(groups, model.Name.ValueString(), func(g generated.ResourceGroupDto) string { return g.Name })
+	switch len(matches) {
+	case 0:
+		resp.Diagnostics.AddError("Resource group not found", fmt.Sprintf("No resource group found with name %q", model.Name.ValueString()))
+	case 1:
+		mapResourceGroupToState(&model, &matches[0])
+		resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+	default:
+		ids := make([]string, len(matches))
+		for i, m := range matches {
+			ids[i] = m.Id.String()
 		}
+		resp.Diagnostics.AddError(
+			"Ambiguous resource group lookup",
+			fmt.Sprintf("%d resource groups share the name %q (ids: %v). Reference the group by UUID instead of using this data source.", len(matches), model.Name.ValueString(), ids),
+		)
 	}
+}
 
-	resp.Diagnostics.AddError("Resource group not found", fmt.Sprintf("No resource group found with name %q", model.Name.ValueString()))
+func mapResourceGroupToState(model *ResourceGroupDataSourceModel, g *generated.ResourceGroupDto) {
+	model.ID = types.StringValue(g.Id.String())
+	model.Name = types.StringValue(g.Name)
+	model.Slug = types.StringValue(g.Slug)
+	if g.Description != nil {
+		model.Description = types.StringValue(*g.Description)
+	} else {
+		model.Description = types.StringNull()
+	}
 }

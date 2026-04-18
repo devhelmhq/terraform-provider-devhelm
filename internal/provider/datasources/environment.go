@@ -47,7 +47,12 @@ func (d *EnvironmentDataSource) Configure(_ context.Context, req datasource.Conf
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Data Source Configure Type", "Expected *api.Client")
+		return
+	}
+	d.client = client
 }
 
 func (d *EnvironmentDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
@@ -63,8 +68,13 @@ func (d *EnvironmentDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
+	mapEnvironmentToState(&model, env)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+}
+
+func mapEnvironmentToState(model *EnvironmentDataSourceModel, env *generated.EnvironmentDto) {
 	model.ID = types.StringValue(env.Id.String())
 	model.Name = types.StringValue(env.Name)
+	model.Slug = types.StringValue(env.Slug)
 	model.IsDefault = types.BoolValue(env.IsDefault)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

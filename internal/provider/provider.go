@@ -48,7 +48,7 @@ func (p *DevhelmProvider) Schema(_ context.Context, _ provider.SchemaRequest, re
 				Sensitive:   true,
 			},
 			"base_url": schema.StringAttribute{
-				Description: "Base URL for the DevHelm API. Defaults to https://api.devhelm.io",
+				Description: "Base URL for the DevHelm API. Can also be set via DEVHELM_API_URL env var. Defaults to https://api.devhelm.io",
 				Optional:    true,
 			},
 			"org_id": schema.StringAttribute{
@@ -101,7 +101,10 @@ func (p *DevhelmProvider) Resources(_ context.Context) []func() resource.Resourc
 		resources.NewMonitorResource,
 		resources.NewDependencyResource,
 		resources.NewStatusPageResource,
+		resources.NewStatusPageComponentGroupResource,
+		resources.NewStatusPageComponentResource,
 		resources.NewStatusPageCustomDomainResource,
+		resources.NewStatusPageCustomDomainVerificationResource,
 	}
 }
 

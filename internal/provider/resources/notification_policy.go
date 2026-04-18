@@ -3,10 +3,11 @@ package resources
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
-	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -132,7 +133,12 @@ func (r *NotificationPolicyResource) Configure(_ context.Context, req resource.C
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type", "Expected *api.Client")
+		return
+	}
+	r.client = client
 }
 
 type escalationStepModel struct {
@@ -158,9 +164,13 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 	}
 
 	var apiSteps []generated.EscalationStep
-	for _, s := range steps {
+	for i, s := range steps {
+		channelIDs, err := uuidListToSliceChecked(s.ChannelIDs, fmt.Sprintf("escalation[%d].channel_ids", i))
+		if err != nil {
+			return nil, err
+		}
 		apiSteps = append(apiSteps, generated.EscalationStep{
-			ChannelIds:            uuidListToSlice(s.ChannelIDs),
+			ChannelIds:            channelIDs,
 			DelayMinutes:          int32PtrOrNil(s.DelayMinutes),
 			RequireAck:            boolPtrOrNil(s.RequireAck),
 			RepeatIntervalSeconds: int32PtrOrNil(s.RepeatIntervalSeconds),
@@ -169,13 +179,19 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 
 	var apiRules []generated.MatchRule
 	var rules []matchRuleModel
-	plan.MatchRules.ElementsAs(ctx, &rules, false)
-	for _, mr := range rules {
+	if ruleDiags := plan.MatchRules.ElementsAs(ctx, &rules, false); ruleDiags.HasError() {
+		return nil, fmt.Errorf("parsing match rules: %s", ruleDiags.Errors()[0].Detail())
+	}
+	for i, mr := range rules {
+		monitorIDs, err := uuidSliceFromStringListChecked(mr.MonitorIDs, fmt.Sprintf("match_rule[%d].monitor_ids", i))
+		if err != nil {
+			return nil, err
+		}
 		apiRules = append(apiRules, generated.MatchRule{
 			Type:       mr.Type.ValueString(),
 			Value:      stringPtrOrNil(mr.Value),
 			Values:     stringSliceToPtr(mr.Values),
-			MonitorIds: uuidSliceFromStringList(mr.MonitorIDs),
+			MonitorIds: monitorIDs,
 			Regions:    stringSliceToPtr(mr.Regions),
 		})
 	}
@@ -192,6 +208,71 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 		MatchRules: &apiRules,
 	}
 	return req, nil
+}
+
+// buildUpdateRequest mirrors buildRequest but targets the
+// UpdateNotificationPolicyRequest DTO (which uses non-pointer fields; the API
+// treats missing JSON fields as "preserve current").
+func (r *NotificationPolicyResource) buildUpdateRequest(ctx context.Context, plan *NotificationPolicyModel) (*generated.UpdateNotificationPolicyRequest, error) {
+	var steps []escalationStepModel
+	diags := plan.Escalation.ElementsAs(ctx, &steps, false)
+	if diags.HasError() {
+		return nil, fmt.Errorf("parsing escalation steps: %s", diags.Errors()[0].Detail())
+	}
+
+	var apiSteps []generated.EscalationStep
+	for i, s := range steps {
+		channelIDs, err := uuidListToSliceChecked(s.ChannelIDs, fmt.Sprintf("escalation[%d].channel_ids", i))
+		if err != nil {
+			return nil, err
+		}
+		apiSteps = append(apiSteps, generated.EscalationStep{
+			ChannelIds:            channelIDs,
+			DelayMinutes:          int32PtrOrNil(s.DelayMinutes),
+			RequireAck:            boolPtrOrNil(s.RequireAck),
+			RepeatIntervalSeconds: int32PtrOrNil(s.RepeatIntervalSeconds),
+		})
+	}
+
+	var apiRules []generated.MatchRule
+	var rules []matchRuleModel
+	if ruleDiags := plan.MatchRules.ElementsAs(ctx, &rules, false); ruleDiags.HasError() {
+		return nil, fmt.Errorf("parsing match rules: %s", ruleDiags.Errors()[0].Detail())
+	}
+	for i, mr := range rules {
+		monitorIDs, err := uuidSliceFromStringListChecked(mr.MonitorIDs, fmt.Sprintf("match_rule[%d].monitor_ids", i))
+		if err != nil {
+			return nil, err
+		}
+		apiRules = append(apiRules, generated.MatchRule{
+			Type:       mr.Type.ValueString(),
+			Value:      stringPtrOrNil(mr.Value),
+			Values:     stringSliceToPtr(mr.Values),
+			MonitorIds: monitorIDs,
+			Regions:    stringSliceToPtr(mr.Regions),
+		})
+	}
+
+	priority := int32(0)
+	if !plan.Priority.IsNull() && !plan.Priority.IsUnknown() {
+		priority = int32(plan.Priority.ValueInt64())
+	}
+	enabled := true
+	if !plan.Enabled.IsNull() && !plan.Enabled.IsUnknown() {
+		enabled = plan.Enabled.ValueBool()
+	}
+
+	return &generated.UpdateNotificationPolicyRequest{
+		Name:     plan.Name.ValueString(),
+		Enabled:  enabled,
+		Priority: priority,
+		Escalation: generated.EscalationChain{
+			Steps:     apiSteps,
+			OnResolve: stringPtrOrNil(plan.OnResolve),
+			OnReopen:  stringPtrOrNil(plan.OnReopen),
+		},
+		MatchRules: apiRules,
+	}, nil
 }
 
 func (r *NotificationPolicyResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -213,8 +294,116 @@ func (r *NotificationPolicyResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
-	plan.ID = types.StringValue(policy.Id.String())
+	r.mapToState(ctx, &plan, policy)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+}
+
+func escalationStepObjectType() types.ObjectType {
+	return types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"channel_ids":             types.ListType{ElemType: types.StringType},
+			"delay_minutes":           types.Int64Type,
+			"require_ack":             types.BoolType,
+			"repeat_interval_seconds": types.Int64Type,
+		},
+	}
+}
+
+func matchRuleObjectType() types.ObjectType {
+	return types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"type":        types.StringType,
+			"value":       types.StringType,
+			"values":      types.ListType{ElemType: types.StringType},
+			"monitor_ids": types.ListType{ElemType: types.StringType},
+			"regions":     types.ListType{ElemType: types.StringType},
+		},
+	}
+}
+
+func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *NotificationPolicyModel, dto *generated.NotificationPolicyDto) {
+	model.ID = types.StringValue(dto.Id.String())
+	model.Name = types.StringValue(dto.Name)
+	model.Enabled = types.BoolValue(dto.Enabled)
+	model.Priority = types.Int64Value(int64(dto.Priority))
+	model.OnResolve = stringValue(dto.Escalation.OnResolve)
+	model.OnReopen = stringValue(dto.Escalation.OnReopen)
+
+	// Escalation steps
+	if len(dto.Escalation.Steps) > 0 {
+		var priorSteps []escalationStepModel
+		if !model.Escalation.IsNull() {
+			_ = model.Escalation.ElementsAs(ctx, &priorSteps, false)
+		}
+		var stepModels []escalationStepModel
+		for i, s := range dto.Escalation.Steps {
+			sm := escalationStepModel{
+				RepeatIntervalSeconds: int32Value(s.RepeatIntervalSeconds),
+			}
+			// Preserve null for optional fields not set by user
+			if i < len(priorSteps) {
+				if priorSteps[i].DelayMinutes.IsNull() {
+					sm.DelayMinutes = types.Int64Null()
+				} else {
+					sm.DelayMinutes = int32Value(s.DelayMinutes)
+				}
+				if priorSteps[i].RequireAck.IsNull() {
+					sm.RequireAck = types.BoolNull()
+				} else {
+					sm.RequireAck = boolValue(s.RequireAck)
+				}
+				if priorSteps[i].RepeatIntervalSeconds.IsNull() {
+					sm.RepeatIntervalSeconds = types.Int64Null()
+				}
+			} else {
+				sm.DelayMinutes = int32Value(s.DelayMinutes)
+				sm.RequireAck = boolValue(s.RequireAck)
+			}
+			if len(s.ChannelIds) > 0 {
+				chElems := make([]types.String, len(s.ChannelIds))
+				for j, id := range s.ChannelIds {
+					chElems[j] = types.StringValue(id.String())
+				}
+				sm.ChannelIDs, _ = types.ListValueFrom(ctx, types.StringType, chElems)
+			} else {
+				sm.ChannelIDs, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+			}
+			stepModels = append(stepModels, sm)
+		}
+		model.Escalation, _ = types.ListValueFrom(ctx, escalationStepObjectType(), stepModels)
+	} else {
+		model.Escalation = types.ListNull(escalationStepObjectType())
+	}
+
+	// Match rules
+	if len(dto.MatchRules) > 0 {
+		var priorRules []matchRuleModel
+		if !model.MatchRules.IsNull() {
+			_ = model.MatchRules.ElementsAs(ctx, &priorRules, false)
+		}
+		var ruleModels []matchRuleModel
+		for i, mr := range dto.MatchRules {
+			val := stringValue(mr.Value)
+			// Preserve user-provided casing when it matches case-insensitively
+			if i < len(priorRules) && !priorRules[i].Value.IsNull() {
+				priorVal := priorRules[i].Value.ValueString()
+				if strings.EqualFold(priorVal, val.ValueString()) {
+					val = priorRules[i].Value
+				}
+			}
+			rm := matchRuleModel{
+				Type:  types.StringValue(mr.Type),
+				Value: val,
+			}
+			rm.Values = ptrStringSliceToList(ctx, mr.Values)
+			rm.MonitorIDs = ptrUUIDSliceToList(ctx, mr.MonitorIds)
+			rm.Regions = ptrStringSliceToList(ctx, mr.Regions)
+			ruleModels = append(ruleModels, rm)
+		}
+		model.MatchRules, _ = types.ListValueFrom(ctx, matchRuleObjectType(), ruleModels)
+	} else {
+		model.MatchRules = types.ListNull(matchRuleObjectType())
+	}
 }
 
 func (r *NotificationPolicyResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -234,11 +423,7 @@ func (r *NotificationPolicyResource) Read(ctx context.Context, req resource.Read
 		return
 	}
 
-	state.Name = types.StringValue(policy.Name)
-	state.Enabled = types.BoolValue(policy.Enabled)
-	state.Priority = types.Int64Value(int64(policy.Priority))
-	state.OnResolve = stringValue(policy.Escalation.OnResolve)
-	state.OnReopen = stringValue(policy.Escalation.OnReopen)
+	r.mapToState(ctx, &state, policy)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -255,19 +440,19 @@ func (r *NotificationPolicyResource) Update(ctx context.Context, req resource.Up
 		return
 	}
 
-	body, err := r.buildRequest(ctx, &plan)
+	body, err := r.buildUpdateRequest(ctx, &plan)
 	if err != nil {
 		resp.Diagnostics.AddError("Error building request", err.Error())
 		return
 	}
 
-	_, err = api.Update[generated.NotificationPolicyDto](ctx, r.client, "/api/v1/notification-policies/"+state.ID.ValueString(), body)
+	policy, err := api.Update[generated.NotificationPolicyDto](ctx, r.client, "/api/v1/notification-policies/"+state.ID.ValueString(), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating notification policy", err.Error())
 		return
 	}
 
-	plan.ID = state.ID
+	r.mapToState(ctx, &plan, policy)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -291,15 +476,48 @@ func (r *NotificationPolicyResource) ImportState(ctx context.Context, req resour
 		return
 	}
 
+	// UUID matches are unique. Name matches must be unique within the
+	// org or we refuse the import — silently picking the first match
+	// would produce a stale or arbitrary state for users who happen to
+	// share a policy name across teams or environments.
+	var policyID string
+	var matchedByName []string
 	for _, p := range policies {
+		if p.Id.String() == req.ID {
+			policyID = p.Id.String()
+			matchedByName = nil
+			break
+		}
 		if p.Name == req.ID {
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), p.Id.String())...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), p.Name)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), p.Enabled)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("priority"), int64(p.Priority))...)
+			matchedByName = append(matchedByName, p.Id.String())
+		}
+	}
+	if policyID == "" {
+		switch len(matchedByName) {
+		case 0:
+			resp.Diagnostics.AddError("Notification policy not found", fmt.Sprintf("No notification policy found with name or ID %q", req.ID))
+			return
+		case 1:
+			policyID = matchedByName[0]
+		default:
+			resp.Diagnostics.AddError(
+				"Ambiguous notification policy import",
+				fmt.Sprintf("%d notification policies share the name %q (ids: %v). Import by UUID instead.", len(matchedByName), req.ID, matchedByName),
+			)
 			return
 		}
 	}
 
-	resp.Diagnostics.AddError("Notification policy not found", fmt.Sprintf("No notification policy found with name %q", req.ID))
+	policy, err := api.Get[generated.NotificationPolicyDto](ctx, r.client, "/api/v1/notification-policies/"+policyID)
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading notification policy for import", err.Error())
+		return
+	}
+
+	// Pre-initialize nested block lists so mapToState populates them.
+	model := NotificationPolicyModel{}
+	model.Escalation, _ = types.ListValueFrom(ctx, escalationStepObjectType(), []escalationStepModel{})
+	model.MatchRules, _ = types.ListValueFrom(ctx, matchRuleObjectType(), []matchRuleModel{})
+	r.mapToState(ctx, &model, policy)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

@@ -15,10 +15,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
-      - uses: golangci/golangci-lint-action@v6
+          go-version: '1.25'
+      - uses: golangci/golangci-lint-action@v8
         with:
-          version: latest
+          version: v2.11.4
 
   test:
     runs-on: ubuntu-latest
@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version: '1.25'
       - run: go test ./... -v -count=1
 
   build:
@@ -35,6 +35,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version: '1.25'
       - run: go build -o terraform-provider-devhelm
 
+  docs:
+    # Verifies that the committed docs/ tree is up-to-date with the schema
+    # descriptions and the examples/ directory. Catches PRs that bump a
+    # @Schema description but forget to re-run `make docs`.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.10.5'
+          terraform_wrapper: false
+      - run: make docs-check

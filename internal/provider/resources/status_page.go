@@ -8,14 +8,19 @@ import (
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 var (
@@ -23,6 +28,15 @@ var (
 	_ resource.ResourceWithImportState = &StatusPageResource{}
 )
 
+// StatusPageResource manages a DevHelm status page.
+//
+// **Children are separate resources.** Component groups and components live
+// in their own resources (`devhelm_status_page_component_group` and
+// `devhelm_status_page_component`). This mirrors the API's resource model
+// — each child has its own UUID, lifecycle, and `/components/{id}` endpoint
+// — and lets users rename child entries via Terraform's built-in `moved {}`
+// block without losing identity, or use `for_each` to attach components in
+// bulk. The previous inline-block design has been removed.
 type StatusPageResource struct {
 	client *api.Client
 }
@@ -35,31 +49,28 @@ type StatusPageResourceModel struct {
 	Visibility   types.String `tfsdk:"visibility"`
 	Enabled      types.Bool   `tfsdk:"enabled"`
 	IncidentMode types.String `tfsdk:"incident_mode"`
+	Branding     types.Object `tfsdk:"branding"`
 	PageURL      types.String `tfsdk:"page_url"`
-
-	ComponentGroups []StatusPageComponentGroupModel `tfsdk:"component_group"`
-	Components      []StatusPageComponentModel      `tfsdk:"component"`
 }
 
-type StatusPageComponentGroupModel struct {
-	ID           types.String `tfsdk:"id"`
-	Name         types.String `tfsdk:"name"`
-	Description  types.String `tfsdk:"description"`
-	Collapsed    types.Bool   `tfsdk:"collapsed"`
-	DisplayOrder types.Int64  `tfsdk:"display_order"`
-}
-
-type StatusPageComponentModel struct {
-	ID                 types.String `tfsdk:"id"`
-	Name               types.String `tfsdk:"name"`
-	Description        types.String `tfsdk:"description"`
-	Type               types.String `tfsdk:"type"`
-	GroupName          types.String `tfsdk:"group_name"`
-	MonitorID          types.String `tfsdk:"monitor_id"`
-	ResourceGroupID    types.String `tfsdk:"resource_group_id"`
-	DisplayOrder       types.Int64  `tfsdk:"display_order"`
-	ExcludeFromOverall types.Bool   `tfsdk:"exclude_from_overall"`
-	ShowUptime         types.Bool   `tfsdk:"show_uptime"`
+// statusPageBrandingModel mirrors generated.StatusPageBranding for use with
+// types.Object.As(). All sub-fields are independently optional + computed
+// (UseStateForUnknown), so a user can set just one knob in HCL without
+// accidentally clearing the rest.
+type statusPageBrandingModel struct {
+	BrandColor     types.String `tfsdk:"brand_color"`
+	TextColor      types.String `tfsdk:"text_color"`
+	PageBackground types.String `tfsdk:"page_background"`
+	CardBackground types.String `tfsdk:"card_background"`
+	BorderColor    types.String `tfsdk:"border_color"`
+	Theme          types.String `tfsdk:"theme"`
+	HeaderStyle    types.String `tfsdk:"header_style"`
+	LogoURL        types.String `tfsdk:"logo_url"`
+	FaviconURL     types.String `tfsdk:"favicon_url"`
+	ReportURL      types.String `tfsdk:"report_url"`
+	CustomCSS      types.String `tfsdk:"custom_css"`
+	CustomHeadHTML types.String `tfsdk:"custom_head_html"`
+	HidePoweredBy  types.Bool   `tfsdk:"hide_powered_by"`
 }
 
 func NewStatusPageResource() resource.Resource {
@@ -72,8 +83,37 @@ func (r *StatusPageResource) Metadata(_ context.Context, req resource.MetadataRe
 
 func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Version:     0,
-		Description: "Manages a DevHelm status page with component groups and components.",
+		Version: 0,
+		Description: "Manages a DevHelm status page. " +
+			"Component groups and components are managed as separate resources " +
+			"(devhelm_status_page_component_group, devhelm_status_page_component); " +
+			"this resource only owns the page-level configuration.",
+		MarkdownDescription: "Manages a DevHelm status page.\n\n" +
+			"This resource owns **page-level configuration only** (name, slug, visibility, " +
+			"incident mode, branding). Children are first-class resources:\n\n" +
+			"- [`devhelm_status_page_component_group`](./status_page_component_group) " +
+			"— groupings shown on the page\n" +
+			"- [`devhelm_status_page_component`](./status_page_component) " +
+			"— individual components (static, monitor-backed, or resource-group-backed)\n\n" +
+			"Splitting children into their own resources gives them stable Terraform addresses, " +
+			"so renames preserve the underlying API UUID via the built-in `moved {}` block " +
+			"(no destructive delete/recreate, no loss of incident history or subscribers). " +
+			"It also unlocks `for_each`, `-target`, and cross-resource references.\n\n" +
+			"## Example\n\n" +
+			"```hcl\n" +
+			"resource \"devhelm_status_page\" \"public\" {\n" +
+			"  name          = \"Acme Status\"\n" +
+			"  slug          = \"acme\"\n" +
+			"  description   = \"Live status of Acme services.\"\n" +
+			"  visibility    = \"PUBLIC\"\n" +
+			"  incident_mode = \"AUTOMATIC\"\n" +
+			"}\n" +
+			"\n" +
+			"resource \"devhelm_status_page_component_group\" \"infra\" {\n" +
+			"  status_page_id = devhelm_status_page.public.id\n" +
+			"  name           = \"Infrastructure\"\n" +
+			"}\n" +
+			"```\n",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true, Description: "Unique identifier for this status page",
@@ -88,7 +128,12 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"description": schema.StringAttribute{
-				Optional: true, Description: "Description shown below the page header",
+				Optional: true,
+				Description: "Description shown below the page header. " +
+					"Omit to clear an existing description; empty string is rejected.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"visibility": schema.StringAttribute{
 				Optional: true, Computed: true,
@@ -110,74 +155,50 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 			"page_url": schema.StringAttribute{
 				Computed: true, Description: "Public URL of the status page (https://<slug>.devhelm.page)",
 			},
-		},
-		Blocks: map[string]schema.Block{
-			"component_group": schema.ListNestedBlock{
-				Description: "Component groups for visual organization. Components reference groups by name.",
-				NestedObject: schema.NestedBlockObject{
-					Attributes: map[string]schema.Attribute{
-						"id": schema.StringAttribute{
-							Computed: true, Description: "Group ID (set after creation)",
-						},
-						"name": schema.StringAttribute{
-							Required: true, Description: "Group display name",
-						},
-						"description": schema.StringAttribute{
-							Optional: true, Description: "Optional group description",
-						},
-						"collapsed": schema.BoolAttribute{
-							Optional: true, Computed: true, Default: booldefault.StaticBool(true),
-							Description: "Whether the group is collapsed by default (default: true)",
-						},
-						"display_order": schema.Int64Attribute{
-							Optional: true, Computed: true, Description: "Position in the group list",
-						},
-					},
-				},
-			},
-			"component": schema.ListNestedBlock{
-				Description: "Components that appear on the status page.",
-				NestedObject: schema.NestedBlockObject{
-					Attributes: map[string]schema.Attribute{
-						"id": schema.StringAttribute{
-							Computed: true, Description: "Component ID (set after creation)",
-						},
-						"name": schema.StringAttribute{
-							Required: true, Description: "Component display name",
-						},
-						"description": schema.StringAttribute{
-							Optional: true, Description: "Optional description shown on expand",
-						},
-						"type": schema.StringAttribute{
-							Required: true, Description: "Component type: STATIC, MONITOR, or GROUP",
-							Validators: []validator.String{
-								stringvalidator.OneOf("STATIC", "MONITOR", "GROUP"),
-							},
-						},
-						"group_name": schema.StringAttribute{
-							Optional: true, Description: "Name of the component_group to place this component in",
-						},
-						"monitor_id": schema.StringAttribute{
-							Optional: true, Description: "Monitor ID (required when type=MONITOR)",
-						},
-						"resource_group_id": schema.StringAttribute{
-							Optional: true, Description: "Resource group ID (required when type=GROUP)",
-						},
-						"display_order": schema.Int64Attribute{
-							Optional: true, Computed: true, Description: "Position in the component list",
-						},
-						"exclude_from_overall": schema.BoolAttribute{
-							Optional: true, Computed: true, Default: booldefault.StaticBool(false),
-							Description: "Exclude from overall status calculation (default: false)",
-						},
-						"show_uptime": schema.BoolAttribute{
-							Optional: true, Computed: true, Default: booldefault.StaticBool(true),
-							Description: "Whether to show the uptime bar (default: true)",
-						},
+			"branding": schema.SingleNestedAttribute{
+				Optional: true, Computed: true,
+				Description: "Visual branding for the public status page. " +
+					"The block is **declarative** — every sub-field you list is upserted, " +
+					"every sub-field you omit is cleared on the API. To leave branding " +
+					"completely untouched, omit the entire `branding` attribute (or set " +
+					"it to null — Terraform treats those identically). To reset all " +
+					"branding back to defaults, set the attribute to an empty object: " +
+					"`branding = {}`.",
+				PlanModifiers: []planmodifier.Object{objectplanmodifier.UseStateForUnknown()},
+				Attributes: map[string]schema.Attribute{
+					"brand_color":      brandingHexAttr("Primary brand color as hex (e.g. #4F46E5); drives accent, links, and buttons"),
+					"text_color":       brandingHexAttr("Primary text color as hex (e.g. #09090B)"),
+					"page_background":  brandingHexAttr("Page body background color as hex (e.g. #FAFAFA)"),
+					"card_background":  brandingHexAttr("Card / surface background color as hex (e.g. #FFFFFF)"),
+					"border_color":     brandingHexAttr("Card border color as hex (e.g. #E4E4E7)"),
+					"theme":            schema.StringAttribute{Optional: true, Description: "Color theme: 'light' or 'dark' (default: light)"},
+					"header_style":     schema.StringAttribute{Optional: true, Description: "Header layout style (reserved for future use)"},
+					"logo_url":         schema.StringAttribute{Optional: true, Description: "URL for the logo image displayed in the header"},
+					"favicon_url":      schema.StringAttribute{Optional: true, Description: "URL for the browser tab favicon"},
+					"report_url":       schema.StringAttribute{Optional: true, Description: "URL where visitors can report a problem"},
+					"custom_css":       schema.StringAttribute{Optional: true, Description: "Custom CSS injected via <style> on the public page — grants full style control"},
+					"custom_head_html": schema.StringAttribute{Optional: true, Description: "Custom HTML injected into <head> on the public page — grants full script control (analytics, pixels)"},
+					"hide_powered_by": schema.BoolAttribute{
+						Optional: true, Computed: true,
+						Description:   "Whether to hide the 'Powered by DevHelm' footer badge (default: false)",
+						PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
 					},
 				},
 			},
 		},
+	}
+}
+
+// brandingHexAttr is a small factory for the many hex-color sub-fields on the
+// branding object — they all share the same Optional shape and only their
+// description differs. They are intentionally NOT Computed: each sub-field
+// is declarative, so omitting it from the `branding` block clears it on the
+// API (unless the parent `branding` attribute itself is omitted, in which
+// case parent UseStateForUnknown preserves the entire prior object).
+func brandingHexAttr(description string) schema.StringAttribute {
+	return schema.StringAttribute{
+		Optional:    true,
+		Description: description,
 	}
 }
 
@@ -185,10 +206,13 @@ func (r *StatusPageResource) Configure(_ context.Context, req resource.Configure
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type", "Expected *api.Client")
+		return
+	}
+	r.client = client
 }
-
-// ── CRUD ────────────────────────────────────────────────────────────────
 
 func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var plan StatusPageResourceModel
@@ -197,59 +221,29 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	body := r.buildCreateRequest(&plan)
+	branding, diags := brandingForCreate(ctx, plan.Branding)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	body := generated.CreateStatusPageRequest{
+		Name:         plan.Name.ValueString(),
+		Slug:         plan.Slug.ValueString(),
+		Description:  stringPtrOrNil(plan.Description),
+		Visibility:   visibilityCreatePtr(plan.Visibility),
+		Enabled:      boolPtrOrNil(plan.Enabled),
+		IncidentMode: incidentModeCreatePtr(plan.IncidentMode),
+		Branding:     branding,
+	}
+
 	page, err := api.Create[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages", body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating status page", err.Error())
 		return
 	}
 
-	// Save state immediately so the page is tracked even if sub-resource creation fails.
-	r.mapToState(&plan, page)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	pageID := page.Id.String()
-
-	groupNameToID := make(map[string]string)
-	for i, g := range plan.ComponentGroups {
-		gBody := generated.CreateStatusPageComponentGroupRequest{
-			Name:         g.Name.ValueString(),
-			Description:  stringPtrOrNil(g.Description),
-			Collapsed:    boolPtrOrNil(g.Collapsed),
-			DisplayOrder: int32PtrFromInt64(g.DisplayOrder),
-		}
-		created, err := api.Create[generated.StatusPageComponentGroupDto](
-			ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/groups", pageID), gBody,
-		)
-		if err != nil {
-			resp.Diagnostics.AddError("Error creating component group", err.Error())
-			return
-		}
-		plan.ComponentGroups[i].ID = types.StringValue(created.Id.String())
-		plan.ComponentGroups[i].DisplayOrder = types.Int64Value(int64(created.DisplayOrder))
-		groupNameToID[created.Name] = created.Id.String()
-	}
-
-	for i, c := range plan.Components {
-		cBody, err := r.buildComponentRequest(&c, groupNameToID)
-		if err != nil {
-			resp.Diagnostics.AddError("Error building component request", err.Error())
-			return
-		}
-		created, err := api.Create[generated.StatusPageComponentDto](
-			ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/components", pageID), cBody,
-		)
-		if err != nil {
-			resp.Diagnostics.AddError("Error creating component", err.Error())
-			return
-		}
-		plan.Components[i].ID = types.StringValue(created.Id.String())
-		plan.Components[i].DisplayOrder = types.Int64Value(int64(created.DisplayOrder))
-	}
-
+	r.mapToState(ctx, &plan, page)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -270,23 +264,7 @@ func (r *StatusPageResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	pageID := state.ID.ValueString()
-
-	groups, err := api.List[generated.StatusPageComponentGroupDto](ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/groups", pageID))
-	if err != nil {
-		resp.Diagnostics.AddError("Error listing component groups", err.Error())
-		return
-	}
-
-	components, err := api.List[generated.StatusPageComponentDto](ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/components", pageID))
-	if err != nil {
-		resp.Diagnostics.AddError("Error listing components", err.Error())
-		return
-	}
-
-	r.mapToState(&state, page)
-	r.mapGroupsToState(&state, groups)
-	r.mapComponentsToState(&state, components, groups)
+	r.mapToState(ctx, &state, page)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -303,77 +281,40 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	pageID := state.ID.ValueString()
-	body := r.buildUpdateRequest(&plan)
-	page, err := api.Update[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+pageID, body)
+	branding, diags := brandingForUpdate(ctx, plan.Branding)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	name := plan.Name.ValueString()
+	body := generated.UpdateStatusPageRequest{
+		Name: &name,
+		// Description follows the API's "null preserves, empty string clears"
+		// contract. We always emit so removing the attribute from HCL clears
+		// the server-side value (the Terraform contract is "config is the
+		// source of truth"). See helpers.go::descriptionPtrForClear.
+		Description:  descriptionPtrForClear(plan.Description),
+		Visibility:   visibilityUpdatePtr(plan.Visibility),
+		Enabled:      boolPtrOrNil(plan.Enabled),
+		IncidentMode: incidentModeUpdatePtr(plan.IncidentMode),
+		// Branding is non-pointer in the Update DTO so it must always be sent.
+		// brandingForUpdate handles three cases:
+		//   - plan.Branding fully populated (UseStateForUnknown filled blanks
+		//     from prior state) → forward as-is, server upserts each field.
+		//   - plan.Branding == null (user explicitly set `branding = null`) →
+		//     send a zero-value StatusPageBranding, server clears all fields.
+		//   - plan.Branding == unknown (rare, defensive) → also zero-value.
+		Branding: &branding,
+	}
+
+	page, err := api.Update[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+state.ID.ValueString(), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating status page", err.Error())
 		return
 	}
 
-	// Reconcile sub-resources: delete all existing, then recreate from plan.
-	existingComponents, err := api.List[generated.StatusPageComponentDto](ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/components", pageID))
-	if err != nil {
-		resp.Diagnostics.AddError("Error listing components for update", err.Error())
-		return
-	}
-	for _, c := range existingComponents {
-		if err := api.Delete(ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/components/%s", pageID, c.Id.String())); err != nil {
-			resp.Diagnostics.AddError("Error deleting component during update", err.Error())
-			return
-		}
-	}
-
-	existingGroups, err := api.List[generated.StatusPageComponentGroupDto](ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/groups", pageID))
-	if err != nil {
-		resp.Diagnostics.AddError("Error listing groups for update", err.Error())
-		return
-	}
-	for _, g := range existingGroups {
-		if err := api.Delete(ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/groups/%s", pageID, g.Id.String())); err != nil {
-			resp.Diagnostics.AddError("Error deleting group during update", err.Error())
-			return
-		}
-	}
-
-	groupNameToID := make(map[string]string)
-	for i, g := range plan.ComponentGroups {
-		gBody := generated.CreateStatusPageComponentGroupRequest{
-			Name:         g.Name.ValueString(),
-			Description:  stringPtrOrNil(g.Description),
-			Collapsed:    boolPtrOrNil(g.Collapsed),
-			DisplayOrder: int32PtrFromInt64(g.DisplayOrder),
-		}
-		created, err := api.Create[generated.StatusPageComponentGroupDto](
-			ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/groups", pageID), gBody,
-		)
-		if err != nil {
-			resp.Diagnostics.AddError("Error creating component group during update", err.Error())
-			return
-		}
-		plan.ComponentGroups[i].ID = types.StringValue(created.Id.String())
-		plan.ComponentGroups[i].DisplayOrder = types.Int64Value(int64(created.DisplayOrder))
-		groupNameToID[created.Name] = created.Id.String()
-	}
-
-	for i, c := range plan.Components {
-		cBody, err := r.buildComponentRequest(&c, groupNameToID)
-		if err != nil {
-			resp.Diagnostics.AddError("Error building component request", err.Error())
-			return
-		}
-		created, err := api.Create[generated.StatusPageComponentDto](
-			ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/components", pageID), cBody,
-		)
-		if err != nil {
-			resp.Diagnostics.AddError("Error creating component during update", err.Error())
-			return
-		}
-		plan.Components[i].ID = types.StringValue(created.Id.String())
-		plan.Components[i].DisplayOrder = types.Int64Value(int64(created.DisplayOrder))
-	}
-
-	r.mapToState(&plan, page)
+	r.mapToState(ctx, &plan, page)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -391,219 +332,196 @@ func (r *StatusPageResource) Delete(ctx context.Context, req resource.DeleteRequ
 }
 
 func (r *StatusPageResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
-}
-
-// ── Request builders ────────────────────────────────────────────────────
-
-func (r *StatusPageResource) buildCreateRequest(plan *StatusPageResourceModel) generated.CreateStatusPageRequest {
-	req := generated.CreateStatusPageRequest{
-		Name: plan.Name.ValueString(),
-		Slug: plan.Slug.ValueString(),
-	}
-	if !plan.Description.IsNull() && !plan.Description.IsUnknown() {
-		d := plan.Description.ValueString()
-		req.Description = &d
-	}
-	if !plan.Visibility.IsNull() && !plan.Visibility.IsUnknown() {
-		v := generated.CreateStatusPageRequestVisibility(plan.Visibility.ValueString())
-		req.Visibility = &v
-	}
-	req.Enabled = boolPtrOrNil(plan.Enabled)
-	if !plan.IncidentMode.IsNull() && !plan.IncidentMode.IsUnknown() {
-		m := generated.CreateStatusPageRequestIncidentMode(plan.IncidentMode.ValueString())
-		req.IncidentMode = &m
-	}
-	return req
-}
-
-func (r *StatusPageResource) buildUpdateRequest(plan *StatusPageResourceModel) generated.UpdateStatusPageRequest {
-	name := plan.Name.ValueString()
-	req := generated.UpdateStatusPageRequest{
-		Name: &name,
-	}
-	if !plan.Description.IsNull() && !plan.Description.IsUnknown() {
-		d := plan.Description.ValueString()
-		req.Description = &d
-	}
-	req.Enabled = boolPtrOrNil(plan.Enabled)
-	if !plan.Visibility.IsNull() && !plan.Visibility.IsUnknown() {
-		v := generated.UpdateStatusPageRequestVisibility(plan.Visibility.ValueString())
-		req.Visibility = &v
-	}
-	if !plan.IncidentMode.IsNull() && !plan.IncidentMode.IsUnknown() {
-		m := generated.UpdateStatusPageRequestIncidentMode(plan.IncidentMode.ValueString())
-		req.IncidentMode = &m
-	}
-	return req
-}
-
-func (r *StatusPageResource) buildComponentRequest(c *StatusPageComponentModel, groupNameToID map[string]string) (generated.CreateStatusPageComponentRequest, error) {
-	cType := generated.CreateStatusPageComponentRequestType(c.Type.ValueString())
-	req := generated.CreateStatusPageComponentRequest{
-		Name:               c.Name.ValueString(),
-		Type:               cType,
-		Description:        stringPtrOrNil(c.Description),
-		ExcludeFromOverall: boolPtrOrNil(c.ExcludeFromOverall),
-		ShowUptime:         boolPtrOrNil(c.ShowUptime),
-		DisplayOrder:       int32PtrFromInt64(c.DisplayOrder),
-	}
-
-	if !c.GroupName.IsNull() && !c.GroupName.IsUnknown() {
-		gName := c.GroupName.ValueString()
-		gid, ok := groupNameToID[gName]
-		if !ok {
-			return req, fmt.Errorf("component %q references group_name %q which does not match any component_group block", c.Name.ValueString(), gName)
+	// Accept either a UUID or a slug as the import identifier.
+	//
+	// When the identifier parses as a UUID we go straight to the by-id GET.
+	// Otherwise (or on 404 fallback) we list and scan by slug. We deliberately
+	// do not POST a slug into the by-id endpoint, since the API rejects that
+	// at the path-conversion layer with a 400 (not 404), which would otherwise
+	// be surfaced as a confusing error.
+	var page *generated.StatusPageDto
+	if _, parseErr := uuid.Parse(req.ID); parseErr == nil {
+		got, err := api.Get[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+req.ID)
+		if err != nil && !api.IsNotFound(err) {
+			resp.Diagnostics.AddError("Error importing status page", err.Error())
+			return
 		}
-		uid := uuidFromString(gid)
-		req.GroupId = &uid
+		page = got
 	}
-	if !c.MonitorID.IsNull() && !c.MonitorID.IsUnknown() {
-		uid := uuidFromString(c.MonitorID.ValueString())
-		req.MonitorId = &uid
-	}
-	if !c.ResourceGroupID.IsNull() && !c.ResourceGroupID.IsUnknown() {
-		uid := uuidFromString(c.ResourceGroupID.ValueString())
-		req.ResourceGroupId = &uid
+	if page == nil {
+		pages, listErr := api.List[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages")
+		if listErr != nil {
+			resp.Diagnostics.AddError("Error importing status page", listErr.Error())
+			return
+		}
+		for i := range pages {
+			if pages[i].Slug == req.ID || pages[i].Id.String() == req.ID {
+				page = &pages[i]
+				break
+			}
+		}
+		if page == nil {
+			resp.Diagnostics.AddError(
+				"Status page not found",
+				fmt.Sprintf("No status page with ID or slug %q", req.ID),
+			)
+			return
+		}
 	}
 
-	return req, nil
+	model := StatusPageResourceModel{}
+	r.mapToState(ctx, &model, page)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), model.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), model.Name)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), model.Slug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("description"), model.Description)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("visibility"), model.Visibility)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), model.Enabled)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("incident_mode"), model.IncidentMode)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("branding"), model.Branding)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("page_url"), model.PageURL)...)
 }
 
-// ── State mapping ───────────────────────────────────────────────────────
-
-func (r *StatusPageResource) mapToState(model *StatusPageResourceModel, dto *generated.StatusPageDto) {
+func (r *StatusPageResource) mapToState(ctx context.Context, model *StatusPageResourceModel, dto *generated.StatusPageDto) {
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
-	model.Description = stringValue(dto.Description)
+	model.Description = stringValueClearable(dto.Description)
 	model.Visibility = types.StringValue(string(dto.Visibility))
 	model.Enabled = types.BoolValue(dto.Enabled)
 	model.IncidentMode = types.StringValue(string(dto.IncidentMode))
+	model.Branding = brandingObjectFromDto(ctx, dto.Branding)
+	// page_url is derived client-side from the slug. The API doesn't return
+	// it because the host is dictated by the deployment (devhelm.page) and
+	// would otherwise drift across environments.
 	model.PageURL = types.StringValue(fmt.Sprintf("https://%s.devhelm.page", dto.Slug))
 }
 
-func (r *StatusPageResource) mapGroupsToState(model *StatusPageResourceModel, groups []generated.StatusPageComponentGroupDto) {
-	if len(model.ComponentGroups) == 0 && len(groups) == 0 {
-		return
-	}
+// ── Branding conversion helpers ────────────────────────────────────────
 
-	// If model has no groups (e.g., after import), rebuild from API response.
-	if len(model.ComponentGroups) == 0 {
-		model.ComponentGroups = make([]StatusPageComponentGroupModel, len(groups))
-		for i, g := range groups {
-			model.ComponentGroups[i] = StatusPageComponentGroupModel{
-				ID:           types.StringValue(g.Id.String()),
-				Name:         types.StringValue(g.Name),
-				Description:  stringValue(g.Description),
-				Collapsed:    types.BoolValue(g.Collapsed),
-				DisplayOrder: types.Int64Value(int64(g.DisplayOrder)),
-			}
-		}
-		return
-	}
-
-	nameToGroup := make(map[string]generated.StatusPageComponentGroupDto)
-	for _, g := range groups {
-		nameToGroup[g.Name] = g
-	}
-
-	for i, mg := range model.ComponentGroups {
-		if g, ok := nameToGroup[mg.Name.ValueString()]; ok {
-			model.ComponentGroups[i].ID = types.StringValue(g.Id.String())
-			model.ComponentGroups[i].Name = types.StringValue(g.Name)
-			model.ComponentGroups[i].DisplayOrder = types.Int64Value(int64(g.DisplayOrder))
-			model.ComponentGroups[i].Collapsed = types.BoolValue(g.Collapsed)
-			model.ComponentGroups[i].Description = stringValue(g.Description)
-		}
+func brandingObjectAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"brand_color":      types.StringType,
+		"text_color":       types.StringType,
+		"page_background":  types.StringType,
+		"card_background":  types.StringType,
+		"border_color":     types.StringType,
+		"theme":            types.StringType,
+		"header_style":     types.StringType,
+		"logo_url":         types.StringType,
+		"favicon_url":      types.StringType,
+		"report_url":       types.StringType,
+		"custom_css":       types.StringType,
+		"custom_head_html": types.StringType,
+		"hide_powered_by":  types.BoolType,
 	}
 }
 
-func (r *StatusPageResource) mapComponentsToState(model *StatusPageResourceModel, components []generated.StatusPageComponentDto, groups []generated.StatusPageComponentGroupDto) {
-	if len(model.Components) == 0 && len(components) == 0 {
-		return
+// brandingObjectFromDto materializes the API's branding payload into a
+// types.Object that matches the schema. *string nils round-trip to
+// types.StringNull so an HCL omission stays stable across plans.
+func brandingObjectFromDto(ctx context.Context, b generated.StatusPageBranding) types.Object {
+	model := statusPageBrandingModel{
+		BrandColor:     stringValue(b.BrandColor),
+		TextColor:      stringValue(b.TextColor),
+		PageBackground: stringValue(b.PageBackground),
+		CardBackground: stringValue(b.CardBackground),
+		BorderColor:    stringValue(b.BorderColor),
+		Theme:          stringValue(b.Theme),
+		HeaderStyle:    stringValue(b.HeaderStyle),
+		LogoURL:        stringValue(b.LogoUrl),
+		FaviconURL:     stringValue(b.FaviconUrl),
+		ReportURL:      stringValue(b.ReportUrl),
+		CustomCSS:      stringValue(b.CustomCss),
+		CustomHeadHTML: stringValue(b.CustomHeadHtml),
+		HidePoweredBy:  types.BoolValue(b.HidePoweredBy),
 	}
-
-	// Build reverse lookup: group ID → group name.
-	groupIDToName := make(map[string]string)
-	for _, g := range groups {
-		groupIDToName[g.Id.String()] = g.Name
-	}
-
-	// If model has no components (e.g., after import), rebuild from API response.
-	if len(model.Components) == 0 {
-		model.Components = make([]StatusPageComponentModel, len(components))
-		for i, c := range components {
-			model.Components[i] = StatusPageComponentModel{
-				ID:                 types.StringValue(c.Id.String()),
-				Name:               types.StringValue(c.Name),
-				Description:        stringValue(c.Description),
-				Type:               types.StringValue(string(c.Type)),
-				DisplayOrder:       types.Int64Value(int64(c.DisplayOrder)),
-				ExcludeFromOverall: types.BoolValue(c.ExcludeFromOverall),
-				ShowUptime:         types.BoolValue(c.ShowUptime),
-			}
-			if c.GroupId != nil {
-				if name, ok := groupIDToName[c.GroupId.String()]; ok {
-					model.Components[i].GroupName = types.StringValue(name)
-				}
-			} else {
-				model.Components[i].GroupName = types.StringNull()
-			}
-			if c.MonitorId != nil {
-				model.Components[i].MonitorID = types.StringValue(c.MonitorId.String())
-			} else {
-				model.Components[i].MonitorID = types.StringNull()
-			}
-			if c.ResourceGroupId != nil {
-				model.Components[i].ResourceGroupID = types.StringValue(c.ResourceGroupId.String())
-			} else {
-				model.Components[i].ResourceGroupID = types.StringNull()
-			}
-		}
-		return
-	}
-
-	nameToComp := make(map[string]generated.StatusPageComponentDto)
-	for _, c := range components {
-		nameToComp[c.Name] = c
-	}
-
-	for i, mc := range model.Components {
-		if c, ok := nameToComp[mc.Name.ValueString()]; ok {
-			model.Components[i].ID = types.StringValue(c.Id.String())
-			model.Components[i].Name = types.StringValue(c.Name)
-			model.Components[i].Description = stringValue(c.Description)
-			model.Components[i].Type = types.StringValue(string(c.Type))
-			model.Components[i].DisplayOrder = types.Int64Value(int64(c.DisplayOrder))
-			model.Components[i].ExcludeFromOverall = types.BoolValue(c.ExcludeFromOverall)
-			model.Components[i].ShowUptime = types.BoolValue(c.ShowUptime)
-			if c.MonitorId != nil {
-				model.Components[i].MonitorID = types.StringValue(c.MonitorId.String())
-			}
-			if c.ResourceGroupId != nil {
-				model.Components[i].ResourceGroupID = types.StringValue(c.ResourceGroupId.String())
-			}
-			if c.GroupId != nil {
-				if name, ok := groupIDToName[c.GroupId.String()]; ok {
-					model.Components[i].GroupName = types.StringValue(name)
-				}
-			}
-		}
-	}
+	obj, _ := types.ObjectValueFrom(ctx, brandingObjectAttrTypes(), model)
+	return obj
 }
 
-// ── Helpers ─────────────────────────────────────────────────────────────
-
-func uuidFromString(s string) uuid.UUID {
-	u, _ := uuid.Parse(s)
-	return u
+// brandingForCreate returns the optional pointer used by CreateStatusPageRequest.
+// A null/unknown plan attribute means "no branding overrides" → nil pointer →
+// the server uses its built-in defaults for every sub-field.
+func brandingForCreate(ctx context.Context, obj types.Object) (*generated.StatusPageBranding, diag.Diagnostics) {
+	if obj.IsNull() || obj.IsUnknown() {
+		return nil, nil
+	}
+	b, diags := brandingFromObject(ctx, obj)
+	if diags.HasError() {
+		return nil, diags
+	}
+	return &b, diags
 }
 
-func int32PtrFromInt64(v types.Int64) *int32 {
-	if v.IsNull() || v.IsUnknown() {
+// brandingForUpdate returns the always-sent branding payload for the Update
+// DTO. A null/unknown plan attribute → zero-value StatusPageBranding, which
+// instructs the server to clear every overrideable field. UseStateForUnknown
+// on the parent attribute means the only path to a null plan value is an
+// explicit `branding = null` in HCL.
+func brandingForUpdate(ctx context.Context, obj types.Object) (generated.StatusPageBranding, diag.Diagnostics) {
+	if obj.IsNull() || obj.IsUnknown() {
+		return generated.StatusPageBranding{}, nil
+	}
+	return brandingFromObject(ctx, obj)
+}
+
+func brandingFromObject(ctx context.Context, obj types.Object) (generated.StatusPageBranding, diag.Diagnostics) {
+	var model statusPageBrandingModel
+	diags := obj.As(ctx, &model, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    false,
+		UnhandledUnknownAsEmpty: true, // tolerate transient unknowns from partial updates
+	})
+	if diags.HasError() {
+		return generated.StatusPageBranding{}, diags
+	}
+	return generated.StatusPageBranding{
+		BrandColor:     stringPtrOrNil(model.BrandColor),
+		TextColor:      stringPtrOrNil(model.TextColor),
+		PageBackground: stringPtrOrNil(model.PageBackground),
+		CardBackground: stringPtrOrNil(model.CardBackground),
+		BorderColor:    stringPtrOrNil(model.BorderColor),
+		Theme:          stringPtrOrNil(model.Theme),
+		HeaderStyle:    stringPtrOrNil(model.HeaderStyle),
+		LogoUrl:        stringPtrOrNil(model.LogoURL),
+		FaviconUrl:     stringPtrOrNil(model.FaviconURL),
+		ReportUrl:      stringPtrOrNil(model.ReportURL),
+		CustomCss:      stringPtrOrNil(model.CustomCSS),
+		CustomHeadHtml: stringPtrOrNil(model.CustomHeadHTML),
+		HidePoweredBy:  !model.HidePoweredBy.IsNull() && !model.HidePoweredBy.IsUnknown() && model.HidePoweredBy.ValueBool(),
+	}, diags
+}
+
+// ── Enum conversion helpers (visibility, incident mode) ─────────────────
+
+func visibilityCreatePtr(v types.String) *generated.CreateStatusPageRequestVisibility {
+	if v.IsNull() || v.IsUnknown() || v.ValueString() == "" {
 		return nil
 	}
-	i := int32(v.ValueInt64())
-	return &i
+	out := generated.CreateStatusPageRequestVisibility(v.ValueString())
+	return &out
+}
+
+func visibilityUpdatePtr(v types.String) *generated.UpdateStatusPageRequestVisibility {
+	if v.IsNull() || v.IsUnknown() || v.ValueString() == "" {
+		return nil
+	}
+	out := generated.UpdateStatusPageRequestVisibility(v.ValueString())
+	return &out
+}
+
+func incidentModeCreatePtr(v types.String) *generated.CreateStatusPageRequestIncidentMode {
+	if v.IsNull() || v.IsUnknown() || v.ValueString() == "" {
+		return nil
+	}
+	out := generated.CreateStatusPageRequestIncidentMode(v.ValueString())
+	return &out
+}
+
+func incidentModeUpdatePtr(v types.String) *generated.UpdateStatusPageRequestIncidentMode {
+	if v.IsNull() || v.IsUnknown() || v.ValueString() == "" {
+		return nil
+	}
+	out := generated.UpdateStatusPageRequestIncidentMode(v.ValueString())
+	return &out
 }

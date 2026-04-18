@@ -46,7 +46,12 @@ func (d *AlertChannelDataSource) Configure(_ context.Context, req datasource.Con
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Data Source Configure Type", "Expected *api.Client")
+		return
+	}
+	d.client = client
 }
 
 func (d *AlertChannelDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
@@ -62,14 +67,32 @@ func (d *AlertChannelDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 
-	for _, ch := range channels {
-		if ch.Name == model.Name.ValueString() {
-			model.ID = types.StringValue(ch.Id.String())
-			model.ChannelType = types.StringValue(string(ch.ChannelType))
-			resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
-			return
+	// Channel names are not unique within an org (e.g. multiple "ops"
+	// Slack channels in different workspaces). matchByName surfaces
+	// every collision so the operator can switch to a UUID reference.
+	matches := matchByName(channels, model.Name.ValueString(), func(c generated.AlertChannelDto) string { return c.Name })
+	switch len(matches) {
+	case 0:
+		resp.Diagnostics.AddError("Alert channel not found", fmt.Sprintf("No alert channel found with name %q", model.Name.ValueString()))
+	case 1:
+		mapAlertChannelToState(&model, &matches[0])
+		resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+	default:
+		ids := make([]string, len(matches))
+		for i, m := range matches {
+			ids[i] = m.Id.String()
 		}
+		resp.Diagnostics.AddError(
+			"Ambiguous alert channel lookup",
+			fmt.Sprintf("%d alert channels share the name %q (ids: %v). Reference the channel by UUID instead of using this data source.", len(matches), model.Name.ValueString(), ids),
+		)
 	}
+}
 
-	resp.Diagnostics.AddError("Alert channel not found", fmt.Sprintf("No alert channel found with name %q", model.Name.ValueString()))
+// mapAlertChannelToState mirrors the resource's mapToState pattern so the
+// data source has an isolated, testable state-population path.
+func mapAlertChannelToState(model *AlertChannelDataSourceModel, dto *generated.AlertChannelDto) {
+	model.ID = types.StringValue(dto.Id.String())
+	model.Name = types.StringValue(dto.Name)
+	model.ChannelType = types.StringValue(string(dto.ChannelType))
 }

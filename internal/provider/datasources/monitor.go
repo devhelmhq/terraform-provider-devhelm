@@ -2,7 +2,6 @@ package datasources
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
@@ -55,7 +54,12 @@ func (d *MonitorDataSource) Configure(_ context.Context, req datasource.Configur
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Data Source Configure Type", "Expected *api.Client")
+		return
+	}
+	d.client = client
 }
 
 func (d *MonitorDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
@@ -71,25 +75,49 @@ func (d *MonitorDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 
-	for _, m := range monitors {
-		if m.Name == model.Name.ValueString() {
-			model.ID = types.StringValue(m.Id.String())
-			model.Type = types.StringValue(string(m.Type))
-			model.FrequencySeconds = types.Int64Value(int64(m.FrequencySeconds))
-			model.Enabled = types.BoolValue(m.Enabled)
-			if m.Config != nil {
-				cfgBytes, _ := json.Marshal(m.Config)
-				model.Config = types.StringValue(string(cfgBytes))
-			}
-			if m.PingUrl != nil {
-				model.PingUrl = types.StringValue(*m.PingUrl)
-			} else {
-				model.PingUrl = types.StringNull()
-			}
-			resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
-			return
+	want := model.Name.ValueString()
+	matches := matchByName(monitors, want, func(m generated.MonitorDto) string { return m.Name })
+	switch len(matches) {
+	case 0:
+		resp.Diagnostics.AddError("Monitor not found", fmt.Sprintf("No monitor found with name %q", want))
+		return
+	case 1:
+		// fall through
+	default:
+		ids := make([]string, len(matches))
+		for i, m := range matches {
+			ids[i] = m.Id.String()
 		}
+		resp.Diagnostics.AddError(
+			"Ambiguous monitor lookup",
+			fmt.Sprintf("%d monitors share the name %q (ids: %v). Rename one in the dashboard, or reference the monitor by ID directly instead of via this data source.", len(matches), want, ids),
+		)
+		return
 	}
 
-	resp.Diagnostics.AddError("Monitor not found", fmt.Sprintf("No monitor found with name %q", model.Name.ValueString()))
+	mapMonitorToState(&model, &matches[0])
+	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+}
+
+// mapMonitorToState populates the data source model from the API DTO.
+// Extracted as a free function so unit tests can pin the field-by-field
+// mapping (including the JSON normalization on Config and the nullability
+// of PingUrl) without a real HTTP server in the loop.
+func mapMonitorToState(model *MonitorDataSourceModel, m *generated.MonitorDto) {
+	model.ID = types.StringValue(m.Id.String())
+	model.Name = types.StringValue(m.Name)
+	model.Type = types.StringValue(string(m.Type))
+	model.FrequencySeconds = types.Int64Value(int64(m.FrequencySeconds))
+	model.Enabled = types.BoolValue(m.Enabled)
+	cfgBytes, err := m.Config.MarshalJSON()
+	if err == nil && len(cfgBytes) > 0 && string(cfgBytes) != "null" {
+		model.Config = types.StringValue(normalizeConfigJSON(cfgBytes))
+	} else {
+		model.Config = types.StringNull()
+	}
+	if m.PingUrl != nil {
+		model.PingUrl = types.StringValue(*m.PingUrl)
+	} else {
+		model.PingUrl = types.StringNull()
+	}
 }

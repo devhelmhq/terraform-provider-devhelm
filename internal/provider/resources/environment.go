@@ -6,7 +6,6 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -110,7 +109,7 @@ func (r *EnvironmentResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	r.mapToState(&plan, env)
+	r.mapToState(ctx, &plan, env)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -131,7 +130,7 @@ func (r *EnvironmentResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
-	r.mapToState(&state, env)
+	r.mapToState(ctx, &state, env)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -155,7 +154,7 @@ func (r *EnvironmentResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	r.mapToState(&plan, env)
+	r.mapToState(ctx, &plan, env)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -173,28 +172,57 @@ func (r *EnvironmentResource) Delete(ctx context.Context, req resource.DeleteReq
 }
 
 func (r *EnvironmentResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	// The API exposes environments by slug only (`/environments/{slug}`).
+	// We optimistically try a direct GET first (covers the common case where
+	// the user supplies a slug), and fall back to a list scan if that 404s
+	// so users can also import by UUID for round-tripping with dashboard URLs.
 	env, err := api.Get[generated.EnvironmentDto](ctx, r.client, "/api/v1/environments/"+api.PathEscape(req.ID))
 	if err != nil {
-		resp.Diagnostics.AddError("Error importing environment", fmt.Sprintf("No environment found with slug %q: %s", req.ID, err))
-		return
+		if !api.IsNotFound(err) {
+			resp.Diagnostics.AddError("Error importing environment", err.Error())
+			return
+		}
+		envs, listErr := api.List[generated.EnvironmentDto](ctx, r.client, "/api/v1/environments")
+		if listErr != nil {
+			resp.Diagnostics.AddError("Error importing environment", listErr.Error())
+			return
+		}
+		for i := range envs {
+			e := &envs[i]
+			if e.Id.String() == req.ID {
+				env = e
+				break
+			}
+		}
+		if env == nil {
+			resp.Diagnostics.AddError(
+				"Environment not found",
+				fmt.Sprintf("No environment found with slug or ID %q", req.ID),
+			)
+			return
+		}
 	}
 
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), env.Id.String())...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), env.Name)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), env.Slug)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("is_default"), env.IsDefault)...)
+	model := EnvironmentResourceModel{}
+	// Pre-initialize Variables so mapToState writes a typed value even when
+	// the environment has no variables (avoids unknown/null inconsistencies).
+	model.Variables, _ = types.MapValueFrom(ctx, types.StringType, map[string]string{})
+	r.mapToState(ctx, &model, env)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }
 
-func (r *EnvironmentResource) mapToState(model *EnvironmentResourceModel, dto *generated.EnvironmentDto) {
+func (r *EnvironmentResource) mapToState(ctx context.Context, model *EnvironmentResourceModel, dto *generated.EnvironmentDto) {
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
 	model.IsDefault = types.BoolValue(dto.IsDefault)
 	if len(dto.Variables) > 0 {
-		elements := make(map[string]types.String)
+		elements := make(map[string]string, len(dto.Variables))
 		for k, v := range dto.Variables {
-			elements[k] = types.StringValue(v)
+			elements[k] = v
 		}
-		// We set variables from DTO but keep the model's map type
+		model.Variables, _ = types.MapValueFrom(ctx, types.StringType, elements)
+	} else if !model.Variables.IsNull() {
+		model.Variables, _ = types.MapValueFrom(ctx, types.StringType, map[string]string{})
 	}
 }

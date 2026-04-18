@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Universal release script — matches the pattern across all DevHelm surface repos.
-# Usage: ./scripts/release.sh 0.1.0-alpha.1
+# Usage: ./scripts/release.sh 0.1.0
 set -euo pipefail
 
 VERSION="${1:?Usage: $0 <version>}"

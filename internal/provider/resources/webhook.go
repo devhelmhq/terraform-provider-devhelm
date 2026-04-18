@@ -54,8 +54,11 @@ func (r *WebhookResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Description: "Webhook URL that receives event payloads",
 			},
 			"description": schema.StringAttribute{
-				Optional:    true,
-				Description: "Human-readable description of this webhook",
+				Optional: true,
+				Description: "Human-readable description of this webhook. " +
+					"Note: the API currently treats null as 'preserve current' and does NOT support clearing the description once set " +
+					"(unlike status_page descriptions). Removing this attribute from HCL after a value has been set will leave the " +
+					"existing description on the server unchanged. Track API parity here: https://devhelm.io/docs/api/webhook-description-clear.",
 			},
 			"enabled": schema.BoolAttribute{
 				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
@@ -73,7 +76,12 @@ func (r *WebhookResource) Configure(_ context.Context, req resource.ConfigureReq
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Resource Configure Type", "Expected *api.Client")
+		return
+	}
+	r.client = client
 }
 
 func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -95,8 +103,34 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
+	// CreateWebhookEndpointRequest has no `enabled` field — the API forces
+	// new webhooks to enabled=true. If the user explicitly set
+	// `enabled = false` in HCL we must follow up with an immediate Update
+	// to honor their plan. Without this, `terraform apply` would silently
+	// create the webhook in the wrong state and the next plan would show
+	// a perpetual diff.
+	if !plan.Enabled.IsNull() && !plan.Enabled.IsUnknown() && !plan.Enabled.ValueBool() && wh.Enabled {
+		falseVal := false
+		updateBody := generated.UpdateWebhookEndpointRequest{Enabled: &falseVal}
+		updated, updateErr := api.Update[generated.WebhookEndpointDto](
+			ctx, r.client, "/api/v1/webhooks/"+wh.Id.String(), updateBody,
+		)
+		if updateErr != nil {
+			resp.Diagnostics.AddError(
+				"Error disabling webhook after create",
+				fmt.Sprintf("Webhook was created (id=%s) but the follow-up disable request failed: %s. "+
+					"Re-run `terraform apply` to retry, or set `enabled = true` in your config.", wh.Id, updateErr),
+			)
+			return
+		}
+		wh = updated
+	}
+
 	plan.ID = types.StringValue(wh.Id.String())
+	plan.URL = types.StringValue(wh.Url)
+	plan.Description = stringValue(wh.Description)
 	plan.Enabled = types.BoolValue(wh.Enabled)
+	plan.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -120,6 +154,7 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 	state.URL = types.StringValue(wh.Url)
 	state.Description = stringValue(wh.Description)
 	state.Enabled = types.BoolValue(wh.Enabled)
+	state.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -151,7 +186,10 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 
 	plan.ID = state.ID
+	plan.URL = types.StringValue(wh.Url)
+	plan.Description = stringValue(wh.Description)
 	plan.Enabled = types.BoolValue(wh.Enabled)
+	plan.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -176,13 +214,15 @@ func (r *WebhookResource) ImportState(ctx context.Context, req resource.ImportSt
 	}
 
 	for _, wh := range webhooks {
-		if wh.Url == req.ID {
+		if wh.Url == req.ID || wh.Id.String() == req.ID {
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), wh.Id.String())...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("url"), wh.Url)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), wh.Enabled)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("description"), stringValue(wh.Description))...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("subscribed_events"), stringSliceToSet(ctx, wh.SubscribedEvents))...)
 			return
 		}
 	}
 
-	resp.Diagnostics.AddError("Webhook not found", fmt.Sprintf("No webhook found with URL %q", req.ID))
+	resp.Diagnostics.AddError("Webhook not found", fmt.Sprintf("No webhook found with URL or ID %q", req.ID))
 }

@@ -56,7 +56,12 @@ func (d *StatusPageDataSource) Configure(_ context.Context, req datasource.Confi
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*api.Client)
+	client, ok := req.ProviderData.(*api.Client)
+	if !ok {
+		resp.Diagnostics.AddError("Unexpected Data Source Configure Type", "Expected *api.Client")
+		return
+	}
+	d.client = client
 }
 
 func (d *StatusPageDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
@@ -73,24 +78,31 @@ func (d *StatusPageDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	}
 
 	slug := model.Slug.ValueString()
-	for _, p := range pages {
-		if p.Slug == slug {
-			model.ID = types.StringValue(p.Id.String())
-			model.Name = types.StringValue(p.Name)
-			model.Slug = types.StringValue(p.Slug)
-			if p.Description != nil {
-				model.Description = types.StringValue(*p.Description)
-			} else {
-				model.Description = types.StringNull()
-			}
-			model.Visibility = types.StringValue(string(p.Visibility))
-			model.Enabled = types.BoolValue(p.Enabled)
-			model.IncidentMode = types.StringValue(string(p.IncidentMode))
-			model.PageURL = types.StringValue(fmt.Sprintf("https://%s.devhelm.page", p.Slug))
+	for i := range pages {
+		if pages[i].Slug == slug {
+			mapStatusPageToState(&model, &pages[i])
 			resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 			return
 		}
 	}
 
 	resp.Diagnostics.AddError("Status page not found", fmt.Sprintf("No status page found with slug %q", slug))
+}
+
+// mapStatusPageToState mirrors the resource's mapping pattern: shared with
+// unit tests so that nullability and the synthetic page_url construction
+// stay in lockstep with read-back behaviour.
+func mapStatusPageToState(model *StatusPageDataSourceModel, p *generated.StatusPageDto) {
+	model.ID = types.StringValue(p.Id.String())
+	model.Name = types.StringValue(p.Name)
+	model.Slug = types.StringValue(p.Slug)
+	if p.Description != nil {
+		model.Description = types.StringValue(*p.Description)
+	} else {
+		model.Description = types.StringNull()
+	}
+	model.Visibility = types.StringValue(string(p.Visibility))
+	model.Enabled = types.BoolValue(p.Enabled)
+	model.IncidentMode = types.StringValue(string(p.IncidentMode))
+	model.PageURL = types.StringValue(fmt.Sprintf("https://%s.devhelm.page", p.Slug))
 }
