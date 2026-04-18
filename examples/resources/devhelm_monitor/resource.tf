@@ -13,12 +13,14 @@ resource "devhelm_monitor" "api" {
 
   assertions {
     type   = "status_code"
-    config = jsonencode({ expected = 200 })
+    config = jsonencode({ expected = 200, operator = "equals" })
   }
 
   assertions {
-    type   = "response_time"
-    config = jsonencode({ threshold_ms = 500 })
+    type = "response_time"
+    # API field names are camelCase inside `config` (the API contract is JSON,
+    # not Terraform). Use `thresholdMs`, not `threshold_ms`.
+    config = jsonencode({ thresholdMs = 500 })
   }
 
   alert_channel_ids = [devhelm_alert_channel.ops.id]

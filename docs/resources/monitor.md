@@ -28,12 +28,14 @@ resource "devhelm_monitor" "api" {
 
   assertions {
     type   = "status_code"
-    config = jsonencode({ expected = 200 })
+    config = jsonencode({ expected = 200, operator = "equals" })
   }
 
   assertions {
-    type   = "response_time"
-    config = jsonencode({ threshold_ms = 500 })
+    type = "response_time"
+    # API field names are camelCase inside `config` (the API contract is JSON,
+    # not Terraform). Use `thresholdMs`, not `threshold_ms`.
+    config = jsonencode({ thresholdMs = 500 })
   }
 
   alert_channel_ids = [devhelm_alert_channel.ops.id]
@@ -110,7 +112,7 @@ resource "devhelm_monitor" "private_api" {
 
 Required:
 
-- `config` (String) Assertion configuration as JSON; the inner `type` field is omitted (set via the sibling `type` attribute) and the rest of the shape depends on the assertion kind. Example for `status_code`: `jsonencode({expected = 200})`
+- `config` (String) Assertion configuration as JSON; the inner `type` field is omitted (set via the sibling `type` attribute) and the rest of the shape depends on the assertion kind. Field names inside the JSON are camelCase (the API wire format), e.g. `jsonencode({expected = 200, operator = "equals"})` for `status_code` or `jsonencode({thresholdMs = 500})` for `response_time`.
 - `type` (String) Assertion type discriminator in snake_case wire format (e.g. `status_code`, `response_time`, `body_contains`, `header_value`, `dns_resolves`, `ssl_expiry`, `tcp_connects`). Must match an AssertionType enum value as serialized by the API.
 
 Optional:
