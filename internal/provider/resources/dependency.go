@@ -58,11 +58,12 @@ func (r *DependencyResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				Computed: true, Description: "Human-readable service name",
 			},
 			"alert_sensitivity": schema.StringAttribute{
-				Optional:    true,
-				Description: "Alert sensitivity: ALL, INCIDENTS_ONLY, or MAJOR_ONLY",
+				Optional: true, Computed: true,
+				Description: "Alert sensitivity: ALL, INCIDENTS_ONLY, or MAJOR_ONLY (default: ALL, computed by the API)",
 				Validators: []validator.String{
 					stringvalidator.OneOf("ALL", "INCIDENTS_ONLY", "MAJOR_ONLY"),
 				},
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"component_id": schema.StringAttribute{
 				Optional:    true,

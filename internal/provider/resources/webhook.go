@@ -103,6 +103,29 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
+	// CreateWebhookEndpointRequest has no `enabled` field — the API forces
+	// new webhooks to enabled=true. If the user explicitly set
+	// `enabled = false` in HCL we must follow up with an immediate Update
+	// to honor their plan. Without this, `terraform apply` would silently
+	// create the webhook in the wrong state and the next plan would show
+	// a perpetual diff.
+	if !plan.Enabled.IsNull() && !plan.Enabled.IsUnknown() && !plan.Enabled.ValueBool() && wh.Enabled {
+		falseVal := false
+		updateBody := generated.UpdateWebhookEndpointRequest{Enabled: &falseVal}
+		updated, updateErr := api.Update[generated.WebhookEndpointDto](
+			ctx, r.client, "/api/v1/webhooks/"+wh.Id.String(), updateBody,
+		)
+		if updateErr != nil {
+			resp.Diagnostics.AddError(
+				"Error disabling webhook after create",
+				fmt.Sprintf("Webhook was created (id=%s) but the follow-up disable request failed: %s. "+
+					"Re-run `terraform apply` to retry, or set `enabled = true` in your config.", wh.Id, updateErr),
+			)
+			return
+		}
+		wh = updated
+	}
+
 	plan.ID = types.StringValue(wh.Id.String())
 	plan.URL = types.StringValue(wh.Url)
 	plan.Description = stringValue(wh.Description)

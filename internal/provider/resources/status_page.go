@@ -6,15 +6,21 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
+	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 var (
@@ -43,7 +49,28 @@ type StatusPageResourceModel struct {
 	Visibility   types.String `tfsdk:"visibility"`
 	Enabled      types.Bool   `tfsdk:"enabled"`
 	IncidentMode types.String `tfsdk:"incident_mode"`
+	Branding     types.Object `tfsdk:"branding"`
 	PageURL      types.String `tfsdk:"page_url"`
+}
+
+// statusPageBrandingModel mirrors generated.StatusPageBranding for use with
+// types.Object.As(). All sub-fields are independently optional + computed
+// (UseStateForUnknown), so a user can set just one knob in HCL without
+// accidentally clearing the rest.
+type statusPageBrandingModel struct {
+	BrandColor     types.String `tfsdk:"brand_color"`
+	TextColor      types.String `tfsdk:"text_color"`
+	PageBackground types.String `tfsdk:"page_background"`
+	CardBackground types.String `tfsdk:"card_background"`
+	BorderColor    types.String `tfsdk:"border_color"`
+	Theme          types.String `tfsdk:"theme"`
+	HeaderStyle    types.String `tfsdk:"header_style"`
+	LogoURL        types.String `tfsdk:"logo_url"`
+	FaviconURL     types.String `tfsdk:"favicon_url"`
+	ReportURL      types.String `tfsdk:"report_url"`
+	CustomCSS      types.String `tfsdk:"custom_css"`
+	CustomHeadHTML types.String `tfsdk:"custom_head_html"`
+	HidePoweredBy  types.Bool   `tfsdk:"hide_powered_by"`
 }
 
 func NewStatusPageResource() resource.Resource {
@@ -128,7 +155,50 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 			"page_url": schema.StringAttribute{
 				Computed: true, Description: "Public URL of the status page (https://<slug>.devhelm.page)",
 			},
+			"branding": schema.SingleNestedAttribute{
+				Optional: true, Computed: true,
+				Description: "Visual branding for the public status page. " +
+					"The block is **declarative** — every sub-field you list is upserted, " +
+					"every sub-field you omit is cleared on the API. To leave branding " +
+					"completely untouched, omit the entire `branding` attribute (or set " +
+					"it to null — Terraform treats those identically). To reset all " +
+					"branding back to defaults, set the attribute to an empty object: " +
+					"`branding = {}`.",
+				PlanModifiers: []planmodifier.Object{objectplanmodifier.UseStateForUnknown()},
+				Attributes: map[string]schema.Attribute{
+					"brand_color":      brandingHexAttr("Primary brand color as hex (e.g. #4F46E5); drives accent, links, and buttons"),
+					"text_color":       brandingHexAttr("Primary text color as hex (e.g. #09090B)"),
+					"page_background":  brandingHexAttr("Page body background color as hex (e.g. #FAFAFA)"),
+					"card_background":  brandingHexAttr("Card / surface background color as hex (e.g. #FFFFFF)"),
+					"border_color":     brandingHexAttr("Card border color as hex (e.g. #E4E4E7)"),
+					"theme":            schema.StringAttribute{Optional: true, Description: "Color theme: 'light' or 'dark' (default: light)"},
+					"header_style":     schema.StringAttribute{Optional: true, Description: "Header layout style (reserved for future use)"},
+					"logo_url":         schema.StringAttribute{Optional: true, Description: "URL for the logo image displayed in the header"},
+					"favicon_url":      schema.StringAttribute{Optional: true, Description: "URL for the browser tab favicon"},
+					"report_url":       schema.StringAttribute{Optional: true, Description: "URL where visitors can report a problem"},
+					"custom_css":       schema.StringAttribute{Optional: true, Description: "Custom CSS injected via <style> on the public page — grants full style control"},
+					"custom_head_html": schema.StringAttribute{Optional: true, Description: "Custom HTML injected into <head> on the public page — grants full script control (analytics, pixels)"},
+					"hide_powered_by": schema.BoolAttribute{
+						Optional: true, Computed: true,
+						Description:   "Whether to hide the 'Powered by DevHelm' footer badge (default: false)",
+						PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
+					},
+				},
+			},
 		},
+	}
+}
+
+// brandingHexAttr is a small factory for the many hex-color sub-fields on the
+// branding object — they all share the same Optional shape and only their
+// description differs. They are intentionally NOT Computed: each sub-field
+// is declarative, so omitting it from the `branding` block clears it on the
+// API (unless the parent `branding` attribute itself is omitted, in which
+// case parent UseStateForUnknown preserves the entire prior object).
+func brandingHexAttr(description string) schema.StringAttribute {
+	return schema.StringAttribute{
+		Optional:    true,
+		Description: description,
 	}
 }
 
@@ -151,6 +221,12 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
+	branding, diags := brandingForCreate(ctx, plan.Branding)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	body := generated.CreateStatusPageRequest{
 		Name:         plan.Name.ValueString(),
 		Slug:         plan.Slug.ValueString(),
@@ -158,6 +234,7 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		Visibility:   visibilityCreatePtr(plan.Visibility),
 		Enabled:      boolPtrOrNil(plan.Enabled),
 		IncidentMode: incidentModeCreatePtr(plan.IncidentMode),
+		Branding:     branding,
 	}
 
 	page, err := api.Create[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages", body)
@@ -166,7 +243,7 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	r.mapToState(&plan, page)
+	r.mapToState(ctx, &plan, page)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -187,7 +264,7 @@ func (r *StatusPageResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	r.mapToState(&state, page)
+	r.mapToState(ctx, &state, page)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -204,6 +281,12 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
+	branding, diags := brandingForUpdate(ctx, plan.Branding)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	name := plan.Name.ValueString()
 	body := generated.UpdateStatusPageRequest{
 		Name: &name,
@@ -215,6 +298,14 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 		Visibility:   visibilityUpdatePtr(plan.Visibility),
 		Enabled:      boolPtrOrNil(plan.Enabled),
 		IncidentMode: incidentModeUpdatePtr(plan.IncidentMode),
+		// Branding is non-pointer in the Update DTO so it must always be sent.
+		// brandingForUpdate handles three cases:
+		//   - plan.Branding fully populated (UseStateForUnknown filled blanks
+		//     from prior state) → forward as-is, server upserts each field.
+		//   - plan.Branding == null (user explicitly set `branding = null`) →
+		//     send a zero-value StatusPageBranding, server clears all fields.
+		//   - plan.Branding == unknown (rare, defensive) → also zero-value.
+		Branding: &branding,
 	}
 
 	page, err := api.Update[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+state.ID.ValueString(), body)
@@ -223,7 +314,7 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	r.mapToState(&plan, page)
+	r.mapToState(ctx, &plan, page)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -241,21 +332,30 @@ func (r *StatusPageResource) Delete(ctx context.Context, req resource.DeleteRequ
 }
 
 func (r *StatusPageResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	// Try direct ID lookup first; fall back to slug list scan if that 404s,
-	// so users can import either way.
-	page, err := api.Get[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+req.ID)
-	if err != nil {
-		if !api.IsNotFound(err) {
+	// Accept either a UUID or a slug as the import identifier.
+	//
+	// When the identifier parses as a UUID we go straight to the by-id GET.
+	// Otherwise (or on 404 fallback) we list and scan by slug. We deliberately
+	// do not POST a slug into the by-id endpoint, since the API rejects that
+	// at the path-conversion layer with a 400 (not 404), which would otherwise
+	// be surfaced as a confusing error.
+	var page *generated.StatusPageDto
+	if _, parseErr := uuid.Parse(req.ID); parseErr == nil {
+		got, err := api.Get[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+req.ID)
+		if err != nil && !api.IsNotFound(err) {
 			resp.Diagnostics.AddError("Error importing status page", err.Error())
 			return
 		}
+		page = got
+	}
+	if page == nil {
 		pages, listErr := api.List[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages")
 		if listErr != nil {
 			resp.Diagnostics.AddError("Error importing status page", listErr.Error())
 			return
 		}
 		for i := range pages {
-			if pages[i].Slug == req.ID {
+			if pages[i].Slug == req.ID || pages[i].Id.String() == req.ID {
 				page = &pages[i]
 				break
 			}
@@ -270,7 +370,7 @@ func (r *StatusPageResource) ImportState(ctx context.Context, req resource.Impor
 	}
 
 	model := StatusPageResourceModel{}
-	r.mapToState(&model, page)
+	r.mapToState(ctx, &model, page)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), model.ID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), model.Name)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), model.Slug)...)
@@ -278,10 +378,11 @@ func (r *StatusPageResource) ImportState(ctx context.Context, req resource.Impor
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("visibility"), model.Visibility)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), model.Enabled)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("incident_mode"), model.IncidentMode)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("branding"), model.Branding)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("page_url"), model.PageURL)...)
 }
 
-func (r *StatusPageResource) mapToState(model *StatusPageResourceModel, dto *generated.StatusPageDto) {
+func (r *StatusPageResource) mapToState(ctx context.Context, model *StatusPageResourceModel, dto *generated.StatusPageDto) {
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
@@ -289,10 +390,106 @@ func (r *StatusPageResource) mapToState(model *StatusPageResourceModel, dto *gen
 	model.Visibility = types.StringValue(string(dto.Visibility))
 	model.Enabled = types.BoolValue(dto.Enabled)
 	model.IncidentMode = types.StringValue(string(dto.IncidentMode))
+	model.Branding = brandingObjectFromDto(ctx, dto.Branding)
 	// page_url is derived client-side from the slug. The API doesn't return
 	// it because the host is dictated by the deployment (devhelm.page) and
 	// would otherwise drift across environments.
 	model.PageURL = types.StringValue(fmt.Sprintf("https://%s.devhelm.page", dto.Slug))
+}
+
+// ── Branding conversion helpers ────────────────────────────────────────
+
+func brandingObjectAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"brand_color":      types.StringType,
+		"text_color":       types.StringType,
+		"page_background":  types.StringType,
+		"card_background":  types.StringType,
+		"border_color":     types.StringType,
+		"theme":            types.StringType,
+		"header_style":     types.StringType,
+		"logo_url":         types.StringType,
+		"favicon_url":      types.StringType,
+		"report_url":       types.StringType,
+		"custom_css":       types.StringType,
+		"custom_head_html": types.StringType,
+		"hide_powered_by":  types.BoolType,
+	}
+}
+
+// brandingObjectFromDto materializes the API's branding payload into a
+// types.Object that matches the schema. *string nils round-trip to
+// types.StringNull so an HCL omission stays stable across plans.
+func brandingObjectFromDto(ctx context.Context, b generated.StatusPageBranding) types.Object {
+	model := statusPageBrandingModel{
+		BrandColor:     stringValue(b.BrandColor),
+		TextColor:      stringValue(b.TextColor),
+		PageBackground: stringValue(b.PageBackground),
+		CardBackground: stringValue(b.CardBackground),
+		BorderColor:    stringValue(b.BorderColor),
+		Theme:          stringValue(b.Theme),
+		HeaderStyle:    stringValue(b.HeaderStyle),
+		LogoURL:        stringValue(b.LogoUrl),
+		FaviconURL:     stringValue(b.FaviconUrl),
+		ReportURL:      stringValue(b.ReportUrl),
+		CustomCSS:      stringValue(b.CustomCss),
+		CustomHeadHTML: stringValue(b.CustomHeadHtml),
+		HidePoweredBy:  types.BoolValue(b.HidePoweredBy),
+	}
+	obj, _ := types.ObjectValueFrom(ctx, brandingObjectAttrTypes(), model)
+	return obj
+}
+
+// brandingForCreate returns the optional pointer used by CreateStatusPageRequest.
+// A null/unknown plan attribute means "no branding overrides" → nil pointer →
+// the server uses its built-in defaults for every sub-field.
+func brandingForCreate(ctx context.Context, obj types.Object) (*generated.StatusPageBranding, diag.Diagnostics) {
+	if obj.IsNull() || obj.IsUnknown() {
+		return nil, nil
+	}
+	b, diags := brandingFromObject(ctx, obj)
+	if diags.HasError() {
+		return nil, diags
+	}
+	return &b, diags
+}
+
+// brandingForUpdate returns the always-sent branding payload for the Update
+// DTO. A null/unknown plan attribute → zero-value StatusPageBranding, which
+// instructs the server to clear every overrideable field. UseStateForUnknown
+// on the parent attribute means the only path to a null plan value is an
+// explicit `branding = null` in HCL.
+func brandingForUpdate(ctx context.Context, obj types.Object) (generated.StatusPageBranding, diag.Diagnostics) {
+	if obj.IsNull() || obj.IsUnknown() {
+		return generated.StatusPageBranding{}, nil
+	}
+	return brandingFromObject(ctx, obj)
+}
+
+func brandingFromObject(ctx context.Context, obj types.Object) (generated.StatusPageBranding, diag.Diagnostics) {
+	var model statusPageBrandingModel
+	diags := obj.As(ctx, &model, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    false,
+		UnhandledUnknownAsEmpty: true, // tolerate transient unknowns from partial updates
+	})
+	if diags.HasError() {
+		return generated.StatusPageBranding{}, diags
+	}
+	return generated.StatusPageBranding{
+		BrandColor:     stringPtrOrNil(model.BrandColor),
+		TextColor:      stringPtrOrNil(model.TextColor),
+		PageBackground: stringPtrOrNil(model.PageBackground),
+		CardBackground: stringPtrOrNil(model.CardBackground),
+		BorderColor:    stringPtrOrNil(model.BorderColor),
+		Theme:          stringPtrOrNil(model.Theme),
+		HeaderStyle:    stringPtrOrNil(model.HeaderStyle),
+		LogoUrl:        stringPtrOrNil(model.LogoURL),
+		FaviconUrl:     stringPtrOrNil(model.FaviconURL),
+		ReportUrl:      stringPtrOrNil(model.ReportURL),
+		CustomCss:      stringPtrOrNil(model.CustomCSS),
+		CustomHeadHtml: stringPtrOrNil(model.CustomHeadHTML),
+		HidePoweredBy:  !model.HidePoweredBy.IsNull() && !model.HidePoweredBy.IsUnknown() && model.HidePoweredBy.ValueBool(),
+	}, diags
 }
 
 // ── Enum conversion helpers (visibility, incident mode) ─────────────────

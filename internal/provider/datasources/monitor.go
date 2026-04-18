@@ -2,7 +2,6 @@ package datasources
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
@@ -76,17 +75,8 @@ func (d *MonitorDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 
-	// Names are not unique within an organization (two monitors can share
-	// the same display name). Picking the first match would silently produce
-	// non-deterministic lookups, so we collect all matches and surface
-	// ambiguity as a hard error pointing the user at the matching IDs.
-	var matches []generated.MonitorDto
 	want := model.Name.ValueString()
-	for _, m := range monitors {
-		if m.Name == want {
-			matches = append(matches, m)
-		}
-	}
+	matches := matchByName(monitors, want, func(m generated.MonitorDto) string { return m.Name })
 	switch len(matches) {
 	case 0:
 		resp.Diagnostics.AddError("Monitor not found", fmt.Sprintf("No monitor found with name %q", want))
@@ -105,23 +95,29 @@ func (d *MonitorDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 
-	m := matches[0]
+	mapMonitorToState(&model, &matches[0])
+	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+}
+
+// mapMonitorToState populates the data source model from the API DTO.
+// Extracted as a free function so unit tests can pin the field-by-field
+// mapping (including the JSON normalization on Config and the nullability
+// of PingUrl) without a real HTTP server in the loop.
+func mapMonitorToState(model *MonitorDataSourceModel, m *generated.MonitorDto) {
 	model.ID = types.StringValue(m.Id.String())
+	model.Name = types.StringValue(m.Name)
 	model.Type = types.StringValue(string(m.Type))
 	model.FrequencySeconds = types.Int64Value(int64(m.FrequencySeconds))
 	model.Enabled = types.BoolValue(m.Enabled)
-	if m.Config != nil {
-		cfgBytes, err := json.Marshal(m.Config)
-		if err != nil {
-			resp.Diagnostics.AddError("Error marshaling monitor config", err.Error())
-			return
-		}
+	cfgBytes, err := m.Config.MarshalJSON()
+	if err == nil && len(cfgBytes) > 0 && string(cfgBytes) != "null" {
 		model.Config = types.StringValue(normalizeConfigJSON(cfgBytes))
+	} else {
+		model.Config = types.StringNull()
 	}
 	if m.PingUrl != nil {
 		model.PingUrl = types.StringValue(*m.PingUrl)
 	} else {
 		model.PingUrl = types.StringNull()
 	}
-	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

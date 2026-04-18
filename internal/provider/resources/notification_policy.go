@@ -476,16 +476,36 @@ func (r *NotificationPolicyResource) ImportState(ctx context.Context, req resour
 		return
 	}
 
+	// UUID matches are unique. Name matches must be unique within the
+	// org or we refuse the import — silently picking the first match
+	// would produce a stale or arbitrary state for users who happen to
+	// share a policy name across teams or environments.
 	var policyID string
+	var matchedByName []string
 	for _, p := range policies {
-		if p.Name == req.ID || p.Id.String() == req.ID {
+		if p.Id.String() == req.ID {
 			policyID = p.Id.String()
+			matchedByName = nil
 			break
+		}
+		if p.Name == req.ID {
+			matchedByName = append(matchedByName, p.Id.String())
 		}
 	}
 	if policyID == "" {
-		resp.Diagnostics.AddError("Notification policy not found", fmt.Sprintf("No notification policy found with name or ID %q", req.ID))
-		return
+		switch len(matchedByName) {
+		case 0:
+			resp.Diagnostics.AddError("Notification policy not found", fmt.Sprintf("No notification policy found with name or ID %q", req.ID))
+			return
+		case 1:
+			policyID = matchedByName[0]
+		default:
+			resp.Diagnostics.AddError(
+				"Ambiguous notification policy import",
+				fmt.Sprintf("%d notification policies share the name %q (ids: %v). Import by UUID instead.", len(matchedByName), req.ID, matchedByName),
+			)
+			return
+		}
 	}
 
 	policy, err := api.Get[generated.NotificationPolicyDto](ctx, r.client, "/api/v1/notification-policies/"+policyID)

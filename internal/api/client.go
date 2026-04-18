@@ -278,6 +278,29 @@ func Get[T any](ctx context.Context, c *Client, path string) (*T, error) {
 	return &resp.Data, nil
 }
 
+// GetRaw is the escape-hatch variant of Get that also returns the raw
+// response body so callers can extract polymorphic / discriminated-union
+// fields whose generated Go type loses information during a typed unmarshal
+// (e.g. monitor `auth`, where the spec collapsed the oneOf into a base
+// `MonitorAuthConfig{Type string}` and only the `type` discriminator survives).
+// Use the typed result for everything else; only reach into the raw body for
+// the specific field whose round-trip you need to preserve.
+func GetRaw[T any](ctx context.Context, c *Client, path string) (*T, []byte, error) {
+	body, status, err := c.doRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	if err := checkResponse(body, status); err != nil {
+		return nil, nil, err
+	}
+
+	var resp SingleValueResponse[T]
+	if err := json.Unmarshal(body, &resp); err != nil {
+		return nil, nil, fmt.Errorf("decoding response: %w", err)
+	}
+	return &resp.Data, body, nil
+}
+
 func List[T any](ctx context.Context, c *Client, basePath string) ([]T, error) {
 	var all []T
 	page := 0
@@ -328,6 +351,43 @@ func Create[T any](ctx context.Context, c *Client, path string, body any) (*T, e
 	return &resp.Data, nil
 }
 
+// CreateList POSTs to an endpoint that returns a TableResponse[T] (e.g. the
+// tag-management sub-resources on monitors, which return the full collection
+// after the mutation rather than a single entity). Use Create when the
+// endpoint returns SingleValueResponse[T].
+func CreateList[T any](ctx context.Context, c *Client, path string, body any) ([]T, error) {
+	respBody, status, err := c.doRequest(ctx, http.MethodPost, path, body)
+	if err != nil {
+		return nil, err
+	}
+	if err := checkResponse(respBody, status); err != nil {
+		return nil, err
+	}
+
+	var resp TableResponse[T]
+	if err := json.Unmarshal(respBody, &resp); err != nil {
+		return nil, fmt.Errorf("decoding response: %w", err)
+	}
+	return resp.Data, nil
+}
+
+// CreateRaw mirrors Create but also returns the raw response body. See GetRaw.
+func CreateRaw[T any](ctx context.Context, c *Client, path string, body any) (*T, []byte, error) {
+	respBody, status, err := c.doRequest(ctx, http.MethodPost, path, body)
+	if err != nil {
+		return nil, nil, err
+	}
+	if err := checkResponse(respBody, status); err != nil {
+		return nil, nil, err
+	}
+
+	var resp SingleValueResponse[T]
+	if err := json.Unmarshal(respBody, &resp); err != nil {
+		return nil, nil, fmt.Errorf("decoding response: %w", err)
+	}
+	return &resp.Data, respBody, nil
+}
+
 func Update[T any](ctx context.Context, c *Client, path string, body any) (*T, error) {
 	respBody, status, err := c.doRequest(ctx, http.MethodPut, path, body)
 	if err != nil {
@@ -342,6 +402,23 @@ func Update[T any](ctx context.Context, c *Client, path string, body any) (*T, e
 		return nil, fmt.Errorf("decoding response: %w", err)
 	}
 	return &resp.Data, nil
+}
+
+// UpdateRaw mirrors Update but also returns the raw response body. See GetRaw.
+func UpdateRaw[T any](ctx context.Context, c *Client, path string, body any) (*T, []byte, error) {
+	respBody, status, err := c.doRequest(ctx, http.MethodPut, path, body)
+	if err != nil {
+		return nil, nil, err
+	}
+	if err := checkResponse(respBody, status); err != nil {
+		return nil, nil, err
+	}
+
+	var resp SingleValueResponse[T]
+	if err := json.Unmarshal(respBody, &resp); err != nil {
+		return nil, nil, fmt.Errorf("decoding response: %w", err)
+	}
+	return &resp.Data, respBody, nil
 }
 
 func Patch[T any](ctx context.Context, c *Client, path string, body any) (*T, error) {

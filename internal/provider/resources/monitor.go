@@ -15,10 +15,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 var (
@@ -45,7 +49,7 @@ type MonitorResourceModel struct {
 	Config         types.String `tfsdk:"config"`
 	Auth           types.String `tfsdk:"auth"`
 	Assertions     types.List   `tfsdk:"assertions"`
-	IncidentPolicy types.List   `tfsdk:"incident_policy"`
+	IncidentPolicy types.Object `tfsdk:"incident_policy"`
 }
 
 func NewMonitorResource() resource.Resource {
@@ -76,22 +80,36 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"frequency_seconds": schema.Int64Attribute{
-				Optional: true, Description: "Check frequency in seconds (30\u201386400)",
+				Optional: true, Computed: true,
+				Description: "Check frequency in seconds (30\u201386400). " +
+					"Server applies its default (60s) when omitted on create. " +
+					"Omit on update to preserve the current value; the API has no way to clear this field.",
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
 			},
 			"enabled": schema.BoolAttribute{
 				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
 				Description: "Whether the monitor is active (default: true)",
 			},
 			"regions": schema.ListAttribute{
-				Optional: true, ElementType: types.StringType,
-				Description: "Probe regions (e.g. us-east, eu-west)",
+				Optional: true, Computed: true, ElementType: types.StringType,
+				Description: "Probe regions (e.g. us-east, eu-west). " +
+					"Omit to preserve the server's current regions; explicitly set to `[]` to clear.",
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"environment_id": schema.StringAttribute{
 				Optional: true, Description: "Environment ID for variable substitution",
 			},
 			"alert_channel_ids": schema.ListAttribute{
-				Optional: true, ElementType: types.StringType,
-				Description: "Alert channel IDs to notify on incidents",
+				Optional: true, Computed: true, ElementType: types.StringType,
+				Description: "Alert channel IDs to notify on incidents. " +
+					"Omit to preserve the current list; explicitly set to `[]` to clear all channels.",
+				PlanModifiers: []planmodifier.List{
+					UseStateForUnknownAlwaysList(),
+				},
 			},
 			"tag_ids": schema.ListAttribute{
 				Optional: true, ElementType: types.StringType,
@@ -99,6 +117,7 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"ping_url": schema.StringAttribute{
 				Computed: true, Description: "Heartbeat ping URL (only set for HEARTBEAT monitors)",
+				PlanModifiers: []planmodifier.String{UseStateForUnknownAlwaysString()},
 			},
 			"config": schema.StringAttribute{
 				Required:    true,
@@ -108,6 +127,84 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Optional:    true,
 				Sensitive:   true,
 				Description: "Authentication configuration as JSON. Discriminator field `type` selects the auth scheme: `bearer`, `basic`, `header`, or `api_key`. Example: `jsonencode({type = \"bearer\", token = var.api_token})`",
+			},
+			"incident_policy": schema.SingleNestedAttribute{
+				Optional: true, Computed: true,
+				Description: "Incident policy controlling when failures escalate to incidents. " +
+					"The API auto-creates a default policy on monitor creation, so omitting this attribute " +
+					"adopts the server defaults; supplying any field overrides the policy in full.",
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
+				},
+				Attributes: map[string]schema.Attribute{
+					"confirmation_type": schema.StringAttribute{
+						Optional: true, Computed: true,
+						Description:   "Confirmation strategy type (e.g. multi_region)",
+						PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+					},
+					"min_regions_failing": schema.Int64Attribute{
+						Optional: true, Computed: true,
+						Description:   "Minimum regions that must fail to confirm an incident",
+						PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
+					},
+					"max_wait_seconds": schema.Int64Attribute{
+						Optional: true, Computed: true,
+						Description:   "Maximum seconds to wait for multi-region confirmation",
+						PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
+					},
+					"consecutive_successes": schema.Int64Attribute{
+						Optional: true, Computed: true,
+						Description:   "Consecutive successes required for recovery",
+						PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
+					},
+					"min_regions_passing": schema.Int64Attribute{
+						Optional: true, Computed: true,
+						Description:   "Minimum regions passing for recovery",
+						PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
+					},
+					"cooldown_minutes": schema.Int64Attribute{
+						Optional: true, Computed: true,
+						Description:   "Minutes to wait before auto-resolving",
+						PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
+					},
+					"trigger_rules": schema.ListNestedAttribute{
+						Optional: true, Computed: true,
+						Description:   "Rules that determine when failures escalate to incidents.",
+						PlanModifiers: []planmodifier.List{listplanmodifier.UseStateForUnknown()},
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"type": schema.StringAttribute{
+									Required:    true,
+									Description: "Rule type: consecutive_failures, failures_in_window, or response_time",
+								},
+								"severity": schema.StringAttribute{
+									Required:    true,
+									Description: "Incident severity: down or degraded",
+								},
+								"scope": schema.StringAttribute{
+									Optional:    true,
+									Description: "Rule scope: per_region or any_region",
+								},
+								"count": schema.Int64Attribute{
+									Optional:    true,
+									Description: "Failure count threshold",
+								},
+								"window_minutes": schema.Int64Attribute{
+									Optional:    true,
+									Description: "Time window in minutes (for failures_in_window)",
+								},
+								"threshold_ms": schema.Int64Attribute{
+									Optional:    true,
+									Description: "Response time threshold in ms (for response_time)",
+								},
+								"aggregation_type": schema.StringAttribute{
+									Optional:    true,
+									Description: "Aggregation type: all_exceed, average, p95, max",
+								},
+							},
+						},
+					},
+				},
 			},
 		},
 		Blocks: map[string]schema.Block{
@@ -126,74 +223,6 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						"severity": schema.StringAttribute{
 							Optional:    true,
 							Description: "Assertion severity: fail or warn (default: fail)",
-						},
-					},
-				},
-			},
-			"incident_policy": schema.ListNestedBlock{
-				Description: "Incident policy with trigger rules, confirmation, and recovery settings. At most one block.",
-				NestedObject: schema.NestedBlockObject{
-					Attributes: map[string]schema.Attribute{
-						"confirmation_type": schema.StringAttribute{
-							Required:    true,
-							Description: "Confirmation strategy type (e.g. multi_region)",
-						},
-						"min_regions_failing": schema.Int64Attribute{
-							Optional:    true,
-							Description: "Minimum regions that must fail to confirm incident",
-						},
-						"max_wait_seconds": schema.Int64Attribute{
-							Optional:    true,
-							Description: "Maximum seconds to wait for multi-region confirmation",
-						},
-						"consecutive_successes": schema.Int64Attribute{
-							Optional:    true,
-							Description: "Consecutive successes required for recovery",
-						},
-						"min_regions_passing": schema.Int64Attribute{
-							Optional:    true,
-							Description: "Minimum regions passing for recovery",
-						},
-						"cooldown_minutes": schema.Int64Attribute{
-							Optional:    true,
-							Description: "Minutes to wait before auto-resolving",
-						},
-					},
-					Blocks: map[string]schema.Block{
-						"trigger_rule": schema.ListNestedBlock{
-							Description: "Rules that trigger incidents.",
-							NestedObject: schema.NestedBlockObject{
-								Attributes: map[string]schema.Attribute{
-									"type": schema.StringAttribute{
-										Required:    true,
-										Description: "Rule type: consecutive_failures, failures_in_window, or response_time",
-									},
-									"severity": schema.StringAttribute{
-										Required:    true,
-										Description: "Incident severity: down or degraded",
-									},
-									"scope": schema.StringAttribute{
-										Optional:    true,
-										Description: "Rule scope: per_region or any_region",
-									},
-									"count": schema.Int64Attribute{
-										Optional:    true,
-										Description: "Failure count threshold",
-									},
-									"window_minutes": schema.Int64Attribute{
-										Optional:    true,
-										Description: "Time window in minutes (for failures_in_window)",
-									},
-									"threshold_ms": schema.Int64Attribute{
-										Optional:    true,
-										Description: "Response time threshold in ms (for response_time)",
-									},
-									"aggregation_type": schema.StringAttribute{
-										Optional:    true,
-										Description: "Aggregation type: all_exceed, average, p95, max",
-									},
-								},
-							},
 						},
 					},
 				},
@@ -233,13 +262,13 @@ type triggerRuleModel struct {
 }
 
 type incidentPolicyModel struct {
-	ConfirmationType    types.String `tfsdk:"confirmation_type"`
-	MinRegionsFailing   types.Int64  `tfsdk:"min_regions_failing"`
-	MaxWaitSeconds      types.Int64  `tfsdk:"max_wait_seconds"`
-	ConsecutiveSuccesses types.Int64 `tfsdk:"consecutive_successes"`
-	MinRegionsPassing   types.Int64  `tfsdk:"min_regions_passing"`
-	CooldownMinutes     types.Int64  `tfsdk:"cooldown_minutes"`
-	TriggerRules        types.List   `tfsdk:"trigger_rule"`
+	ConfirmationType     types.String `tfsdk:"confirmation_type"`
+	MinRegionsFailing    types.Int64  `tfsdk:"min_regions_failing"`
+	MaxWaitSeconds       types.Int64  `tfsdk:"max_wait_seconds"`
+	ConsecutiveSuccesses types.Int64  `tfsdk:"consecutive_successes"`
+	MinRegionsPassing    types.Int64  `tfsdk:"min_regions_passing"`
+	CooldownMinutes      types.Int64  `tfsdk:"cooldown_minutes"`
+	TriggerRules         types.List   `tfsdk:"trigger_rules"`
 }
 
 func buildAssertions(ctx context.Context, list types.List) ([]generated.CreateAssertionRequest, error) {
@@ -284,25 +313,29 @@ func buildAssertions(ctx context.Context, list types.List) ([]generated.CreateAs
 	return result, nil
 }
 
-func buildIncidentPolicy(ctx context.Context, list types.List) (*generated.UpdateIncidentPolicyRequest, error) {
-	if list.IsNull() || list.IsUnknown() || len(list.Elements()) == 0 {
+func buildIncidentPolicy(ctx context.Context, obj types.Object) (*generated.UpdateIncidentPolicyRequest, error) {
+	// Null/unknown means "do not override the API's default policy". Empty
+	// attributes inside a present object are treated the same as omitting
+	// only that attribute (server-side defaults are kept).
+	if obj.IsNull() || obj.IsUnknown() {
 		return nil, nil
 	}
 
-	var models []incidentPolicyModel
-	diags := list.ElementsAs(ctx, &models, false)
+	var m incidentPolicyModel
+	diags := obj.As(ctx, &m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	if diags.HasError() {
 		return nil, fmt.Errorf("parsing incident policy: %s", diags.Errors())
 	}
-	if len(models) == 0 {
-		return nil, nil
-	}
-	m := models[0]
 
 	var triggerRules []generated.TriggerRule
 	var ruleModels []triggerRuleModel
-	if ruleDiags := m.TriggerRules.ElementsAs(ctx, &ruleModels, false); ruleDiags.HasError() {
-		return nil, fmt.Errorf("parsing trigger rules: %s", ruleDiags.Errors())
+	if !m.TriggerRules.IsNull() && !m.TriggerRules.IsUnknown() {
+		if ruleDiags := m.TriggerRules.ElementsAs(ctx, &ruleModels, false); ruleDiags.HasError() {
+			return nil, fmt.Errorf("parsing trigger rules: %s", ruleDiags.Errors())
+		}
 	}
 	for _, rm := range ruleModels {
 		triggerRules = append(triggerRules, generated.TriggerRule{
@@ -370,13 +403,13 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		IncidentPolicy:   incidentPolicy,
 	}
 
-	if !plan.Auth.IsNull() && !plan.Auth.IsUnknown() {
-		var authUnion generated.CreateMonitorRequest_Auth
-		if err := authUnion.UnmarshalJSON(json.RawMessage(plan.Auth.ValueString())); err != nil {
-			return nil, fmt.Errorf("monitor auth: %w", err)
-		}
-		req.Auth = &authUnion
-	}
+	// NOTE: req.Auth is intentionally left nil here. The generated
+	// `MonitorAuthConfig` collapsed the polymorphic oneOf into a flat
+	// {type: string} struct (the OpenAPI generator does not synthesize a
+	// proper union type for a discriminator-only base schema), so writing
+	// the typed field would drop every credential beyond `type`. The auth
+	// blob is injected as raw JSON in (*MonitorResource).Create — see
+	// marshalWithRawAuth.
 
 	tagUUIDs, err := uuidSliceFromStringListChecked(plan.TagIds, "tag_ids")
 	if err != nil {
@@ -405,8 +438,11 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 	name := plan.Name.ValueString()
 	managedBy := generated.UpdateMonitorRequestManagedBy("TERRAFORM")
 
-	var configUnion generated.UpdateMonitorRequest_Config
-	if err := configUnion.UnmarshalJSON(json.RawMessage(plan.Config.ValueString())); err != nil {
+	// MonitorConfig is a `map[string]interface{}` alias post-spec-sync
+	// (the spec dropped the polymorphic oneOf for the update path), so we
+	// parse the user-supplied JSON into a plain map.
+	var configMap generated.MonitorConfig
+	if err := json.Unmarshal([]byte(plan.Config.ValueString()), &configMap); err != nil {
 		return nil, fmt.Errorf("monitor config: %w", err)
 	}
 
@@ -421,7 +457,7 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 
 	req := &generated.UpdateMonitorRequest{
 		Name:             &name,
-		Config:           &configUnion,
+		Config:           &configMap,
 		ManagedBy:        &managedBy,
 		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
 		Enabled:          boolPtrOrNil(plan.Enabled),
@@ -437,16 +473,9 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 		req.ClearEnvironmentId = &clearEnv
 	}
 
-	if !plan.Auth.IsNull() && !plan.Auth.IsUnknown() {
-		var authUnion generated.UpdateMonitorRequest_Auth
-		if err := authUnion.UnmarshalJSON(json.RawMessage(plan.Auth.ValueString())); err != nil {
-			return nil, fmt.Errorf("monitor auth: %w", err)
-		}
-		req.Auth = &authUnion
-	} else {
-		clearAuth := true
-		req.ClearAuth = &clearAuth
-	}
+	// req.Auth left nil; raw auth JSON is merged into the request body in
+	// (*MonitorResource).Update via marshalWithRawAuth. ClearAuth is also
+	// set there so we never send `auth: null` and `clearAuth: true` together.
 
 	// NOTE: Tag add/remove reconciliation is handled outside the PUT body
 	// in (*MonitorResource).reconcileTags. PUT /monitors/{id} only supports
@@ -485,20 +514,24 @@ func triggerRuleObjectType() types.ObjectType {
 func incidentPolicyObjectType() types.ObjectType {
 	return types.ObjectType{
 		AttrTypes: map[string]attr.Type{
-			"confirmation_type":    types.StringType,
-			"min_regions_failing":  types.Int64Type,
-			"max_wait_seconds":     types.Int64Type,
+			"confirmation_type":     types.StringType,
+			"min_regions_failing":   types.Int64Type,
+			"max_wait_seconds":      types.Int64Type,
 			"consecutive_successes": types.Int64Type,
-			"min_regions_passing":  types.Int64Type,
-			"cooldown_minutes":     types.Int64Type,
-			"trigger_rule":         types.ListType{ElemType: triggerRuleObjectType()},
+			"min_regions_passing":   types.Int64Type,
+			"cooldown_minutes":      types.Int64Type,
+			"trigger_rules":         types.ListType{ElemType: triggerRuleObjectType()},
 		},
 	}
 }
 
 // ── API → TF mapping ───────────────────────────────────────────────────
 
-func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResourceModel, dto *generated.MonitorDto) {
+// mapToState mirrors a freshly-fetched MonitorDto onto the Terraform model.
+// rawAuth is the raw JSON blob for the `auth` field as returned by the API
+// (extracted from the response body via extractRawField) — see the comment in
+// buildCreateRequest for why we cannot rely on the typed dto.Auth field.
+func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResourceModel, dto *generated.MonitorDto, rawAuth string) {
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Type = types.StringValue(string(dto.Type))
@@ -506,25 +539,54 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 	model.Enabled = types.BoolValue(dto.Enabled)
 	model.PingUrl = stringValue(dto.PingUrl)
 
-	if dto.Config != nil {
-		if configBytes, err := dto.Config.MarshalJSON(); err == nil {
-			model.Config = types.StringValue(normalizeJSON(configBytes))
+	if configBytes, err := dto.Config.MarshalJSON(); err == nil && unionHasData(configBytes) {
+		// The API strips the `type` discriminator from the config object
+		// in its response (it's already represented at the top level via
+		// dto.Type). Users frequently include it in their HCL config,
+		// though — both because it's a natural way to reason about the
+		// shape of the union and because some config fields require the
+		// discriminator to disambiguate (e.g. ICMP packetCount). Echo
+		// the user's `type` choice back into state if they originally
+		// supplied one, so the round-trip is identity-preserving.
+		normalized := normalizeJSON(configBytes)
+		if priorHasConfigType(model.Config) {
+			normalized = injectConfigType(normalized, string(dto.Type))
 		}
+		model.Config = types.StringValue(normalized)
 	}
 
-	if dto.Environment.Id.String() != "00000000-0000-0000-0000-000000000000" {
+	if dto.Environment != nil && dto.Environment.Id.String() != "00000000-0000-0000-0000-000000000000" {
 		model.EnvironmentID = types.StringValue(dto.Environment.Id.String())
 	} else {
 		model.EnvironmentID = types.StringNull()
 	}
 
-	if dto.Auth != nil {
-		if authBytes, err := dto.Auth.MarshalJSON(); err == nil {
-			// Normalize the same way `config` is normalized so that the API echoing
-			// optional fields back as `null` does not produce a perpetual diff
-			// against a user-supplied auth blob that omits those keys.
-			model.Auth = types.StringValue(normalizeJSON(authBytes))
+	// Auth: the API stores credential fields server-side (in a vault) and
+	// only echoes back the public discriminator/handle (e.g. `{type, vaultSecretId}`),
+	// stripping the actual `token`/`password`/etc. that the user supplied.
+	// If we overwrote model.Auth with the API echo we'd lose those fields
+	// from state, producing both a plan diff and a "Provider produced
+	// inconsistent result after apply: .auth: inconsistent values for
+	// sensitive attribute" error from Terraform on the very first Create.
+	//
+	// Strategy: when the user already has an auth value in plan/state we
+	// preserve it verbatim. We only adopt the API echo when our local
+	// value is null (e.g. import flow), and we clear local state only when
+	// the API explicitly returned an empty/missing auth.
+	switch {
+	case rawAuth == "":
+		// API returned no auth — only clear if state currently has one and
+		// the resource genuinely has no auth attached server-side.
+		if !model.Auth.IsNull() && !model.Auth.IsUnknown() {
+			model.Auth = types.StringNull()
 		}
+	case model.Auth.IsNull() || model.Auth.IsUnknown():
+		// Initial state has no auth (Read after import, or refresh of a
+		// resource we don't yet have credential bytes for) — adopt the API
+		// echo, even though it only contains the public handle.
+		model.Auth = types.StringValue(normalizeJSON(json.RawMessage(rawAuth)))
+		// Otherwise: keep the user-supplied value untouched. The token/secret
+		// in plan is the source of truth; the API echo is a redacted handle.
 	}
 
 	// Regions
@@ -539,23 +601,29 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 	}
 
 	// Tag IDs
+	// The API treats tags as an unordered set and may return them in a
+	// different order than the user supplied (e.g. by primary key). If the
+	// returned *set* matches the plan's set we preserve the plan's order
+	// to avoid spurious diffs and "Provider produced inconsistent result
+	// after apply" errors. Otherwise (genuine drift), we adopt the API's
+	// order as the new source of truth.
 	if dto.Tags != nil && len(*dto.Tags) > 0 {
-		tagElems := make([]types.String, len(*dto.Tags))
+		apiIDs := make([]string, len(*dto.Tags))
 		for i, t := range *dto.Tags {
-			tagElems[i] = types.StringValue(t.Id.String())
+			apiIDs[i] = t.Id.String()
 		}
-		model.TagIds, _ = types.ListValueFrom(ctx, types.StringType, tagElems)
+		model.TagIds = preserveListOrder(ctx, model.TagIds, apiIDs)
 	} else if !model.TagIds.IsNull() {
 		model.TagIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
 	}
 
-	// Alert Channel IDs
+	// Alert Channel IDs — same set semantics as Tag IDs above.
 	if dto.AlertChannelIds != nil && len(*dto.AlertChannelIds) > 0 {
-		chElems := make([]types.String, len(*dto.AlertChannelIds))
+		apiIDs := make([]string, len(*dto.AlertChannelIds))
 		for i, id := range *dto.AlertChannelIds {
-			chElems[i] = types.StringValue(id.String())
+			apiIDs[i] = id.String()
 		}
-		model.AlertChannelIds, _ = types.ListValueFrom(ctx, types.StringType, chElems)
+		model.AlertChannelIds = preserveListOrder(ctx, model.AlertChannelIds, apiIDs)
 	} else if !model.AlertChannelIds.IsNull() {
 		model.AlertChannelIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
 	}
@@ -595,18 +663,16 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 
 			// Compute normalized config first so we can use it as a lookup key.
 			cfgStr := ""
-			if a.Config != nil {
-				if cfgBytes, err := a.Config.MarshalJSON(); err == nil {
-					var raw map[string]json.RawMessage
-					if err := json.Unmarshal(cfgBytes, &raw); err == nil {
-						delete(raw, "type")
-						if stripped, err := json.Marshal(raw); err == nil {
-							// Strip null-valued keys so the API echoing optional
-							// fields back as `null` does not show as a diff
-							// against a user-supplied config that omits them.
-							cfgStr = normalizeJSON(stripped)
-							am.Config = types.StringValue(cfgStr)
-						}
+			if cfgBytes, err := a.Config.MarshalJSON(); err == nil && unionHasData(cfgBytes) {
+				var raw map[string]json.RawMessage
+				if err := json.Unmarshal(cfgBytes, &raw); err == nil {
+					delete(raw, "type")
+					if stripped, err := json.Marshal(raw); err == nil {
+						// Strip null-valued keys so the API echoing optional
+						// fields back as `null` does not show as a diff
+						// against a user-supplied config that omits them.
+						cfgStr = normalizeJSON(stripped)
+						am.Config = types.StringValue(cfgStr)
 					}
 				}
 			}
@@ -645,18 +711,12 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 		}, assertionModels)
 	}
 
-	// Incident Policy — populate when EITHER the prior state already has a
-	// block (so we keep the regular plan/state in sync without producing a
-	// 0↔1 block-count diff) OR the API actually returned a real policy and
-	// the prior state has none, which happens during `terraform import` of
-	// a monitor that has a policy attached. The Id-zero guard is the only
-	// reliable wire-level signal: IncidentPolicyDto is a non-pointer struct
-	// in the OpenAPI types, so a missing policy still arrives as a zero-
-	// initialized struct — checking for a non-zero UUID separates "real
-	// policy" from "default zero value".
-	hasPriorPolicy := !model.IncidentPolicy.IsNull() && len(model.IncidentPolicy.Elements()) > 0
-	apiHasPolicy := dto.IncidentPolicy.Id.String() != "00000000-0000-0000-0000-000000000000"
-	if hasPriorPolicy || apiHasPolicy {
+	// Incident Policy — schema is a SingleNestedAttribute (Optional+Computed
+	// with UseStateForUnknown), so we always populate it from the DTO when
+	// the API has one. The plan modifier ensures Terraform sees the prior
+	// state when the user omits the attribute, eliminating the 0↔1 block
+	// count drift that the previous ListNestedBlock design produced.
+	if dto.IncidentPolicy != nil && dto.IncidentPolicy.Id.String() != "00000000-0000-0000-0000-000000000000" {
 		policyModel := incidentPolicyModel{
 			ConfirmationType:     types.StringValue(string(dto.IncidentPolicy.Confirmation.Type)),
 			MinRegionsFailing:    int32Value(dto.IncidentPolicy.Confirmation.MinRegionsFailing),
@@ -678,15 +738,14 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 					AggregationType: typedStringPtrValue(tr.AggregationType),
 				})
 			}
-			policyModel.TriggerRules, _ = types.ListValueFrom(ctx, types.ObjectType{
-				AttrTypes: triggerRuleObjectType().AttrTypes,
-			}, ruleModels)
+			policyModel.TriggerRules, _ = types.ListValueFrom(ctx, triggerRuleObjectType(), ruleModels)
 		} else {
-			policyModel.TriggerRules = types.ListNull(types.ObjectType{AttrTypes: triggerRuleObjectType().AttrTypes})
+			policyModel.TriggerRules = types.ListNull(triggerRuleObjectType())
 		}
-		model.IncidentPolicy, _ = types.ListValueFrom(ctx, types.ObjectType{
-			AttrTypes: incidentPolicyObjectType().AttrTypes,
-		}, []incidentPolicyModel{policyModel})
+		obj, _ := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+		model.IncidentPolicy = obj
+	} else {
+		model.IncidentPolicy = types.ObjectNull(incidentPolicyObjectType().AttrTypes)
 	}
 }
 
@@ -705,13 +764,19 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	monitor, err := api.Create[generated.MonitorDto](ctx, r.client, "/api/v1/monitors", body)
+	bodyJSON, err := marshalWithRawAuth(body, plan.Auth)
+	if err != nil {
+		resp.Diagnostics.AddError("Error encoding monitor request body", err.Error())
+		return
+	}
+
+	monitor, rawResp, err := api.CreateRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors", bodyJSON)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating monitor", err.Error())
 		return
 	}
 
-	r.mapToState(ctx, &plan, monitor)
+	r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -722,7 +787,7 @@ func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	monitor, err := api.Get[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
+	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -732,7 +797,7 @@ func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	r.mapToState(ctx, &state, monitor)
+	r.mapToState(ctx, &state, monitor, extractDataField(rawResp, "auth"))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -755,6 +820,21 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
+	// Auth handling: when the user removes auth in HCL we set clearAuth: true
+	// on the typed body; when the user supplies auth we inject the raw JSON
+	// blob (the typed MonitorAuthConfig field would discard everything beyond
+	// `type`). We never send both, which would be ambiguous.
+	if plan.Auth.IsNull() || plan.Auth.IsUnknown() {
+		clearAuth := true
+		body.ClearAuth = &clearAuth
+	}
+
+	bodyJSON, err := marshalWithRawAuth(body, plan.Auth)
+	if err != nil {
+		resp.Diagnostics.AddError("Error encoding monitor request body", err.Error())
+		return
+	}
+
 	// IMPORTANT: use `state.ID` (not `plan.ID`) for the URL — `plan.ID` is
 	// `Unknown` during Update because the schema marks `id` as Computed; the
 	// only authoritative source for the existing monitor's identifier is the
@@ -762,13 +842,17 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// `plan.ID` with the value returned by the API, which keeps state stable
 	// even if the backend ever decides to issue a new ID (currently it does
 	// not, but the contract makes the read path resilient either way).
-	monitor, err := api.Update[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString(), body)
+	monitor, _, err := api.UpdateRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString(), bodyJSON)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating monitor", err.Error())
 		return
 	}
 
-	if err := r.reconcileTags(ctx, state.ID.ValueString(), plan.TagIds, monitor); err != nil {
+	// The PUT /monitors/{id} response does not echo back the tag set, so we
+	// cannot trust monitor.Tags here as the "current" set when computing the
+	// add/remove delta. The last-persisted tag list in `state.TagIds` is the
+	// authoritative "before" view from Terraform's perspective.
+	if err := r.reconcileTags(ctx, state.ID.ValueString(), plan.TagIds, state.TagIds); err != nil {
 		resp.Diagnostics.AddError("Error reconciling monitor tags", err.Error())
 		return
 	}
@@ -778,24 +862,31 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// the previous PUT. We must re-GET to capture the post-reconciliation
 	// tag set before calling mapToState, otherwise the persisted state would
 	// describe the monitor as it existed *before* the tag delta was applied.
-	monitor, err = api.Get[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
+	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError("Error re-reading monitor after tag sync", err.Error())
 		return
 	}
 
-	r.mapToState(ctx, &plan, monitor)
+	r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
 // reconcileTags brings the monitor's tag set in line with the plan:
-//   - plan has tag IDs not on the monitor → POST to add
-//   - monitor has tag IDs absent from plan → DELETE to remove
+//   - plan has tag IDs not in the prior state → POST to add
+//   - prior state has tag IDs absent from the plan → DELETE to remove
 //
-// Called after the main PUT so we operate on the latest server state. When
-// tag_ids is null in the plan we do not touch tags (preserves existing).
-// When tag_ids is an empty list we remove everything.
-func (r *MonitorResource) reconcileTags(ctx context.Context, monitorID string, planTags types.List, current *generated.MonitorDto) error {
+// `currentTags` is the prior Terraform state value for `tag_ids`, used as the
+// authoritative "before" view of the monitor's tag set. We deliberately do
+// NOT use the API's PUT /monitors/{id} response: that endpoint omits the tag
+// list from its DTO entirely, so a freshly-PUT monitor surfaces an empty
+// `Tags` field even when the underlying record still has tags attached. If we
+// computed the delta against that empty set we'd never DELETE the tags the
+// user is trying to clear.
+//
+// When `planTags` is null/unknown we do not touch tags (preserves existing).
+// When `planTags` is an empty list we remove everything currently attached.
+func (r *MonitorResource) reconcileTags(ctx context.Context, monitorID string, planTags types.List, currentTags types.List) error {
 	if planTags.IsNull() || planTags.IsUnknown() {
 		return nil
 	}
@@ -808,21 +899,22 @@ func (r *MonitorResource) reconcileTags(ctx context.Context, monitorID string, p
 	}
 
 	existing := make(map[string]bool)
-	if current != nil && current.Tags != nil {
-		for _, t := range *current.Tags {
-			existing[t.Id.String()] = true
+	if !currentTags.IsNull() && !currentTags.IsUnknown() {
+		for _, el := range currentTags.Elements() {
+			if s, ok := el.(types.String); ok && !s.IsNull() && !s.IsUnknown() {
+				existing[s.ValueString()] = true
+			}
 		}
 	}
 
-	var toAddPtrs []*openapi_types.UUID
+	var toAdd []openapi_types.UUID
 	for id := range desired {
 		if !existing[id] {
 			u, err := uuid.Parse(id)
 			if err != nil {
 				return fmt.Errorf("invalid tag id %q: %w", id, err)
 			}
-			uu := u
-			toAddPtrs = append(toAddPtrs, &uu)
+			toAdd = append(toAdd, openapi_types.UUID(u))
 		}
 	}
 
@@ -837,9 +929,9 @@ func (r *MonitorResource) reconcileTags(ctx context.Context, monitorID string, p
 		}
 	}
 
-	if len(toAddPtrs) > 0 {
-		addBody := generated.AddMonitorTagsRequest{TagIds: &toAddPtrs}
-		if _, err := api.Create[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+monitorID+"/tags", addBody); err != nil {
+	if len(toAdd) > 0 {
+		addBody := generated.AddMonitorTagsRequest{TagIds: &toAdd}
+		if _, err := api.CreateList[generated.TagDto](ctx, r.client, "/api/v1/monitors/"+monitorID+"/tags", addBody); err != nil {
 			return fmt.Errorf("adding tags: %w", err)
 		}
 	}
@@ -907,23 +999,28 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 		}
 	}
 
-	monitor, err := api.Get[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+monitorID)
+	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+monitorID)
 	if err != nil {
 		resp.Diagnostics.AddError("Error fetching monitor for import", err.Error())
 		return
 	}
 
 	var model MonitorResourceModel
-	// Pre-initialize lists so mapToState populates them during import
-	model.IncidentPolicy, _ = types.ListValueFrom(ctx, types.ObjectType{
-		AttrTypes: incidentPolicyObjectType().AttrTypes,
-	}, []incidentPolicyModel{})
-	model.Assertions, _ = types.ListValueFrom(ctx, types.ObjectType{
+	// All collection-valued attributes start as typed-null. mapToState
+	// will populate them from the API response when present. Pre-seeding
+	// to an empty list would force the post-import state to look like
+	// the user wrote `tag_ids = []` even when the resource has none —
+	// causing a guaranteed `[] -> null` diff against any HCL that omits
+	// the attribute (the common case for greenfield imports).
+	//
+	// IncidentPolicy is a single nested attribute and mapToState writes
+	// either a populated object or null directly, so no pre-init needed.
+	model.Assertions = types.ListNull(types.ObjectType{
 		AttrTypes: assertionObjectType().AttrTypes,
-	}, []assertionModel{})
-	model.Regions, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
-	model.TagIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
-	model.AlertChannelIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
-	r.mapToState(ctx, &model, monitor)
+	})
+	model.Regions = types.ListNull(types.StringType)
+	model.TagIds = types.ListNull(types.StringType)
+	model.AlertChannelIds = types.ListNull(types.StringType)
+	r.mapToState(ctx, &model, monitor, extractDataField(rawResp, "auth"))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

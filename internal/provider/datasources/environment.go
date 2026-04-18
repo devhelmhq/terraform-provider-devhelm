@@ -68,8 +68,13 @@ func (d *EnvironmentDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
+	mapEnvironmentToState(&model, env)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+}
+
+func mapEnvironmentToState(model *EnvironmentDataSourceModel, env *generated.EnvironmentDto) {
 	model.ID = types.StringValue(env.Id.String())
 	model.Name = types.StringValue(env.Name)
+	model.Slug = types.StringValue(env.Slug)
 	model.IsDefault = types.BoolValue(env.IsDefault)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

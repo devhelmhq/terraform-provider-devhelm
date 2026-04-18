@@ -67,14 +67,27 @@ func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 		return
 	}
 
-	for _, t := range tags {
-		if t.Name == model.Name.ValueString() {
-			model.ID = types.StringValue(t.Id.String())
-			model.Color = types.StringValue(t.Color)
-			resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
-			return
+	matches := matchByName(tags, model.Name.ValueString(), func(t generated.TagDto) string { return t.Name })
+	switch len(matches) {
+	case 0:
+		resp.Diagnostics.AddError("Tag not found", fmt.Sprintf("No tag found with name %q", model.Name.ValueString()))
+	case 1:
+		mapTagToState(&model, &matches[0])
+		resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+	default:
+		ids := make([]string, len(matches))
+		for i, m := range matches {
+			ids[i] = m.Id.String()
 		}
+		resp.Diagnostics.AddError(
+			"Ambiguous tag lookup",
+			fmt.Sprintf("%d tags share the name %q (ids: %v). Reference the tag by UUID instead of using this data source.", len(matches), model.Name.ValueString(), ids),
+		)
 	}
+}
 
-	resp.Diagnostics.AddError("Tag not found", fmt.Sprintf("No tag found with name %q", model.Name.ValueString()))
+func mapTagToState(model *TagDataSourceModel, t *generated.TagDto) {
+	model.ID = types.StringValue(t.Id.String())
+	model.Name = types.StringValue(t.Name)
+	model.Color = types.StringValue(t.Color)
 }

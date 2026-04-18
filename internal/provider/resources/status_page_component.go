@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -17,6 +19,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+// componentStartDateLayout is the wire format the API expects for
+// StartDate (ISO-8601 calendar date). We surface the same layout in HCL
+// so users can write `start_date = "2024-01-15"` without time-of-day
+// noise leaking through.
+const componentStartDateLayout = "2006-01-02"
 
 var (
 	_ resource.Resource                = &StatusPageComponentResource{}
@@ -43,6 +51,7 @@ type StatusPageComponentResourceModel struct {
 	DisplayOrder       types.Int64  `tfsdk:"display_order"`
 	ExcludeFromOverall types.Bool   `tfsdk:"exclude_from_overall"`
 	ShowUptime         types.Bool   `tfsdk:"show_uptime"`
+	StartDate          types.String `tfsdk:"start_date"`
 }
 
 func NewStatusPageComponentResource() resource.Resource {
@@ -163,7 +172,45 @@ func (r *StatusPageComponentResource) Schema(_ context.Context, _ resource.Schem
 				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
 				Description: "Whether the uptime bar is shown for this component (default: true)",
 			},
+			"start_date": schema.StringAttribute{
+				Optional: true, Computed: true,
+				Description: "Date (ISO 8601, YYYY-MM-DD) from which uptime data should be displayed. " +
+					"Useful when migrating an existing service onto a status page so historical uptime " +
+					"is not shown back to the component's creation. Server-assigned if omitted.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					componentStartDateValidator{},
+				},
+			},
 		},
+	}
+}
+
+// componentStartDateValidator enforces the YYYY-MM-DD wire format at
+// plan time so users get a clear error before any API call is made,
+// rather than a confusing 400 on apply.
+type componentStartDateValidator struct{}
+
+func (componentStartDateValidator) Description(_ context.Context) string {
+	return "value must be a date in YYYY-MM-DD format (ISO 8601)"
+}
+
+func (v componentStartDateValidator) MarkdownDescription(ctx context.Context) string {
+	return v.Description(ctx)
+}
+
+func (componentStartDateValidator) ValidateString(_ context.Context, req validator.StringRequest, resp *validator.StringResponse) {
+	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
+		return
+	}
+	if _, err := time.Parse(componentStartDateLayout, req.ConfigValue.ValueString()); err != nil {
+		resp.Diagnostics.AddAttributeError(
+			req.Path,
+			"Invalid start_date format",
+			fmt.Sprintf("Expected ISO 8601 date (YYYY-MM-DD), got %q: %s", req.ConfigValue.ValueString(), err),
+		)
 	}
 }
 
@@ -227,6 +274,11 @@ func (r *StatusPageComponentResource) Create(ctx context.Context, req resource.C
 		return
 	}
 
+	startDate, err := componentStartDatePtr(plan.StartDate)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid start_date", err.Error())
+		return
+	}
 	body := generated.CreateStatusPageComponentRequest{
 		Name:               plan.Name.ValueString(),
 		Type:               generated.CreateStatusPageComponentRequestType(plan.Type.ValueString()),
@@ -234,6 +286,7 @@ func (r *StatusPageComponentResource) Create(ctx context.Context, req resource.C
 		ExcludeFromOverall: boolPtrOrNil(plan.ExcludeFromOverall),
 		ShowUptime:         boolPtrOrNil(plan.ShowUptime),
 		DisplayOrder:       int32PtrOrNil(plan.DisplayOrder),
+		StartDate:          startDate,
 	}
 
 	groupID, err := parseUUIDPtrChecked(plan.GroupID, "group_id")
@@ -324,6 +377,11 @@ func (r *StatusPageComponentResource) Update(ctx context.Context, req resource.U
 		return
 	}
 
+	startDate, err := componentStartDatePtr(plan.StartDate)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid start_date", err.Error())
+		return
+	}
 	name := plan.Name.ValueString()
 	body := generated.UpdateStatusPageComponentRequest{
 		Name:               &name,
@@ -331,6 +389,7 @@ func (r *StatusPageComponentResource) Update(ctx context.Context, req resource.U
 		ExcludeFromOverall: boolPtrOrNil(plan.ExcludeFromOverall),
 		ShowUptime:         boolPtrOrNil(plan.ShowUptime),
 		DisplayOrder:       int32PtrOrNil(plan.DisplayOrder),
+		StartDate:          startDate,
 	}
 
 	// Group movement: explicit `remove_from_group` flag is required to
@@ -419,6 +478,7 @@ func (r *StatusPageComponentResource) ImportState(ctx context.Context, req resou
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_order"), model.DisplayOrder)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("exclude_from_overall"), model.ExcludeFromOverall)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("show_uptime"), model.ShowUptime)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("start_date"), model.StartDate)...)
 			return
 		}
 	}
@@ -452,4 +512,24 @@ func (r *StatusPageComponentResource) mapToState(model *StatusPageComponentResou
 	} else {
 		model.ResourceGroupID = types.StringNull()
 	}
+	if dto.StartDate != nil {
+		model.StartDate = types.StringValue(dto.StartDate.Format(componentStartDateLayout))
+	} else {
+		model.StartDate = types.StringNull()
+	}
+}
+
+// componentStartDatePtr converts an HCL string ("2024-01-15") into the
+// API's openapi_types.Date pointer. Returns (nil, nil) when the value
+// is null/unknown so omitting `start_date` preserves the server-side
+// value (consistent with the schema's Computed semantics).
+func componentStartDatePtr(v types.String) (*openapi_types.Date, error) {
+	if v.IsNull() || v.IsUnknown() {
+		return nil, nil
+	}
+	t, err := time.Parse(componentStartDateLayout, v.ValueString())
+	if err != nil {
+		return nil, fmt.Errorf("expected ISO 8601 date (YYYY-MM-DD), got %q: %w", v.ValueString(), err)
+	}
+	return &openapi_types.Date{Time: t}, nil
 }
