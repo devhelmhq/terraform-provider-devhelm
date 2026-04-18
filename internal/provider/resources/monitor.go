@@ -842,8 +842,10 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// `plan.ID` with the value returned by the API, which keeps state stable
 	// even if the backend ever decides to issue a new ID (currently it does
 	// not, but the contract makes the read path resilient either way).
-	monitor, _, err := api.UpdateRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString(), bodyJSON)
-	if err != nil {
+	// We deliberately discard the PUT response body: its DTO omits the tag
+	// list entirely (so `monitor.Tags` would be misleading), and we re-GET
+	// below to capture the post-reconciliation state authoritatively.
+	if _, _, err := api.UpdateRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString(), bodyJSON); err != nil {
 		resp.Diagnostics.AddError("Error updating monitor", err.Error())
 		return
 	}

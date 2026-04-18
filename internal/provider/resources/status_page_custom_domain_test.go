@@ -1,7 +1,6 @@
 package resources
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -121,8 +120,8 @@ func TestStatusPageCustomDomainVerification_IsVerifiedStatus(t *testing.T) {
 }
 
 func TestStatusPageCustomDomainVerification_PollingParams_Defaults(t *testing.T) {
-	os.Unsetenv("DEVHELM_TF_VERIFY_POLL_INTERVAL_MS")
-	os.Unsetenv("DEVHELM_TF_VERIFY_MAX_ATTEMPTS")
+	t.Setenv("DEVHELM_TF_VERIFY_POLL_INTERVAL_MS", "")
+	t.Setenv("DEVHELM_TF_VERIFY_MAX_ATTEMPTS", "")
 
 	interval, maxAttempts := verifyPollingParams()
 	if interval != defaultVerifyPollInterval {
