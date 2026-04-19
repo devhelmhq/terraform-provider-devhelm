@@ -230,7 +230,7 @@ func (r *AlertChannelResource) Create(ctx context.Context, req resource.CreateRe
 		Config: configUnion,
 	}
 
-	ch, err := api.Create[generated.AlertChannelDto](ctx, r.client, "/api/v1/alert-channels", body)
+	ch, err := api.Create[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating alert channel", err.Error())
 		return
@@ -248,7 +248,7 @@ func (r *AlertChannelResource) Read(ctx context.Context, req resource.ReadReques
 		return
 	}
 
-	channels, err := api.List[generated.AlertChannelDto](ctx, r.client, "/api/v1/alert-channels")
+	channels, err := api.List[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels)
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading alert channels", err.Error())
 		return
@@ -308,7 +308,7 @@ func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRe
 		Config: configUnion,
 	}
 
-	ch, err := api.Update[generated.AlertChannelDto](ctx, r.client, "/api/v1/alert-channels/"+state.ID.ValueString(), body)
+	ch, err := api.Update[generated.AlertChannelDto](ctx, r.client, api.AlertChannelPath(state.ID.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating alert channel", err.Error())
 		return
@@ -326,14 +326,14 @@ func (r *AlertChannelResource) Delete(ctx context.Context, req resource.DeleteRe
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/alert-channels/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.AlertChannelPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting alert channel", err.Error())
 	}
 }
 
 func (r *AlertChannelResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	channels, err := api.List[generated.AlertChannelDto](ctx, r.client, "/api/v1/alert-channels")
+	channels, err := api.List[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing alert channels for import", err.Error())
 		return

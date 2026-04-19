@@ -297,7 +297,7 @@ func (r *NotificationPolicyResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
-	policy, err := api.Create[generated.NotificationPolicyDto](ctx, r.client, "/api/v1/notification-policies", body)
+	policy, err := api.Create[generated.NotificationPolicyDto](ctx, r.client, api.PathNotificationPolicies, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating notification policy", err.Error())
 		return
@@ -440,7 +440,7 @@ func (r *NotificationPolicyResource) Read(ctx context.Context, req resource.Read
 		return
 	}
 
-	policy, err := api.Get[generated.NotificationPolicyDto](ctx, r.client, "/api/v1/notification-policies/"+state.ID.ValueString())
+	policy, err := api.Get[generated.NotificationPolicyDto](ctx, r.client, api.NotificationPolicyPath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -476,7 +476,7 @@ func (r *NotificationPolicyResource) Update(ctx context.Context, req resource.Up
 		return
 	}
 
-	policy, err := api.Update[generated.NotificationPolicyDto](ctx, r.client, "/api/v1/notification-policies/"+state.ID.ValueString(), body)
+	policy, err := api.Update[generated.NotificationPolicyDto](ctx, r.client, api.NotificationPolicyPath(state.ID.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating notification policy", err.Error())
 		return
@@ -496,14 +496,14 @@ func (r *NotificationPolicyResource) Delete(ctx context.Context, req resource.De
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/notification-policies/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.NotificationPolicyPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting notification policy", err.Error())
 	}
 }
 
 func (r *NotificationPolicyResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	policies, err := api.List[generated.NotificationPolicyDto](ctx, r.client, "/api/v1/notification-policies")
+	policies, err := api.List[generated.NotificationPolicyDto](ctx, r.client, api.PathNotificationPolicies)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing notification policies for import", err.Error())
 		return
@@ -541,7 +541,7 @@ func (r *NotificationPolicyResource) ImportState(ctx context.Context, req resour
 		}
 	}
 
-	policy, err := api.Get[generated.NotificationPolicyDto](ctx, r.client, "/api/v1/notification-policies/"+policyID)
+	policy, err := api.Get[generated.NotificationPolicyDto](ctx, r.client, api.NotificationPolicyPath(policyID))
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading notification policy for import", err.Error())
 		return

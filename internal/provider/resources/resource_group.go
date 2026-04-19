@@ -336,7 +336,7 @@ func (r *ResourceGroupResource) Create(ctx context.Context, req resource.CreateR
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	group, err := api.Create[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups", body)
+	group, err := api.Create[generated.ResourceGroupDto](ctx, r.client, api.PathResourceGroups, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating resource group", err.Error())
 		return
@@ -356,7 +356,7 @@ func (r *ResourceGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups/"+state.ID.ValueString())
+	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, api.ResourceGroupPath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -391,7 +391,7 @@ func (r *ResourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	group, err := api.Update[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups/"+state.ID.ValueString(), body)
+	group, err := api.Update[generated.ResourceGroupDto](ctx, r.client, api.ResourceGroupPath(state.ID.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating resource group", err.Error())
 		return
@@ -411,14 +411,14 @@ func (r *ResourceGroupResource) Delete(ctx context.Context, req resource.DeleteR
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/resource-groups/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.ResourceGroupPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting resource group", err.Error())
 	}
 }
 
 func (r *ResourceGroupResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	groups, err := api.List[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups")
+	groups, err := api.List[generated.ResourceGroupDto](ctx, r.client, api.PathResourceGroups)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing resource groups for import", err.Error())
 		return

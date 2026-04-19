@@ -243,7 +243,7 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		Branding:     branding,
 	}
 
-	page, err := api.Create[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages", body)
+	page, err := api.Create[generated.StatusPageDto](ctx, r.client, api.PathStatusPages, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating status page", err.Error())
 		return
@@ -263,7 +263,7 @@ func (r *StatusPageResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	page, err := api.Get[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+state.ID.ValueString())
+	page, err := api.Get[generated.StatusPageDto](ctx, r.client, api.StatusPagePath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -320,7 +320,7 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 		Branding: &branding,
 	}
 
-	page, err := api.Update[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+state.ID.ValueString(), body)
+	page, err := api.Update[generated.StatusPageDto](ctx, r.client, api.StatusPagePath(state.ID.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating status page", err.Error())
 		return
@@ -340,7 +340,7 @@ func (r *StatusPageResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/status-pages/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.StatusPagePath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting status page", err.Error())
 	}
@@ -356,7 +356,7 @@ func (r *StatusPageResource) ImportState(ctx context.Context, req resource.Impor
 	// be surfaced as a confusing error.
 	var page *generated.StatusPageDto
 	if _, parseErr := uuid.Parse(req.ID); parseErr == nil {
-		got, err := api.Get[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+req.ID)
+		got, err := api.Get[generated.StatusPageDto](ctx, r.client, api.StatusPagePath(req.ID))
 		if err != nil && !api.IsNotFound(err) {
 			resp.Diagnostics.AddError("Error importing status page", err.Error())
 			return
@@ -364,7 +364,7 @@ func (r *StatusPageResource) ImportState(ctx context.Context, req resource.Impor
 		page = got
 	}
 	if page == nil {
-		pages, listErr := api.List[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages")
+		pages, listErr := api.List[generated.StatusPageDto](ctx, r.client, api.PathStatusPages)
 		if listErr != nil {
 			resp.Diagnostics.AddError("Error importing status page", listErr.Error())
 			return

@@ -105,7 +105,7 @@ func (r *ResourceGroupMembershipResource) Create(ctx context.Context, req resour
 
 	member, err := api.Create[generated.ResourceGroupMemberDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/resource-groups/%s/members", plan.GroupID.ValueString()),
+		api.ResourceGroupMembersPath(plan.GroupID.ValueString()),
 		body,
 	)
 	if err != nil {
@@ -124,7 +124,7 @@ func (r *ResourceGroupMembershipResource) Read(ctx context.Context, req resource
 		return
 	}
 
-	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups/"+state.GroupID.ValueString())
+	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, api.ResourceGroupPath(state.GroupID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -175,10 +175,7 @@ func (r *ResourceGroupMembershipResource) Delete(ctx context.Context, req resour
 		return
 	}
 
-	p := fmt.Sprintf("/api/v1/resource-groups/%s/members/%s",
-		state.GroupID.ValueString(), state.ID.ValueString())
-
-	err := api.Delete(ctx, r.client, p)
+	err := api.Delete(ctx, r.client, api.ResourceGroupMemberPath(state.GroupID.ValueString(), state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error removing resource group member", err.Error())
 	}
@@ -204,7 +201,7 @@ func (r *ResourceGroupMembershipResource) ImportState(ctx context.Context, req r
 		return
 	}
 
-	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups/"+groupID)
+	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, api.ResourceGroupPath(groupID))
 	if err != nil {
 		resp.Diagnostics.AddError("Error fetching resource group for import", err.Error())
 		return

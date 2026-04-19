@@ -61,7 +61,7 @@ func (d *AlertChannelDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 
-	channels, err := api.List[generated.AlertChannelDto](ctx, d.client, "/api/v1/alert-channels")
+	channels, err := api.List[generated.AlertChannelDto](ctx, d.client, api.PathAlertChannels)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing alert channels", err.Error())
 		return

@@ -63,7 +63,7 @@ func (d *ResourceGroupDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	groups, err := api.List[generated.ResourceGroupDto](ctx, d.client, "/api/v1/resource-groups")
+	groups, err := api.List[generated.ResourceGroupDto](ctx, d.client, api.PathResourceGroups)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing resource groups", err.Error())
 		return

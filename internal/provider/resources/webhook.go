@@ -97,7 +97,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 		Description:      stringPtrOrNil(plan.Description),
 	}
 
-	wh, err := api.Create[generated.WebhookEndpointDto](ctx, r.client, "/api/v1/webhooks", body)
+	wh, err := api.Create[generated.WebhookEndpointDto](ctx, r.client, api.PathWebhooks, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating webhook", err.Error())
 		return
@@ -113,7 +113,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 		falseVal := false
 		updateBody := generated.UpdateWebhookEndpointRequest{Enabled: &falseVal}
 		updated, updateErr := api.Update[generated.WebhookEndpointDto](
-			ctx, r.client, "/api/v1/webhooks/"+wh.Id.String(), updateBody,
+			ctx, r.client, api.WebhookPath(wh.Id.String()), updateBody,
 		)
 		if updateErr != nil {
 			resp.Diagnostics.AddError(
@@ -141,7 +141,7 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	wh, err := api.Get[generated.WebhookEndpointDto](ctx, r.client, "/api/v1/webhooks/"+state.ID.ValueString())
+	wh, err := api.Get[generated.WebhookEndpointDto](ctx, r.client, api.WebhookPath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -179,7 +179,7 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 		SubscribedEvents: stringSliceToPtrFromSet(plan.SubscribedEvents),
 	}
 
-	wh, err := api.Update[generated.WebhookEndpointDto](ctx, r.client, "/api/v1/webhooks/"+state.ID.ValueString(), body)
+	wh, err := api.Update[generated.WebhookEndpointDto](ctx, r.client, api.WebhookPath(state.ID.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating webhook", err.Error())
 		return
@@ -200,14 +200,14 @@ func (r *WebhookResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/webhooks/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.WebhookPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting webhook", err.Error())
 	}
 }
 
 func (r *WebhookResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	webhooks, err := api.List[generated.WebhookEndpointDto](ctx, r.client, "/api/v1/webhooks")
+	webhooks, err := api.List[generated.WebhookEndpointDto](ctx, r.client, api.PathWebhooks)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing webhooks for import", err.Error())
 		return

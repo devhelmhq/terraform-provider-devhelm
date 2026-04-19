@@ -953,7 +953,7 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	monitor, rawResp, err := api.CreateRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors", bodyJSON)
+	monitor, rawResp, err := api.CreateRaw[generated.MonitorDto](ctx, r.client, api.PathMonitors, bodyJSON)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating monitor", err.Error())
 		return
@@ -973,7 +973,7 @@ func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
+	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -1034,7 +1034,7 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// We deliberately discard the PUT response body: its DTO omits the tag
 	// list entirely (so `monitor.Tags` would be misleading), and we re-GET
 	// below to capture the post-reconciliation state authoritatively.
-	if _, _, err := api.UpdateRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString(), bodyJSON); err != nil {
+	if _, _, err := api.UpdateRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()), bodyJSON); err != nil {
 		resp.Diagnostics.AddError("Error updating monitor", err.Error())
 		return
 	}
@@ -1053,7 +1053,7 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// the previous PUT. We must re-GET to capture the post-reconciliation
 	// tag set before calling mapToState, otherwise the persisted state would
 	// describe the monitor as it existed *before* the tag delta was applied.
-	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
+	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
 	if err != nil {
 		resp.Diagnostics.AddError("Error re-reading monitor after tag sync", err.Error())
 		return
@@ -1125,14 +1125,14 @@ func (r *MonitorResource) reconcileTags(ctx context.Context, monitorID string, p
 
 	if len(toAdd) > 0 {
 		addBody := generated.AddMonitorTagsRequest{TagIds: &toAdd}
-		if _, err := api.CreateList[generated.TagDto](ctx, r.client, "/api/v1/monitors/"+monitorID+"/tags", addBody); err != nil {
+		if _, err := api.CreateList[generated.TagDto](ctx, r.client, api.MonitorTagsPath(monitorID), addBody); err != nil {
 			return fmt.Errorf("adding tags: %w", err)
 		}
 	}
 
 	if len(toRemove) > 0 {
 		removeBody := generated.RemoveMonitorTagsRequest{TagIds: toRemove}
-		if err := api.DeleteWithBody(ctx, r.client, "/api/v1/monitors/"+monitorID+"/tags", removeBody); err != nil {
+		if err := api.DeleteWithBody(ctx, r.client, api.MonitorTagsPath(monitorID), removeBody); err != nil {
 			return fmt.Errorf("removing tags: %w", err)
 		}
 	}
@@ -1147,14 +1147,14 @@ func (r *MonitorResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.MonitorPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting monitor", err.Error())
 	}
 }
 
 func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	monitors, err := api.List[generated.MonitorDto](ctx, r.client, "/api/v1/monitors")
+	monitors, err := api.List[generated.MonitorDto](ctx, r.client, api.PathMonitors)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing monitors for import", err.Error())
 		return
@@ -1193,7 +1193,7 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 		}
 	}
 
-	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+monitorID)
+	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(monitorID))
 	if err != nil {
 		resp.Diagnostics.AddError("Error fetching monitor for import", err.Error())
 		return

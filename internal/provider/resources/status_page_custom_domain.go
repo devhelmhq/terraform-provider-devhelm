@@ -244,7 +244,7 @@ func (r *StatusPageCustomDomainResource) Create(ctx context.Context, req resourc
 
 	pageID := plan.StatusPageID.ValueString()
 	domain, err := api.Create[generated.StatusPageCustomDomainDto](
-		ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/domains", pageID), body,
+		ctx, r.client, api.StatusPageDomainsPath(pageID), body,
 	)
 	if err != nil {
 		resp.Diagnostics.AddError("Error adding custom domain", err.Error())
@@ -264,7 +264,7 @@ func (r *StatusPageCustomDomainResource) Read(ctx context.Context, req resource.
 
 	pageID := state.StatusPageID.ValueString()
 	domains, err := api.List[generated.StatusPageCustomDomainDto](
-		ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/domains", pageID),
+		ctx, r.client, api.StatusPageDomainsPath(pageID),
 	)
 	if err != nil {
 		if api.IsNotFound(err) {
@@ -304,7 +304,7 @@ func (r *StatusPageCustomDomainResource) Delete(ctx context.Context, req resourc
 	pageID := state.StatusPageID.ValueString()
 	domainID := state.ID.ValueString()
 
-	err := api.Delete(ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/domains/%s", pageID, domainID))
+	err := api.Delete(ctx, r.client, api.StatusPageDomainPath(pageID, domainID))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error removing custom domain", err.Error())
 	}
@@ -333,7 +333,7 @@ func (r *StatusPageCustomDomainResource) ImportState(ctx context.Context, req re
 	}
 
 	domains, err := api.List[generated.StatusPageCustomDomainDto](
-		ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/domains", pageID),
+		ctx, r.client, api.StatusPageDomainsPath(pageID),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing domains for import", err.Error())

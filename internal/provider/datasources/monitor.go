@@ -69,7 +69,7 @@ func (d *MonitorDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 
-	monitors, err := api.List[generated.MonitorDto](ctx, d.client, "/api/v1/monitors")
+	monitors, err := api.List[generated.MonitorDto](ctx, d.client, api.PathMonitors)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing monitors", err.Error())
 		return

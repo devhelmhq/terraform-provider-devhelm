@@ -366,7 +366,7 @@ func (r *StatusPageComponentResource) Create(ctx context.Context, req resource.C
 
 	created, err := api.Create[generated.StatusPageComponentDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/components", plan.StatusPageID.ValueString()),
+		api.StatusPageComponentsPath(plan.StatusPageID.ValueString()),
 		body,
 	)
 	if err != nil {
@@ -387,7 +387,7 @@ func (r *StatusPageComponentResource) Read(ctx context.Context, req resource.Rea
 
 	components, err := api.List[generated.StatusPageComponentDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/components", state.StatusPageID.ValueString()),
+		api.StatusPageComponentsPath(state.StatusPageID.ValueString()),
 	)
 	if err != nil {
 		if api.IsNotFound(err) {
@@ -466,8 +466,7 @@ func (r *StatusPageComponentResource) Update(ctx context.Context, req resource.U
 
 	updated, err := api.Update[generated.StatusPageComponentDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/components/%s",
-			state.StatusPageID.ValueString(), state.ID.ValueString()),
+		api.StatusPageComponentPath(state.StatusPageID.ValueString(), state.ID.ValueString()),
 		body,
 	)
 	if err != nil {
@@ -487,8 +486,7 @@ func (r *StatusPageComponentResource) Delete(ctx context.Context, req resource.D
 	}
 
 	err := api.Delete(ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/components/%s",
-			state.StatusPageID.ValueString(), state.ID.ValueString()),
+		api.StatusPageComponentPath(state.StatusPageID.ValueString(), state.ID.ValueString()),
 	)
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting component", err.Error())
@@ -508,7 +506,7 @@ func (r *StatusPageComponentResource) ImportState(ctx context.Context, req resou
 
 	components, err := api.List[generated.StatusPageComponentDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/components", pageID),
+		api.StatusPageComponentsPath(pageID),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing components for import", err.Error())

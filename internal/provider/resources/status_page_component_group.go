@@ -156,7 +156,7 @@ func (r *StatusPageComponentGroupResource) Create(ctx context.Context, req resou
 
 	created, err := api.Create[generated.StatusPageComponentGroupDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/groups", plan.StatusPageID.ValueString()),
+		api.StatusPageGroupsPath(plan.StatusPageID.ValueString()),
 		body,
 	)
 	if err != nil {
@@ -180,7 +180,7 @@ func (r *StatusPageComponentGroupResource) Read(ctx context.Context, req resourc
 	// (groups per page are small) and avoids a new endpoint.
 	groups, err := api.List[generated.StatusPageComponentGroupDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/groups", state.StatusPageID.ValueString()),
+		api.StatusPageGroupsPath(state.StatusPageID.ValueString()),
 	)
 	if err != nil {
 		if api.IsNotFound(err) {
@@ -226,8 +226,7 @@ func (r *StatusPageComponentGroupResource) Update(ctx context.Context, req resou
 
 	updated, err := api.Update[generated.StatusPageComponentGroupDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/groups/%s",
-			state.StatusPageID.ValueString(), state.ID.ValueString()),
+		api.StatusPageGroupPath(state.StatusPageID.ValueString(), state.ID.ValueString()),
 		body,
 	)
 	if err != nil {
@@ -247,8 +246,7 @@ func (r *StatusPageComponentGroupResource) Delete(ctx context.Context, req resou
 	}
 
 	err := api.Delete(ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/groups/%s",
-			state.StatusPageID.ValueString(), state.ID.ValueString()),
+		api.StatusPageGroupPath(state.StatusPageID.ValueString(), state.ID.ValueString()),
 	)
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting component group", err.Error())
@@ -271,7 +269,7 @@ func (r *StatusPageComponentGroupResource) ImportState(ctx context.Context, req 
 
 	groups, err := api.List[generated.StatusPageComponentGroupDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/groups", pageID),
+		api.StatusPageGroupsPath(pageID),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing component groups for import", err.Error())
