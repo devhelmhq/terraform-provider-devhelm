@@ -71,8 +71,8 @@ func TestMatchByName_MultipleMatches_AllReturned(t *testing.T) {
 	id1 := mustUUID(t, "11111111-1111-1111-1111-111111111111")
 	id2 := mustUUID(t, "22222222-2222-2222-2222-222222222222")
 	items := []generated.AlertChannelDto{
-		{Id: id1, Name: "ops-slack", ChannelType: "SLACK"},
-		{Id: id2, Name: "ops-slack", ChannelType: "DISCORD"},
+		{Id: id1, Name: "ops-slack", ChannelType: generated.Slack},
+		{Id: id2, Name: "ops-slack", ChannelType: generated.Discord},
 	}
 	got := matchByName(items, "ops-slack", func(c generated.AlertChannelDto) string { return c.Name })
 	if len(got) != 2 {
@@ -133,14 +133,14 @@ func TestMapAlertChannelToState_EmptyNamePreserved(t *testing.T) {
 	dto := &generated.AlertChannelDto{
 		Id:          id,
 		Name:        "",
-		ChannelType: "WEBHOOK",
+		ChannelType: generated.Webhook,
 	}
 	var model AlertChannelDataSourceModel
 	mapAlertChannelToState(&model, dto)
 	if model.Name.ValueString() != "" {
 		t.Errorf("Name should be empty string, got %q", model.Name.ValueString())
 	}
-	if model.ChannelType.ValueString() != "WEBHOOK" {
+	if model.ChannelType.ValueString() != string(generated.Webhook) {
 		t.Errorf("ChannelType = %q", model.ChannelType.ValueString())
 	}
 }
@@ -242,9 +242,9 @@ func TestMapStatusPageToState_SyntheticPageURLWithSlug(t *testing.T) {
 		Id:           id,
 		Name:         "Test",
 		Slug:         "my-company",
-		Visibility:   "PUBLIC",
+		Visibility:   generated.StatusPageDtoVisibilityPUBLIC,
 		Enabled:      true,
-		IncidentMode: "AUTO",
+		IncidentMode: generated.StatusPageDtoIncidentModeAUTOMATIC,
 	}
 	var model StatusPageDataSourceModel
 	mapStatusPageToState(&model, dto)

@@ -134,9 +134,9 @@ func fullyPopulatedStatusPageDto() *generated.StatusPageDto {
 		Name:         "Acme Status",
 		Slug:         "acme",
 		Description:  &desc,
-		Visibility:   generated.StatusPageDtoVisibility("PUBLIC"),
+		Visibility:   generated.StatusPageDtoVisibilityPUBLIC,
 		Enabled:      true,
-		IncidentMode: generated.StatusPageDtoIncidentMode("AUTOMATIC"),
+		IncidentMode: generated.StatusPageDtoIncidentModeAUTOMATIC,
 		Branding: generated.StatusPageBranding{
 			BrandColor:    &cc,
 			TextColor:     &tc,

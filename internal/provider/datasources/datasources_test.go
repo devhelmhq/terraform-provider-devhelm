@@ -105,7 +105,7 @@ func TestMapAlertChannelToState_PopulatesAllSurfacedFields(t *testing.T) {
 	dto := &generated.AlertChannelDto{
 		Id:          id,
 		Name:        "ops-slack",
-		ChannelType: generated.AlertChannelDtoChannelType("SLACK"),
+		ChannelType: generated.Slack,
 	}
 	var model AlertChannelDataSourceModel
 	mapAlertChannelToState(&model, dto)
@@ -115,7 +115,7 @@ func TestMapAlertChannelToState_PopulatesAllSurfacedFields(t *testing.T) {
 	if model.Name.ValueString() != "ops-slack" {
 		t.Errorf("Name: got %q", model.Name.ValueString())
 	}
-	if model.ChannelType.ValueString() != "SLACK" {
+	if model.ChannelType.ValueString() != string(generated.Slack) {
 		t.Errorf("ChannelType: got %q", model.ChannelType.ValueString())
 	}
 }
@@ -272,9 +272,9 @@ func TestMapStatusPageToState_PopulatesAllFieldsAndSyntheticPageURL(t *testing.T
 		Name:         "Acme Status",
 		Slug:         "acme",
 		Description:  &desc,
-		Visibility:   generated.StatusPageDtoVisibility("PUBLIC"),
+		Visibility:   generated.StatusPageDtoVisibilityPUBLIC,
 		Enabled:      true,
-		IncidentMode: generated.StatusPageDtoIncidentMode("MANUAL"),
+		IncidentMode: generated.StatusPageDtoIncidentModeMANUAL,
 	}
 	var model StatusPageDataSourceModel
 	mapStatusPageToState(&model, dto)
@@ -291,13 +291,13 @@ func TestMapStatusPageToState_PopulatesAllFieldsAndSyntheticPageURL(t *testing.T
 	if model.Description.ValueString() != desc {
 		t.Errorf("Description: %q", model.Description.ValueString())
 	}
-	if model.Visibility.ValueString() != "PUBLIC" {
+	if model.Visibility.ValueString() != string(generated.StatusPageDtoVisibilityPUBLIC) {
 		t.Error("Visibility")
 	}
 	if !model.Enabled.ValueBool() {
 		t.Error("Enabled")
 	}
-	if model.IncidentMode.ValueString() != "MANUAL" {
+	if model.IncidentMode.ValueString() != string(generated.StatusPageDtoIncidentModeMANUAL) {
 		t.Error("IncidentMode")
 	}
 	// PageURL is a *synthetic* field — the API doesn't return it, the
@@ -317,9 +317,9 @@ func TestMapStatusPageToState_NilDescriptionBecomesNull(t *testing.T) {
 		Name:         "x",
 		Slug:         "x",
 		Description:  nil,
-		Visibility:   generated.StatusPageDtoVisibility("PRIVATE"),
+		Visibility:   generated.StatusPageDtoVisibilityPASSWORD,
 		Enabled:      false,
-		IncidentMode: generated.StatusPageDtoIncidentMode("AUTO"),
+		IncidentMode: generated.StatusPageDtoIncidentModeAUTOMATIC,
 	}
 	var model StatusPageDataSourceModel
 	mapStatusPageToState(&model, dto)
