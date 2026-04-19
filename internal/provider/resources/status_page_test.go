@@ -135,7 +135,7 @@ func fullyPopulatedStatusPageDto() *generated.StatusPageDto {
 		Slug:         "acme",
 		Description:  &desc,
 		Visibility:   generated.StatusPageDtoVisibility("PUBLIC"),
-		Enabled:      true,
+		Enabled:      boolPtr(true),
 		IncidentMode: generated.StatusPageDtoIncidentMode("AUTOMATIC"),
 		Branding: generated.StatusPageBranding{
 			BrandColor:    &cc,
@@ -243,8 +243,8 @@ func TestStatusPageComponentGroup_MapToState_PopulatesEveryField(t *testing.T) {
 		Id:           id,
 		Name:         "Infrastructure",
 		Description:  &desc,
-		Collapsed:    true,
-		DisplayOrder: 5,
+		Collapsed:    boolPtr(true),
+		DisplayOrder: int32Ptr(5),
 	}
 	model := &StatusPageComponentGroupResourceModel{}
 	r.mapToState(model, dto)
@@ -395,9 +395,9 @@ func TestStatusPageComponent_MapToState_PopulatesEveryField(t *testing.T) {
 		GroupId:            &gid,
 		MonitorId:          &mid,
 		ResourceGroupId:    &rgid, // odd combo, but proves we map every field
-		DisplayOrder:       3,
-		ExcludeFromOverall: false,
-		ShowUptime:         true,
+		DisplayOrder:       int32Ptr(3),
+		ExcludeFromOverall: boolPtr(false),
+		ShowUptime:         boolPtr(true),
 		StartDate:          &startDate,
 	}
 	model := &StatusPageComponentResourceModel{}
@@ -434,7 +434,7 @@ func TestStatusPageComponent_MapToState_NullsForOptionalRefs(t *testing.T) {
 		Id:           openapi_types.UUID(uuid.New()),
 		Name:         "Static",
 		Type:         generated.StatusPageComponentDtoType("STATIC"),
-		DisplayOrder: 0,
+		DisplayOrder: int32Ptr(0),
 	}
 	model := &StatusPageComponentResourceModel{}
 	r.mapToState(model, dto)

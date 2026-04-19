@@ -239,7 +239,7 @@ func (r *ResourceGroupResource) mapToState(ctx context.Context, model *ResourceG
 	model.DefaultEnvironmentID = uuidPtrValue(dto.DefaultEnvironmentId)
 	model.HealthThresholdType = typedStringPtrValue(dto.HealthThresholdType)
 	model.HealthThresholdValue = float32Value(dto.HealthThresholdValue)
-	model.SuppressMemberAlerts = types.BoolValue(dto.SuppressMemberAlerts)
+	model.SuppressMemberAlerts = boolValue(dto.SuppressMemberAlerts)
 	model.ConfirmationDelaySeconds = int32Value(dto.ConfirmationDelaySeconds)
 	model.RecoveryCooldownMinutes = int32Value(dto.RecoveryCooldownMinutes)
 

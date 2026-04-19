@@ -109,7 +109,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 	// to honor their plan. Without this, `terraform apply` would silently
 	// create the webhook in the wrong state and the next plan would show
 	// a perpetual diff.
-	if !plan.Enabled.IsNull() && !plan.Enabled.IsUnknown() && !plan.Enabled.ValueBool() && wh.Enabled {
+	if !plan.Enabled.IsNull() && !plan.Enabled.IsUnknown() && !plan.Enabled.ValueBool() && (wh.Enabled != nil && *wh.Enabled) {
 		falseVal := false
 		updateBody := generated.UpdateWebhookEndpointRequest{Enabled: &falseVal}
 		updated, updateErr := api.Update[generated.WebhookEndpointDto](
@@ -129,7 +129,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 	plan.ID = types.StringValue(wh.Id.String())
 	plan.URL = types.StringValue(wh.Url)
 	plan.Description = stringValue(wh.Description)
-	plan.Enabled = types.BoolValue(wh.Enabled)
+	plan.Enabled = boolValue(wh.Enabled)
 	plan.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
@@ -153,7 +153,7 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 
 	state.URL = types.StringValue(wh.Url)
 	state.Description = stringValue(wh.Description)
-	state.Enabled = types.BoolValue(wh.Enabled)
+	state.Enabled = boolValue(wh.Enabled)
 	state.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -188,7 +188,7 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 	plan.ID = state.ID
 	plan.URL = types.StringValue(wh.Url)
 	plan.Description = stringValue(wh.Description)
-	plan.Enabled = types.BoolValue(wh.Enabled)
+	plan.Enabled = boolValue(wh.Enabled)
 	plan.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }

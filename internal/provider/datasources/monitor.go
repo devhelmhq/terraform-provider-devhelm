@@ -107,8 +107,16 @@ func mapMonitorToState(model *MonitorDataSourceModel, m *generated.MonitorDto) {
 	model.ID = types.StringValue(m.Id.String())
 	model.Name = types.StringValue(m.Name)
 	model.Type = types.StringValue(string(m.Type))
-	model.FrequencySeconds = types.Int64Value(int64(m.FrequencySeconds))
-	model.Enabled = types.BoolValue(m.Enabled)
+	if m.FrequencySeconds != nil {
+		model.FrequencySeconds = types.Int64Value(int64(*m.FrequencySeconds))
+	} else {
+		model.FrequencySeconds = types.Int64Null()
+	}
+	if m.Enabled != nil {
+		model.Enabled = types.BoolValue(*m.Enabled)
+	} else {
+		model.Enabled = types.BoolNull()
+	}
 	cfgBytes, err := m.Config.MarshalJSON()
 	if err == nil && len(cfgBytes) > 0 && string(cfgBytes) != "null" {
 		model.Config = types.StringValue(normalizeConfigJSON(cfgBytes))

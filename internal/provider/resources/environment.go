@@ -215,7 +215,7 @@ func (r *EnvironmentResource) mapToState(ctx context.Context, model *Environment
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
-	model.IsDefault = types.BoolValue(dto.IsDefault)
+	model.IsDefault = boolValue(dto.IsDefault)
 	if len(dto.Variables) > 0 {
 		elements := make(map[string]string, len(dto.Variables))
 		for k, v := range dto.Variables {

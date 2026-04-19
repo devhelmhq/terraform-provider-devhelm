@@ -32,7 +32,7 @@ func TestEnvironment_MapToState_PopulatesAllFields(t *testing.T) {
 		Id:        id,
 		Name:      "Production",
 		Slug:      "production",
-		IsDefault: true,
+		IsDefault: boolPtr(true),
 		Variables: map[string]string{"REGION": "us-east", "TIER": "prod"},
 	}
 	model := &EnvironmentResourceModel{}
@@ -64,7 +64,7 @@ func TestEnvironment_MapToState_EmptyVariablesPreservesNullByDefault(t *testing.
 	ctx := context.Background()
 	r := &EnvironmentResource{}
 	dto := &generated.EnvironmentDto{
-		Id: openapi_types.UUID(uuid.New()), Name: "x", Slug: "x", IsDefault: false, Variables: nil,
+		Id: openapi_types.UUID(uuid.New()), Name: "x", Slug: "x", IsDefault: boolPtr(false), Variables: nil,
 	}
 	model := &EnvironmentResourceModel{
 		Variables: types.MapNull(types.StringType),
@@ -83,7 +83,7 @@ func TestEnvironment_MapToState_EmptyVariablesFlowsToEmptyMapOnImport(t *testing
 	ctx := context.Background()
 	r := &EnvironmentResource{}
 	dto := &generated.EnvironmentDto{
-		Id: openapi_types.UUID(uuid.New()), Name: "x", Slug: "x", IsDefault: false,
+		Id: openapi_types.UUID(uuid.New()), Name: "x", Slug: "x", IsDefault: boolPtr(false),
 	}
 	model := &EnvironmentResourceModel{}
 	model.Variables, _ = types.MapValueFrom(ctx, types.StringType, map[string]string{})
@@ -102,7 +102,7 @@ func TestEnvironment_MapToState_Idempotent(t *testing.T) {
 	r := &EnvironmentResource{}
 	dto := &generated.EnvironmentDto{
 		Id: openapi_types.UUID(uuid.New()), Name: "x", Slug: "x",
-		IsDefault: true, Variables: map[string]string{"K": "V"},
+		IsDefault: boolPtr(true), Variables: map[string]string{"K": "V"},
 	}
 	first := &EnvironmentResourceModel{}
 	r.mapToState(ctx, first, dto)

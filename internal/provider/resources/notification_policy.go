@@ -196,16 +196,25 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 		})
 	}
 
+	createEnabled := true
+	if !plan.Enabled.IsNull() && !plan.Enabled.IsUnknown() {
+		createEnabled = plan.Enabled.ValueBool()
+	}
+	createPriority := int32(0)
+	if !plan.Priority.IsNull() && !plan.Priority.IsUnknown() {
+		createPriority = int32(plan.Priority.ValueInt64())
+	}
+
 	req := &generated.CreateNotificationPolicyRequest{
 		Name:     plan.Name.ValueString(),
-		Enabled:  boolPtrOrNil(plan.Enabled),
-		Priority: int32PtrOrNil(plan.Priority),
+		Enabled:  createEnabled,
+		Priority: createPriority,
 		Escalation: generated.EscalationChain{
 			Steps:     apiSteps,
 			OnResolve: stringPtrOrNil(plan.OnResolve),
 			OnReopen:  stringPtrOrNil(plan.OnReopen),
 		},
-		MatchRules: &apiRules,
+		MatchRules: apiRules,
 	}
 	return req, nil
 }
@@ -263,15 +272,15 @@ func (r *NotificationPolicyResource) buildUpdateRequest(ctx context.Context, pla
 	}
 
 	return &generated.UpdateNotificationPolicyRequest{
-		Name:     plan.Name.ValueString(),
-		Enabled:  enabled,
-		Priority: priority,
-		Escalation: generated.EscalationChain{
+		Name:     stringPtrOrNil(plan.Name),
+		Enabled:  &enabled,
+		Priority: &priority,
+		Escalation: &generated.EscalationChain{
 			Steps:     apiSteps,
 			OnResolve: stringPtrOrNil(plan.OnResolve),
 			OnReopen:  stringPtrOrNil(plan.OnReopen),
 		},
-		MatchRules: apiRules,
+		MatchRules: &apiRules,
 	}, nil
 }
 
@@ -324,8 +333,8 @@ func matchRuleObjectType() types.ObjectType {
 func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *NotificationPolicyModel, dto *generated.NotificationPolicyDto) {
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
-	model.Enabled = types.BoolValue(dto.Enabled)
-	model.Priority = types.Int64Value(int64(dto.Priority))
+	model.Enabled = boolValue(dto.Enabled)
+	model.Priority = int32Value(dto.Priority)
 	model.OnResolve = stringValue(dto.Escalation.OnResolve)
 	model.OnReopen = stringValue(dto.Escalation.OnReopen)
 

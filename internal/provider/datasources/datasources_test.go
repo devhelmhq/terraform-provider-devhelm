@@ -32,6 +32,9 @@ import (
 // on its own — those are exercised end-to-end by the surface suite.
 // ───────────────────────────────────────────────────────────────────────
 
+func int32Ptr(v int32) *int32 { return &v }
+func boolPtr(v bool) *bool   { return &v }
+
 func mustUUID(t *testing.T, s string) openapi_types.UUID {
 	t.Helper()
 	u, err := uuid.Parse(s)
@@ -130,8 +133,8 @@ func TestMapMonitorToState_FullDtoRoundTripsToState(t *testing.T) {
 		Id:               id,
 		Name:             "homepage",
 		Type:             generated.MonitorDtoType("HTTP"),
-		FrequencySeconds: 60,
-		Enabled:          true,
+		FrequencySeconds: int32Ptr(60),
+		Enabled:          boolPtr(true),
 		Config:           cfg,
 		PingUrl:          &ping,
 	}
@@ -182,8 +185,8 @@ func TestMapMonitorToState_NilPingUrlBecomesNullNotEmpty(t *testing.T) {
 		Id:               id,
 		Name:             "tcp-check",
 		Type:             generated.MonitorDtoType("TCP"),
-		FrequencySeconds: 30,
-		Enabled:          false,
+		FrequencySeconds: int32Ptr(30),
+		Enabled:          boolPtr(false),
 		Config:           cfg,
 		PingUrl:          nil,
 	}
@@ -206,8 +209,8 @@ func TestMapMonitorToState_EmptyConfigBecomesNull(t *testing.T) {
 		Id:               id,
 		Name:             "x",
 		Type:             generated.MonitorDtoType("HEARTBEAT"),
-		FrequencySeconds: 300,
-		Enabled:          true,
+		FrequencySeconds: int32Ptr(300),
+		Enabled:          boolPtr(true),
 		Config:           cfg,
 	}
 	var model MonitorDataSourceModel
@@ -270,7 +273,7 @@ func TestMapStatusPageToState_PopulatesAllFieldsAndSyntheticPageURL(t *testing.T
 		Slug:         "acme",
 		Description:  &desc,
 		Visibility:   generated.StatusPageDtoVisibility("PUBLIC"),
-		Enabled:      true,
+		Enabled:      boolPtr(true),
 		IncidentMode: generated.StatusPageDtoIncidentMode("MANUAL"),
 	}
 	var model StatusPageDataSourceModel
@@ -315,7 +318,7 @@ func TestMapStatusPageToState_NilDescriptionBecomesNull(t *testing.T) {
 		Slug:         "x",
 		Description:  nil,
 		Visibility:   generated.StatusPageDtoVisibility("PRIVATE"),
-		Enabled:      false,
+		Enabled:      boolPtr(false),
 		IncidentMode: generated.StatusPageDtoIncidentMode("AUTO"),
 	}
 	var model StatusPageDataSourceModel
@@ -355,7 +358,7 @@ func TestMapEnvironmentToState_PopulatesAllFields(t *testing.T) {
 		Id:        id,
 		Name:      "Production",
 		Slug:      "production",
-		IsDefault: true,
+		IsDefault: boolPtr(true),
 	}
 	var model EnvironmentDataSourceModel
 	mapEnvironmentToState(&model, dto)
