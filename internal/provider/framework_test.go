@@ -187,3 +187,6 @@ func hasTerraformBinary() bool {
 	}
 	return false
 }
+
+func int32Ptr(v int32) *int32 { return &v }
+func boolPtr(v bool) *bool   { return &v }

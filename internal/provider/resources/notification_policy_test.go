@@ -102,10 +102,10 @@ func TestNotificationPolicy_BuildRequest_PopulatesStepsAndRules(t *testing.T) {
 	if s.RepeatIntervalSeconds == nil || *s.RepeatIntervalSeconds != 60 {
 		t.Errorf("RepeatIntervalSeconds = %v", s.RepeatIntervalSeconds)
 	}
-	if body.MatchRules == nil || len(*body.MatchRules) != 1 {
+	if len(body.MatchRules) != 1 {
 		t.Fatalf("MatchRules = %v", body.MatchRules)
 	}
-	mr := (*body.MatchRules)[0]
+	mr := body.MatchRules[0]
 	if mr.Type != "severity_gte" {
 		t.Errorf("MatchRule.Type = %q", mr.Type)
 	}
@@ -165,11 +165,11 @@ func TestNotificationPolicy_BuildUpdateRequest_NullEnabledDefaultsToTrue(t *test
 	if err != nil {
 		t.Fatalf("buildUpdateRequest err: %v", err)
 	}
-	if !body.Enabled {
-		t.Errorf("Enabled = false, want true (null plan must not silently disable)")
+	if body.Enabled == nil || !*body.Enabled {
+		t.Errorf("Enabled = %v, want true (null plan must not silently disable)", body.Enabled)
 	}
-	if body.Priority != 0 {
-		t.Errorf("Priority = %d, want 0 (default for null)", body.Priority)
+	if body.Priority == nil || *body.Priority != 0 {
+		t.Errorf("Priority = %v, want 0 (default for null)", body.Priority)
 	}
 }
 
@@ -207,14 +207,14 @@ func TestNotificationPolicy_BuildUpdateRequest_PopulatesEveryField(t *testing.T)
 	if err != nil {
 		t.Fatalf("buildUpdateRequest err: %v", err)
 	}
-	if body.Name != "oncall" {
-		t.Errorf("Name = %q", body.Name)
+	if body.Name == nil || *body.Name != "oncall" {
+		t.Errorf("Name = %v", body.Name)
 	}
-	if !body.Enabled {
-		t.Error("Enabled = false")
+	if body.Enabled == nil || !*body.Enabled {
+		t.Errorf("Enabled = %v", body.Enabled)
 	}
-	if body.Priority != 10 {
-		t.Errorf("Priority = %d", body.Priority)
+	if body.Priority == nil || *body.Priority != 10 {
+		t.Errorf("Priority = %v", body.Priority)
 	}
 	if len(body.Escalation.Steps) != 1 {
 		t.Fatalf("Steps = %d", len(body.Escalation.Steps))
@@ -235,10 +235,10 @@ func TestNotificationPolicy_BuildUpdateRequest_PopulatesEveryField(t *testing.T)
 	if body.Escalation.OnReopen == nil || *body.Escalation.OnReopen != "pagerduty" {
 		t.Errorf("OnReopen = %v", body.Escalation.OnReopen)
 	}
-	if len(body.MatchRules) != 1 {
+	if body.MatchRules == nil || len(*body.MatchRules) != 1 {
 		t.Fatalf("MatchRules = %v", body.MatchRules)
 	}
-	mr := body.MatchRules[0]
+	mr := (*body.MatchRules)[0]
 	if mr.Type != "severity_gte" {
 		t.Errorf("MatchRule.Type = %q", mr.Type)
 	}
@@ -327,8 +327,8 @@ func fullyPopulatedPolicyDto() *generated.NotificationPolicyDto {
 	return &generated.NotificationPolicyDto{
 		Id:       openapi_types.UUID(uuid.New()),
 		Name:     "oncall",
-		Enabled:  true,
-		Priority: 10,
+		Enabled:  boolPtr(true),
+		Priority: int32Ptr(10),
 		Escalation: generated.EscalationChain{
 			Steps: []generated.EscalationStep{{
 				ChannelIds:            []openapi_types.UUID{channelID},

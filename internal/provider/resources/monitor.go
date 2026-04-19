@@ -306,7 +306,7 @@ func buildAssertions(ctx context.Context, list types.List) ([]generated.CreateAs
 
 		req := generated.CreateAssertionRequest{
 			Config:   configUnion,
-			Severity: typedStringPtrOrNil[generated.CreateAssertionRequestSeverity](m.Severity),
+			Severity: generated.CreateAssertionRequestSeverity(m.Severity.ValueString()),
 		}
 		result = append(result, req)
 	}
@@ -535,8 +535,8 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Type = types.StringValue(string(dto.Type))
-	model.FrequencySeconds = types.Int64Value(int64(dto.FrequencySeconds))
-	model.Enabled = types.BoolValue(dto.Enabled)
+	model.FrequencySeconds = int32Value(dto.FrequencySeconds)
+	model.Enabled = boolValue(dto.Enabled)
 	model.PingUrl = stringValue(dto.PingUrl)
 
 	if configBytes, err := dto.Config.MarshalJSON(); err == nil && unionHasData(configBytes) {

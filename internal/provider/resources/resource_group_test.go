@@ -299,7 +299,7 @@ func fullyPopulatedResourceGroupDto(t *testing.T) *generated.ResourceGroupDto {
 		},
 		HealthThresholdType:      &thresholdType,
 		HealthThresholdValue:     &thresholdVal,
-		SuppressMemberAlerts:     true,
+		SuppressMemberAlerts:     boolPtr(true),
 		ConfirmationDelaySeconds: &confirm,
 		RecoveryCooldownMinutes:  &cooldown,
 	}

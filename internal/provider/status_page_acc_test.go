@@ -31,7 +31,7 @@ func statusPageFixture() generated.StatusPageDto {
 		Slug:         "initial-slug",
 		Visibility:   generated.StatusPageDtoVisibility("PUBLIC"),
 		IncidentMode: generated.StatusPageDtoIncidentMode("AUTOMATIC"),
-		Enabled:      true,
+		Enabled:      boolPtr(true),
 		Branding:     generated.StatusPageBranding{HidePoweredBy: false},
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
@@ -88,7 +88,7 @@ func TestAccStatusPage_FullLifecycle(t *testing.T) {
 			state.Name = v
 		}
 		if v, ok := req["enabled"].(bool); ok {
-			state.Enabled = v
+			state.Enabled = &v
 		}
 		mu.Unlock()
 		jsonResponse(w, state)

@@ -388,7 +388,7 @@ func (r *StatusPageResource) mapToState(ctx context.Context, model *StatusPageRe
 	model.Slug = types.StringValue(dto.Slug)
 	model.Description = stringValueClearable(dto.Description)
 	model.Visibility = types.StringValue(string(dto.Visibility))
-	model.Enabled = types.BoolValue(dto.Enabled)
+	model.Enabled = boolValue(dto.Enabled)
 	model.IncidentMode = types.StringValue(string(dto.IncidentMode))
 	model.Branding = brandingObjectFromDto(ctx, dto.Branding)
 	// page_url is derived client-side from the slug. The API doesn't return

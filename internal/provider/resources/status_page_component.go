@@ -494,9 +494,9 @@ func (r *StatusPageComponentResource) mapToState(model *StatusPageComponentResou
 	model.Name = types.StringValue(dto.Name)
 	model.Description = stringValueClearable(dto.Description)
 	model.Type = types.StringValue(string(dto.Type))
-	model.DisplayOrder = types.Int64Value(int64(dto.DisplayOrder))
-	model.ExcludeFromOverall = types.BoolValue(dto.ExcludeFromOverall)
-	model.ShowUptime = types.BoolValue(dto.ShowUptime)
+	model.DisplayOrder = int32Value(dto.DisplayOrder)
+	model.ExcludeFromOverall = boolValue(dto.ExcludeFromOverall)
+	model.ShowUptime = boolValue(dto.ShowUptime)
 	if dto.GroupId != nil {
 		model.GroupID = types.StringValue(dto.GroupId.String())
 	} else {

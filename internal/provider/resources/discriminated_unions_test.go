@@ -184,8 +184,8 @@ func TestMonitorConfig_UnmarshalEveryVariant(t *testing.T) {
 				if v.Host != "example.com" {
 					t.Errorf("host not preserved: %q", v.Host)
 				}
-				if v.Port == nil || *v.Port != 443 {
-					t.Errorf("port not preserved: %+v", v.Port)
+				if v.Port != 443 {
+					t.Errorf("port not preserved: %d", v.Port)
 				}
 			},
 		},

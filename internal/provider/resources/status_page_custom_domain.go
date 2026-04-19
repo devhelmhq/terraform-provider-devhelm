@@ -397,7 +397,7 @@ func (r *StatusPageCustomDomainResource) mapToState(model *StatusPageCustomDomai
 	model.VerificationToken = types.StringValue(dto.VerificationToken)
 	model.VerificationCnameTarget = types.StringValue(dto.VerificationCnameTarget)
 	model.VerificationError = stringValue(dto.VerificationError)
-	model.Primary = types.BoolValue(dto.Primary)
+	model.Primary = boolValue(dto.Primary)
 
 	if dto.VerifiedAt != nil {
 		model.VerifiedAt = types.StringValue(dto.VerifiedAt.UTC().Format(time.RFC3339))
