@@ -9,9 +9,10 @@ import (
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/google/uuid"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -23,11 +24,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 var (
-	_ resource.Resource                = &MonitorResource{}
-	_ resource.ResourceWithImportState = &MonitorResource{}
+	_ resource.Resource                   = &MonitorResource{}
+	_ resource.ResourceWithImportState    = &MonitorResource{}
+	_ resource.ResourceWithValidateConfig = &MonitorResource{}
 )
 
 type MonitorResource struct {
@@ -84,6 +87,9 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Description: "Check frequency in seconds (30\u201386400). " +
 					"Server applies its default (60s) when omitted on create. " +
 					"Omit on update to preserve the current value; the API has no way to clear this field.",
+				Validators: []validator.Int64{
+					int64validator.Between(30, 86400),
+				},
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},
@@ -176,30 +182,51 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 								"type": schema.StringAttribute{
 									Required:    true,
 									Description: "Rule type: consecutive_failures, failures_in_window, or response_time",
+									Validators: []validator.String{
+										stringvalidator.OneOf("consecutive_failures", "failures_in_window", "response_time"),
+									},
 								},
 								"severity": schema.StringAttribute{
 									Required:    true,
 									Description: "Incident severity: down or degraded",
+									Validators: []validator.String{
+										stringvalidator.OneOf("down", "degraded"),
+									},
 								},
 								"scope": schema.StringAttribute{
 									Optional:    true,
 									Description: "Rule scope: per_region or any_region",
+									Validators: []validator.String{
+										stringvalidator.OneOf("per_region", "any_region"),
+									},
 								},
 								"count": schema.Int64Attribute{
 									Optional:    true,
-									Description: "Failure count threshold",
+									Description: "Failure count threshold (1–10)",
+									Validators: []validator.Int64{
+										int64validator.Between(1, 10),
+									},
 								},
 								"window_minutes": schema.Int64Attribute{
 									Optional:    true,
 									Description: "Time window in minutes (for failures_in_window)",
+									Validators: []validator.Int64{
+										int64validator.AtLeast(1),
+									},
 								},
 								"threshold_ms": schema.Int64Attribute{
 									Optional:    true,
 									Description: "Response time threshold in ms (for response_time)",
+									Validators: []validator.Int64{
+										int64validator.AtLeast(1),
+									},
 								},
 								"aggregation_type": schema.StringAttribute{
 									Optional:    true,
 									Description: "Aggregation type: all_exceed, average, p95, max",
+									Validators: []validator.String{
+										stringvalidator.OneOf("all_exceed", "average", "p95", "max"),
+									},
 								},
 							},
 						},
@@ -223,11 +250,103 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						"severity": schema.StringAttribute{
 							Optional:    true,
 							Description: "Assertion severity: fail or warn (default: fail)",
+							Validators: []validator.String{
+								stringvalidator.OneOf("fail", "warn"),
+							},
 						},
 					},
 				},
 			},
 		},
+	}
+}
+
+func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var model MonitorResourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &model)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Config JSON validation: verify it's parseable as JSON.
+	if !model.Config.IsNull() && !model.Config.IsUnknown() {
+		configJSON := model.Config.ValueString()
+		var parsed map[string]json.RawMessage
+		if err := json.Unmarshal([]byte(configJSON), &parsed); err != nil {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("config"),
+				"Invalid JSON in config",
+				fmt.Sprintf("The config attribute must be valid JSON: %s", err),
+			)
+		}
+	}
+
+	// Auth JSON validation: verify it's parseable as JSON with a valid type.
+	if !model.Auth.IsNull() && !model.Auth.IsUnknown() {
+		authJSON := model.Auth.ValueString()
+		if authJSON != "" {
+			var parsed map[string]json.RawMessage
+			if err := json.Unmarshal([]byte(authJSON), &parsed); err != nil {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("auth"),
+					"Invalid JSON in auth",
+					fmt.Sprintf("The auth attribute must be valid JSON: %s", err),
+				)
+			} else if typeRaw, ok := parsed["type"]; ok {
+				var authType string
+				if err := json.Unmarshal(typeRaw, &authType); err == nil {
+					if !generated.MonitorAuthDtoAuthType(authType).Valid() {
+						resp.Diagnostics.AddAttributeError(
+							path.Root("auth"),
+							"Invalid auth type",
+							fmt.Sprintf("Auth type %q is not valid. Must be one of: bearer, basic, header, api_key", authType),
+						)
+					}
+				}
+			}
+		}
+	}
+
+	// Trigger rule conditional validation: count is required for all rule types.
+	if !model.IncidentPolicy.IsNull() && !model.IncidentPolicy.IsUnknown() {
+		var policy incidentPolicyModel
+		diags := model.IncidentPolicy.As(ctx, &policy, basetypes.ObjectAsOptions{
+			UnhandledNullAsEmpty:    true,
+			UnhandledUnknownAsEmpty: true,
+		})
+		if !diags.HasError() && !policy.TriggerRules.IsNull() && !policy.TriggerRules.IsUnknown() {
+			var rules []triggerRuleModel
+			if ruleDiags := policy.TriggerRules.ElementsAs(ctx, &rules, false); !ruleDiags.HasError() {
+				for i, rule := range rules {
+					rulePath := path.Root("incident_policy").AtName("trigger_rules").AtListIndex(i)
+
+					if rule.Count.IsNull() || rule.Count.IsUnknown() {
+						resp.Diagnostics.AddAttributeError(
+							rulePath.AtName("count"),
+							"Missing required attribute",
+							"Trigger rule count is required for all rule types",
+						)
+					}
+
+					ruleType := rule.Type.ValueString()
+					if ruleType == "failures_in_window" && (rule.WindowMinutes.IsNull() || rule.WindowMinutes.IsUnknown()) {
+						resp.Diagnostics.AddAttributeError(
+							rulePath.AtName("window_minutes"),
+							"Missing required attribute",
+							"window_minutes is required when trigger rule type is failures_in_window",
+						)
+					}
+
+					if ruleType == "response_time" && (rule.ThresholdMs.IsNull() || rule.ThresholdMs.IsUnknown()) {
+						resp.Diagnostics.AddAttributeError(
+							rulePath.AtName("threshold_ms"),
+							"Missing required attribute",
+							"threshold_ms is required when trigger rule type is response_time",
+						)
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -337,10 +456,18 @@ func buildIncidentPolicy(ctx context.Context, obj types.Object) (*generated.Upda
 			return nil, fmt.Errorf("parsing trigger rules: %s", ruleDiags.Errors())
 		}
 	}
-	for _, rm := range ruleModels {
+	for i, rm := range ruleModels {
+		ruleType := generated.TriggerRuleType(rm.Type.ValueString())
+		if !ruleType.Valid() {
+			return nil, fmt.Errorf("trigger_rules[%d].type: invalid value %q", i, rm.Type.ValueString())
+		}
+		ruleSeverity := generated.TriggerRuleSeverity(rm.Severity.ValueString())
+		if !ruleSeverity.Valid() {
+			return nil, fmt.Errorf("trigger_rules[%d].severity: invalid value %q", i, rm.Severity.ValueString())
+		}
 		triggerRules = append(triggerRules, generated.TriggerRule{
-			Type:            generated.TriggerRuleType(rm.Type.ValueString()),
-			Severity:        generated.TriggerRuleSeverity(rm.Severity.ValueString()),
+			Type:            ruleType,
+			Severity:        ruleSeverity,
 			Scope:           typedStringPtrOrNil[generated.TriggerRuleScope](rm.Scope),
 			Count:           int32PtrOrNil(rm.Count),
 			WindowMinutes:   int32PtrOrNil(rm.WindowMinutes),
@@ -389,9 +516,14 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		return nil, err
 	}
 
+	monitorType := generated.CreateMonitorRequestType(plan.Type.ValueString())
+	if !monitorType.Valid() {
+		return nil, fmt.Errorf("type: invalid monitor type %q", plan.Type.ValueString())
+	}
+
 	req := &generated.CreateMonitorRequest{
 		Name:             plan.Name.ValueString(),
-		Type:             generated.CreateMonitorRequestType(plan.Type.ValueString()),
+		Type:             monitorType,
 		Config:           configUnion,
 		ManagedBy:        generated.CreateMonitorRequestManagedBy("TERRAFORM"),
 		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),

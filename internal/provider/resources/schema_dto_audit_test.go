@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -317,6 +318,135 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 						fieldName, tc.resource, attrName,
 					)
 				}
+			}
+		})
+	}
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// Validator presence audit (Class V)
+//
+// Verifies that schema attributes corresponding to known enum fields in
+// the generated DTOs have Validators configured (typically OneOf). This
+// catches silent drift: if a new enum field appears in the spec but no
+// validator is wired in, the provider would accept arbitrary strings
+// and let the API reject them at apply time.
+// ───────────────────────────────────────────────────────────────────────
+
+type enumValidatorCase struct {
+	resource    resource.Resource
+	attrPath    string // dot-separated path, e.g. "type" or "incident_policy.trigger_rules.type"
+	enumValues  []string
+	description string
+}
+
+func hasStringValidators(t *testing.T, r resource.Resource, attrPath string) bool {
+	t.Helper()
+	resp := &resource.SchemaResponse{}
+	r.Schema(context.Background(), resource.SchemaRequest{}, resp)
+
+	parts := strings.Split(attrPath, ".")
+	attrs := resp.Schema.Attributes
+	blocks := resp.Schema.Blocks
+
+	for i, part := range parts {
+		isLast := i == len(parts)-1
+
+		if attr, ok := attrs[part]; ok {
+			if isLast {
+				switch a := attr.(type) {
+				case schema.StringAttribute:
+					return len(a.Validators) > 0
+				case schema.Int64Attribute:
+					return len(a.Validators) > 0
+				default:
+					return false
+				}
+			}
+			if nested, ok := attr.(schema.SingleNestedAttribute); ok {
+				attrs = nested.Attributes
+				blocks = nil
+				continue
+			}
+			if nested, ok := attr.(schema.ListNestedAttribute); ok {
+				attrs = nested.NestedObject.Attributes
+				blocks = nil
+				continue
+			}
+			return false
+		}
+		if block, ok := blocks[part]; ok {
+			if nested, ok := block.(schema.ListNestedBlock); ok {
+				attrs = nested.NestedObject.Attributes
+				blocks = nil
+				continue
+			}
+			return false
+		}
+
+		return false
+	}
+	return false
+}
+
+func TestSchemaValidatorAudit(t *testing.T) {
+	cases := []enumValidatorCase{
+		// Monitor enums
+		{&MonitorResource{}, "type", []string{"HTTP", "DNS", "TCP", "ICMP", "HEARTBEAT", "MCP_SERVER"}, "monitor type"},
+		{&MonitorResource{}, "frequency_seconds", nil, "monitor frequency range"},
+		{&MonitorResource{}, "incident_policy.trigger_rules.type", []string{"consecutive_failures", "failures_in_window", "response_time"}, "trigger rule type"},
+		{&MonitorResource{}, "incident_policy.trigger_rules.severity", []string{"down", "degraded"}, "trigger severity"},
+		{&MonitorResource{}, "incident_policy.trigger_rules.scope", []string{"per_region", "any_region"}, "trigger scope"},
+		{&MonitorResource{}, "incident_policy.trigger_rules.aggregation_type", []string{"all_exceed", "average", "p95", "max"}, "trigger aggregation"},
+		{&MonitorResource{}, "incident_policy.trigger_rules.count", nil, "trigger count range"},
+		{&MonitorResource{}, "assertions.severity", nil, "assertion severity"},
+		// Alert channel enums (TF attribute is "channel_type", not "type")
+		{&AlertChannelResource{}, "channel_type", []string{"slack", "email", "pagerduty", "opsgenie", "discord", "teams", "webhook"}, "channel type"},
+		// Status page enums
+		{&StatusPageResource{}, "visibility", []string{"PUBLIC"}, "visibility"},
+		{&StatusPageResource{}, "incident_mode", []string{"MANUAL", "REVIEW", "AUTOMATIC"}, "incident mode"},
+		// Status page component enums
+		{&StatusPageComponentResource{}, "type", []string{"STATIC", "MONITOR", "GROUP"}, "component type"},
+		// Dependency enums
+		{&DependencyResource{}, "alert_sensitivity", []string{"ALL", "INCIDENTS_ONLY", "MAJOR_ONLY"}, "alert sensitivity"},
+		// Resource group enums
+		{&ResourceGroupResource{}, "health_threshold_type", []string{"COUNT", "PERCENTAGE"}, "health threshold type"},
+		{&ResourceGroupResource{}, "default_frequency", nil, "resource group default frequency range"},
+	}
+
+	for _, tc := range cases {
+		name := fmt.Sprintf("%T/%s", tc.resource, tc.attrPath)
+		t.Run(name, func(t *testing.T) {
+			if !hasStringValidators(t, tc.resource, tc.attrPath) {
+				t.Errorf(
+					"attribute %q on %T has no Validators. "+
+						"Add a stringvalidator.OneOf(%v) or int64validator for %s.",
+					tc.attrPath, tc.resource, tc.enumValues, tc.description,
+				)
+			}
+		})
+	}
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// ValidateConfig audit (Class VC)
+//
+// Verifies that key resources implement resource.ResourceWithValidateConfig.
+// ───────────────────────────────────────────────────────────────────────
+
+func TestValidateConfigImplemented(t *testing.T) {
+	resources := []struct {
+		name     string
+		resource resource.Resource
+	}{
+		{"monitor", &MonitorResource{}},
+		{"status_page_component", &StatusPageComponentResource{}},
+	}
+
+	for _, tc := range resources {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, ok := tc.resource.(resource.ResourceWithValidateConfig); !ok {
+				t.Errorf("%T does not implement ResourceWithValidateConfig", tc.resource)
 			}
 		})
 	}

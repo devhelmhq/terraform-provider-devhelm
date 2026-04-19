@@ -682,3 +682,70 @@ func TestUnionHasData_PopulatedReturnsTrue(t *testing.T) {
 		t.Error("populated object should return true")
 	}
 }
+
+// ── Enum Valid() apply-time checks ──────────────────────────────────────
+
+func TestMonitor_BuildCreate_InvalidMonitorType(t *testing.T) {
+	ctx := context.Background()
+	r := &MonitorResource{}
+	plan := &MonitorResourceModel{
+		Name:           types.StringValue("neg"),
+		Type:           types.StringValue("INVALID_TYPE"),
+		Config:         types.StringValue(`{"url":"https://example.com"}`),
+		Assertions:     types.ListNull(assertionObjectType()),
+		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
+	}
+	_, err := r.buildCreateRequest(ctx, plan)
+	if err == nil {
+		t.Fatal("expected error for invalid monitor type")
+	}
+	if !strings.Contains(err.Error(), "INVALID_TYPE") {
+		t.Errorf("error should mention the invalid type, got: %s", err.Error())
+	}
+}
+
+func TestMonitor_BuildIncidentPolicy_InvalidTriggerRuleType(t *testing.T) {
+	ctx := context.Background()
+	ruleModel := triggerRuleModel{
+		Type:     types.StringValue("invalid_rule_type"),
+		Severity: types.StringValue("down"),
+		Count:    types.Int64Value(3),
+	}
+	rulesList, _ := types.ListValueFrom(ctx, triggerRuleObjectType(), []triggerRuleModel{ruleModel})
+	policyModel := incidentPolicyModel{
+		ConfirmationType: types.StringValue("multi_region"),
+		TriggerRules:     rulesList,
+	}
+	policyObj, _ := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+
+	_, err := buildIncidentPolicy(ctx, policyObj)
+	if err == nil {
+		t.Fatal("expected error for invalid trigger rule type")
+	}
+	if !strings.Contains(err.Error(), "invalid_rule_type") {
+		t.Errorf("error should mention the invalid type, got: %s", err.Error())
+	}
+}
+
+func TestMonitor_BuildIncidentPolicy_InvalidTriggerRuleSeverity(t *testing.T) {
+	ctx := context.Background()
+	ruleModel := triggerRuleModel{
+		Type:     types.StringValue("consecutive_failures"),
+		Severity: types.StringValue("critical"),
+		Count:    types.Int64Value(3),
+	}
+	rulesList, _ := types.ListValueFrom(ctx, triggerRuleObjectType(), []triggerRuleModel{ruleModel})
+	policyModel := incidentPolicyModel{
+		ConfirmationType: types.StringValue("multi_region"),
+		TriggerRules:     rulesList,
+	}
+	policyObj, _ := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+
+	_, err := buildIncidentPolicy(ctx, policyObj)
+	if err == nil {
+		t.Fatal("expected error for invalid trigger rule severity")
+	}
+	if !strings.Contains(err.Error(), "critical") {
+		t.Errorf("error should mention the invalid severity, got: %s", err.Error())
+	}
+}

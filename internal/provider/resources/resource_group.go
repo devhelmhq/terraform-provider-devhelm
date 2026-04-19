@@ -6,6 +6,7 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -87,7 +88,10 @@ func (r *ResourceGroupResource) Schema(_ context.Context, _ resource.SchemaReque
 				Optional: true, Description: "Notification policy ID for group-level alerts",
 			},
 			"default_frequency": schema.Int64Attribute{
-				Optional: true, Description: "Default check frequency in seconds for group members",
+				Optional: true, Description: "Default check frequency in seconds for group members (30–86400)",
+				Validators: []validator.Int64{
+					int64validator.Between(30, 86400),
+				},
 			},
 			"default_regions": schema.ListAttribute{
 				Optional: true, ElementType: types.StringType,
@@ -124,6 +128,9 @@ func (r *ResourceGroupResource) Schema(_ context.Context, _ resource.SchemaReque
 			},
 			"health_threshold_type": schema.StringAttribute{
 				Optional: true, Description: "Health threshold type: COUNT or PERCENTAGE",
+				Validators: []validator.String{
+					stringvalidator.OneOf("COUNT", "PERCENTAGE"),
+				},
 			},
 			"health_threshold_value": schema.Float64Attribute{
 				Optional: true, Description: "Health threshold value",
@@ -210,13 +217,13 @@ func (r *ResourceGroupResource) buildUpdateRequest(ctx context.Context, plan *Re
 		return generated.UpdateResourceGroupRequest{}, diags
 	}
 	return generated.UpdateResourceGroupRequest{
-		Name:                     plan.Name.ValueString(),
-		Description:              stringPtrOrNil(plan.Description),
-		AlertPolicyId:            alertPolicyID,
-		DefaultFrequency:         int32PtrOrNil(plan.DefaultFrequency),
-		DefaultRegions:           stringSliceToPtr(plan.DefaultRegions),
-		DefaultAlertChannels:     channels,
-		DefaultEnvironmentId:     envID,
+		Name:                 plan.Name.ValueString(),
+		Description:          stringPtrOrNil(plan.Description),
+		AlertPolicyId:        alertPolicyID,
+		DefaultFrequency:     int32PtrOrNil(plan.DefaultFrequency),
+		DefaultRegions:       stringSliceToPtr(plan.DefaultRegions),
+		DefaultAlertChannels: channels,
+		DefaultEnvironmentId: envID,
 		// API contract: null clears, missing-from-payload preserves. We
 		// always emit (config is the source of truth), so a removed-from-HCL
 		// strategy will be cleared on the server.

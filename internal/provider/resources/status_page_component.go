@@ -8,7 +8,6 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -18,6 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // componentStartDateLayout is the wire format the API expects for
@@ -27,8 +27,9 @@ import (
 const componentStartDateLayout = "2006-01-02"
 
 var (
-	_ resource.Resource                = &StatusPageComponentResource{}
-	_ resource.ResourceWithImportState = &StatusPageComponentResource{}
+	_ resource.Resource                   = &StatusPageComponentResource{}
+	_ resource.ResourceWithImportState    = &StatusPageComponentResource{}
+	_ resource.ResourceWithValidateConfig = &StatusPageComponentResource{}
 )
 
 // StatusPageComponentResource manages a single component on a status page as
@@ -210,6 +211,55 @@ func (componentStartDateValidator) ValidateString(_ context.Context, req validat
 			req.Path,
 			"Invalid start_date format",
 			fmt.Sprintf("Expected ISO 8601 date (YYYY-MM-DD), got %q: %s", req.ConfigValue.ValueString(), err),
+		)
+	}
+}
+
+func (r *StatusPageComponentResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var model StatusPageComponentResourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &model)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if model.Type.IsNull() || model.Type.IsUnknown() {
+		return
+	}
+
+	compType := model.Type.ValueString()
+
+	switch compType {
+	case "MONITOR":
+		if model.MonitorID.IsNull() || model.MonitorID.IsUnknown() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("monitor_id"),
+				"Missing required attribute",
+				"monitor_id is required when component type is MONITOR",
+			)
+		}
+	case "GROUP":
+		if model.ResourceGroupID.IsNull() || model.ResourceGroupID.IsUnknown() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("resource_group_id"),
+				"Missing required attribute",
+				"resource_group_id is required when component type is GROUP",
+			)
+		}
+	}
+
+	if compType != "MONITOR" && !model.MonitorID.IsNull() && !model.MonitorID.IsUnknown() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("monitor_id"),
+			"Conflicting attribute",
+			fmt.Sprintf("monitor_id should not be set when component type is %s", compType),
+		)
+	}
+
+	if compType != "GROUP" && !model.ResourceGroupID.IsNull() && !model.ResourceGroupID.IsUnknown() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("resource_group_id"),
+			"Conflicting attribute",
+			fmt.Sprintf("resource_group_id should not be set when component type is %s", compType),
 		)
 	}
 }
