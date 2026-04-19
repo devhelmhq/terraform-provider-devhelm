@@ -51,8 +51,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install oapi-codegen
-        run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+      # oapi-codegen version is pinned by the `tool` directive in
+      # go.mod; `go tool oapi-codegen` (invoked from typegen.sh) resolves
+      # via the module cache, so no separate install step is needed.
       - run: make typegen
       - name: Verify no drift
         run: |
