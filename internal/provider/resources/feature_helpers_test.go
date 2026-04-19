@@ -19,7 +19,7 @@ func TestBrandingObjectFromDto_RoundTripsAllFields(t *testing.T) {
 		BrandColor:    brand,
 		TextColor:     text,
 		LogoUrl:       logo,
-		HidePoweredBy: true,
+		HidePoweredBy: boolPtr(true),
 	}
 
 	obj := brandingObjectFromDto(ctx, dto)
@@ -40,7 +40,7 @@ func TestBrandingObjectFromDto_RoundTripsAllFields(t *testing.T) {
 	if got.LogoUrl == nil || *got.LogoUrl != "https://acme.com/logo.png" {
 		t.Errorf("logo_url round-trip failed: %+v", got.LogoUrl)
 	}
-	if !got.HidePoweredBy {
+	if got.HidePoweredBy == nil || !*got.HidePoweredBy {
 		t.Errorf("hide_powered_by round-trip lost the true value")
 	}
 	// Untouched optional pointers must round-trip as nil, not "".
@@ -69,7 +69,7 @@ func TestBrandingForUpdate_NullObjectReturnsZeroValue(t *testing.T) {
 		t.Fatalf("unexpected diagnostics: %v", diags)
 	}
 	// Zero value: all *string nil, HidePoweredBy false.
-	if got.BrandColor != nil || got.HidePoweredBy {
+	if got.BrandColor != nil || (got.HidePoweredBy != nil && *got.HidePoweredBy) {
 		t.Errorf("expected zero StatusPageBranding, got %+v", got)
 	}
 }
@@ -96,8 +96,8 @@ func TestRetryStrategyObjectFromDto_PopulatesAllFields(t *testing.T) {
 	ctx := context.Background()
 	rs := &generated.RetryStrategy{
 		Type:       "fixed",
-		Interval:   int32Ptr(60),
-		MaxRetries: int32Ptr(3),
+		Interval:   60,
+		MaxRetries: 3,
 	}
 	obj := retryStrategyObjectFromDto(ctx, rs)
 	if obj.IsNull() || obj.IsUnknown() {
@@ -114,11 +114,11 @@ func TestRetryStrategyObjectFromDto_PopulatesAllFields(t *testing.T) {
 	if got.Type != "fixed" {
 		t.Errorf("type round-trip failed: got %q", got.Type)
 	}
-	if got.Interval == nil || *got.Interval != 60 {
-		t.Errorf("interval round-trip failed: %+v", got.Interval)
+	if got.Interval != 60 {
+		t.Errorf("interval round-trip failed: %d", got.Interval)
 	}
-	if got.MaxRetries == nil || *got.MaxRetries != 3 {
-		t.Errorf("max_retries round-trip failed: %+v", got.MaxRetries)
+	if got.MaxRetries != 3 {
+		t.Errorf("max_retries round-trip failed: %d", got.MaxRetries)
 	}
 }
 

@@ -129,7 +129,10 @@ func (r *ResourceGroupResource) Schema(_ context.Context, _ resource.SchemaReque
 			"health_threshold_type": schema.StringAttribute{
 				Optional: true, Description: "Health threshold type: COUNT or PERCENTAGE",
 				Validators: []validator.String{
-					stringvalidator.OneOf("COUNT", "PERCENTAGE"),
+					stringvalidator.OneOf(
+					string(generated.CreateResourceGroupRequestHealthThresholdTypeCOUNT),
+					string(generated.CreateResourceGroupRequestHealthThresholdTypePERCENTAGE),
+				),
 				},
 			},
 			"health_threshold_value": schema.Float64Attribute{
@@ -246,7 +249,7 @@ func (r *ResourceGroupResource) mapToState(ctx context.Context, model *ResourceG
 	model.DefaultEnvironmentID = uuidPtrValue(dto.DefaultEnvironmentId)
 	model.HealthThresholdType = typedStringPtrValue(dto.HealthThresholdType)
 	model.HealthThresholdValue = float32Value(dto.HealthThresholdValue)
-	model.SuppressMemberAlerts = boolValue(dto.SuppressMemberAlerts)
+	model.SuppressMemberAlerts = types.BoolValue(dto.SuppressMemberAlerts)
 	model.ConfirmationDelaySeconds = int32Value(dto.ConfirmationDelaySeconds)
 	model.RecoveryCooldownMinutes = int32Value(dto.RecoveryCooldownMinutes)
 
@@ -269,13 +272,13 @@ func retryStrategyObjectAttrTypes() map[string]attr.Type {
 // An "empty" DTO (zero-value Type) is treated as "no strategy configured" and
 // rendered as types.ObjectNull so HCL omission stays stable across plans.
 func retryStrategyObjectFromDto(ctx context.Context, rs *generated.RetryStrategy) types.Object {
-	if rs == nil || (rs.Type == "" && rs.Interval == nil && rs.MaxRetries == nil) {
+	if rs == nil || (rs.Type == "" && rs.Interval == 0 && rs.MaxRetries == 0) {
 		return types.ObjectNull(retryStrategyObjectAttrTypes())
 	}
 	model := retryStrategyModel{
 		Type:       types.StringValue(rs.Type),
-		Interval:   int32Value(rs.Interval),
-		MaxRetries: int32Value(rs.MaxRetries),
+		Interval:   types.Int64Value(int64(rs.Interval)),
+		MaxRetries: types.Int64Value(int64(rs.MaxRetries)),
 	}
 	obj, _ := types.ObjectValueFrom(ctx, retryStrategyObjectAttrTypes(), model)
 	return obj
@@ -299,8 +302,8 @@ func retryStrategyFromObject(ctx context.Context, obj types.Object) (*generated.
 	}
 	return &generated.RetryStrategy{
 		Type:       model.Type.ValueString(),
-		Interval:   int32PtrOrNil(model.Interval),
-		MaxRetries: int32PtrOrNil(model.MaxRetries),
+		Interval:   int32OrZero(model.Interval),
+		MaxRetries: int32OrZero(model.MaxRetries),
 	}, diags
 }
 

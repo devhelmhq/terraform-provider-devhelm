@@ -78,7 +78,15 @@ func (r *AlertChannelResource) Schema(_ context.Context, _ resource.SchemaReques
 				Required:    true,
 				Description: "Channel type: slack, email, pagerduty, opsgenie, discord, teams, webhook",
 				Validators: []validator.String{
-					stringvalidator.OneOf("slack", "email", "pagerduty", "opsgenie", "discord", "teams", "webhook"),
+					stringvalidator.OneOf(
+					string(generated.Slack),
+					string(generated.Email),
+					string(generated.Pagerduty),
+					string(generated.Opsgenie),
+					string(generated.Discord),
+					string(generated.Teams),
+					string(generated.Webhook),
+				),
 				},
 			},
 			"config_hash": schema.StringAttribute{
@@ -149,44 +157,44 @@ func (r *AlertChannelResource) buildConfig(model *AlertChannelResourceModel) (js
 	channelType := model.ChannelType.ValueString()
 
 	var cfg any
-	switch channelType {
-	case "slack":
+	switch generated.AlertChannelDtoChannelType(channelType) {
+	case generated.Slack:
 		cfg = generated.SlackChannelConfig{
-			ChannelType: "slack",
+			ChannelType: string(generated.Slack),
 			WebhookUrl:  model.WebhookURL.ValueString(),
 			MentionText: stringPtrOrNil(model.MentionText),
 		}
-	case "discord":
+	case generated.Discord:
 		cfg = generated.DiscordChannelConfig{
-			ChannelType:   "discord",
+			ChannelType:   string(generated.Discord),
 			WebhookUrl:    model.WebhookURL.ValueString(),
 			MentionRoleId: stringPtrOrNil(model.MentionRoleID),
 		}
-	case "email":
+	case generated.Email:
 		cfg = generated.EmailChannelConfig{
-			ChannelType: "email",
+			ChannelType: string(generated.Email),
 			Recipients:  emailsFromStringList(model.Recipients),
 		}
-	case "pagerduty":
+	case generated.Pagerduty:
 		cfg = generated.PagerDutyChannelConfig{
-			ChannelType:      "pagerduty",
+			ChannelType:      string(generated.Pagerduty),
 			RoutingKey:       model.RoutingKey.ValueString(),
 			SeverityOverride: stringPtrOrNil(model.SeverityOverride),
 		}
-	case "opsgenie":
+	case generated.Opsgenie:
 		cfg = generated.OpsGenieChannelConfig{
-			ChannelType: "opsgenie",
+			ChannelType: string(generated.Opsgenie),
 			ApiKey:      model.APIKey.ValueString(),
 			Region:      stringPtrOrNil(model.Region),
 		}
-	case "teams":
+	case generated.Teams:
 		cfg = generated.TeamsChannelConfig{
-			ChannelType: "teams",
+			ChannelType: string(generated.Teams),
 			WebhookUrl:  model.WebhookURL.ValueString(),
 		}
-	case "webhook":
+	case generated.Webhook:
 		cfg = generated.WebhookChannelConfig{
-			ChannelType:   "webhook",
+			ChannelType:   string(generated.Webhook),
 			Url:           model.URL.ValueString(),
 			CustomHeaders: stringMapToPtr(model.CustomHeaders),
 			SigningSecret: stringPtrOrNil(model.SigningSecret),

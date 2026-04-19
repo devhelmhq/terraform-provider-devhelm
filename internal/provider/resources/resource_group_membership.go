@@ -18,6 +18,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+const (
+	memberTypeMonitor = "monitor"
+	memberTypeService = "service"
+)
+
 var (
 	_ resource.Resource                = &ResourceGroupMembershipResource{}
 	_ resource.ResourceWithImportState = &ResourceGroupMembershipResource{}
@@ -58,7 +63,7 @@ func (r *ResourceGroupMembershipResource) Schema(_ context.Context, _ resource.S
 			"member_type": schema.StringAttribute{
 				Required:    true,
 				Description: "Type of member: monitor or service",
-				Validators:  []validator.String{stringvalidator.OneOf("monitor", "service")},
+				Validators:  []validator.String{stringvalidator.OneOf(memberTypeMonitor, memberTypeService)},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"member_id": schema.StringAttribute{
@@ -151,9 +156,9 @@ func (r *ResourceGroupMembershipResource) Read(ctx context.Context, req resource
 	// expects: monitor_id for monitors, subscription_id for services
 	// (NOT service_id — see AddResourceGroupMemberRequest in api/v1).
 	state.MemberType = types.StringValue(matched.MemberType)
-	if matched.MemberType == "monitor" && matched.MonitorId != nil {
+	if matched.MemberType == memberTypeMonitor && matched.MonitorId != nil {
 		state.MemberID = types.StringValue(matched.MonitorId.String())
-	} else if matched.MemberType == "service" && matched.SubscriptionId != nil {
+	} else if matched.MemberType == memberTypeService && matched.SubscriptionId != nil {
 		state.MemberID = types.StringValue(matched.SubscriptionId.String())
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -229,11 +234,11 @@ func (r *ResourceGroupMembershipResource) ImportState(ctx context.Context, req r
 
 	memberID := ""
 	switch matched.MemberType {
-	case "monitor":
+	case memberTypeMonitor:
 		if matched.MonitorId != nil {
 			memberID = matched.MonitorId.String()
 		}
-	case "service":
+	case memberTypeService:
 		if matched.SubscriptionId != nil {
 			memberID = matched.SubscriptionId.String()
 		}

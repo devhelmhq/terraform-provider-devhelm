@@ -139,7 +139,9 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				Optional: true, Computed: true,
 				Description: "Page visibility. Only PUBLIC is currently supported (default: PUBLIC)",
 				Validators: []validator.String{
-					stringvalidator.OneOf("PUBLIC"),
+					stringvalidator.OneOf(
+					string(generated.CreateStatusPageRequestVisibilityPUBLIC),
+				),
 				},
 			},
 			"enabled": schema.BoolAttribute{
@@ -149,7 +151,11 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 			"incident_mode": schema.StringAttribute{
 				Optional: true, Computed: true, Description: "Incident mode: MANUAL, REVIEW, or AUTOMATIC (default: AUTOMATIC)",
 				Validators: []validator.String{
-					stringvalidator.OneOf("MANUAL", "REVIEW", "AUTOMATIC"),
+					stringvalidator.OneOf(
+					string(generated.CreateStatusPageRequestIncidentModeMANUAL),
+					string(generated.CreateStatusPageRequestIncidentModeREVIEW),
+					string(generated.CreateStatusPageRequestIncidentModeAUTOMATIC),
+				),
 				},
 			},
 			"page_url": schema.StringAttribute{
@@ -388,7 +394,7 @@ func (r *StatusPageResource) mapToState(ctx context.Context, model *StatusPageRe
 	model.Slug = types.StringValue(dto.Slug)
 	model.Description = stringValueClearable(dto.Description)
 	model.Visibility = types.StringValue(string(dto.Visibility))
-	model.Enabled = boolValue(dto.Enabled)
+	model.Enabled = types.BoolValue(dto.Enabled)
 	model.IncidentMode = types.StringValue(string(dto.IncidentMode))
 	model.Branding = brandingObjectFromDto(ctx, dto.Branding)
 	// page_url is derived client-side from the slug. The API doesn't return
@@ -434,7 +440,7 @@ func brandingObjectFromDto(ctx context.Context, b generated.StatusPageBranding) 
 		ReportURL:      stringValue(b.ReportUrl),
 		CustomCSS:      stringValue(b.CustomCss),
 		CustomHeadHTML: stringValue(b.CustomHeadHtml),
-		HidePoweredBy:  types.BoolValue(b.HidePoweredBy),
+		HidePoweredBy:  boolValue(b.HidePoweredBy),
 	}
 	obj, _ := types.ObjectValueFrom(ctx, brandingObjectAttrTypes(), model)
 	return obj
@@ -488,7 +494,7 @@ func brandingFromObject(ctx context.Context, obj types.Object) (generated.Status
 		ReportUrl:      stringPtrOrNil(model.ReportURL),
 		CustomCss:      stringPtrOrNil(model.CustomCSS),
 		CustomHeadHtml: stringPtrOrNil(model.CustomHeadHTML),
-		HidePoweredBy:  !model.HidePoweredBy.IsNull() && !model.HidePoweredBy.IsUnknown() && model.HidePoweredBy.ValueBool(),
+		HidePoweredBy:  boolPtrOrNil(model.HidePoweredBy),
 	}, diags
 }
 

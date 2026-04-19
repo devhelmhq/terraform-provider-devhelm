@@ -100,7 +100,7 @@ func (r *EnvironmentResource) Create(ctx context.Context, req resource.CreateReq
 		Name:      plan.Name.ValueString(),
 		Slug:      plan.Slug.ValueString(),
 		Variables: stringMapToPtr(plan.Variables),
-		IsDefault: boolPtrOrNil(plan.IsDefault),
+		IsDefault: plan.IsDefault.ValueBool(),
 	}
 
 	env, err := api.Create[generated.EnvironmentDto](ctx, r.client, "/api/v1/environments", body)
@@ -215,7 +215,7 @@ func (r *EnvironmentResource) mapToState(ctx context.Context, model *Environment
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
-	model.IsDefault = boolValue(dto.IsDefault)
+	model.IsDefault = types.BoolValue(dto.IsDefault)
 	if len(dto.Variables) > 0 {
 		elements := make(map[string]string, len(dto.Variables))
 		for k, v := range dto.Variables {

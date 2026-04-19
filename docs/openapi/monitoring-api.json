@@ -4119,6 +4119,7 @@
           "Status Data"
         ],
         "summary": "Get daily uptime data for a component",
+        "description": "Pass either ``period`` (preset window) or an explicit ``from``/``to`` calendar window (ISO yyyy-MM-dd, max 730 days, ``to`` defaults to today). When both are supplied, the explicit window wins.",
         "operationId": "getComponentUptime",
         "parameters": [
           {
@@ -4141,7 +4142,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Time window",
+            "description": "Preset time window (used when ``from`` is omitted)",
             "required": false,
             "schema": {
               "type": "string",
@@ -4151,6 +4152,26 @@
                 "90d",
                 "1y"
               ]
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Explicit window start (ISO date); overrides ``period``",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Explicit window end (ISO date); defaults to today",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
             }
           }
         ],
@@ -4174,7 +4195,7 @@
           "Status Data"
         ],
         "summary": "Batch daily uptime data for all leaf components",
-        "description": "Returns daily uptime for every active non-group component with uptime data, keyed by component ID. Replaces N individual per-component uptime calls with a single request.",
+        "description": "Returns daily uptime for every active non-group component with uptime data, keyed by component ID. Replaces N individual per-component uptime calls with a single request. Supports either a preset ``period`` or an explicit ``from``/``to`` window (ISO yyyy-MM-dd, max 730 days). The explicit window wins when both are supplied — this is what powers the sliding 90-day navigator on the public uptime history page.",
         "operationId": "getBatchComponentUptime",
         "parameters": [
           {
@@ -4188,7 +4209,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Time window",
+            "description": "Preset time window (used when ``from`` is omitted)",
             "required": false,
             "schema": {
               "type": "string",
@@ -4198,6 +4219,26 @@
                 "90d",
                 "1y"
               ]
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Explicit window start (ISO date); overrides ``period``",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Explicit window end (ISO date); defaults to today",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
             }
           }
         ],
@@ -6780,7 +6821,10 @@
           "eventType",
           "id",
           "incidentId",
-          "status"
+          "status",
+          "stepNumber",
+          "fireCount",
+          "attemptCount"
         ],
         "type": "object",
         "properties": {
@@ -6912,7 +6956,8 @@
         "required": [
           "createdAt",
           "key",
-          "name"
+          "name",
+          "id"
         ],
         "type": "object",
         "properties": {
@@ -6950,7 +6995,8 @@
           "createdAt",
           "key",
           "name",
-          "updatedAt"
+          "updatedAt",
+          "id"
         ],
         "type": "object",
         "properties": {
@@ -7062,7 +7108,8 @@
       "AssertionResultDto": {
         "required": [
           "severity",
-          "type"
+          "type",
+          "passed"
         ],
         "type": "object",
         "properties": {
@@ -7107,7 +7154,8 @@
         "required": [
           "assertionType",
           "message",
-          "severity"
+          "severity",
+          "passed"
         ],
         "type": "object",
         "properties": {
@@ -7190,7 +7238,8 @@
       "AuditEventDto": {
         "required": [
           "action",
-          "createdAt"
+          "createdAt",
+          "id"
         ],
         "type": "object",
         "properties": {
@@ -7410,7 +7459,8 @@
       },
       "CategoryDto": {
         "required": [
-          "category"
+          "category",
+          "serviceCount"
         ],
         "type": "object",
         "properties": {
@@ -7612,7 +7662,8 @@
         "required": [
           "id",
           "region",
-          "timestamp"
+          "timestamp",
+          "passed"
         ],
         "type": "object",
         "properties": {
@@ -7688,7 +7739,10 @@
       "ComponentImpact": {
         "required": [
           "componentId",
-          "componentName"
+          "componentName",
+          "uptimePercentage",
+          "partialOutageSeconds",
+          "majorOutageSeconds"
         ],
         "type": "object",
         "properties": {
@@ -7726,7 +7780,8 @@
       },
       "ComponentPosition": {
         "required": [
-          "componentId"
+          "componentId",
+          "displayOrder"
         ],
         "type": "object",
         "properties": {
@@ -7774,7 +7829,10 @@
       },
       "ComponentUptimeDayDto": {
         "required": [
-          "date"
+          "date",
+          "partialOutageSeconds",
+          "majorOutageSeconds",
+          "uptimePercentage"
         ],
         "type": "object",
         "properties": {
@@ -7846,7 +7904,9 @@
       },
       "ConfirmationPolicy": {
         "required": [
-          "type"
+          "type",
+          "minRegionsFailing",
+          "maxWaitSeconds"
         ],
         "type": "object",
         "properties": {
@@ -7932,8 +7992,7 @@
       },
       "CreateAssertionRequest": {
         "required": [
-          "config",
-          "severity"
+          "config"
         ],
         "type": "object",
         "properties": {
@@ -8069,7 +8128,8 @@
           },
           "severity": {
             "type": "string",
-            "description": "Outcome severity: FAIL (fails the check) or WARN (warns without failing)",
+            "description": "Outcome severity: FAIL (fails the check) or WARN (warns without failing, default: FAIL)",
+            "nullable": true,
             "enum": [
               "fail",
               "warn"
@@ -8081,7 +8141,8 @@
       "CreateEnvironmentRequest": {
         "required": [
           "name",
-          "slug"
+          "slug",
+          "isDefault"
         ],
         "type": "object",
         "properties": {
@@ -8345,11 +8406,8 @@
       },
       "CreateNotificationPolicyRequest": {
         "required": [
-          "enabled",
           "escalation",
-          "matchRules",
-          "name",
-          "priority"
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -8362,6 +8420,7 @@
           "matchRules": {
             "type": "array",
             "description": "Match rules to evaluate (all must pass; omit or empty for catch-all)",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/MatchRule"
             }
@@ -8372,12 +8431,14 @@
           "enabled": {
             "type": "boolean",
             "description": "Whether this policy is enabled (default true)",
+            "nullable": true,
             "default": true
           },
           "priority": {
             "type": "integer",
             "description": "Evaluation priority; higher value = evaluated first (default 0)",
             "format": "int32",
+            "nullable": true,
             "default": 0
           }
         },
@@ -8858,7 +8919,8 @@
       },
       "CursorPage": {
         "required": [
-          "data"
+          "data",
+          "hasMore"
         ],
         "type": "object",
         "properties": {
@@ -8884,7 +8946,8 @@
       },
       "CursorPageCheckResultDto": {
         "required": [
-          "data"
+          "data",
+          "hasMore"
         ],
         "type": "object",
         "properties": {
@@ -8909,7 +8972,8 @@
       },
       "CursorPageServiceCatalogDto": {
         "required": [
-          "data"
+          "data",
+          "hasMore"
         ],
         "type": "object",
         "properties": {
@@ -8934,7 +8998,8 @@
       },
       "CursorPageServicePollResultDto": {
         "required": [
-          "data"
+          "data",
+          "hasMore"
         ],
         "type": "object",
         "properties": {
@@ -8979,7 +9044,8 @@
           "id",
           "impact",
           "status",
-          "title"
+          "title",
+          "scheduled"
         ],
         "type": "object",
         "properties": {
@@ -9041,7 +9107,11 @@
       },
       "DekRotationResultDto": {
         "required": [
-          "rotatedAt"
+          "rotatedAt",
+          "previousDekVersion",
+          "newDekVersion",
+          "secretsReEncrypted",
+          "channelsReEncrypted"
         ],
         "type": "object",
         "properties": {
@@ -9098,7 +9168,8 @@
           "attemptedAt",
           "deliveryId",
           "id",
-          "status"
+          "status",
+          "attemptNumber"
         ],
         "type": "object",
         "properties": {
@@ -9618,7 +9689,10 @@
       },
       "EntitlementDto": {
         "required": [
-          "key"
+          "key",
+          "value",
+          "defaultValue",
+          "overridden"
         ],
         "type": "object",
         "properties": {
@@ -9650,7 +9724,10 @@
           "name",
           "slug",
           "updatedAt",
-          "variables"
+          "variables",
+          "orgId",
+          "monitorCount",
+          "isDefault"
         ],
         "type": "object",
         "properties": {
@@ -9733,7 +9810,8 @@
       },
       "EscalationStep": {
         "required": [
-          "channelIds"
+          "channelIds",
+          "delayMinutes"
         ],
         "type": "object",
         "properties": {
@@ -9789,7 +9867,15 @@
       },
       "GlobalStatusSummaryDto": {
         "required": [
-          "servicesWithIssues"
+          "servicesWithIssues",
+          "totalServices",
+          "operationalCount",
+          "degradedCount",
+          "partialOutageCount",
+          "majorOutageCount",
+          "maintenanceCount",
+          "unknownCount",
+          "activeIncidentCount"
         ],
         "type": "object",
         "properties": {
@@ -10274,7 +10360,10 @@
           "severity",
           "source",
           "status",
-          "updatedAt"
+          "updatedAt",
+          "organizationId",
+          "reopenCount",
+          "statusPageVisible"
         ],
         "type": "object",
         "properties": {
@@ -10662,7 +10751,8 @@
         "required": [
           "createdAt",
           "id",
-          "incidentId"
+          "incidentId",
+          "notifySubscribers"
         ],
         "type": "object",
         "properties": {
@@ -10837,7 +10927,8 @@
         "required": [
           "email",
           "expiresAt",
-          "roleOffered"
+          "roleOffered",
+          "inviteId"
         ],
         "type": "object",
         "properties": {
@@ -10927,7 +11018,8 @@
       "KeyInfo": {
         "required": [
           "createdAt",
-          "name"
+          "name",
+          "id"
         ],
         "type": "object",
         "properties": {
@@ -10968,7 +11060,8 @@
           "statusPageId",
           "statusPageName",
           "statusPageSlug",
-          "title"
+          "title",
+          "scheduled"
         ],
         "type": "object",
         "properties": {
@@ -11076,7 +11169,9 @@
           "createdAt",
           "endsAt",
           "id",
-          "startsAt"
+          "startsAt",
+          "organizationId",
+          "suppressAlerts"
         ],
         "type": "object",
         "properties": {
@@ -11387,7 +11482,8 @@
           "createdAt",
           "email",
           "orgRole",
-          "status"
+          "status",
+          "userId"
         ],
         "type": "object",
         "properties": {
@@ -11716,7 +11812,10 @@
           "name",
           "regions",
           "type",
-          "updatedAt"
+          "updatedAt",
+          "organizationId",
+          "frequencySeconds",
+          "enabled"
         ],
         "type": "object",
         "properties": {
@@ -11984,7 +12083,8 @@
       },
       "MonitorTestResultDto": {
         "required": [
-          "assertionResults"
+          "assertionResults",
+          "passed"
         ],
         "type": "object",
         "properties": {
@@ -12056,7 +12156,8 @@
           "createdAt",
           "id",
           "monitorId",
-          "snapshot"
+          "snapshot",
+          "version"
         ],
         "type": "object",
         "properties": {
@@ -12136,7 +12237,8 @@
           "incidentId",
           "policyId",
           "status",
-          "updatedAt"
+          "updatedAt",
+          "currentStep"
         ],
         "type": "object",
         "properties": {
@@ -12235,7 +12337,9 @@
         "required": [
           "createdAt",
           "title",
-          "type"
+          "type",
+          "id",
+          "read"
         ],
         "type": "object",
         "properties": {
@@ -12286,7 +12390,10 @@
           "id",
           "matchRules",
           "name",
-          "updatedAt"
+          "updatedAt",
+          "organizationId",
+          "enabled",
+          "priority"
         ],
         "type": "object",
         "properties": {
@@ -12369,7 +12476,8 @@
       "OrganizationDto": {
         "required": [
           "email",
-          "name"
+          "name",
+          "id"
         ],
         "type": "object",
         "properties": {
@@ -12407,7 +12515,8 @@
       },
       "OrgInfo": {
         "required": [
-          "name"
+          "name",
+          "id"
         ],
         "type": "object",
         "properties": {
@@ -12508,7 +12617,8 @@
         "required": [
           "entitlements",
           "tier",
-          "usage"
+          "usage",
+          "trialActive"
         ],
         "type": "object",
         "properties": {
@@ -12560,7 +12670,8 @@
       },
       "PollChartBucketDto": {
         "required": [
-          "bucket"
+          "bucket",
+          "totalPolls"
         ],
         "type": "object",
         "properties": {
@@ -12782,7 +12893,8 @@
       "RegionStatusDto": {
         "required": [
           "region",
-          "timestamp"
+          "timestamp",
+          "passed"
         ],
         "type": "object",
         "properties": {
@@ -12878,14 +12990,12 @@
         "description": "Reorder page-level layout: groups and ungrouped components share one ordering"
       },
       "ResolveIncidentRequest": {
-        "required": [
-          "body"
-        ],
         "type": "object",
         "properties": {
           "body": {
             "type": "string",
-            "description": "Optional resolution message or post-mortem notes"
+            "description": "Optional resolution message or post-mortem notes",
+            "nullable": true
           }
         }
       },
@@ -12896,7 +13006,9 @@
           "id",
           "name",
           "slug",
-          "updatedAt"
+          "updatedAt",
+          "organizationId",
+          "suppressMemberAlerts"
         ],
         "type": "object",
         "properties": {
@@ -13026,7 +13138,10 @@
       },
       "ResourceGroupHealthDto": {
         "required": [
-          "status"
+          "status",
+          "totalMembers",
+          "operationalCount",
+          "activeIncidents"
         ],
         "type": "object",
         "properties": {
@@ -13307,7 +13422,9 @@
       },
       "RetryStrategy": {
         "required": [
-          "type"
+          "type",
+          "maxRetries",
+          "interval"
         ],
         "type": "object",
         "properties": {
@@ -13413,7 +13530,8 @@
           "id",
           "key",
           "updatedAt",
-          "valueHash"
+          "valueHash",
+          "dekVersion"
         ],
         "type": "object",
         "properties": {
@@ -13485,7 +13603,12 @@
           "id",
           "name",
           "slug",
-          "updatedAt"
+          "updatedAt",
+          "pollingIntervalSeconds",
+          "enabled",
+          "published",
+          "componentCount",
+          "activeIncidentCount"
         ],
         "type": "object",
         "properties": {
@@ -13569,7 +13692,12 @@
           "lastSeenAt",
           "lifecycleStatus",
           "name",
-          "status"
+          "status",
+          "showcase",
+          "onlyShowIfDegraded",
+          "hasUptime",
+          "displayAggregatedUptime",
+          "isGroup"
         ],
         "type": "object",
         "properties": {
@@ -13679,7 +13807,10 @@
         "required": [
           "components",
           "date",
-          "incidents"
+          "incidents",
+          "totalPartialOutageSeconds",
+          "totalMajorOutageSeconds",
+          "totalDegradedSeconds"
         ],
         "type": "object",
         "properties": {
@@ -13702,6 +13833,11 @@
           "totalMajorOutageSeconds": {
             "type": "integer",
             "description": "Sum of major outage seconds across all leaf components",
+            "format": "int64"
+          },
+          "totalDegradedSeconds": {
+            "type": "integer",
+            "description": "Sum of degraded performance seconds across all leaf components",
             "format": "int64"
           },
           "components": {
@@ -13732,7 +13868,9 @@
           "name",
           "recentIncidents",
           "slug",
-          "updatedAt"
+          "updatedAt",
+          "pollingIntervalSeconds",
+          "enabled"
         ],
         "type": "object",
         "properties": {
@@ -13983,7 +14121,8 @@
       },
       "ServiceLiveStatusDto": {
         "required": [
-          "componentStatuses"
+          "componentStatuses",
+          "activeIncidentCount"
         ],
         "type": "object",
         "properties": {
@@ -14014,7 +14153,10 @@
       "ServicePollResultDto": {
         "required": [
           "serviceId",
-          "timestamp"
+          "timestamp",
+          "passed",
+          "componentCount",
+          "degradedCount"
         ],
         "type": "object",
         "properties": {
@@ -14076,7 +14218,9 @@
       "ServicePollSummaryDto": {
         "required": [
           "chartData",
-          "window"
+          "window",
+          "totalPolls",
+          "passedPolls"
         ],
         "type": "object",
         "properties": {
@@ -14169,7 +14313,9 @@
           "serviceId",
           "slug",
           "subscribedAt",
-          "subscriptionId"
+          "subscriptionId",
+          "pollingIntervalSeconds",
+          "enabled"
         ],
         "type": "object",
         "properties": {
@@ -15100,7 +15246,8 @@
           },
           "hidePoweredBy": {
             "type": "boolean",
-            "description": "Whether to hide the 'Powered by DevHelm' footer badge"
+            "description": "Whether to hide the 'Powered by DevHelm' footer badge (default: false)",
+            "default": false
           },
           "customCss": {
             "maxLength": 50000,
@@ -15117,10 +15264,7 @@
             "nullable": true
           }
         },
-        "description": "Updated branding configuration; null preserves current",
-        "required": [
-          "hidePoweredBy"
-        ]
+        "description": "Updated branding configuration; null preserves current"
       },
       "StatusPageComponentDto": {
         "required": [
@@ -15130,7 +15274,11 @@
           "name",
           "statusPageId",
           "type",
-          "updatedAt"
+          "updatedAt",
+          "showUptime",
+          "displayOrder",
+          "pageOrder",
+          "excludeFromOverall"
         ],
         "type": "object",
         "properties": {
@@ -15218,7 +15366,10 @@
           "id",
           "name",
           "statusPageId",
-          "updatedAt"
+          "updatedAt",
+          "displayOrder",
+          "pageOrder",
+          "collapsed"
         ],
         "type": "object",
         "properties": {
@@ -15274,7 +15425,8 @@
           "updatedAt",
           "verificationCnameTarget",
           "verificationMethod",
-          "verificationToken"
+          "verificationToken",
+          "primary"
         ],
         "type": "object",
         "properties": {
@@ -15341,7 +15493,10 @@
           "name",
           "slug",
           "updatedAt",
-          "visibility"
+          "visibility",
+          "organizationId",
+          "workspaceId",
+          "enabled"
         ],
         "type": "object",
         "properties": {
@@ -15458,7 +15613,9 @@
           "status",
           "statusPageId",
           "title",
-          "updatedAt"
+          "updatedAt",
+          "scheduled",
+          "autoResolve"
         ],
         "type": "object",
         "properties": {
@@ -15569,7 +15726,8 @@
           "body",
           "createdAt",
           "id",
-          "status"
+          "status",
+          "notifySubscribers"
         ],
         "type": "object",
         "properties": {
@@ -15615,7 +15773,8 @@
         "required": [
           "createdAt",
           "email",
-          "id"
+          "id",
+          "confirmed"
         ],
         "type": "object",
         "properties": {
@@ -15660,7 +15819,9 @@
       },
       "TableValueResultAlertChannelDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15690,7 +15851,9 @@
       },
       "TableValueResultAlertDeliveryDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15720,7 +15883,9 @@
       },
       "TableValueResultApiKeyDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15750,7 +15915,9 @@
       },
       "TableValueResultAuditEventDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15780,7 +15947,9 @@
       },
       "TableValueResultCategoryDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15810,7 +15979,9 @@
       },
       "TableValueResultComponentUptimeDayDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15840,7 +16011,9 @@
       },
       "TableValueResultDeliveryAttemptDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15870,7 +16043,9 @@
       },
       "TableValueResultEnvironmentDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15900,7 +16075,9 @@
       },
       "TableValueResultIncidentDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15930,7 +16107,9 @@
       },
       "TableValueResultIntegrationDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15960,7 +16139,9 @@
       },
       "TableValueResultInviteDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -15990,7 +16171,9 @@
       },
       "TableValueResultMaintenanceWindowDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16020,7 +16203,9 @@
       },
       "TableValueResultMemberDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16050,7 +16235,9 @@
       },
       "TableValueResultMonitorDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16080,7 +16267,9 @@
       },
       "TableValueResultMonitorVersionDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16110,7 +16299,9 @@
       },
       "TableValueResultNotificationDispatchDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16140,7 +16331,9 @@
       },
       "TableValueResultNotificationDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16170,7 +16363,9 @@
       },
       "TableValueResultNotificationPolicyDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16200,7 +16395,9 @@
       },
       "TableValueResultResourceGroupDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16230,7 +16427,9 @@
       },
       "TableValueResultScheduledMaintenanceDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16260,7 +16459,9 @@
       },
       "TableValueResultSecretDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16290,7 +16491,9 @@
       },
       "TableValueResultServiceComponentDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16320,7 +16523,9 @@
       },
       "TableValueResultServiceIncidentDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16350,7 +16555,9 @@
       },
       "TableValueResultServiceSubscriptionDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16380,7 +16587,9 @@
       },
       "TableValueResultStatusPageComponentDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16410,7 +16619,9 @@
       },
       "TableValueResultStatusPageComponentGroupDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16440,7 +16651,9 @@
       },
       "TableValueResultStatusPageCustomDomainDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16470,7 +16683,9 @@
       },
       "TableValueResultStatusPageDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16500,7 +16715,9 @@
       },
       "TableValueResultStatusPageIncidentDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16530,7 +16747,9 @@
       },
       "TableValueResultStatusPageSubscriberDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16560,7 +16779,9 @@
       },
       "TableValueResultTagDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16590,7 +16811,9 @@
       },
       "TableValueResultWebhookDeliveryDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16620,7 +16843,9 @@
       },
       "TableValueResultWebhookEndpointDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16650,7 +16875,9 @@
       },
       "TableValueResultWorkspaceDto": {
         "required": [
-          "data"
+          "data",
+          "hasNext",
+          "hasPrev"
         ],
         "type": "object",
         "properties": {
@@ -16684,7 +16911,8 @@
           "createdAt",
           "id",
           "name",
-          "updatedAt"
+          "updatedAt",
+          "organizationId"
         ],
         "type": "object",
         "properties": {
@@ -16869,7 +17097,8 @@
       },
       "TestChannelResult": {
         "required": [
-          "message"
+          "message",
+          "success"
         ],
         "type": "object",
         "properties": {
@@ -16884,7 +17113,8 @@
       "TestMatchResult": {
         "required": [
           "matchedRules",
-          "unmatchedRules"
+          "unmatchedRules",
+          "matched"
         ],
         "type": "object",
         "properties": {
@@ -18011,7 +18241,8 @@
       },
       "UptimeBucketDto": {
         "required": [
-          "timestamp"
+          "timestamp",
+          "totalPolls"
         ],
         "type": "object",
         "properties": {
@@ -18126,7 +18357,9 @@
           "eventId",
           "eventType",
           "id",
-          "status"
+          "status",
+          "attemptCount",
+          "maxAttempts"
         ],
         "type": "object",
         "properties": {
@@ -18196,7 +18429,9 @@
           "id",
           "subscribedEvents",
           "updatedAt",
-          "url"
+          "url",
+          "enabled",
+          "consecutiveFailures"
         ],
         "type": "object",
         "properties": {
@@ -18310,7 +18545,8 @@
       },
       "WebhookTestResult": {
         "required": [
-          "message"
+          "message",
+          "success"
         ],
         "type": "object",
         "properties": {
@@ -18336,7 +18572,9 @@
         "required": [
           "createdAt",
           "name",
-          "updatedAt"
+          "updatedAt",
+          "id",
+          "orgId"
         ],
         "type": "object",
         "properties": {

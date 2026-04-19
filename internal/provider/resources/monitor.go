@@ -78,7 +78,14 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			"type": schema.StringAttribute{
 				Required: true, Description: "Monitor type: HTTP, DNS, TCP, ICMP, HEARTBEAT, or MCP_SERVER",
 				Validators: []validator.String{
-					stringvalidator.OneOf("HTTP", "DNS", "TCP", "ICMP", "HEARTBEAT", "MCP_SERVER"),
+					stringvalidator.OneOf(
+					string(generated.CreateMonitorRequestTypeHTTP),
+					string(generated.CreateMonitorRequestTypeDNS),
+					string(generated.CreateMonitorRequestTypeTCP),
+					string(generated.CreateMonitorRequestTypeICMP),
+					string(generated.CreateMonitorRequestTypeHEARTBEAT),
+					string(generated.CreateMonitorRequestTypeMCPSERVER),
+				),
 				},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
@@ -183,21 +190,31 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									Required:    true,
 									Description: "Rule type: consecutive_failures, failures_in_window, or response_time",
 									Validators: []validator.String{
-										stringvalidator.OneOf("consecutive_failures", "failures_in_window", "response_time"),
+										stringvalidator.OneOf(
+										string(generated.ConsecutiveFailures),
+										string(generated.FailuresInWindow),
+										string(generated.ResponseTime),
+									),
 									},
 								},
 								"severity": schema.StringAttribute{
 									Required:    true,
 									Description: "Incident severity: down or degraded",
 									Validators: []validator.String{
-										stringvalidator.OneOf("down", "degraded"),
+										stringvalidator.OneOf(
+										string(generated.Down),
+										string(generated.Degraded),
+									),
 									},
 								},
 								"scope": schema.StringAttribute{
 									Optional:    true,
 									Description: "Rule scope: per_region or any_region",
 									Validators: []validator.String{
-										stringvalidator.OneOf("per_region", "any_region"),
+										stringvalidator.OneOf(
+										string(generated.PerRegion),
+										string(generated.AnyRegion),
+									),
 									},
 								},
 								"count": schema.Int64Attribute{
@@ -225,7 +242,12 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									Optional:    true,
 									Description: "Aggregation type: all_exceed, average, p95, max",
 									Validators: []validator.String{
-										stringvalidator.OneOf("all_exceed", "average", "p95", "max"),
+										stringvalidator.OneOf(
+										string(generated.AllExceed),
+										string(generated.Average),
+										string(generated.P95),
+										string(generated.Max),
+									),
 									},
 								},
 							},
@@ -251,7 +273,10 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 							Optional:    true,
 							Description: "Assertion severity: fail or warn (default: fail)",
 							Validators: []validator.String{
-								stringvalidator.OneOf("fail", "warn"),
+								stringvalidator.OneOf(
+								string(generated.CreateAssertionRequestSeverityFail),
+								string(generated.CreateAssertionRequestSeverityWarn),
+							),
 							},
 						},
 					},
@@ -328,8 +353,8 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 						)
 					}
 
-					ruleType := rule.Type.ValueString()
-					if ruleType == "failures_in_window" && (rule.WindowMinutes.IsNull() || rule.WindowMinutes.IsUnknown()) {
+				ruleType := generated.TriggerRuleType(rule.Type.ValueString())
+				if ruleType == generated.FailuresInWindow && (rule.WindowMinutes.IsNull() || rule.WindowMinutes.IsUnknown()) {
 						resp.Diagnostics.AddAttributeError(
 							rulePath.AtName("window_minutes"),
 							"Missing required attribute",
@@ -337,7 +362,7 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 						)
 					}
 
-					if ruleType == "response_time" && (rule.ThresholdMs.IsNull() || rule.ThresholdMs.IsUnknown()) {
+					if ruleType == generated.ResponseTime && (rule.ThresholdMs.IsNull() || rule.ThresholdMs.IsUnknown()) {
 						resp.Diagnostics.AddAttributeError(
 							rulePath.AtName("threshold_ms"),
 							"Missing required attribute",
@@ -425,7 +450,7 @@ func buildAssertions(ctx context.Context, list types.List) ([]generated.CreateAs
 
 		req := generated.CreateAssertionRequest{
 			Config:   configUnion,
-			Severity: generated.CreateAssertionRequestSeverity(m.Severity.ValueString()),
+			Severity: typedStringPtrOrNil[generated.CreateAssertionRequestSeverity](m.Severity),
 		}
 		result = append(result, req)
 	}
@@ -480,8 +505,8 @@ func buildIncidentPolicy(ctx context.Context, obj types.Object) (*generated.Upda
 		TriggerRules: triggerRules,
 		Confirmation: generated.ConfirmationPolicy{
 			Type:              generated.ConfirmationPolicyType(m.ConfirmationType.ValueString()),
-			MinRegionsFailing: int32PtrOrNil(m.MinRegionsFailing),
-			MaxWaitSeconds:    int32PtrOrNil(m.MaxWaitSeconds),
+			MinRegionsFailing: int32OrZero(m.MinRegionsFailing),
+			MaxWaitSeconds:    int32OrZero(m.MaxWaitSeconds),
 		},
 		Recovery: generated.RecoveryPolicy{
 			ConsecutiveSuccesses: int32OrZero(m.ConsecutiveSuccesses),
@@ -525,7 +550,7 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		Name:             plan.Name.ValueString(),
 		Type:             monitorType,
 		Config:           configUnion,
-		ManagedBy:        generated.CreateMonitorRequestManagedBy("TERRAFORM"),
+		ManagedBy:        generated.CreateMonitorRequestManagedByTERRAFORM,
 		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
 		Enabled:          boolPtrOrNil(plan.Enabled),
 		Regions:          stringSliceToPtr(plan.Regions),
@@ -568,7 +593,7 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 	}
 
 	name := plan.Name.ValueString()
-	managedBy := generated.UpdateMonitorRequestManagedBy("TERRAFORM")
+	managedBy := generated.UpdateMonitorRequestManagedByTERRAFORM
 
 	// MonitorConfig is a `map[string]interface{}` alias post-spec-sync
 	// (the spec dropped the polymorphic oneOf for the update path), so we
@@ -667,8 +692,8 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Type = types.StringValue(string(dto.Type))
-	model.FrequencySeconds = int32Value(dto.FrequencySeconds)
-	model.Enabled = boolValue(dto.Enabled)
+	model.FrequencySeconds = types.Int64Value(int64(dto.FrequencySeconds))
+	model.Enabled = types.BoolValue(dto.Enabled)
 	model.PingUrl = stringValue(dto.PingUrl)
 
 	if configBytes, err := dto.Config.MarshalJSON(); err == nil && unionHasData(configBytes) {
@@ -851,8 +876,8 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 	if dto.IncidentPolicy != nil && dto.IncidentPolicy.Id.String() != "00000000-0000-0000-0000-000000000000" {
 		policyModel := incidentPolicyModel{
 			ConfirmationType:     types.StringValue(string(dto.IncidentPolicy.Confirmation.Type)),
-			MinRegionsFailing:    int32Value(dto.IncidentPolicy.Confirmation.MinRegionsFailing),
-			MaxWaitSeconds:       int32Value(dto.IncidentPolicy.Confirmation.MaxWaitSeconds),
+			MinRegionsFailing:    types.Int64Value(int64(dto.IncidentPolicy.Confirmation.MinRegionsFailing)),
+			MaxWaitSeconds:       types.Int64Value(int64(dto.IncidentPolicy.Confirmation.MaxWaitSeconds)),
 			ConsecutiveSuccesses: types.Int64Value(int64(dto.IncidentPolicy.Recovery.ConsecutiveSuccesses)),
 			MinRegionsPassing:    types.Int64Value(int64(dto.IncidentPolicy.Recovery.MinRegionsPassing)),
 			CooldownMinutes:      types.Int64Value(int64(dto.IncidentPolicy.Recovery.CooldownMinutes)),

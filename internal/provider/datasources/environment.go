@@ -76,9 +76,5 @@ func mapEnvironmentToState(model *EnvironmentDataSourceModel, env *generated.Env
 	model.ID = types.StringValue(env.Id.String())
 	model.Name = types.StringValue(env.Name)
 	model.Slug = types.StringValue(env.Slug)
-	if env.IsDefault != nil {
-		model.IsDefault = types.BoolValue(*env.IsDefault)
-	} else {
-		model.IsDefault = types.BoolNull()
-	}
+	model.IsDefault = types.BoolValue(env.IsDefault)
 }

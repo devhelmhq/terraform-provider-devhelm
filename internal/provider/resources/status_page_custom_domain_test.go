@@ -26,7 +26,7 @@ func TestStatusPageCustomDomain_MapToState_CNAMEMethodCollapsesRecords(t *testin
 		VerificationToken:       "tok-cname-unused",
 		VerificationCnameTarget: "acme.devhelm.io",
 		VerifiedAt:              &verifiedAt,
-		Primary:                 boolPtr(true),
+		Primary:                 true,
 	}
 
 	r.mapToState(model, dto)

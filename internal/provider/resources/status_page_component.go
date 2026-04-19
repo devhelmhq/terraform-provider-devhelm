@@ -137,7 +137,11 @@ func (r *StatusPageComponentResource) Schema(_ context.Context, _ resource.Schem
 				Description: "Component type: STATIC (text-only), MONITOR (driven by a monitor's " +
 					"check status), or GROUP (rolls up a resource group). Changing forces replacement.",
 				Validators: []validator.String{
-					stringvalidator.OneOf("STATIC", "MONITOR", "GROUP"),
+					stringvalidator.OneOf(
+					string(generated.CreateStatusPageComponentRequestTypeSTATIC),
+					string(generated.CreateStatusPageComponentRequestTypeMONITOR),
+					string(generated.CreateStatusPageComponentRequestTypeGROUP),
+				),
 				},
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
@@ -226,10 +230,10 @@ func (r *StatusPageComponentResource) ValidateConfig(ctx context.Context, req re
 		return
 	}
 
-	compType := model.Type.ValueString()
+	compType := generated.CreateStatusPageComponentRequestType(model.Type.ValueString())
 
 	switch compType {
-	case "MONITOR":
+	case generated.CreateStatusPageComponentRequestTypeMONITOR:
 		if model.MonitorID.IsNull() || model.MonitorID.IsUnknown() {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("monitor_id"),
@@ -237,7 +241,7 @@ func (r *StatusPageComponentResource) ValidateConfig(ctx context.Context, req re
 				"monitor_id is required when component type is MONITOR",
 			)
 		}
-	case "GROUP":
+	case generated.CreateStatusPageComponentRequestTypeGROUP:
 		if model.ResourceGroupID.IsNull() || model.ResourceGroupID.IsUnknown() {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("resource_group_id"),
@@ -247,19 +251,19 @@ func (r *StatusPageComponentResource) ValidateConfig(ctx context.Context, req re
 		}
 	}
 
-	if compType != "MONITOR" && !model.MonitorID.IsNull() && !model.MonitorID.IsUnknown() {
+	if compType != generated.CreateStatusPageComponentRequestTypeMONITOR && !model.MonitorID.IsNull() && !model.MonitorID.IsUnknown() {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("monitor_id"),
 			"Conflicting attribute",
-			fmt.Sprintf("monitor_id should not be set when component type is %s", compType),
+			fmt.Sprintf("monitor_id should not be set when component type is %s", string(compType)),
 		)
 	}
 
-	if compType != "GROUP" && !model.ResourceGroupID.IsNull() && !model.ResourceGroupID.IsUnknown() {
+	if compType != generated.CreateStatusPageComponentRequestTypeGROUP && !model.ResourceGroupID.IsNull() && !model.ResourceGroupID.IsUnknown() {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("resource_group_id"),
 			"Conflicting attribute",
-			fmt.Sprintf("resource_group_id should not be set when component type is %s", compType),
+			fmt.Sprintf("resource_group_id should not be set when component type is %s", string(compType)),
 		)
 	}
 }
@@ -281,23 +285,23 @@ func (r *StatusPageComponentResource) Configure(_ context.Context, req resource.
 // MONITOR-typed component with a missing monitor_id would fail server-side
 // with a confusing 400; surfacing it during plan gives a clean error.
 func (r *StatusPageComponentResource) validateTypeRefs(plan *StatusPageComponentResourceModel, diags *[]string) {
-	t := plan.Type.ValueString()
+	t := generated.CreateStatusPageComponentRequestType(plan.Type.ValueString())
 	switch t {
-	case "MONITOR":
+	case generated.CreateStatusPageComponentRequestTypeMONITOR:
 		if plan.MonitorID.IsNull() || plan.MonitorID.ValueString() == "" {
 			*diags = append(*diags, "type=MONITOR requires monitor_id to be set")
 		}
 		if !plan.ResourceGroupID.IsNull() && plan.ResourceGroupID.ValueString() != "" {
 			*diags = append(*diags, "type=MONITOR forbids resource_group_id; remove it or change type to GROUP")
 		}
-	case "GROUP":
+	case generated.CreateStatusPageComponentRequestTypeGROUP:
 		if plan.ResourceGroupID.IsNull() || plan.ResourceGroupID.ValueString() == "" {
 			*diags = append(*diags, "type=GROUP requires resource_group_id to be set")
 		}
 		if !plan.MonitorID.IsNull() && plan.MonitorID.ValueString() != "" {
 			*diags = append(*diags, "type=GROUP forbids monitor_id; remove it or change type to MONITOR")
 		}
-	case "STATIC":
+	case generated.CreateStatusPageComponentRequestTypeSTATIC:
 		if !plan.MonitorID.IsNull() && plan.MonitorID.ValueString() != "" {
 			*diags = append(*diags, "type=STATIC forbids monitor_id")
 		}
@@ -544,9 +548,9 @@ func (r *StatusPageComponentResource) mapToState(model *StatusPageComponentResou
 	model.Name = types.StringValue(dto.Name)
 	model.Description = stringValueClearable(dto.Description)
 	model.Type = types.StringValue(string(dto.Type))
-	model.DisplayOrder = int32Value(dto.DisplayOrder)
-	model.ExcludeFromOverall = boolValue(dto.ExcludeFromOverall)
-	model.ShowUptime = boolValue(dto.ShowUptime)
+	model.DisplayOrder = types.Int64Value(int64(dto.DisplayOrder))
+	model.ExcludeFromOverall = types.BoolValue(dto.ExcludeFromOverall)
+	model.ShowUptime = types.BoolValue(dto.ShowUptime)
 	if dto.GroupId != nil {
 		model.GroupID = types.StringValue(dto.GroupId.String())
 	} else {

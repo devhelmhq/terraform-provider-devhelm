@@ -350,8 +350,8 @@ func fullyPopulatedMonitorDto(t *testing.T) *generated.MonitorDto {
 		Id:               id,
 		Name:             "acme-api",
 		Type:             generated.MonitorDtoType("HTTP"),
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Regions:          []string{"us-east", "eu-west"},
 		Environment:      &generated.Summary{Id: envID, Name: "prod", Slug: "prod"},
 		Config:           cfg,
@@ -373,8 +373,8 @@ func fullyPopulatedMonitorDto(t *testing.T) *generated.MonitorDto {
 			MonitorId: id,
 			Confirmation: generated.ConfirmationPolicy{
 				Type:              generated.ConfirmationPolicyType("multi_region"),
-				MinRegionsFailing: int32Ptr(2),
-				MaxWaitSeconds:    int32Ptr(120),
+				MinRegionsFailing: 2,
+				MaxWaitSeconds:    120,
 			},
 			Recovery: generated.RecoveryPolicy{
 				ConsecutiveSuccesses: 3, MinRegionsPassing: 2, CooldownMinutes: 5,
@@ -542,7 +542,7 @@ func TestMonitor_AssertionMatching_PreservesUserSeverityCasing(t *testing.T) {
 
 	dto := &generated.MonitorDto{
 		Id:   openapi_types.UUID(uuid.New()),
-		Name: "x", Type: "HTTP", FrequencySeconds: int32Ptr(60), Enabled: boolPtr(true),
+		Name: "x", Type: "HTTP", FrequencySeconds: 60, Enabled: true,
 		Assertions: &[]generated.MonitorAssertionDto{
 			{
 				AssertionType: "status_code",
@@ -588,7 +588,7 @@ func TestMonitor_AssertionMatching_KeepsNullSeverityWhenUserOmitted(t *testing.T
 
 	dto := &generated.MonitorDto{
 		Id:   openapi_types.UUID(uuid.New()),
-		Name: "x", Type: "HTTP", FrequencySeconds: int32Ptr(60), Enabled: boolPtr(true),
+		Name: "x", Type: "HTTP", FrequencySeconds: 60, Enabled: true,
 		Assertions: &[]generated.MonitorAssertionDto{
 			{AssertionType: "status_code", Severity: "fail", Config: asnCfg},
 		},
@@ -631,7 +631,7 @@ func TestMonitor_AssertionMatching_ImportPathPopulatesSeverity(t *testing.T) {
 
 	dto := &generated.MonitorDto{
 		Id:   openapi_types.UUID(uuid.New()),
-		Name: "x", Type: "HTTP", FrequencySeconds: int32Ptr(60), Enabled: boolPtr(true),
+		Name: "x", Type: "HTTP", FrequencySeconds: 60, Enabled: true,
 		Assertions: &[]generated.MonitorAssertionDto{
 			{AssertionType: "status_code", Severity: "fail", Config: asnCfg},
 		},
@@ -665,7 +665,7 @@ func TestMonitor_AssertionMatching_FIFOForDuplicates(t *testing.T) {
 
 	dto := &generated.MonitorDto{
 		Id:   openapi_types.UUID(uuid.New()),
-		Name: "x", Type: "HTTP", FrequencySeconds: int32Ptr(60), Enabled: boolPtr(true),
+		Name: "x", Type: "HTTP", FrequencySeconds: 60, Enabled: true,
 		Assertions: &[]generated.MonitorAssertionDto{
 			{AssertionType: "status_code", Severity: "fail", Config: asnCfg},
 			{AssertionType: "status_code", Severity: "fail", Config: asnCfg},

@@ -304,6 +304,6 @@ func (r *StatusPageComponentGroupResource) mapToState(model *StatusPageComponent
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Description = stringValueClearable(dto.Description)
-	model.Collapsed = boolValue(dto.Collapsed)
-	model.DisplayOrder = int32Value(dto.DisplayOrder)
+	model.Collapsed = types.BoolValue(dto.Collapsed)
+	model.DisplayOrder = types.Int64Value(int64(dto.DisplayOrder))
 }

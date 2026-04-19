@@ -116,8 +116,8 @@ func TestMonitor_MapToState_NilAssertionsStaysNull(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Assertions:       nil,
 	}
 	model := &MonitorResourceModel{
@@ -136,8 +136,8 @@ func TestMonitor_MapToState_NilAlertChannelIds(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		AlertChannelIds:  nil,
 	}
 	model := &MonitorResourceModel{
@@ -156,8 +156,8 @@ func TestMonitor_MapToState_NilRegions(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Regions:          nil,
 	}
 	model := &MonitorResourceModel{
@@ -176,8 +176,8 @@ func TestMonitor_MapToState_NilTags(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Tags:             nil,
 	}
 	model := &MonitorResourceModel{
@@ -196,8 +196,8 @@ func TestMonitor_MapToState_EmptyAuthStringSetNull(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Auth:             nil,
 	}
 	model := &MonitorResourceModel{
@@ -216,8 +216,8 @@ func TestMonitor_MapToState_NilPingUrl(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		PingUrl:          nil,
 	}
 	model := &MonitorResourceModel{
@@ -236,8 +236,8 @@ func TestMonitor_MapToState_NilIncidentPolicy(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		IncidentPolicy:   nil,
 	}
 	model := &MonitorResourceModel{
@@ -283,19 +283,19 @@ func TestAlertChannel_BuildConfig_SlackMissingWebhookUrl(t *testing.T) {
 
 // ── Environment: mapToState with edge-case DTOs ────────────────────────
 
-func TestEnvironment_MapToState_NilIsDefaultSetsNull(t *testing.T) {
+func TestEnvironment_MapToState_FalseIsDefaultMapsToFalse(t *testing.T) {
 	ctx := context.Background()
 	r := &EnvironmentResource{}
 	dto := &generated.EnvironmentDto{
 		Id:        openapi_types.UUID(uuid.New()),
 		Name:      "x",
 		Slug:      "x",
-		IsDefault: nil,
+		IsDefault: false,
 	}
 	model := &EnvironmentResourceModel{}
 	r.mapToState(ctx, model, dto)
-	if !model.IsDefault.IsNull() {
-		t.Errorf("IsDefault should be null when DTO pointer is nil, got %v", model.IsDefault)
+	if model.IsDefault.ValueBool() {
+		t.Errorf("IsDefault should be false for zero-value DTO, got %v", model.IsDefault.ValueBool())
 	}
 }
 
@@ -397,7 +397,7 @@ func TestStatusPage_MapToState_NilDescriptionBecomesNull(t *testing.T) {
 		Slug:         "x",
 		Description:  nil,
 		Visibility:   "PUBLIC",
-		Enabled:      boolPtr(true),
+		Enabled:      true,
 		IncidentMode: "MANUAL",
 	}
 	model := &StatusPageResourceModel{}
@@ -415,7 +415,7 @@ func TestStatusPage_MapToState_SyntheticPageURL(t *testing.T) {
 		Name:         "Acme",
 		Slug:         "acme",
 		Visibility:   "PUBLIC",
-		Enabled:      boolPtr(true),
+		Enabled:      true,
 		IncidentMode: "MANUAL",
 	}
 	model := &StatusPageResourceModel{}

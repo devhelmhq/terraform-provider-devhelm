@@ -171,7 +171,7 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 		}
 		apiSteps = append(apiSteps, generated.EscalationStep{
 			ChannelIds:            channelIDs,
-			DelayMinutes:          int32PtrOrNil(s.DelayMinutes),
+			DelayMinutes:          int32OrZero(s.DelayMinutes),
 			RequireAck:            boolPtrOrNil(s.RequireAck),
 			RepeatIntervalSeconds: int32PtrOrNil(s.RepeatIntervalSeconds),
 		})
@@ -207,14 +207,14 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 
 	req := &generated.CreateNotificationPolicyRequest{
 		Name:     plan.Name.ValueString(),
-		Enabled:  createEnabled,
-		Priority: createPriority,
+		Enabled:  &createEnabled,
+		Priority: &createPriority,
 		Escalation: generated.EscalationChain{
 			Steps:     apiSteps,
 			OnResolve: stringPtrOrNil(plan.OnResolve),
 			OnReopen:  stringPtrOrNil(plan.OnReopen),
 		},
-		MatchRules: apiRules,
+		MatchRules: &apiRules,
 	}
 	return req, nil
 }
@@ -237,7 +237,7 @@ func (r *NotificationPolicyResource) buildUpdateRequest(ctx context.Context, pla
 		}
 		apiSteps = append(apiSteps, generated.EscalationStep{
 			ChannelIds:            channelIDs,
-			DelayMinutes:          int32PtrOrNil(s.DelayMinutes),
+			DelayMinutes:          int32OrZero(s.DelayMinutes),
 			RequireAck:            boolPtrOrNil(s.RequireAck),
 			RepeatIntervalSeconds: int32PtrOrNil(s.RepeatIntervalSeconds),
 		})
@@ -333,8 +333,8 @@ func matchRuleObjectType() types.ObjectType {
 func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *NotificationPolicyModel, dto *generated.NotificationPolicyDto) {
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
-	model.Enabled = boolValue(dto.Enabled)
-	model.Priority = int32Value(dto.Priority)
+	model.Enabled = types.BoolValue(dto.Enabled)
+	model.Priority = types.Int64Value(int64(dto.Priority))
 	model.OnResolve = stringValue(dto.Escalation.OnResolve)
 	model.OnReopen = stringValue(dto.Escalation.OnReopen)
 
@@ -354,7 +354,7 @@ func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *Noti
 				if priorSteps[i].DelayMinutes.IsNull() {
 					sm.DelayMinutes = types.Int64Null()
 				} else {
-					sm.DelayMinutes = int32Value(s.DelayMinutes)
+					sm.DelayMinutes = types.Int64Value(int64(s.DelayMinutes))
 				}
 				if priorSteps[i].RequireAck.IsNull() {
 					sm.RequireAck = types.BoolNull()
@@ -365,7 +365,7 @@ func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *Noti
 					sm.RepeatIntervalSeconds = types.Int64Null()
 				}
 			} else {
-				sm.DelayMinutes = int32Value(s.DelayMinutes)
+				sm.DelayMinutes = types.Int64Value(int64(s.DelayMinutes))
 				sm.RequireAck = boolValue(s.RequireAck)
 			}
 			if len(s.ChannelIds) > 0 {

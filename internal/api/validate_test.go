@@ -11,13 +11,15 @@ import (
 
 func TestValidateDTO_ValidMonitorDto(t *testing.T) {
 	dto := generated.MonitorDto{
-		Id:        openapi_types.UUID(uuid.New()),
-		Name:      "test-monitor",
-		Type:      generated.MonitorDtoTypeHTTP,
-		ManagedBy: generated.MonitorDtoManagedByDASHBOARD,
-		Regions:   []string{"us-east"},
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Id:               openapi_types.UUID(uuid.New()),
+		Name:             "test-monitor",
+		Type:             generated.MonitorDtoTypeHTTP,
+		ManagedBy:        generated.MonitorDtoManagedByDASHBOARD,
+		FrequencySeconds: 60,
+		OrganizationId:   1,
+		Regions:          []string{"us-east"},
+		CreatedAt:        time.Now(),
+		UpdatedAt:        time.Now(),
 	}
 	if err := ValidateDTO(&dto, "test"); err != nil {
 		t.Errorf("expected valid DTO, got error: %v", err)
@@ -135,13 +137,15 @@ func TestValidateDTO_MultipleErrors(t *testing.T) {
 
 func TestValidateDTO_OptionalFieldsSkipped(t *testing.T) {
 	dto := generated.MonitorDto{
-		Id:        openapi_types.UUID(uuid.New()),
-		Name:      "test",
-		Type:      generated.MonitorDtoTypeHTTP,
-		ManagedBy: generated.MonitorDtoManagedByDASHBOARD,
-		Regions:   []string{"us-east"},
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Id:               openapi_types.UUID(uuid.New()),
+		Name:             "test",
+		Type:             generated.MonitorDtoTypeHTTP,
+		ManagedBy:        generated.MonitorDtoManagedByDASHBOARD,
+		FrequencySeconds: 60,
+		OrganizationId:   1,
+		Regions:          []string{"us-east"},
+		CreatedAt:        time.Now(),
+		UpdatedAt:        time.Now(),
 	}
 	if err := ValidateDTO(&dto, "test"); err != nil {
 		t.Errorf("optional nil fields should not cause errors: %v", err)
@@ -172,6 +176,8 @@ func TestValidateDTO_StatusPageComponentDto(t *testing.T) {
 		Type:          generated.StatusPageComponentDtoTypeMONITOR,
 		CurrentStatus: generated.StatusPageComponentDtoCurrentStatusOPERATIONAL,
 		StatusPageId:  openapi_types.UUID(uuid.New()),
+		DisplayOrder:  1,
+		PageOrder:     1,
 		CreatedAt:     time.Now(),
 		UpdatedAt:     time.Now(),
 	}

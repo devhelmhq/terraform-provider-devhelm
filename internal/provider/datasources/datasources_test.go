@@ -133,8 +133,8 @@ func TestMapMonitorToState_FullDtoRoundTripsToState(t *testing.T) {
 		Id:               id,
 		Name:             "homepage",
 		Type:             generated.MonitorDtoType("HTTP"),
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Config:           cfg,
 		PingUrl:          &ping,
 	}
@@ -185,8 +185,8 @@ func TestMapMonitorToState_NilPingUrlBecomesNullNotEmpty(t *testing.T) {
 		Id:               id,
 		Name:             "tcp-check",
 		Type:             generated.MonitorDtoType("TCP"),
-		FrequencySeconds: int32Ptr(30),
-		Enabled:          boolPtr(false),
+		FrequencySeconds: 30,
+		Enabled:          false,
 		Config:           cfg,
 		PingUrl:          nil,
 	}
@@ -209,8 +209,8 @@ func TestMapMonitorToState_EmptyConfigBecomesNull(t *testing.T) {
 		Id:               id,
 		Name:             "x",
 		Type:             generated.MonitorDtoType("HEARTBEAT"),
-		FrequencySeconds: int32Ptr(300),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 300,
+		Enabled:          true,
 		Config:           cfg,
 	}
 	var model MonitorDataSourceModel
@@ -273,7 +273,7 @@ func TestMapStatusPageToState_PopulatesAllFieldsAndSyntheticPageURL(t *testing.T
 		Slug:         "acme",
 		Description:  &desc,
 		Visibility:   generated.StatusPageDtoVisibility("PUBLIC"),
-		Enabled:      boolPtr(true),
+		Enabled:      true,
 		IncidentMode: generated.StatusPageDtoIncidentMode("MANUAL"),
 	}
 	var model StatusPageDataSourceModel
@@ -318,7 +318,7 @@ func TestMapStatusPageToState_NilDescriptionBecomesNull(t *testing.T) {
 		Slug:         "x",
 		Description:  nil,
 		Visibility:   generated.StatusPageDtoVisibility("PRIVATE"),
-		Enabled:      boolPtr(false),
+		Enabled:      false,
 		IncidentMode: generated.StatusPageDtoIncidentMode("AUTO"),
 	}
 	var model StatusPageDataSourceModel
@@ -358,7 +358,7 @@ func TestMapEnvironmentToState_PopulatesAllFields(t *testing.T) {
 		Id:        id,
 		Name:      "Production",
 		Slug:      "production",
-		IsDefault: boolPtr(true),
+		IsDefault: true,
 	}
 	var model EnvironmentDataSourceModel
 	mapEnvironmentToState(&model, dto)

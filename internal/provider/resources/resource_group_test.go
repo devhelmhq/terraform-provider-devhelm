@@ -87,7 +87,7 @@ func TestResourceGroup_BuildRequest_PopulatesEveryField(t *testing.T) {
 	if body.DefaultRetryStrategy.Type != "fixed" {
 		t.Errorf("retry.Type = %q", body.DefaultRetryStrategy.Type)
 	}
-	if body.DefaultRetryStrategy.Interval == nil || *body.DefaultRetryStrategy.Interval != 60 {
+	if body.DefaultRetryStrategy.Interval != 60 {
 		t.Errorf("retry.Interval = %v", body.DefaultRetryStrategy.Interval)
 	}
 	if body.SuppressMemberAlerts == nil || !*body.SuppressMemberAlerts {
@@ -294,12 +294,12 @@ func fullyPopulatedResourceGroupDto(t *testing.T) *generated.ResourceGroupDto {
 		DefaultEnvironmentId:     &envID,
 		DefaultRetryStrategy: &generated.RetryStrategy{
 			Type:       "fixed",
-			Interval:   func() *int32 { v := int32(60); return &v }(),
-			MaxRetries: func() *int32 { v := int32(3); return &v }(),
+			Interval:   60,
+			MaxRetries: 3,
 		},
 		HealthThresholdType:      &thresholdType,
 		HealthThresholdValue:     &thresholdVal,
-		SuppressMemberAlerts:     boolPtr(true),
+		SuppressMemberAlerts:     true,
 		ConfirmationDelaySeconds: &confirm,
 		RecoveryCooldownMinutes:  &cooldown,
 	}
