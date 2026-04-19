@@ -711,12 +711,18 @@ func TestMonitor_BuildIncidentPolicy_InvalidTriggerRuleType(t *testing.T) {
 		Severity: types.StringValue("down"),
 		Count:    types.Int64Value(3),
 	}
-	rulesList, _ := types.ListValueFrom(ctx, triggerRuleObjectType(), []triggerRuleModel{ruleModel})
+	rulesList, diags := types.ListValueFrom(ctx, triggerRuleObjectType(), []triggerRuleModel{ruleModel})
+	if diags.HasError() {
+		t.Fatalf("ListValueFrom diagnostics: %v", diags)
+	}
 	policyModel := incidentPolicyModel{
 		ConfirmationType: types.StringValue("multi_region"),
 		TriggerRules:     rulesList,
 	}
-	policyObj, _ := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+	policyObj, diags := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+	if diags.HasError() {
+		t.Fatalf("ObjectValueFrom diagnostics: %v", diags)
+	}
 
 	_, err := buildIncidentPolicy(ctx, policyObj)
 	if err == nil {
@@ -734,12 +740,18 @@ func TestMonitor_BuildIncidentPolicy_InvalidTriggerRuleSeverity(t *testing.T) {
 		Severity: types.StringValue("critical"),
 		Count:    types.Int64Value(3),
 	}
-	rulesList, _ := types.ListValueFrom(ctx, triggerRuleObjectType(), []triggerRuleModel{ruleModel})
+	rulesList, diags := types.ListValueFrom(ctx, triggerRuleObjectType(), []triggerRuleModel{ruleModel})
+	if diags.HasError() {
+		t.Fatalf("ListValueFrom diagnostics: %v", diags)
+	}
 	policyModel := incidentPolicyModel{
 		ConfirmationType: types.StringValue("multi_region"),
 		TriggerRules:     rulesList,
 	}
-	policyObj, _ := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+	policyObj, diags := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+	if diags.HasError() {
+		t.Fatalf("ObjectValueFrom diagnostics: %v", diags)
+	}
 
 	_, err := buildIncidentPolicy(ctx, policyObj)
 	if err == nil {

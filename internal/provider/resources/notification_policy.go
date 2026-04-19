@@ -8,6 +8,7 @@ import (
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -44,7 +45,6 @@ func NewNotificationPolicyResource() resource.Resource {
 func (r *NotificationPolicyResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_notification_policy"
 }
-
 
 func (r *NotificationPolicyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
@@ -303,7 +303,10 @@ func (r *NotificationPolicyResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
-	r.mapToState(ctx, &plan, policy)
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, policy)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -330,7 +333,12 @@ func matchRuleObjectType() types.ObjectType {
 	}
 }
 
-func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *NotificationPolicyModel, dto *generated.NotificationPolicyDto) {
+// mapToState mirrors a NotificationPolicyDto onto the Terraform model.
+// Returns any framework diagnostics (END-1141: previously these were
+// silently dropped, hiding spec drift between the API DTO and the schema).
+func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *NotificationPolicyModel, dto *generated.NotificationPolicyDto) diag.Diagnostics {
+	var diags diag.Diagnostics
+
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Enabled = types.BoolValue(dto.Enabled)
@@ -342,7 +350,7 @@ func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *Noti
 	if len(dto.Escalation.Steps) > 0 {
 		var priorSteps []escalationStepModel
 		if !model.Escalation.IsNull() {
-			_ = model.Escalation.ElementsAs(ctx, &priorSteps, false)
+			diags.Append(model.Escalation.ElementsAs(ctx, &priorSteps, false)...)
 		}
 		var stepModels []escalationStepModel
 		for i, s := range dto.Escalation.Steps {
@@ -373,13 +381,19 @@ func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *Noti
 				for j, id := range s.ChannelIds {
 					chElems[j] = types.StringValue(id.String())
 				}
-				sm.ChannelIDs, _ = types.ListValueFrom(ctx, types.StringType, chElems)
+				var d diag.Diagnostics
+				sm.ChannelIDs, d = types.ListValueFrom(ctx, types.StringType, chElems)
+				diags.Append(d...)
 			} else {
-				sm.ChannelIDs, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+				var d diag.Diagnostics
+				sm.ChannelIDs, d = types.ListValueFrom(ctx, types.StringType, []types.String{})
+				diags.Append(d...)
 			}
 			stepModels = append(stepModels, sm)
 		}
-		model.Escalation, _ = types.ListValueFrom(ctx, escalationStepObjectType(), stepModels)
+		var d diag.Diagnostics
+		model.Escalation, d = types.ListValueFrom(ctx, escalationStepObjectType(), stepModels)
+		diags.Append(d...)
 	} else {
 		model.Escalation = types.ListNull(escalationStepObjectType())
 	}
@@ -388,7 +402,7 @@ func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *Noti
 	if len(dto.MatchRules) > 0 {
 		var priorRules []matchRuleModel
 		if !model.MatchRules.IsNull() {
-			_ = model.MatchRules.ElementsAs(ctx, &priorRules, false)
+			diags.Append(model.MatchRules.ElementsAs(ctx, &priorRules, false)...)
 		}
 		var ruleModels []matchRuleModel
 		for i, mr := range dto.MatchRules {
@@ -409,10 +423,14 @@ func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *Noti
 			rm.Regions = ptrStringSliceToList(ctx, mr.Regions)
 			ruleModels = append(ruleModels, rm)
 		}
-		model.MatchRules, _ = types.ListValueFrom(ctx, matchRuleObjectType(), ruleModels)
+		var d diag.Diagnostics
+		model.MatchRules, d = types.ListValueFrom(ctx, matchRuleObjectType(), ruleModels)
+		diags.Append(d...)
 	} else {
 		model.MatchRules = types.ListNull(matchRuleObjectType())
 	}
+
+	return diags
 }
 
 func (r *NotificationPolicyResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -432,7 +450,10 @@ func (r *NotificationPolicyResource) Read(ctx context.Context, req resource.Read
 		return
 	}
 
-	r.mapToState(ctx, &state, policy)
+	resp.Diagnostics.Append(r.mapToState(ctx, &state, policy)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -461,7 +482,10 @@ func (r *NotificationPolicyResource) Update(ctx context.Context, req resource.Up
 		return
 	}
 
-	r.mapToState(ctx, &plan, policy)
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, policy)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -525,8 +549,19 @@ func (r *NotificationPolicyResource) ImportState(ctx context.Context, req resour
 
 	// Pre-initialize nested block lists so mapToState populates them.
 	model := NotificationPolicyModel{}
-	model.Escalation, _ = types.ListValueFrom(ctx, escalationStepObjectType(), []escalationStepModel{})
-	model.MatchRules, _ = types.ListValueFrom(ctx, matchRuleObjectType(), []matchRuleModel{})
-	r.mapToState(ctx, &model, policy)
+	{
+		var d diag.Diagnostics
+		model.Escalation, d = types.ListValueFrom(ctx, escalationStepObjectType(), []escalationStepModel{})
+		resp.Diagnostics.Append(d...)
+		model.MatchRules, d = types.ListValueFrom(ctx, matchRuleObjectType(), []matchRuleModel{})
+		resp.Diagnostics.Append(d...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+	resp.Diagnostics.Append(r.mapToState(ctx, &model, policy)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

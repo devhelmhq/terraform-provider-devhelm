@@ -353,7 +353,10 @@ func TestNotificationPolicy_MapToState_PopulatesEveryField(t *testing.T) {
 	dto := fullyPopulatedPolicyDto()
 
 	model := &NotificationPolicyModel{}
-	r.mapToState(ctx, model, dto)
+	// END-1141: mapToState now surfaces framework diagnostics.
+	if diags := r.mapToState(ctx, model, dto); diags.HasError() {
+		t.Fatalf("mapToState returned errors: %v", diags)
+	}
 
 	if model.ID.ValueString() != dto.Id.String() {
 		t.Errorf("ID")

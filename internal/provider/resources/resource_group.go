@@ -130,9 +130,9 @@ func (r *ResourceGroupResource) Schema(_ context.Context, _ resource.SchemaReque
 				Optional: true, Description: "Health threshold type: COUNT or PERCENTAGE",
 				Validators: []validator.String{
 					stringvalidator.OneOf(
-					string(generated.CreateResourceGroupRequestHealthThresholdTypeCOUNT),
-					string(generated.CreateResourceGroupRequestHealthThresholdTypePERCENTAGE),
-				),
+						string(generated.CreateResourceGroupRequestHealthThresholdTypeCOUNT),
+						string(generated.CreateResourceGroupRequestHealthThresholdTypePERCENTAGE),
+					),
 				},
 			},
 			"health_threshold_value": schema.Float64Attribute{
@@ -239,7 +239,11 @@ func (r *ResourceGroupResource) buildUpdateRequest(ctx context.Context, plan *Re
 	}, diags
 }
 
-func (r *ResourceGroupResource) mapToState(ctx context.Context, model *ResourceGroupModel, dto *generated.ResourceGroupDto) {
+// mapToState mirrors a ResourceGroupDto onto the Terraform model.
+// Returns framework diagnostics from collection marshaling (END-1141).
+func (r *ResourceGroupResource) mapToState(ctx context.Context, model *ResourceGroupModel, dto *generated.ResourceGroupDto) diag.Diagnostics {
+	var diags diag.Diagnostics
+
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
@@ -255,7 +259,10 @@ func (r *ResourceGroupResource) mapToState(ctx context.Context, model *ResourceG
 
 	model.DefaultRegions = ptrStringSliceToList(ctx, dto.DefaultRegions)
 	model.DefaultAlertChannels = ptrUUIDSliceToList(ctx, dto.DefaultAlertChannels)
-	model.DefaultRetryStrategy = retryStrategyObjectFromDto(ctx, dto.DefaultRetryStrategy)
+	var d diag.Diagnostics
+	model.DefaultRetryStrategy, d = retryStrategyObjectFromDto(ctx, dto.DefaultRetryStrategy)
+	diags.Append(d...)
+	return diags
 }
 
 // ── Retry strategy conversion helpers ───────────────────────────────────
@@ -271,17 +278,19 @@ func retryStrategyObjectAttrTypes() map[string]attr.Type {
 // retryStrategyObjectFromDto converts the DTO's RetryStrategy into a TF object.
 // An "empty" DTO (zero-value Type) is treated as "no strategy configured" and
 // rendered as types.ObjectNull so HCL omission stays stable across plans.
-func retryStrategyObjectFromDto(ctx context.Context, rs *generated.RetryStrategy) types.Object {
+//
+// Returns framework diagnostics so a marshaling failure surfaces to the
+// caller's response instead of being silently swallowed (END-1141).
+func retryStrategyObjectFromDto(ctx context.Context, rs *generated.RetryStrategy) (types.Object, diag.Diagnostics) {
 	if rs == nil || (rs.Type == "" && rs.Interval == 0 && rs.MaxRetries == 0) {
-		return types.ObjectNull(retryStrategyObjectAttrTypes())
+		return types.ObjectNull(retryStrategyObjectAttrTypes()), nil
 	}
 	model := retryStrategyModel{
 		Type:       types.StringValue(rs.Type),
 		Interval:   types.Int64Value(int64(rs.Interval)),
 		MaxRetries: types.Int64Value(int64(rs.MaxRetries)),
 	}
-	obj, _ := types.ObjectValueFrom(ctx, retryStrategyObjectAttrTypes(), model)
-	return obj
+	return types.ObjectValueFrom(ctx, retryStrategyObjectAttrTypes(), model)
 }
 
 // retryStrategyFromObject converts the TF object into the optional pointer used
@@ -333,7 +342,10 @@ func (r *ResourceGroupResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	r.mapToState(ctx, &plan, group)
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, group)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -354,7 +366,10 @@ func (r *ResourceGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	r.mapToState(ctx, &state, group)
+	resp.Diagnostics.Append(r.mapToState(ctx, &state, group)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -382,7 +397,10 @@ func (r *ResourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	r.mapToState(ctx, &plan, group)
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, group)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 

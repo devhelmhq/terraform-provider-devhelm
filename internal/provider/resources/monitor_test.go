@@ -397,7 +397,13 @@ func TestMonitor_MapToState_PopulatesEveryFieldFromDto(t *testing.T) {
 	dto := fullyPopulatedMonitorDto(t)
 
 	model := &MonitorResourceModel{}
-	r.mapToState(ctx, model, dto, `{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`)
+	// END-1141: mapToState now returns diagnostics from any framework
+	// marshaling errors. The fully-populated DTO is the happy path —
+	// asserting no diagnostics here locks in the contract that the
+	// "obvious" mapping never silently drops a framework error.
+	if diags := r.mapToState(ctx, model, dto, `{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`); diags.HasError() {
+		t.Fatalf("mapToState returned errors: %v", diags)
+	}
 
 	if got := model.ID.ValueString(); got != dto.Id.String() {
 		t.Errorf("ID = %q, want %s", got, dto.Id)

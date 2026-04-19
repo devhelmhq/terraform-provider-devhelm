@@ -22,7 +22,10 @@ func TestBrandingObjectFromDto_RoundTripsAllFields(t *testing.T) {
 		HidePoweredBy: boolPtr(true),
 	}
 
-	obj := brandingObjectFromDto(ctx, dto)
+	obj, brandDiags := brandingObjectFromDto(ctx, dto)
+	if brandDiags.HasError() {
+		t.Fatalf("brandingObjectFromDto diagnostics: %v", brandDiags)
+	}
 	if obj.IsNull() || obj.IsUnknown() {
 		t.Fatalf("expected concrete object, got null/unknown")
 	}
@@ -78,7 +81,10 @@ func TestBrandingForUpdate_NullObjectReturnsZeroValue(t *testing.T) {
 
 func TestRetryStrategyObjectFromDto_NilDtoReturnsNullObject(t *testing.T) {
 	ctx := context.Background()
-	got := retryStrategyObjectFromDto(ctx, nil)
+	got, diags := retryStrategyObjectFromDto(ctx, nil)
+	if diags.HasError() {
+		t.Fatalf("unexpected diagnostics: %v", diags)
+	}
 	if !got.IsNull() {
 		t.Errorf("nil dto → got %v, want null object", got)
 	}
@@ -86,7 +92,10 @@ func TestRetryStrategyObjectFromDto_NilDtoReturnsNullObject(t *testing.T) {
 
 func TestRetryStrategyObjectFromDto_NullWhenZeroValue(t *testing.T) {
 	ctx := context.Background()
-	obj := retryStrategyObjectFromDto(ctx, &generated.RetryStrategy{})
+	obj, diags := retryStrategyObjectFromDto(ctx, &generated.RetryStrategy{})
+	if diags.HasError() {
+		t.Fatalf("unexpected diagnostics: %v", diags)
+	}
 	if !obj.IsNull() {
 		t.Errorf("expected null object for zero-value RetryStrategy, got %+v", obj)
 	}
@@ -99,7 +108,10 @@ func TestRetryStrategyObjectFromDto_PopulatesAllFields(t *testing.T) {
 		Interval:   60,
 		MaxRetries: 3,
 	}
-	obj := retryStrategyObjectFromDto(ctx, rs)
+	obj, diags := retryStrategyObjectFromDto(ctx, rs)
+	if diags.HasError() {
+		t.Fatalf("unexpected diagnostics: %v", diags)
+	}
 	if obj.IsNull() || obj.IsUnknown() {
 		t.Fatalf("expected concrete object, got %+v", obj)
 	}
@@ -138,4 +150,4 @@ func TestRetryStrategyFromObject_NullObjectReturnsNilPointer(t *testing.T) {
 
 func strPtr(s string) *string { return &s }
 func int32Ptr(i int32) *int32 { return &i }
-func boolPtr(v bool) *bool   { return &v }
+func boolPtr(v bool) *bool    { return &v }

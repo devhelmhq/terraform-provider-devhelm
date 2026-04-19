@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -79,13 +80,13 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Required: true, Description: "Monitor type: HTTP, DNS, TCP, ICMP, HEARTBEAT, or MCP_SERVER",
 				Validators: []validator.String{
 					stringvalidator.OneOf(
-					string(generated.CreateMonitorRequestTypeHTTP),
-					string(generated.CreateMonitorRequestTypeDNS),
-					string(generated.CreateMonitorRequestTypeTCP),
-					string(generated.CreateMonitorRequestTypeICMP),
-					string(generated.CreateMonitorRequestTypeHEARTBEAT),
-					string(generated.CreateMonitorRequestTypeMCPSERVER),
-				),
+						string(generated.CreateMonitorRequestTypeHTTP),
+						string(generated.CreateMonitorRequestTypeDNS),
+						string(generated.CreateMonitorRequestTypeTCP),
+						string(generated.CreateMonitorRequestTypeICMP),
+						string(generated.CreateMonitorRequestTypeHEARTBEAT),
+						string(generated.CreateMonitorRequestTypeMCPSERVER),
+					),
 				},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
@@ -191,10 +192,10 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									Description: "Rule type: consecutive_failures, failures_in_window, or response_time",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
-										string(generated.ConsecutiveFailures),
-										string(generated.FailuresInWindow),
-										string(generated.ResponseTime),
-									),
+											string(generated.ConsecutiveFailures),
+											string(generated.FailuresInWindow),
+											string(generated.ResponseTime),
+										),
 									},
 								},
 								"severity": schema.StringAttribute{
@@ -202,9 +203,9 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									Description: "Incident severity: down or degraded",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
-										string(generated.Down),
-										string(generated.Degraded),
-									),
+											string(generated.Down),
+											string(generated.Degraded),
+										),
 									},
 								},
 								"scope": schema.StringAttribute{
@@ -212,9 +213,9 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									Description: "Rule scope: per_region or any_region",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
-										string(generated.PerRegion),
-										string(generated.AnyRegion),
-									),
+											string(generated.PerRegion),
+											string(generated.AnyRegion),
+										),
 									},
 								},
 								"count": schema.Int64Attribute{
@@ -243,11 +244,11 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									Description: "Aggregation type: all_exceed, average, p95, max",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
-										string(generated.AllExceed),
-										string(generated.Average),
-										string(generated.P95),
-										string(generated.Max),
-									),
+											string(generated.AllExceed),
+											string(generated.Average),
+											string(generated.P95),
+											string(generated.Max),
+										),
 									},
 								},
 							},
@@ -274,9 +275,9 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 							Description: "Assertion severity: fail or warn (default: fail)",
 							Validators: []validator.String{
 								stringvalidator.OneOf(
-								string(generated.CreateAssertionRequestSeverityFail),
-								string(generated.CreateAssertionRequestSeverityWarn),
-							),
+									string(generated.CreateAssertionRequestSeverityFail),
+									string(generated.CreateAssertionRequestSeverityWarn),
+								),
 							},
 						},
 					},
@@ -353,8 +354,8 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 						)
 					}
 
-				ruleType := generated.TriggerRuleType(rule.Type.ValueString())
-				if ruleType == generated.FailuresInWindow && (rule.WindowMinutes.IsNull() || rule.WindowMinutes.IsUnknown()) {
+					ruleType := generated.TriggerRuleType(rule.Type.ValueString())
+					if ruleType == generated.FailuresInWindow && (rule.WindowMinutes.IsNull() || rule.WindowMinutes.IsUnknown()) {
 						resp.Diagnostics.AddAttributeError(
 							rulePath.AtName("window_minutes"),
 							"Missing required attribute",
@@ -688,7 +689,13 @@ func incidentPolicyObjectType() types.ObjectType {
 // rawAuth is the raw JSON blob for the `auth` field as returned by the API
 // (extracted from the response body via extractRawField) — see the comment in
 // buildCreateRequest for why we cannot rely on the typed dto.Auth field.
-func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResourceModel, dto *generated.MonitorDto, rawAuth string) {
+//
+// Returns any diagnostics produced while marshaling collection-valued
+// attributes (e.g. types.ListValueFrom). Callers should Append the
+// diagnostics to their response so framework-level errors are surfaced
+// instead of being silently swallowed (END-1141).
+func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResourceModel, dto *generated.MonitorDto, rawAuth string) diag.Diagnostics {
+	var diags diag.Diagnostics
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Type = types.StringValue(string(dto.Type))
@@ -752,9 +759,13 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 		for i, r := range dto.Regions {
 			regionElems[i] = types.StringValue(r)
 		}
-		model.Regions, _ = types.ListValueFrom(ctx, types.StringType, regionElems)
+		var d diag.Diagnostics
+		model.Regions, d = types.ListValueFrom(ctx, types.StringType, regionElems)
+		diags.Append(d...)
 	} else if !model.Regions.IsNull() {
-		model.Regions, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		var d diag.Diagnostics
+		model.Regions, d = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		diags.Append(d...)
 	}
 
 	// Tag IDs
@@ -769,9 +780,13 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 		for i, t := range *dto.Tags {
 			apiIDs[i] = t.Id.String()
 		}
-		model.TagIds = preserveListOrder(ctx, model.TagIds, apiIDs)
+		var d diag.Diagnostics
+		model.TagIds, d = preserveListOrder(ctx, model.TagIds, apiIDs)
+		diags.Append(d...)
 	} else if !model.TagIds.IsNull() {
-		model.TagIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		var d diag.Diagnostics
+		model.TagIds, d = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		diags.Append(d...)
 	}
 
 	// Alert Channel IDs — same set semantics as Tag IDs above.
@@ -780,9 +795,13 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 		for i, id := range *dto.AlertChannelIds {
 			apiIDs[i] = id.String()
 		}
-		model.AlertChannelIds = preserveListOrder(ctx, model.AlertChannelIds, apiIDs)
+		var d diag.Diagnostics
+		model.AlertChannelIds, d = preserveListOrder(ctx, model.AlertChannelIds, apiIDs)
+		diags.Append(d...)
 	} else if !model.AlertChannelIds.IsNull() {
-		model.AlertChannelIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		var d diag.Diagnostics
+		model.AlertChannelIds, d = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		diags.Append(d...)
 	}
 
 	// Assertions
@@ -797,7 +816,7 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 		// (or worse, incorrect) plans on the next run.
 		var priorAssertions []assertionModel
 		if !model.Assertions.IsNull() {
-			_ = model.Assertions.ElementsAs(ctx, &priorAssertions, false)
+			diags.Append(model.Assertions.ElementsAs(ctx, &priorAssertions, false)...)
 		}
 
 		// Key = "<type>|<normalized-config-json>". The config is normalized
@@ -863,9 +882,11 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 
 			assertionModels = append(assertionModels, am)
 		}
-		model.Assertions, _ = types.ListValueFrom(ctx, types.ObjectType{
+		var d diag.Diagnostics
+		model.Assertions, d = types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: assertionObjectType().AttrTypes,
 		}, assertionModels)
+		diags.Append(d...)
 	}
 
 	// Incident Policy — schema is a SingleNestedAttribute (Optional+Computed
@@ -895,15 +916,20 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 					AggregationType: typedStringPtrValue(tr.AggregationType),
 				})
 			}
-			policyModel.TriggerRules, _ = types.ListValueFrom(ctx, triggerRuleObjectType(), ruleModels)
+			var d diag.Diagnostics
+			policyModel.TriggerRules, d = types.ListValueFrom(ctx, triggerRuleObjectType(), ruleModels)
+			diags.Append(d...)
 		} else {
 			policyModel.TriggerRules = types.ListNull(triggerRuleObjectType())
 		}
-		obj, _ := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+		obj, d := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+		diags.Append(d...)
 		model.IncidentPolicy = obj
 	} else {
 		model.IncidentPolicy = types.ObjectNull(incidentPolicyObjectType().AttrTypes)
 	}
+
+	return diags
 }
 
 // ── CRUD ────────────────────────────────────────────────────────────────
@@ -933,7 +959,10 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -954,7 +983,10 @@ func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	r.mapToState(ctx, &state, monitor, extractDataField(rawResp, "auth"))
+	resp.Diagnostics.Append(r.mapToState(ctx, &state, monitor, extractDataField(rawResp, "auth"))...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -1027,7 +1059,10 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -1180,6 +1215,9 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 	model.Regions = types.ListNull(types.StringType)
 	model.TagIds = types.ListNull(types.StringType)
 	model.AlertChannelIds = types.ListNull(types.StringType)
-	r.mapToState(ctx, &model, monitor, extractDataField(rawResp, "auth"))
+	resp.Diagnostics.Append(r.mapToState(ctx, &model, monitor, extractDataField(rawResp, "auth"))...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

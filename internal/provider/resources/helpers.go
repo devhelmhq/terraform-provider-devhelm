@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -492,7 +493,9 @@ func injectConfigType(raw, monitorType string) string {
 // When `existing` is null/unknown, or its element-set differs from
 // `apiIDs`, we return the API's order verbatim — it's the new source of
 // truth.
-func preserveListOrder(ctx context.Context, existing types.List, apiIDs []string) types.List {
+func preserveListOrder(ctx context.Context, existing types.List, apiIDs []string) (types.List, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
 	apiSet := make(map[string]struct{}, len(apiIDs))
 	for _, id := range apiIDs {
 		apiSet[id] = struct{}{}
@@ -500,7 +503,7 @@ func preserveListOrder(ctx context.Context, existing types.List, apiIDs []string
 
 	var existingIDs []string
 	if !existing.IsNull() && !existing.IsUnknown() {
-		existing.ElementsAs(ctx, &existingIDs, false)
+		diags.Append(existing.ElementsAs(ctx, &existingIDs, false)...)
 	}
 
 	if len(existingIDs) == len(apiIDs) {
@@ -518,8 +521,9 @@ func preserveListOrder(ctx context.Context, existing types.List, apiIDs []string
 			for i, id := range existingIDs {
 				elems[i] = types.StringValue(id)
 			}
-			out, _ := types.ListValueFrom(ctx, types.StringType, elems)
-			return out
+			out, d := types.ListValueFrom(ctx, types.StringType, elems)
+			diags.Append(d...)
+			return out, diags
 		}
 	}
 
@@ -527,6 +531,7 @@ func preserveListOrder(ctx context.Context, existing types.List, apiIDs []string
 	for i, id := range apiIDs {
 		elems[i] = types.StringValue(id)
 	}
-	out, _ := types.ListValueFrom(ctx, types.StringType, elems)
-	return out
+	out, d := types.ListValueFrom(ctx, types.StringType, elems)
+	diags.Append(d...)
+	return out, diags
 }
