@@ -33,7 +33,7 @@ import (
 // ───────────────────────────────────────────────────────────────────────
 
 func int32Ptr(v int32) *int32 { return &v }
-func boolPtr(v bool) *bool   { return &v }
+func boolPtr(v bool) *bool    { return &v }
 
 func mustUUID(t *testing.T, s string) openapi_types.UUID {
 	t.Helper()
@@ -105,7 +105,7 @@ func TestMapAlertChannelToState_PopulatesAllSurfacedFields(t *testing.T) {
 	dto := &generated.AlertChannelDto{
 		Id:          id,
 		Name:        "ops-slack",
-		ChannelType: generated.Slack,
+		ChannelType: generated.AlertChannelDtoChannelTypeSlack,
 	}
 	var model AlertChannelDataSourceModel
 	mapAlertChannelToState(&model, dto)
@@ -115,7 +115,7 @@ func TestMapAlertChannelToState_PopulatesAllSurfacedFields(t *testing.T) {
 	if model.Name.ValueString() != "ops-slack" {
 		t.Errorf("Name: got %q", model.Name.ValueString())
 	}
-	if model.ChannelType.ValueString() != string(generated.Slack) {
+	if model.ChannelType.ValueString() != string(generated.AlertChannelDtoChannelTypeSlack) {
 		t.Errorf("ChannelType: got %q", model.ChannelType.ValueString())
 	}
 }

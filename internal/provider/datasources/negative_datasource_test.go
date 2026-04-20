@@ -71,8 +71,8 @@ func TestMatchByName_MultipleMatches_AllReturned(t *testing.T) {
 	id1 := mustUUID(t, "11111111-1111-1111-1111-111111111111")
 	id2 := mustUUID(t, "22222222-2222-2222-2222-222222222222")
 	items := []generated.AlertChannelDto{
-		{Id: id1, Name: "ops-slack", ChannelType: generated.Slack},
-		{Id: id2, Name: "ops-slack", ChannelType: generated.Discord},
+		{Id: id1, Name: "ops-slack", ChannelType: generated.AlertChannelDtoChannelTypeSlack},
+		{Id: id2, Name: "ops-slack", ChannelType: generated.AlertChannelDtoChannelTypeDiscord},
 	}
 	got := matchByName(items, "ops-slack", func(c generated.AlertChannelDto) string { return c.Name })
 	if len(got) != 2 {
@@ -133,14 +133,14 @@ func TestMapAlertChannelToState_EmptyNamePreserved(t *testing.T) {
 	dto := &generated.AlertChannelDto{
 		Id:          id,
 		Name:        "",
-		ChannelType: generated.Webhook,
+		ChannelType: generated.AlertChannelDtoChannelTypeWebhook,
 	}
 	var model AlertChannelDataSourceModel
 	mapAlertChannelToState(&model, dto)
 	if model.Name.ValueString() != "" {
 		t.Errorf("Name should be empty string, got %q", model.Name.ValueString())
 	}
-	if model.ChannelType.ValueString() != string(generated.Webhook) {
+	if model.ChannelType.ValueString() != string(generated.AlertChannelDtoChannelTypeWebhook) {
 		t.Errorf("ChannelType = %q", model.ChannelType.ValueString())
 	}
 }

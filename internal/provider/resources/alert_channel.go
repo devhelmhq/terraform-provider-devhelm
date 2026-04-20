@@ -49,9 +49,9 @@ type AlertChannelResourceModel struct {
 	Region types.String `tfsdk:"region"`
 
 	// Webhook channel
-	URL            types.String `tfsdk:"url"`
-	CustomHeaders  types.Map    `tfsdk:"custom_headers"`
-	SigningSecret  types.String `tfsdk:"signing_secret"`
+	URL           types.String `tfsdk:"url"`
+	CustomHeaders types.Map    `tfsdk:"custom_headers"`
+	SigningSecret types.String `tfsdk:"signing_secret"`
 }
 
 func NewAlertChannelResource() resource.Resource {
@@ -79,14 +79,14 @@ func (r *AlertChannelResource) Schema(_ context.Context, _ resource.SchemaReques
 				Description: "Channel type: slack, email, pagerduty, opsgenie, discord, teams, webhook",
 				Validators: []validator.String{
 					stringvalidator.OneOf(
-					string(generated.Slack),
-					string(generated.Email),
-					string(generated.Pagerduty),
-					string(generated.Opsgenie),
-					string(generated.Discord),
-					string(generated.Teams),
-					string(generated.Webhook),
-				),
+						string(generated.AlertChannelDtoChannelTypeSlack),
+						string(generated.AlertChannelDtoChannelTypeEmail),
+						string(generated.AlertChannelDtoChannelTypePagerduty),
+						string(generated.AlertChannelDtoChannelTypeOpsgenie),
+						string(generated.AlertChannelDtoChannelTypeDiscord),
+						string(generated.AlertChannelDtoChannelTypeTeams),
+						string(generated.AlertChannelDtoChannelTypeWebhook),
+					),
 				},
 			},
 			"config_hash": schema.StringAttribute{
@@ -156,45 +156,50 @@ func (r *AlertChannelResource) Configure(_ context.Context, req resource.Configu
 func (r *AlertChannelResource) buildConfig(model *AlertChannelResourceModel) (json.RawMessage, error) {
 	channelType := model.ChannelType.ValueString()
 
+	// Each subtype carries its own per-discriminator enum (e.g.
+	// SlackChannelConfigChannelType with one value `Slack`). The discriminator
+	// inlining in the upstream OpenAPI preprocessor produces tagged unions —
+	// codegens emit one type per subtype rather than a shared enum, so
+	// each struct literal needs its own typed constant.
 	var cfg any
 	switch generated.AlertChannelDtoChannelType(channelType) {
-	case generated.Slack:
+	case generated.AlertChannelDtoChannelTypeSlack:
 		cfg = generated.SlackChannelConfig{
-			ChannelType: string(generated.Slack),
+			ChannelType: generated.Slack,
 			WebhookUrl:  model.WebhookURL.ValueString(),
 			MentionText: stringPtrOrNil(model.MentionText),
 		}
-	case generated.Discord:
+	case generated.AlertChannelDtoChannelTypeDiscord:
 		cfg = generated.DiscordChannelConfig{
-			ChannelType:   string(generated.Discord),
+			ChannelType:   generated.DiscordChannelConfigChannelTypeDiscord,
 			WebhookUrl:    model.WebhookURL.ValueString(),
 			MentionRoleId: stringPtrOrNil(model.MentionRoleID),
 		}
-	case generated.Email:
+	case generated.AlertChannelDtoChannelTypeEmail:
 		cfg = generated.EmailChannelConfig{
-			ChannelType: string(generated.Email),
+			ChannelType: generated.Email,
 			Recipients:  emailsFromStringList(model.Recipients),
 		}
-	case generated.Pagerduty:
+	case generated.AlertChannelDtoChannelTypePagerduty:
 		cfg = generated.PagerDutyChannelConfig{
-			ChannelType:      string(generated.Pagerduty),
+			ChannelType:      generated.Pagerduty,
 			RoutingKey:       model.RoutingKey.ValueString(),
 			SeverityOverride: stringPtrOrNil(model.SeverityOverride),
 		}
-	case generated.Opsgenie:
+	case generated.AlertChannelDtoChannelTypeOpsgenie:
 		cfg = generated.OpsGenieChannelConfig{
-			ChannelType: string(generated.Opsgenie),
+			ChannelType: generated.Opsgenie,
 			ApiKey:      model.APIKey.ValueString(),
 			Region:      stringPtrOrNil(model.Region),
 		}
-	case generated.Teams:
+	case generated.AlertChannelDtoChannelTypeTeams:
 		cfg = generated.TeamsChannelConfig{
-			ChannelType: string(generated.Teams),
+			ChannelType: generated.Teams,
 			WebhookUrl:  model.WebhookURL.ValueString(),
 		}
-	case generated.Webhook:
+	case generated.AlertChannelDtoChannelTypeWebhook:
 		cfg = generated.WebhookChannelConfig{
-			ChannelType:   string(generated.Webhook),
+			ChannelType:   generated.Webhook,
 			Url:           model.URL.ValueString(),
 			CustomHeaders: stringMapToPtr(model.CustomHeaders),
 			SigningSecret: stringPtrOrNil(model.SigningSecret),

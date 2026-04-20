@@ -58,9 +58,9 @@ func TestBuildCreateRequest_PopulatesEveryRequiredField(t *testing.T) {
 		TagIds: types.ListValueMust(types.StringType, []attr.Value{
 			types.StringValue(tagID),
 		}),
-		Config:     types.StringValue(`{"url":"https://acme.com","method":"GET"}`),
-		Auth:       types.StringValue(`{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`),
-		Assertions: types.ListNull(assertionObjectType()),
+		Config:         types.StringValue(`{"url":"https://acme.com","method":"GET"}`),
+		Auth:           types.StringValue(`{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`),
+		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
 
@@ -346,6 +346,11 @@ func fullyPopulatedMonitorDto(t *testing.T) *generated.MonitorDto {
 	asnCfg := generated.MonitorAssertionDto_Config{}
 	_ = asnCfg.UnmarshalJSON([]byte(`{"type":"status_code","expected":"200","operator":"equals"}`))
 
+	auth := generated.MonitorAuthConfig{}
+	if err := auth.FromBearerAuthConfig(generated.BearerAuthConfig{Type: generated.Bearer}); err != nil {
+		t.Fatalf("auth: %v", err)
+	}
+
 	return &generated.MonitorDto{
 		Id:               id,
 		Name:             "acme-api",
@@ -355,7 +360,7 @@ func fullyPopulatedMonitorDto(t *testing.T) *generated.MonitorDto {
 		Regions:          []string{"us-east", "eu-west"},
 		Environment:      &generated.Summary{Id: envID, Name: "prod", Slug: "prod"},
 		Config:           cfg,
-		Auth:             &generated.MonitorAuthConfig{Type: "bearer"},
+		Auth:             &auth,
 		PingUrl:          &pingURL,
 		AlertChannelIds:  &[]openapi_types.UUID{*chanID},
 		Tags:             &[]generated.TagDto{{Id: tagID, Name: "team-acme", Color: "#000"}},
@@ -469,18 +474,18 @@ func TestMonitor_MapToState_Idempotent(t *testing.T) {
 			ID, Name, Type, Config, Auth, PingURL, EnvID string
 			Freq                                         int64
 			RegionLen, ChannelLen, TagLen, AsnLen        int
-		IncidentNull                                 bool
-		Enabled                                      bool
-	}{
-		m.ID.ValueString(), m.Name.ValueString(), m.Type.ValueString(),
-		m.Config.ValueString(), m.Auth.ValueString(), m.PingUrl.ValueString(),
-		m.EnvironmentID.ValueString(),
-		m.FrequencySeconds.ValueInt64(),
-		len(m.Regions.Elements()), len(m.AlertChannelIds.Elements()),
-		len(m.TagIds.Elements()), len(m.Assertions.Elements()),
-		m.IncidentPolicy.IsNull(),
-		m.Enabled.ValueBool(),
-	})
+			IncidentNull                                 bool
+			Enabled                                      bool
+		}{
+			m.ID.ValueString(), m.Name.ValueString(), m.Type.ValueString(),
+			m.Config.ValueString(), m.Auth.ValueString(), m.PingUrl.ValueString(),
+			m.EnvironmentID.ValueString(),
+			m.FrequencySeconds.ValueInt64(),
+			len(m.Regions.Elements()), len(m.AlertChannelIds.Elements()),
+			len(m.TagIds.Elements()), len(m.Assertions.Elements()),
+			m.IncidentPolicy.IsNull(),
+			m.Enabled.ValueBool(),
+		})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -690,8 +695,8 @@ func TestMonitor_AssertionMatching_FIFOForDuplicates(t *testing.T) {
 		return obj
 	}
 	priorList, _ := types.ListValue(assertionObjectType(), []attr.Value{
-		mk(types.StringValue("Fail")),  // first prior consumed by first DTO
-		mk(types.StringNull()),         // second prior consumed by second DTO
+		mk(types.StringValue("Fail")), // first prior consumed by first DTO
+		mk(types.StringNull()),        // second prior consumed by second DTO
 	})
 
 	model := &MonitorResourceModel{Assertions: priorList}

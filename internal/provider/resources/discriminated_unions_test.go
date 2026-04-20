@@ -439,7 +439,7 @@ func TestAlertChannel_BuildConfig_AllVariants(t *testing.T) {
 			wantContains: "hooks.slack.com",
 			asFn: func(u *generated.CreateAlertChannelRequest_Config) (string, error) {
 				v, err := u.AsSlackChannelConfig()
-				return v.ChannelType, err
+				return string(v.ChannelType), err
 			},
 		},
 		{
@@ -453,7 +453,7 @@ func TestAlertChannel_BuildConfig_AllVariants(t *testing.T) {
 			wantContains: "discord.com",
 			asFn: func(u *generated.CreateAlertChannelRequest_Config) (string, error) {
 				v, err := u.AsDiscordChannelConfig()
-				return v.ChannelType, err
+				return string(v.ChannelType), err
 			},
 		},
 		{
@@ -469,7 +469,7 @@ func TestAlertChannel_BuildConfig_AllVariants(t *testing.T) {
 			wantContains: "a@example.com",
 			asFn: func(u *generated.CreateAlertChannelRequest_Config) (string, error) {
 				v, err := u.AsEmailChannelConfig()
-				return v.ChannelType, err
+				return string(v.ChannelType), err
 			},
 		},
 		{
@@ -483,7 +483,7 @@ func TestAlertChannel_BuildConfig_AllVariants(t *testing.T) {
 			wantContains: "rk-1234",
 			asFn: func(u *generated.CreateAlertChannelRequest_Config) (string, error) {
 				v, err := u.AsPagerDutyChannelConfig()
-				return v.ChannelType, err
+				return string(v.ChannelType), err
 			},
 		},
 		{
@@ -497,7 +497,7 @@ func TestAlertChannel_BuildConfig_AllVariants(t *testing.T) {
 			wantContains: "key-xyz",
 			asFn: func(u *generated.CreateAlertChannelRequest_Config) (string, error) {
 				v, err := u.AsOpsGenieChannelConfig()
-				return v.ChannelType, err
+				return string(v.ChannelType), err
 			},
 		},
 		{
@@ -510,7 +510,7 @@ func TestAlertChannel_BuildConfig_AllVariants(t *testing.T) {
 			wantContains: "outlook.office.com",
 			asFn: func(u *generated.CreateAlertChannelRequest_Config) (string, error) {
 				v, err := u.AsTeamsChannelConfig()
-				return v.ChannelType, err
+				return string(v.ChannelType), err
 			},
 		},
 		{
@@ -527,7 +527,7 @@ func TestAlertChannel_BuildConfig_AllVariants(t *testing.T) {
 			wantContains: "X-Token",
 			asFn: func(u *generated.CreateAlertChannelRequest_Config) (string, error) {
 				v, err := u.AsWebhookChannelConfig()
-				return v.ChannelType, err
+				return string(v.ChannelType), err
 			},
 		},
 	}

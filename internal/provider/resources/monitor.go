@@ -192,9 +192,9 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									Description: "Rule type: consecutive_failures, failures_in_window, or response_time",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
-											string(generated.ConsecutiveFailures),
-											string(generated.FailuresInWindow),
-											string(generated.ResponseTime),
+											string(generated.TriggerRuleTypeConsecutiveFailures),
+											string(generated.TriggerRuleTypeFailuresInWindow),
+											string(generated.TriggerRuleTypeResponseTime),
 										),
 									},
 								},
@@ -355,7 +355,7 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 					}
 
 					ruleType := generated.TriggerRuleType(rule.Type.ValueString())
-					if ruleType == generated.FailuresInWindow && (rule.WindowMinutes.IsNull() || rule.WindowMinutes.IsUnknown()) {
+					if ruleType == generated.TriggerRuleTypeFailuresInWindow && (rule.WindowMinutes.IsNull() || rule.WindowMinutes.IsUnknown()) {
 						resp.Diagnostics.AddAttributeError(
 							rulePath.AtName("window_minutes"),
 							"Missing required attribute",
@@ -363,7 +363,7 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 						)
 					}
 
-					if ruleType == generated.ResponseTime && (rule.ThresholdMs.IsNull() || rule.ThresholdMs.IsUnknown()) {
+					if ruleType == generated.TriggerRuleTypeResponseTime && (rule.ThresholdMs.IsNull() || rule.ThresholdMs.IsUnknown()) {
 						resp.Diagnostics.AddAttributeError(
 							rulePath.AtName("threshold_ms"),
 							"Missing required attribute",
