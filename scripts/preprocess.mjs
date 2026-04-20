@@ -34,6 +34,9 @@
  *      hierarchies, but other (non-discriminated) cycles may still occur.
  *
  * These functions mutate the spec in-place.
+ *
+ * CLI usage (invoked by scripts/typegen.sh):
+ *   node scripts/preprocess.mjs <input.json> <output.json>
  */
 
 function isSchemaObj(v) {
@@ -356,4 +359,47 @@ export function rewriteUnionsAsDiscriminated(source, unions) {
     if (!disc) return full;
     return `z.discriminatedUnion("${disc}", [${memberList.join(', ')}])`;
   });
+}
+
+// CLI entry point: invoked by scripts/typegen.sh as
+//   node scripts/preprocess.mjs <input.json> <output.json>
+// Mirrors the behaviour of `@devhelm/openapi-tools preprocess` so the
+// terraform-provider CI can run without the (private) monorepo package.
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const isMain =
+  process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (isMain) {
+  const [, , inputPath, outputPath] = process.argv;
+  if (!inputPath || !outputPath) {
+    console.error(
+      'Usage: node scripts/preprocess.mjs <input.json> <output.json>',
+    );
+    process.exit(1);
+  }
+  const spec = JSON.parse(readFileSync(resolve(inputPath), 'utf8'));
+  const result = preprocessSpec(spec);
+  writeFileSync(resolve(outputPath), JSON.stringify(spec, null, 2), 'utf8');
+  const schemaCount = Object.keys(spec.components?.schemas ?? {}).length;
+  console.log(
+    `Preprocessed ${schemaCount} schemas → ${resolve(outputPath)}`,
+  );
+  if (result.flattened.length > 0) {
+    console.log(`Flattened circular oneOf: ${result.flattened.join(', ')}`);
+  }
+  if (result.inlinedDiscriminators.length > 0) {
+    console.log(
+      `Inlined discriminator subtypes for: ${result.inlinedDiscriminators
+        .map((u) => `${u.parent}(${u.discriminator})`)
+        .join(', ')}`,
+    );
+  }
+  if (result.inlinedNullableDeductions.length > 0) {
+    console.log(
+      `Inlined nullable deduction refs for: ${result.inlinedNullableDeductions.join(', ')}`,
+    );
+  }
 }
