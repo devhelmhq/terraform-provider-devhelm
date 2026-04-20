@@ -130,7 +130,7 @@ func (r *ResourceGroupMembershipResource) Read(ctx context.Context, req resource
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading resource group", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read resource group", err, path.Root("id"))
 		return
 	}
 

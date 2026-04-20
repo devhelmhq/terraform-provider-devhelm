@@ -108,10 +108,14 @@ func validateStruct(v reflect.Value, prefix string, errs *[]string) {
 		}
 
 		// Non-pointer fields are required — check for zero value.
-		// Bool is excluded: `false` is the zero value but a perfectly valid
-		// API response, and json.Unmarshal cannot distinguish "absent" from
-		// "explicitly false".
-		if fv.IsZero() && field.Type.Kind() != reflect.Bool {
+		// Exclusions:
+		//   - Bool: `false` is a valid value json.Unmarshal cannot
+		//     distinguish from "absent".
+		//   - Nested struct: a zero struct may legitimately come from
+		//     a JSON `{}` payload when every field of the nested type is
+		//     optional. Recursion below validates whatever fields are
+		//     present without false-positiving on this case.
+		if fv.IsZero() && field.Type.Kind() != reflect.Bool && field.Type.Kind() != reflect.Struct {
 			if field.Type.Kind() == reflect.Slice {
 				*errs = append(*errs, fmt.Sprintf("%s: required array is missing", fullName))
 			} else {

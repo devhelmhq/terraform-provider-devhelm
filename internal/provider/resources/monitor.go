@@ -265,6 +265,9 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						"type": schema.StringAttribute{
 							Required:    true,
 							Description: "Assertion type discriminator in snake_case wire format (e.g. `status_code`, `response_time`, `body_contains`, `header_value`, `dns_resolves`, `ssl_expiry`, `tcp_connects`). Must match an AssertionType enum value as serialized by the API.",
+							Validators: []validator.String{
+								stringvalidator.OneOf(api.AssertionTypes...),
+							},
 						},
 						"config": schema.StringAttribute{
 							Required:    true,
@@ -325,7 +328,7 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 						resp.Diagnostics.AddAttributeError(
 							path.Root("auth"),
 							"Invalid auth type",
-							fmt.Sprintf("Auth type %q is not valid. Must be one of: bearer, basic, header, api_key", authType),
+							fmt.Sprintf("Auth type %q is not valid. Must be one of: %v", authType, api.MonitorAuthTypes),
 						)
 					}
 				}
@@ -971,7 +974,7 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 
 	monitor, rawResp, err := api.CreateRaw[generated.MonitorDto](ctx, r.client, api.PathMonitors, bodyJSON)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating monitor", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create monitor", err, path.Root("name"))
 		return
 	}
 
@@ -995,7 +998,7 @@ func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, re
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading monitor", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read monitor", err, path.Root("id"))
 		return
 	}
 
@@ -1051,7 +1054,7 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// list entirely (so `monitor.Tags` would be misleading), and we re-GET
 	// below to capture the post-reconciliation state authoritatively.
 	if _, _, err := api.UpdateRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()), bodyJSON); err != nil {
-		resp.Diagnostics.AddError("Error updating monitor", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update monitor", err, path.Root("name"))
 		return
 	}
 
@@ -1165,7 +1168,7 @@ func (r *MonitorResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 	err := api.Delete(ctx, r.client, api.MonitorPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting monitor", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete monitor", err, path.Root("id"))
 	}
 }
 

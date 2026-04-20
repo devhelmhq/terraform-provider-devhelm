@@ -29,6 +29,23 @@ jobs:
           go-version: '1.25'
       - run: go test ./... -v -count=1
 
+  testacc:
+    # Framework-level acceptance tests (resource.Test + httptest mock API).
+    # Driven by terraform-plugin-testing; requires `terraform` on PATH and
+    # TF_ACC=1. Tests skip cleanly without TF_ACC, so this job is the only
+    # place they actually run.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.10.5'
+          terraform_wrapper: false
+      - run: make testacc
+
   build:
     runs-on: ubuntu-latest
     steps:

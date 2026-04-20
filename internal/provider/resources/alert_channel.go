@@ -237,7 +237,7 @@ func (r *AlertChannelResource) Create(ctx context.Context, req resource.CreateRe
 
 	ch, err := api.Create[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating alert channel", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create alert channel", err, path.Root("name"))
 		return
 	}
 
@@ -255,7 +255,7 @@ func (r *AlertChannelResource) Read(ctx context.Context, req resource.ReadReques
 
 	channels, err := api.List[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels)
 	if err != nil {
-		resp.Diagnostics.AddError("Error reading alert channels", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read alert channels", err, path.Root("id"))
 		return
 	}
 
@@ -315,7 +315,7 @@ func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRe
 
 	ch, err := api.Update[generated.AlertChannelDto](ctx, r.client, api.AlertChannelPath(state.ID.ValueString()), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating alert channel", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update alert channel", err, path.Root("name"))
 		return
 	}
 
@@ -333,7 +333,7 @@ func (r *AlertChannelResource) Delete(ctx context.Context, req resource.DeleteRe
 
 	err := api.Delete(ctx, r.client, api.AlertChannelPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting alert channel", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete alert channel", err, path.Root("id"))
 	}
 }
 

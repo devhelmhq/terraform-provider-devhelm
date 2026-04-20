@@ -245,7 +245,7 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 
 	page, err := api.Create[generated.StatusPageDto](ctx, r.client, api.PathStatusPages, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating status page", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create status page", err, path.Root("name"))
 		return
 	}
 
@@ -269,7 +269,7 @@ func (r *StatusPageResource) Read(ctx context.Context, req resource.ReadRequest,
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading status page", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read status page", err, path.Root("id"))
 		return
 	}
 
@@ -322,7 +322,7 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	page, err := api.Update[generated.StatusPageDto](ctx, r.client, api.StatusPagePath(state.ID.ValueString()), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating status page", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update status page", err, path.Root("name"))
 		return
 	}
 
@@ -342,7 +342,7 @@ func (r *StatusPageResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 	err := api.Delete(ctx, r.client, api.StatusPagePath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting status page", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete status page", err, path.Root("id"))
 	}
 }
 

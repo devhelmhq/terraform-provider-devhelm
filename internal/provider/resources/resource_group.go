@@ -338,7 +338,7 @@ func (r *ResourceGroupResource) Create(ctx context.Context, req resource.CreateR
 	}
 	group, err := api.Create[generated.ResourceGroupDto](ctx, r.client, api.PathResourceGroups, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating resource group", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create resource group", err, path.Root("name"))
 		return
 	}
 
@@ -362,7 +362,7 @@ func (r *ResourceGroupResource) Read(ctx context.Context, req resource.ReadReque
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading resource group", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read resource group", err, path.Root("id"))
 		return
 	}
 
@@ -393,7 +393,7 @@ func (r *ResourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 	}
 	group, err := api.Update[generated.ResourceGroupDto](ctx, r.client, api.ResourceGroupPath(state.ID.ValueString()), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating resource group", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update resource group", err, path.Root("name"))
 		return
 	}
 
@@ -413,7 +413,7 @@ func (r *ResourceGroupResource) Delete(ctx context.Context, req resource.DeleteR
 
 	err := api.Delete(ctx, r.client, api.ResourceGroupPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting resource group", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete resource group", err, path.Root("id"))
 	}
 }
 

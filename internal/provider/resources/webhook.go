@@ -99,7 +99,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 
 	wh, err := api.Create[generated.WebhookEndpointDto](ctx, r.client, api.PathWebhooks, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating webhook", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create webhook", err, path.Root("name"))
 		return
 	}
 
@@ -147,7 +147,7 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading webhook", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read webhook", err, path.Root("id"))
 		return
 	}
 
@@ -181,7 +181,7 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 
 	wh, err := api.Update[generated.WebhookEndpointDto](ctx, r.client, api.WebhookPath(state.ID.ValueString()), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating webhook", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update webhook", err, path.Root("name"))
 		return
 	}
 
@@ -202,7 +202,7 @@ func (r *WebhookResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 	err := api.Delete(ctx, r.client, api.WebhookPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting webhook", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete webhook", err, path.Root("id"))
 	}
 }
 

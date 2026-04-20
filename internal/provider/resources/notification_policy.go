@@ -9,6 +9,7 @@ import (
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -299,7 +300,7 @@ func (r *NotificationPolicyResource) Create(ctx context.Context, req resource.Cr
 
 	policy, err := api.Create[generated.NotificationPolicyDto](ctx, r.client, api.PathNotificationPolicies, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating notification policy", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create notification policy", err, path.Root("name"))
 		return
 	}
 
@@ -446,7 +447,7 @@ func (r *NotificationPolicyResource) Read(ctx context.Context, req resource.Read
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading notification policy", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read notification policy", err, path.Root("id"))
 		return
 	}
 
@@ -478,7 +479,7 @@ func (r *NotificationPolicyResource) Update(ctx context.Context, req resource.Up
 
 	policy, err := api.Update[generated.NotificationPolicyDto](ctx, r.client, api.NotificationPolicyPath(state.ID.ValueString()), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating notification policy", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update notification policy", err, path.Root("name"))
 		return
 	}
 
@@ -498,7 +499,7 @@ func (r *NotificationPolicyResource) Delete(ctx context.Context, req resource.De
 
 	err := api.Delete(ctx, r.client, api.NotificationPolicyPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting notification policy", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete notification policy", err, path.Root("id"))
 	}
 }
 
@@ -543,7 +544,7 @@ func (r *NotificationPolicyResource) ImportState(ctx context.Context, req resour
 
 	policy, err := api.Get[generated.NotificationPolicyDto](ctx, r.client, api.NotificationPolicyPath(policyID))
 	if err != nil {
-		resp.Diagnostics.AddError("Error reading notification policy for import", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read notification policy for import", err, path.Root("id"))
 		return
 	}
 

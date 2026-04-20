@@ -370,7 +370,7 @@ func (r *StatusPageComponentResource) Create(ctx context.Context, req resource.C
 		body,
 	)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating component", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create component", err, path.Root("name"))
 		return
 	}
 
@@ -394,7 +394,7 @@ func (r *StatusPageComponentResource) Read(ctx context.Context, req resource.Rea
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading components", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read components", err, path.Root("id"))
 		return
 	}
 
@@ -470,7 +470,7 @@ func (r *StatusPageComponentResource) Update(ctx context.Context, req resource.U
 		body,
 	)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating component", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update component", err, path.Root("name"))
 		return
 	}
 
@@ -489,7 +489,7 @@ func (r *StatusPageComponentResource) Delete(ctx context.Context, req resource.D
 		api.StatusPageComponentPath(state.StatusPageID.ValueString(), state.ID.ValueString()),
 	)
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting component", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete component", err, path.Root("id"))
 	}
 }
 

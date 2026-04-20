@@ -94,7 +94,16 @@ func retryDelay(attempt int) time.Duration {
 	return d/2 + jitter
 }
 
-func (c *Client) doRequest(ctx context.Context, method, path string, body any) ([]byte, int, error) {
+// RequestBody is the P5-tracked boundary type for any request payload that
+// `doRequest` will serialize via `json.Marshal`. Callers must pass a typed
+// struct from `internal/generated` (or a properly tagged handwritten
+// equivalent), never a raw `map[string]any`. The alias is here so a future
+// audit can grep for `RequestBody` and find every site that crosses the
+// json.Marshal boundary, even though Go's type system can't prevent the
+// `map[string]any` case at compile time.
+type RequestBody = any
+
+func (c *Client) doRequest(ctx context.Context, method, path string, body RequestBody) ([]byte, int, error) {
 	u := c.BaseURL + path
 
 	var bodyBytes []byte
