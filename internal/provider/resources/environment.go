@@ -100,10 +100,10 @@ func (r *EnvironmentResource) Create(ctx context.Context, req resource.CreateReq
 		Name:      plan.Name.ValueString(),
 		Slug:      plan.Slug.ValueString(),
 		Variables: stringMapToPtr(plan.Variables),
-		IsDefault: boolPtrOrNil(plan.IsDefault),
+		IsDefault: plan.IsDefault.ValueBool(),
 	}
 
-	env, err := api.Create[generated.EnvironmentDto](ctx, r.client, "/api/v1/environments", body)
+	env, err := api.Create[generated.EnvironmentDto](ctx, r.client, api.PathEnvironments, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating environment", err.Error())
 		return
@@ -120,7 +120,7 @@ func (r *EnvironmentResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
-	env, err := api.Get[generated.EnvironmentDto](ctx, r.client, "/api/v1/environments/"+state.Slug.ValueString())
+	env, err := api.Get[generated.EnvironmentDto](ctx, r.client, api.EnvironmentPath(state.Slug.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -148,7 +148,7 @@ func (r *EnvironmentResource) Update(ctx context.Context, req resource.UpdateReq
 		IsDefault: boolPtrOrNil(plan.IsDefault),
 	}
 
-	env, err := api.Update[generated.EnvironmentDto](ctx, r.client, "/api/v1/environments/"+plan.Slug.ValueString(), body)
+	env, err := api.Update[generated.EnvironmentDto](ctx, r.client, api.EnvironmentPath(plan.Slug.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating environment", err.Error())
 		return
@@ -165,7 +165,7 @@ func (r *EnvironmentResource) Delete(ctx context.Context, req resource.DeleteReq
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/environments/"+state.Slug.ValueString())
+	err := api.Delete(ctx, r.client, api.EnvironmentPath(state.Slug.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting environment", err.Error())
 	}
@@ -176,13 +176,13 @@ func (r *EnvironmentResource) ImportState(ctx context.Context, req resource.Impo
 	// We optimistically try a direct GET first (covers the common case where
 	// the user supplies a slug), and fall back to a list scan if that 404s
 	// so users can also import by UUID for round-tripping with dashboard URLs.
-	env, err := api.Get[generated.EnvironmentDto](ctx, r.client, "/api/v1/environments/"+api.PathEscape(req.ID))
+	env, err := api.Get[generated.EnvironmentDto](ctx, r.client, api.EnvironmentPath(api.PathEscape(req.ID)))
 	if err != nil {
 		if !api.IsNotFound(err) {
 			resp.Diagnostics.AddError("Error importing environment", err.Error())
 			return
 		}
-		envs, listErr := api.List[generated.EnvironmentDto](ctx, r.client, "/api/v1/environments")
+		envs, listErr := api.List[generated.EnvironmentDto](ctx, r.client, api.PathEnvironments)
 		if listErr != nil {
 			resp.Diagnostics.AddError("Error importing environment", listErr.Error())
 			return
@@ -215,7 +215,7 @@ func (r *EnvironmentResource) mapToState(ctx context.Context, model *Environment
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
-	model.IsDefault = boolValue(dto.IsDefault)
+	model.IsDefault = types.BoolValue(dto.IsDefault)
 	if len(dto.Variables) > 0 {
 		elements := make(map[string]string, len(dto.Variables))
 		for k, v := range dto.Variables {

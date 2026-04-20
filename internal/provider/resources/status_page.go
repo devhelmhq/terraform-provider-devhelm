@@ -123,8 +123,8 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				Required: true, Description: "Human-readable name for this status page",
 			},
 			"slug": schema.StringAttribute{
-				Required:    true,
-				Description: "URL slug (lowercase, hyphens, globally unique). Changing this forces a new resource.",
+				Required:      true,
+				Description:   "URL slug (lowercase, hyphens, globally unique). Changing this forces a new resource.",
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"description": schema.StringAttribute{
@@ -139,7 +139,9 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				Optional: true, Computed: true,
 				Description: "Page visibility. Only PUBLIC is currently supported (default: PUBLIC)",
 				Validators: []validator.String{
-					stringvalidator.OneOf("PUBLIC"),
+					stringvalidator.OneOf(
+						string(generated.CreateStatusPageRequestVisibilityPUBLIC),
+					),
 				},
 			},
 			"enabled": schema.BoolAttribute{
@@ -149,7 +151,11 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 			"incident_mode": schema.StringAttribute{
 				Optional: true, Computed: true, Description: "Incident mode: MANUAL, REVIEW, or AUTOMATIC (default: AUTOMATIC)",
 				Validators: []validator.String{
-					stringvalidator.OneOf("MANUAL", "REVIEW", "AUTOMATIC"),
+					stringvalidator.OneOf(
+						string(generated.CreateStatusPageRequestIncidentModeMANUAL),
+						string(generated.CreateStatusPageRequestIncidentModeREVIEW),
+						string(generated.CreateStatusPageRequestIncidentModeAUTOMATIC),
+					),
 				},
 			},
 			"page_url": schema.StringAttribute{
@@ -237,13 +243,16 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		Branding:     branding,
 	}
 
-	page, err := api.Create[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages", body)
+	page, err := api.Create[generated.StatusPageDto](ctx, r.client, api.PathStatusPages, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating status page", err.Error())
 		return
 	}
 
-	r.mapToState(ctx, &plan, page)
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, page)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -254,7 +263,7 @@ func (r *StatusPageResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	page, err := api.Get[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+state.ID.ValueString())
+	page, err := api.Get[generated.StatusPageDto](ctx, r.client, api.StatusPagePath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -264,7 +273,10 @@ func (r *StatusPageResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	r.mapToState(ctx, &state, page)
+	resp.Diagnostics.Append(r.mapToState(ctx, &state, page)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -308,13 +320,16 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 		Branding: &branding,
 	}
 
-	page, err := api.Update[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+state.ID.ValueString(), body)
+	page, err := api.Update[generated.StatusPageDto](ctx, r.client, api.StatusPagePath(state.ID.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating status page", err.Error())
 		return
 	}
 
-	r.mapToState(ctx, &plan, page)
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, page)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -325,7 +340,7 @@ func (r *StatusPageResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/status-pages/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.StatusPagePath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting status page", err.Error())
 	}
@@ -341,7 +356,7 @@ func (r *StatusPageResource) ImportState(ctx context.Context, req resource.Impor
 	// be surfaced as a confusing error.
 	var page *generated.StatusPageDto
 	if _, parseErr := uuid.Parse(req.ID); parseErr == nil {
-		got, err := api.Get[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages/"+req.ID)
+		got, err := api.Get[generated.StatusPageDto](ctx, r.client, api.StatusPagePath(req.ID))
 		if err != nil && !api.IsNotFound(err) {
 			resp.Diagnostics.AddError("Error importing status page", err.Error())
 			return
@@ -349,7 +364,7 @@ func (r *StatusPageResource) ImportState(ctx context.Context, req resource.Impor
 		page = got
 	}
 	if page == nil {
-		pages, listErr := api.List[generated.StatusPageDto](ctx, r.client, "/api/v1/status-pages")
+		pages, listErr := api.List[generated.StatusPageDto](ctx, r.client, api.PathStatusPages)
 		if listErr != nil {
 			resp.Diagnostics.AddError("Error importing status page", listErr.Error())
 			return
@@ -370,7 +385,10 @@ func (r *StatusPageResource) ImportState(ctx context.Context, req resource.Impor
 	}
 
 	model := StatusPageResourceModel{}
-	r.mapToState(ctx, &model, page)
+	resp.Diagnostics.Append(r.mapToState(ctx, &model, page)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), model.ID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), model.Name)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), model.Slug)...)
@@ -382,19 +400,26 @@ func (r *StatusPageResource) ImportState(ctx context.Context, req resource.Impor
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("page_url"), model.PageURL)...)
 }
 
-func (r *StatusPageResource) mapToState(ctx context.Context, model *StatusPageResourceModel, dto *generated.StatusPageDto) {
+// mapToState mirrors a StatusPageDto onto the Terraform model.
+// Returns framework diagnostics from object marshaling (END-1141).
+func (r *StatusPageResource) mapToState(ctx context.Context, model *StatusPageResourceModel, dto *generated.StatusPageDto) diag.Diagnostics {
+	var diags diag.Diagnostics
+
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
 	model.Description = stringValueClearable(dto.Description)
 	model.Visibility = types.StringValue(string(dto.Visibility))
-	model.Enabled = boolValue(dto.Enabled)
+	model.Enabled = types.BoolValue(dto.Enabled)
 	model.IncidentMode = types.StringValue(string(dto.IncidentMode))
-	model.Branding = brandingObjectFromDto(ctx, dto.Branding)
+	var d diag.Diagnostics
+	model.Branding, d = brandingObjectFromDto(ctx, dto.Branding)
+	diags.Append(d...)
 	// page_url is derived client-side from the slug. The API doesn't return
 	// it because the host is dictated by the deployment (devhelm.page) and
 	// would otherwise drift across environments.
 	model.PageURL = types.StringValue(fmt.Sprintf("https://%s.devhelm.page", dto.Slug))
+	return diags
 }
 
 // ── Branding conversion helpers ────────────────────────────────────────
@@ -420,7 +445,10 @@ func brandingObjectAttrTypes() map[string]attr.Type {
 // brandingObjectFromDto materializes the API's branding payload into a
 // types.Object that matches the schema. *string nils round-trip to
 // types.StringNull so an HCL omission stays stable across plans.
-func brandingObjectFromDto(ctx context.Context, b generated.StatusPageBranding) types.Object {
+//
+// Returns framework diagnostics so a marshaling failure surfaces to the
+// caller's response instead of being silently swallowed (END-1141).
+func brandingObjectFromDto(ctx context.Context, b generated.StatusPageBranding) (types.Object, diag.Diagnostics) {
 	model := statusPageBrandingModel{
 		BrandColor:     stringValue(b.BrandColor),
 		TextColor:      stringValue(b.TextColor),
@@ -434,10 +462,9 @@ func brandingObjectFromDto(ctx context.Context, b generated.StatusPageBranding) 
 		ReportURL:      stringValue(b.ReportUrl),
 		CustomCSS:      stringValue(b.CustomCss),
 		CustomHeadHTML: stringValue(b.CustomHeadHtml),
-		HidePoweredBy:  types.BoolValue(b.HidePoweredBy),
+		HidePoweredBy:  boolValue(b.HidePoweredBy),
 	}
-	obj, _ := types.ObjectValueFrom(ctx, brandingObjectAttrTypes(), model)
-	return obj
+	return types.ObjectValueFrom(ctx, brandingObjectAttrTypes(), model)
 }
 
 // brandingForCreate returns the optional pointer used by CreateStatusPageRequest.
@@ -488,7 +515,7 @@ func brandingFromObject(ctx context.Context, obj types.Object) (generated.Status
 		ReportUrl:      stringPtrOrNil(model.ReportURL),
 		CustomCss:      stringPtrOrNil(model.CustomCSS),
 		CustomHeadHtml: stringPtrOrNil(model.CustomHeadHTML),
-		HidePoweredBy:  !model.HidePoweredBy.IsNull() && !model.HidePoweredBy.IsUnknown() && model.HidePoweredBy.ValueBool(),
+		HidePoweredBy:  boolPtrOrNil(model.HidePoweredBy),
 	}, diags
 }
 

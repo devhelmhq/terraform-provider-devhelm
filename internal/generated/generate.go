@@ -1,3 +1,6 @@
 package generated
 
-//go:generate go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen -generate types -package generated -o types.go ../../docs/openapi/monitoring-api.json
+// Go types are generated via `make typegen` (scripts/typegen.sh), which
+// preprocesses the OpenAPI spec through @devhelm/openapi-tools before
+// running oapi-codegen. Do NOT use `go generate` for type generation —
+// it skips preprocessing and produces different (incorrect) output.

@@ -61,7 +61,7 @@ func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 		return
 	}
 
-	tags, err := api.List[generated.TagDto](ctx, d.client, "/api/v1/tags")
+	tags, err := api.List[generated.TagDto](ctx, d.client, api.PathTags)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing tags", err.Error())
 		return

@@ -624,7 +624,9 @@ func listToSlice(t *testing.T, ctx context.Context, l types.List) []string {
 	t.Helper()
 	var out []string
 	if !l.IsNull() && !l.IsUnknown() {
-		l.ElementsAs(ctx, &out, false)
+		if diags := l.ElementsAs(ctx, &out, false); diags.HasError() {
+			t.Fatalf("listToSlice ElementsAs: %v", diags)
+		}
 	}
 	return out
 }
@@ -639,7 +641,10 @@ func TestPreserveListOrder_KeepsExistingOrderWhenSetMatches(t *testing.T) {
 	existing := stringList(t, ctx, "9f05422e", "e3c350f0")
 	apiIDs := []string{"e3c350f0", "9f05422e"}
 
-	got := preserveListOrder(ctx, existing, apiIDs)
+	got, diags := preserveListOrder(ctx, existing, apiIDs)
+	if diags.HasError() {
+		t.Fatalf("preserveListOrder diagnostics: %v", diags)
+	}
 	gotSlice := listToSlice(t, ctx, got)
 	if len(gotSlice) != 2 || gotSlice[0] != "9f05422e" || gotSlice[1] != "e3c350f0" {
 		t.Fatalf("preserveListOrder dropped existing order: got %v", gotSlice)
@@ -654,7 +659,10 @@ func TestPreserveListOrder_FallsBackToApiOrderWhenSetsDiffer(t *testing.T) {
 	existing := stringList(t, ctx, "id-a", "id-b")
 	apiIDs := []string{"id-c", "id-b"}
 
-	got := preserveListOrder(ctx, existing, apiIDs)
+	got, diags := preserveListOrder(ctx, existing, apiIDs)
+	if diags.HasError() {
+		t.Fatalf("preserveListOrder diagnostics: %v", diags)
+	}
 	gotSlice := listToSlice(t, ctx, got)
 	if len(gotSlice) != 2 || gotSlice[0] != "id-c" || gotSlice[1] != "id-b" {
 		t.Fatalf("expected api order on drift, got %v", gotSlice)
@@ -666,7 +674,10 @@ func TestPreserveListOrder_FallsBackToApiOrderWhenSetsDiffer(t *testing.T) {
 // initial source of truth.
 func TestPreserveListOrder_NullExistingTakesApiOrder(t *testing.T) {
 	ctx := context.Background()
-	got := preserveListOrder(ctx, types.ListNull(types.StringType), []string{"a", "b"})
+	got, diags := preserveListOrder(ctx, types.ListNull(types.StringType), []string{"a", "b"})
+	if diags.HasError() {
+		t.Fatalf("preserveListOrder diagnostics: %v", diags)
+	}
 	gotSlice := listToSlice(t, ctx, got)
 	if len(gotSlice) != 2 || gotSlice[0] != "a" || gotSlice[1] != "b" {
 		t.Fatalf("null-existing should take api order verbatim, got %v", gotSlice)
@@ -679,7 +690,10 @@ func TestPreserveListOrder_NullExistingTakesApiOrder(t *testing.T) {
 func TestPreserveListOrder_DifferingLengthsTakeApiOrder(t *testing.T) {
 	ctx := context.Background()
 	existing := stringList(t, ctx, "only-one")
-	got := preserveListOrder(ctx, existing, []string{"a", "b", "c"})
+	got, diags := preserveListOrder(ctx, existing, []string{"a", "b", "c"})
+	if diags.HasError() {
+		t.Fatalf("preserveListOrder diagnostics: %v", diags)
+	}
 	gotSlice := listToSlice(t, ctx, got)
 	if len(gotSlice) != 3 {
 		t.Fatalf("expected api 3-element order, got %v", gotSlice)
@@ -692,7 +706,10 @@ func TestPreserveListOrder_DifferingLengthsTakeApiOrder(t *testing.T) {
 func TestPreserveListOrder_EmptyApiCollapsesToEmpty(t *testing.T) {
 	ctx := context.Background()
 	existing := stringList(t, ctx, "a", "b")
-	got := preserveListOrder(ctx, existing, []string{})
+	got, diags := preserveListOrder(ctx, existing, []string{})
+	if diags.HasError() {
+		t.Fatalf("preserveListOrder diagnostics: %v", diags)
+	}
 	if got.IsNull() {
 		t.Fatalf("empty api should yield empty list, got null")
 	}

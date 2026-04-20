@@ -32,9 +32,6 @@ import (
 // on its own — those are exercised end-to-end by the surface suite.
 // ───────────────────────────────────────────────────────────────────────
 
-func int32Ptr(v int32) *int32 { return &v }
-func boolPtr(v bool) *bool   { return &v }
-
 func mustUUID(t *testing.T, s string) openapi_types.UUID {
 	t.Helper()
 	u, err := uuid.Parse(s)
@@ -105,7 +102,7 @@ func TestMapAlertChannelToState_PopulatesAllSurfacedFields(t *testing.T) {
 	dto := &generated.AlertChannelDto{
 		Id:          id,
 		Name:        "ops-slack",
-		ChannelType: generated.AlertChannelDtoChannelType("SLACK"),
+		ChannelType: generated.AlertChannelDtoChannelTypeSlack,
 	}
 	var model AlertChannelDataSourceModel
 	mapAlertChannelToState(&model, dto)
@@ -115,7 +112,7 @@ func TestMapAlertChannelToState_PopulatesAllSurfacedFields(t *testing.T) {
 	if model.Name.ValueString() != "ops-slack" {
 		t.Errorf("Name: got %q", model.Name.ValueString())
 	}
-	if model.ChannelType.ValueString() != "SLACK" {
+	if model.ChannelType.ValueString() != string(generated.AlertChannelDtoChannelTypeSlack) {
 		t.Errorf("ChannelType: got %q", model.ChannelType.ValueString())
 	}
 }
@@ -133,8 +130,8 @@ func TestMapMonitorToState_FullDtoRoundTripsToState(t *testing.T) {
 		Id:               id,
 		Name:             "homepage",
 		Type:             generated.MonitorDtoType("HTTP"),
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Config:           cfg,
 		PingUrl:          &ping,
 	}
@@ -185,8 +182,8 @@ func TestMapMonitorToState_NilPingUrlBecomesNullNotEmpty(t *testing.T) {
 		Id:               id,
 		Name:             "tcp-check",
 		Type:             generated.MonitorDtoType("TCP"),
-		FrequencySeconds: int32Ptr(30),
-		Enabled:          boolPtr(false),
+		FrequencySeconds: 30,
+		Enabled:          false,
 		Config:           cfg,
 		PingUrl:          nil,
 	}
@@ -209,8 +206,8 @@ func TestMapMonitorToState_EmptyConfigBecomesNull(t *testing.T) {
 		Id:               id,
 		Name:             "x",
 		Type:             generated.MonitorDtoType("HEARTBEAT"),
-		FrequencySeconds: int32Ptr(300),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 300,
+		Enabled:          true,
 		Config:           cfg,
 	}
 	var model MonitorDataSourceModel
@@ -272,9 +269,9 @@ func TestMapStatusPageToState_PopulatesAllFieldsAndSyntheticPageURL(t *testing.T
 		Name:         "Acme Status",
 		Slug:         "acme",
 		Description:  &desc,
-		Visibility:   generated.StatusPageDtoVisibility("PUBLIC"),
-		Enabled:      boolPtr(true),
-		IncidentMode: generated.StatusPageDtoIncidentMode("MANUAL"),
+		Visibility:   generated.StatusPageDtoVisibilityPUBLIC,
+		Enabled:      true,
+		IncidentMode: generated.StatusPageDtoIncidentModeMANUAL,
 	}
 	var model StatusPageDataSourceModel
 	mapStatusPageToState(&model, dto)
@@ -291,13 +288,13 @@ func TestMapStatusPageToState_PopulatesAllFieldsAndSyntheticPageURL(t *testing.T
 	if model.Description.ValueString() != desc {
 		t.Errorf("Description: %q", model.Description.ValueString())
 	}
-	if model.Visibility.ValueString() != "PUBLIC" {
+	if model.Visibility.ValueString() != string(generated.StatusPageDtoVisibilityPUBLIC) {
 		t.Error("Visibility")
 	}
 	if !model.Enabled.ValueBool() {
 		t.Error("Enabled")
 	}
-	if model.IncidentMode.ValueString() != "MANUAL" {
+	if model.IncidentMode.ValueString() != string(generated.StatusPageDtoIncidentModeMANUAL) {
 		t.Error("IncidentMode")
 	}
 	// PageURL is a *synthetic* field — the API doesn't return it, the
@@ -317,9 +314,9 @@ func TestMapStatusPageToState_NilDescriptionBecomesNull(t *testing.T) {
 		Name:         "x",
 		Slug:         "x",
 		Description:  nil,
-		Visibility:   generated.StatusPageDtoVisibility("PRIVATE"),
-		Enabled:      boolPtr(false),
-		IncidentMode: generated.StatusPageDtoIncidentMode("AUTO"),
+		Visibility:   generated.StatusPageDtoVisibilityPASSWORD,
+		Enabled:      false,
+		IncidentMode: generated.StatusPageDtoIncidentModeAUTOMATIC,
 	}
 	var model StatusPageDataSourceModel
 	mapStatusPageToState(&model, dto)
@@ -358,7 +355,7 @@ func TestMapEnvironmentToState_PopulatesAllFields(t *testing.T) {
 		Id:        id,
 		Name:      "Production",
 		Slug:      "production",
-		IsDefault: boolPtr(true),
+		IsDefault: true,
 	}
 	var model EnvironmentDataSourceModel
 	mapEnvironmentToState(&model, dto)

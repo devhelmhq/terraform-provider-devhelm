@@ -53,7 +53,7 @@ resource "devhelm_resource_group" "checkout" {
 - `confirmation_delay_seconds` (Number) Seconds to wait before confirming a group incident
 - `default_alert_channels` (List of String) Default alert channel IDs for group members
 - `default_environment_id` (String) Default environment ID for group members
-- `default_frequency` (Number) Default check frequency in seconds for group members
+- `default_frequency` (Number) Default check frequency in seconds for group members (30–86400)
 - `default_regions` (List of String) Default probe regions for group members
 - `default_retry_strategy` (Attributes) Default retry strategy applied to monitor members of this group when they don't define their own. Omit the block (or set to null) to leave the current value untouched (UseStateForUnknown). Set to an empty object (`default_retry_strategy = {}`) to clear it back to defaults. (see [below for nested schema](#nestedatt--default_retry_strategy))
 - `description` (String) Description of this resource group

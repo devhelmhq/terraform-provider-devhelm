@@ -71,8 +71,8 @@ func TestMatchByName_MultipleMatches_AllReturned(t *testing.T) {
 	id1 := mustUUID(t, "11111111-1111-1111-1111-111111111111")
 	id2 := mustUUID(t, "22222222-2222-2222-2222-222222222222")
 	items := []generated.AlertChannelDto{
-		{Id: id1, Name: "ops-slack", ChannelType: "SLACK"},
-		{Id: id2, Name: "ops-slack", ChannelType: "DISCORD"},
+		{Id: id1, Name: "ops-slack", ChannelType: generated.AlertChannelDtoChannelTypeSlack},
+		{Id: id2, Name: "ops-slack", ChannelType: generated.AlertChannelDtoChannelTypeDiscord},
 	}
 	got := matchByName(items, "ops-slack", func(c generated.AlertChannelDto) string { return c.Name })
 	if len(got) != 2 {
@@ -85,7 +85,7 @@ func TestMatchByName_MultipleMatches_AllReturned(t *testing.T) {
 
 // ── mapMonitorToState: nil/degenerate DTO fields ───────────────────────
 
-func TestMapMonitorToState_NilFrequencySeconds(t *testing.T) {
+func TestMapMonitorToState_ZeroFrequencyAndFalseEnabled(t *testing.T) {
 	id := mustUUID(t, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
 	var cfg generated.MonitorDto_Config
 	_ = cfg.UnmarshalJSON([]byte(`{}`))
@@ -93,17 +93,17 @@ func TestMapMonitorToState_NilFrequencySeconds(t *testing.T) {
 		Id:               id,
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: nil,
-		Enabled:          nil,
+		FrequencySeconds: 0,
+		Enabled:          false,
 		Config:           cfg,
 	}
 	var model MonitorDataSourceModel
 	mapMonitorToState(&model, dto)
-	if !model.FrequencySeconds.IsNull() {
-		t.Errorf("FrequencySeconds should be null when DTO ptr is nil, got %d", model.FrequencySeconds.ValueInt64())
+	if model.FrequencySeconds.ValueInt64() != 0 {
+		t.Errorf("FrequencySeconds should be 0 for zero-value DTO, got %d", model.FrequencySeconds.ValueInt64())
 	}
-	if !model.Enabled.IsNull() {
-		t.Errorf("Enabled should be null when DTO ptr is nil, got %v", model.Enabled.ValueBool())
+	if model.Enabled.ValueBool() {
+		t.Errorf("Enabled should be false for zero-value DTO, got %v", model.Enabled.ValueBool())
 	}
 }
 
@@ -115,8 +115,8 @@ func TestMapMonitorToState_ZeroIdPreserved(t *testing.T) {
 		Id:               zeroID,
 		Name:             "zero",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(30),
-		Enabled:          boolPtr(false),
+		FrequencySeconds: 30,
+		Enabled:          false,
 		Config:           cfg,
 	}
 	var model MonitorDataSourceModel
@@ -133,14 +133,14 @@ func TestMapAlertChannelToState_EmptyNamePreserved(t *testing.T) {
 	dto := &generated.AlertChannelDto{
 		Id:          id,
 		Name:        "",
-		ChannelType: "WEBHOOK",
+		ChannelType: generated.AlertChannelDtoChannelTypeWebhook,
 	}
 	var model AlertChannelDataSourceModel
 	mapAlertChannelToState(&model, dto)
 	if model.Name.ValueString() != "" {
 		t.Errorf("Name should be empty string, got %q", model.Name.ValueString())
 	}
-	if model.ChannelType.ValueString() != "WEBHOOK" {
+	if model.ChannelType.ValueString() != string(generated.AlertChannelDtoChannelTypeWebhook) {
 		t.Errorf("ChannelType = %q", model.ChannelType.ValueString())
 	}
 }
@@ -163,18 +163,18 @@ func TestMapTagToState_EmptyColorPreserved(t *testing.T) {
 
 // ── mapEnvironmentToState: edge cases ──────────────────────────────────
 
-func TestMapEnvironmentToState_NilIsDefaultBecomesNull(t *testing.T) {
+func TestMapEnvironmentToState_FalseIsDefaultMapsToFalse(t *testing.T) {
 	id := mustUUID(t, "dddddddd-dddd-dddd-dddd-dddddddddddd")
 	dto := &generated.EnvironmentDto{
 		Id:        id,
 		Name:      "staging",
 		Slug:      "staging",
-		IsDefault: nil,
+		IsDefault: false,
 	}
 	var model EnvironmentDataSourceModel
 	mapEnvironmentToState(&model, dto)
-	if !model.IsDefault.IsNull() {
-		t.Errorf("IsDefault should be null when DTO ptr is nil, got %v", model.IsDefault.ValueBool())
+	if model.IsDefault.ValueBool() {
+		t.Errorf("IsDefault should be false for zero-value DTO, got %v", model.IsDefault.ValueBool())
 	}
 }
 
@@ -184,7 +184,7 @@ func TestMapEnvironmentToState_FalseIsDefault(t *testing.T) {
 		Id:        id,
 		Name:      "dev",
 		Slug:      "dev",
-		IsDefault: boolPtr(false),
+		IsDefault: false,
 	}
 	var model EnvironmentDataSourceModel
 	mapEnvironmentToState(&model, dto)
@@ -219,20 +219,20 @@ func TestMapResourceGroupToState_EmptyDescription(t *testing.T) {
 
 // ── mapStatusPageToState: edge cases ───────────────────────────────────
 
-func TestMapStatusPageToState_NilEnabledBecomesNull(t *testing.T) {
+func TestMapStatusPageToState_FalseEnabledMapsToFalse(t *testing.T) {
 	id := mustUUID(t, "11111111-2222-3333-4444-555555555555")
 	dto := &generated.StatusPageDto{
 		Id:           id,
 		Name:         "x",
 		Slug:         "x",
 		Visibility:   "PUBLIC",
-		Enabled:      nil,
+		Enabled:      false,
 		IncidentMode: "MANUAL",
 	}
 	var model StatusPageDataSourceModel
 	mapStatusPageToState(&model, dto)
-	if !model.Enabled.IsNull() {
-		t.Errorf("Enabled should be null when DTO ptr is nil")
+	if model.Enabled.ValueBool() {
+		t.Errorf("Enabled should be false for zero-value DTO")
 	}
 }
 
@@ -242,9 +242,9 @@ func TestMapStatusPageToState_SyntheticPageURLWithSlug(t *testing.T) {
 		Id:           id,
 		Name:         "Test",
 		Slug:         "my-company",
-		Visibility:   "PUBLIC",
-		Enabled:      boolPtr(true),
-		IncidentMode: "AUTO",
+		Visibility:   generated.StatusPageDtoVisibilityPUBLIC,
+		Enabled:      true,
+		IncidentMode: generated.StatusPageDtoIncidentModeAUTOMATIC,
 	}
 	var model StatusPageDataSourceModel
 	mapStatusPageToState(&model, dto)

@@ -8,7 +8,6 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -18,6 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // componentStartDateLayout is the wire format the API expects for
@@ -27,8 +27,9 @@ import (
 const componentStartDateLayout = "2006-01-02"
 
 var (
-	_ resource.Resource                = &StatusPageComponentResource{}
-	_ resource.ResourceWithImportState = &StatusPageComponentResource{}
+	_ resource.Resource                   = &StatusPageComponentResource{}
+	_ resource.ResourceWithImportState    = &StatusPageComponentResource{}
+	_ resource.ResourceWithValidateConfig = &StatusPageComponentResource{}
 )
 
 // StatusPageComponentResource manages a single component on a status page as
@@ -136,7 +137,11 @@ func (r *StatusPageComponentResource) Schema(_ context.Context, _ resource.Schem
 				Description: "Component type: STATIC (text-only), MONITOR (driven by a monitor's " +
 					"check status), or GROUP (rolls up a resource group). Changing forces replacement.",
 				Validators: []validator.String{
-					stringvalidator.OneOf("STATIC", "MONITOR", "GROUP"),
+					stringvalidator.OneOf(
+					string(generated.CreateStatusPageComponentRequestTypeSTATIC),
+					string(generated.CreateStatusPageComponentRequestTypeMONITOR),
+					string(generated.CreateStatusPageComponentRequestTypeGROUP),
+				),
 				},
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
@@ -214,6 +219,55 @@ func (componentStartDateValidator) ValidateString(_ context.Context, req validat
 	}
 }
 
+func (r *StatusPageComponentResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var model StatusPageComponentResourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &model)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if model.Type.IsNull() || model.Type.IsUnknown() {
+		return
+	}
+
+	compType := generated.CreateStatusPageComponentRequestType(model.Type.ValueString())
+
+	switch compType {
+	case generated.CreateStatusPageComponentRequestTypeMONITOR:
+		if model.MonitorID.IsNull() || model.MonitorID.IsUnknown() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("monitor_id"),
+				"Missing required attribute",
+				"monitor_id is required when component type is MONITOR",
+			)
+		}
+	case generated.CreateStatusPageComponentRequestTypeGROUP:
+		if model.ResourceGroupID.IsNull() || model.ResourceGroupID.IsUnknown() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("resource_group_id"),
+				"Missing required attribute",
+				"resource_group_id is required when component type is GROUP",
+			)
+		}
+	}
+
+	if compType != generated.CreateStatusPageComponentRequestTypeMONITOR && !model.MonitorID.IsNull() && !model.MonitorID.IsUnknown() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("monitor_id"),
+			"Conflicting attribute",
+			fmt.Sprintf("monitor_id should not be set when component type is %s", string(compType)),
+		)
+	}
+
+	if compType != generated.CreateStatusPageComponentRequestTypeGROUP && !model.ResourceGroupID.IsNull() && !model.ResourceGroupID.IsUnknown() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("resource_group_id"),
+			"Conflicting attribute",
+			fmt.Sprintf("resource_group_id should not be set when component type is %s", string(compType)),
+		)
+	}
+}
+
 func (r *StatusPageComponentResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
@@ -231,23 +285,23 @@ func (r *StatusPageComponentResource) Configure(_ context.Context, req resource.
 // MONITOR-typed component with a missing monitor_id would fail server-side
 // with a confusing 400; surfacing it during plan gives a clean error.
 func (r *StatusPageComponentResource) validateTypeRefs(plan *StatusPageComponentResourceModel, diags *[]string) {
-	t := plan.Type.ValueString()
+	t := generated.CreateStatusPageComponentRequestType(plan.Type.ValueString())
 	switch t {
-	case "MONITOR":
+	case generated.CreateStatusPageComponentRequestTypeMONITOR:
 		if plan.MonitorID.IsNull() || plan.MonitorID.ValueString() == "" {
 			*diags = append(*diags, "type=MONITOR requires monitor_id to be set")
 		}
 		if !plan.ResourceGroupID.IsNull() && plan.ResourceGroupID.ValueString() != "" {
 			*diags = append(*diags, "type=MONITOR forbids resource_group_id; remove it or change type to GROUP")
 		}
-	case "GROUP":
+	case generated.CreateStatusPageComponentRequestTypeGROUP:
 		if plan.ResourceGroupID.IsNull() || plan.ResourceGroupID.ValueString() == "" {
 			*diags = append(*diags, "type=GROUP requires resource_group_id to be set")
 		}
 		if !plan.MonitorID.IsNull() && plan.MonitorID.ValueString() != "" {
 			*diags = append(*diags, "type=GROUP forbids monitor_id; remove it or change type to MONITOR")
 		}
-	case "STATIC":
+	case generated.CreateStatusPageComponentRequestTypeSTATIC:
 		if !plan.MonitorID.IsNull() && plan.MonitorID.ValueString() != "" {
 			*diags = append(*diags, "type=STATIC forbids monitor_id")
 		}
@@ -312,7 +366,7 @@ func (r *StatusPageComponentResource) Create(ctx context.Context, req resource.C
 
 	created, err := api.Create[generated.StatusPageComponentDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/components", plan.StatusPageID.ValueString()),
+		api.StatusPageComponentsPath(plan.StatusPageID.ValueString()),
 		body,
 	)
 	if err != nil {
@@ -333,7 +387,7 @@ func (r *StatusPageComponentResource) Read(ctx context.Context, req resource.Rea
 
 	components, err := api.List[generated.StatusPageComponentDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/components", state.StatusPageID.ValueString()),
+		api.StatusPageComponentsPath(state.StatusPageID.ValueString()),
 	)
 	if err != nil {
 		if api.IsNotFound(err) {
@@ -412,8 +466,7 @@ func (r *StatusPageComponentResource) Update(ctx context.Context, req resource.U
 
 	updated, err := api.Update[generated.StatusPageComponentDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/components/%s",
-			state.StatusPageID.ValueString(), state.ID.ValueString()),
+		api.StatusPageComponentPath(state.StatusPageID.ValueString(), state.ID.ValueString()),
 		body,
 	)
 	if err != nil {
@@ -433,8 +486,7 @@ func (r *StatusPageComponentResource) Delete(ctx context.Context, req resource.D
 	}
 
 	err := api.Delete(ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/components/%s",
-			state.StatusPageID.ValueString(), state.ID.ValueString()),
+		api.StatusPageComponentPath(state.StatusPageID.ValueString(), state.ID.ValueString()),
 	)
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting component", err.Error())
@@ -454,7 +506,7 @@ func (r *StatusPageComponentResource) ImportState(ctx context.Context, req resou
 
 	components, err := api.List[generated.StatusPageComponentDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/status-pages/%s/components", pageID),
+		api.StatusPageComponentsPath(pageID),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing components for import", err.Error())
@@ -494,9 +546,9 @@ func (r *StatusPageComponentResource) mapToState(model *StatusPageComponentResou
 	model.Name = types.StringValue(dto.Name)
 	model.Description = stringValueClearable(dto.Description)
 	model.Type = types.StringValue(string(dto.Type))
-	model.DisplayOrder = int32Value(dto.DisplayOrder)
-	model.ExcludeFromOverall = boolValue(dto.ExcludeFromOverall)
-	model.ShowUptime = boolValue(dto.ShowUptime)
+	model.DisplayOrder = types.Int64Value(int64(dto.DisplayOrder))
+	model.ExcludeFromOverall = types.BoolValue(dto.ExcludeFromOverall)
+	model.ShowUptime = types.BoolValue(dto.ShowUptime)
 	if dto.GroupId != nil {
 		model.GroupID = types.StringValue(dto.GroupId.String())
 	} else {

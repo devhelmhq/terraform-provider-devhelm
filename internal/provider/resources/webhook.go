@@ -97,7 +97,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 		Description:      stringPtrOrNil(plan.Description),
 	}
 
-	wh, err := api.Create[generated.WebhookEndpointDto](ctx, r.client, "/api/v1/webhooks", body)
+	wh, err := api.Create[generated.WebhookEndpointDto](ctx, r.client, api.PathWebhooks, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating webhook", err.Error())
 		return
@@ -109,11 +109,11 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 	// to honor their plan. Without this, `terraform apply` would silently
 	// create the webhook in the wrong state and the next plan would show
 	// a perpetual diff.
-	if !plan.Enabled.IsNull() && !plan.Enabled.IsUnknown() && !plan.Enabled.ValueBool() && (wh.Enabled != nil && *wh.Enabled) {
+	if !plan.Enabled.IsNull() && !plan.Enabled.IsUnknown() && !plan.Enabled.ValueBool() && (wh.Enabled) {
 		falseVal := false
 		updateBody := generated.UpdateWebhookEndpointRequest{Enabled: &falseVal}
 		updated, updateErr := api.Update[generated.WebhookEndpointDto](
-			ctx, r.client, "/api/v1/webhooks/"+wh.Id.String(), updateBody,
+			ctx, r.client, api.WebhookPath(wh.Id.String()), updateBody,
 		)
 		if updateErr != nil {
 			resp.Diagnostics.AddError(
@@ -129,7 +129,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 	plan.ID = types.StringValue(wh.Id.String())
 	plan.URL = types.StringValue(wh.Url)
 	plan.Description = stringValue(wh.Description)
-	plan.Enabled = boolValue(wh.Enabled)
+	plan.Enabled = types.BoolValue(wh.Enabled)
 	plan.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
@@ -141,7 +141,7 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	wh, err := api.Get[generated.WebhookEndpointDto](ctx, r.client, "/api/v1/webhooks/"+state.ID.ValueString())
+	wh, err := api.Get[generated.WebhookEndpointDto](ctx, r.client, api.WebhookPath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -153,7 +153,7 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 
 	state.URL = types.StringValue(wh.Url)
 	state.Description = stringValue(wh.Description)
-	state.Enabled = boolValue(wh.Enabled)
+	state.Enabled = types.BoolValue(wh.Enabled)
 	state.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -179,7 +179,7 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 		SubscribedEvents: stringSliceToPtrFromSet(plan.SubscribedEvents),
 	}
 
-	wh, err := api.Update[generated.WebhookEndpointDto](ctx, r.client, "/api/v1/webhooks/"+state.ID.ValueString(), body)
+	wh, err := api.Update[generated.WebhookEndpointDto](ctx, r.client, api.WebhookPath(state.ID.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating webhook", err.Error())
 		return
@@ -188,7 +188,7 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 	plan.ID = state.ID
 	plan.URL = types.StringValue(wh.Url)
 	plan.Description = stringValue(wh.Description)
-	plan.Enabled = boolValue(wh.Enabled)
+	plan.Enabled = types.BoolValue(wh.Enabled)
 	plan.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
@@ -200,14 +200,14 @@ func (r *WebhookResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/webhooks/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.WebhookPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting webhook", err.Error())
 	}
 }
 
 func (r *WebhookResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	webhooks, err := api.List[generated.WebhookEndpointDto](ctx, r.client, "/api/v1/webhooks")
+	webhooks, err := api.List[generated.WebhookEndpointDto](ctx, r.client, api.PathWebhooks)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing webhooks for import", err.Error())
 		return

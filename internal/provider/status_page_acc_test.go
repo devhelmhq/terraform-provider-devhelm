@@ -29,10 +29,10 @@ func statusPageFixture() generated.StatusPageDto {
 		Id:           openapi_types.UUID(id),
 		Name:         "Initial",
 		Slug:         "initial-slug",
-		Visibility:   generated.StatusPageDtoVisibility("PUBLIC"),
-		IncidentMode: generated.StatusPageDtoIncidentMode("AUTOMATIC"),
-		Enabled:      boolPtr(true),
-		Branding:     generated.StatusPageBranding{HidePoweredBy: false},
+		Visibility:   generated.StatusPageDtoVisibilityPUBLIC,
+		IncidentMode: generated.StatusPageDtoIncidentModeAUTOMATIC,
+		Enabled:      true,
+		Branding:     generated.StatusPageBranding{},
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
@@ -88,7 +88,7 @@ func TestAccStatusPage_FullLifecycle(t *testing.T) {
 			state.Name = v
 		}
 		if v, ok := req["enabled"].(bool); ok {
-			state.Enabled = &v
+			state.Enabled = v
 		}
 		mu.Unlock()
 		jsonResponse(w, state)

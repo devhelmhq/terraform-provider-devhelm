@@ -49,9 +49,9 @@ type AlertChannelResourceModel struct {
 	Region types.String `tfsdk:"region"`
 
 	// Webhook channel
-	URL            types.String `tfsdk:"url"`
-	CustomHeaders  types.Map    `tfsdk:"custom_headers"`
-	SigningSecret  types.String `tfsdk:"signing_secret"`
+	URL           types.String `tfsdk:"url"`
+	CustomHeaders types.Map    `tfsdk:"custom_headers"`
+	SigningSecret types.String `tfsdk:"signing_secret"`
 }
 
 func NewAlertChannelResource() resource.Resource {
@@ -78,7 +78,15 @@ func (r *AlertChannelResource) Schema(_ context.Context, _ resource.SchemaReques
 				Required:    true,
 				Description: "Channel type: slack, email, pagerduty, opsgenie, discord, teams, webhook",
 				Validators: []validator.String{
-					stringvalidator.OneOf("slack", "email", "pagerduty", "opsgenie", "discord", "teams", "webhook"),
+					stringvalidator.OneOf(
+						string(generated.AlertChannelDtoChannelTypeSlack),
+						string(generated.AlertChannelDtoChannelTypeEmail),
+						string(generated.AlertChannelDtoChannelTypePagerduty),
+						string(generated.AlertChannelDtoChannelTypeOpsgenie),
+						string(generated.AlertChannelDtoChannelTypeDiscord),
+						string(generated.AlertChannelDtoChannelTypeTeams),
+						string(generated.AlertChannelDtoChannelTypeWebhook),
+					),
 				},
 			},
 			"config_hash": schema.StringAttribute{
@@ -148,45 +156,50 @@ func (r *AlertChannelResource) Configure(_ context.Context, req resource.Configu
 func (r *AlertChannelResource) buildConfig(model *AlertChannelResourceModel) (json.RawMessage, error) {
 	channelType := model.ChannelType.ValueString()
 
+	// Each subtype carries its own per-discriminator enum (e.g.
+	// SlackChannelConfigChannelType with one value `Slack`). The discriminator
+	// inlining in the upstream OpenAPI preprocessor produces tagged unions —
+	// codegens emit one type per subtype rather than a shared enum, so
+	// each struct literal needs its own typed constant.
 	var cfg any
-	switch channelType {
-	case "slack":
+	switch generated.AlertChannelDtoChannelType(channelType) {
+	case generated.AlertChannelDtoChannelTypeSlack:
 		cfg = generated.SlackChannelConfig{
-			ChannelType: "slack",
+			ChannelType: generated.Slack,
 			WebhookUrl:  model.WebhookURL.ValueString(),
 			MentionText: stringPtrOrNil(model.MentionText),
 		}
-	case "discord":
+	case generated.AlertChannelDtoChannelTypeDiscord:
 		cfg = generated.DiscordChannelConfig{
-			ChannelType:   "discord",
+			ChannelType:   generated.DiscordChannelConfigChannelTypeDiscord,
 			WebhookUrl:    model.WebhookURL.ValueString(),
 			MentionRoleId: stringPtrOrNil(model.MentionRoleID),
 		}
-	case "email":
+	case generated.AlertChannelDtoChannelTypeEmail:
 		cfg = generated.EmailChannelConfig{
-			ChannelType: "email",
+			ChannelType: generated.Email,
 			Recipients:  emailsFromStringList(model.Recipients),
 		}
-	case "pagerduty":
+	case generated.AlertChannelDtoChannelTypePagerduty:
 		cfg = generated.PagerDutyChannelConfig{
-			ChannelType:      "pagerduty",
+			ChannelType:      generated.Pagerduty,
 			RoutingKey:       model.RoutingKey.ValueString(),
 			SeverityOverride: stringPtrOrNil(model.SeverityOverride),
 		}
-	case "opsgenie":
+	case generated.AlertChannelDtoChannelTypeOpsgenie:
 		cfg = generated.OpsGenieChannelConfig{
-			ChannelType: "opsgenie",
+			ChannelType: generated.Opsgenie,
 			ApiKey:      model.APIKey.ValueString(),
 			Region:      stringPtrOrNil(model.Region),
 		}
-	case "teams":
+	case generated.AlertChannelDtoChannelTypeTeams:
 		cfg = generated.TeamsChannelConfig{
-			ChannelType: "teams",
+			ChannelType: generated.Teams,
 			WebhookUrl:  model.WebhookURL.ValueString(),
 		}
-	case "webhook":
+	case generated.AlertChannelDtoChannelTypeWebhook:
 		cfg = generated.WebhookChannelConfig{
-			ChannelType:   "webhook",
+			ChannelType:   generated.Webhook,
 			Url:           model.URL.ValueString(),
 			CustomHeaders: stringMapToPtr(model.CustomHeaders),
 			SigningSecret: stringPtrOrNil(model.SigningSecret),
@@ -222,7 +235,7 @@ func (r *AlertChannelResource) Create(ctx context.Context, req resource.CreateRe
 		Config: configUnion,
 	}
 
-	ch, err := api.Create[generated.AlertChannelDto](ctx, r.client, "/api/v1/alert-channels", body)
+	ch, err := api.Create[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating alert channel", err.Error())
 		return
@@ -240,7 +253,7 @@ func (r *AlertChannelResource) Read(ctx context.Context, req resource.ReadReques
 		return
 	}
 
-	channels, err := api.List[generated.AlertChannelDto](ctx, r.client, "/api/v1/alert-channels")
+	channels, err := api.List[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels)
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading alert channels", err.Error())
 		return
@@ -300,7 +313,7 @@ func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRe
 		Config: configUnion,
 	}
 
-	ch, err := api.Update[generated.AlertChannelDto](ctx, r.client, "/api/v1/alert-channels/"+state.ID.ValueString(), body)
+	ch, err := api.Update[generated.AlertChannelDto](ctx, r.client, api.AlertChannelPath(state.ID.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating alert channel", err.Error())
 		return
@@ -318,14 +331,14 @@ func (r *AlertChannelResource) Delete(ctx context.Context, req resource.DeleteRe
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/alert-channels/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.AlertChannelPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting alert channel", err.Error())
 	}
 }
 
 func (r *AlertChannelResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	channels, err := api.List[generated.AlertChannelDto](ctx, r.client, "/api/v1/alert-channels")
+	channels, err := api.List[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing alert channels for import", err.Error())
 		return

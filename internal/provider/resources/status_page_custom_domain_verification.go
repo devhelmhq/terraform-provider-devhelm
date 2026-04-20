@@ -134,7 +134,7 @@ func (r *StatusPageCustomDomainVerificationResource) Create(ctx context.Context,
 
 	pageID := plan.StatusPageID.ValueString()
 	domainID := plan.CustomDomainID.ValueString()
-	verifyPath := fmt.Sprintf("/api/v1/status-pages/%s/domains/%s/verify", pageID, domainID)
+	verifyPath := api.StatusPageDomainVerifyPath(pageID, domainID)
 
 	pollInterval, maxAttempts := verifyPollingParams()
 
@@ -195,7 +195,7 @@ func (r *StatusPageCustomDomainVerificationResource) Read(ctx context.Context, r
 	domainID := state.CustomDomainID.ValueString()
 
 	domains, err := api.List[generated.StatusPageCustomDomainDto](
-		ctx, r.client, fmt.Sprintf("/api/v1/status-pages/%s/domains", pageID),
+		ctx, r.client, api.StatusPageDomainsPath(pageID),
 	)
 	if err != nil {
 		if api.IsNotFound(err) {

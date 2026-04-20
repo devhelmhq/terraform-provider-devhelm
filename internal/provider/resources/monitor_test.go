@@ -58,9 +58,9 @@ func TestBuildCreateRequest_PopulatesEveryRequiredField(t *testing.T) {
 		TagIds: types.ListValueMust(types.StringType, []attr.Value{
 			types.StringValue(tagID),
 		}),
-		Config:     types.StringValue(`{"url":"https://acme.com","method":"GET"}`),
-		Auth:       types.StringValue(`{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`),
-		Assertions: types.ListNull(assertionObjectType()),
+		Config:         types.StringValue(`{"url":"https://acme.com","method":"GET"}`),
+		Auth:           types.StringValue(`{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`),
+		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
 
@@ -346,16 +346,21 @@ func fullyPopulatedMonitorDto(t *testing.T) *generated.MonitorDto {
 	asnCfg := generated.MonitorAssertionDto_Config{}
 	_ = asnCfg.UnmarshalJSON([]byte(`{"type":"status_code","expected":"200","operator":"equals"}`))
 
+	auth := generated.MonitorAuthConfig{}
+	if err := auth.FromBearerAuthConfig(generated.BearerAuthConfig{Type: generated.Bearer}); err != nil {
+		t.Fatalf("auth: %v", err)
+	}
+
 	return &generated.MonitorDto{
 		Id:               id,
 		Name:             "acme-api",
 		Type:             generated.MonitorDtoType("HTTP"),
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Regions:          []string{"us-east", "eu-west"},
 		Environment:      &generated.Summary{Id: envID, Name: "prod", Slug: "prod"},
 		Config:           cfg,
-		Auth:             &generated.MonitorAuthConfig{Type: "bearer"},
+		Auth:             &auth,
 		PingUrl:          &pingURL,
 		AlertChannelIds:  &[]openapi_types.UUID{*chanID},
 		Tags:             &[]generated.TagDto{{Id: tagID, Name: "team-acme", Color: "#000"}},
@@ -373,8 +378,8 @@ func fullyPopulatedMonitorDto(t *testing.T) *generated.MonitorDto {
 			MonitorId: id,
 			Confirmation: generated.ConfirmationPolicy{
 				Type:              generated.ConfirmationPolicyType("multi_region"),
-				MinRegionsFailing: int32Ptr(2),
-				MaxWaitSeconds:    int32Ptr(120),
+				MinRegionsFailing: 2,
+				MaxWaitSeconds:    120,
 			},
 			Recovery: generated.RecoveryPolicy{
 				ConsecutiveSuccesses: 3, MinRegionsPassing: 2, CooldownMinutes: 5,
@@ -397,7 +402,13 @@ func TestMonitor_MapToState_PopulatesEveryFieldFromDto(t *testing.T) {
 	dto := fullyPopulatedMonitorDto(t)
 
 	model := &MonitorResourceModel{}
-	r.mapToState(ctx, model, dto, `{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`)
+	// END-1141: mapToState now returns diagnostics from any framework
+	// marshaling errors. The fully-populated DTO is the happy path —
+	// asserting no diagnostics here locks in the contract that the
+	// "obvious" mapping never silently drops a framework error.
+	if diags := r.mapToState(ctx, model, dto, `{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`); diags.HasError() {
+		t.Fatalf("mapToState returned errors: %v", diags)
+	}
 
 	if got := model.ID.ValueString(); got != dto.Id.String() {
 		t.Errorf("ID = %q, want %s", got, dto.Id)
@@ -463,18 +474,18 @@ func TestMonitor_MapToState_Idempotent(t *testing.T) {
 			ID, Name, Type, Config, Auth, PingURL, EnvID string
 			Freq                                         int64
 			RegionLen, ChannelLen, TagLen, AsnLen        int
-		IncidentNull                                 bool
-		Enabled                                      bool
-	}{
-		m.ID.ValueString(), m.Name.ValueString(), m.Type.ValueString(),
-		m.Config.ValueString(), m.Auth.ValueString(), m.PingUrl.ValueString(),
-		m.EnvironmentID.ValueString(),
-		m.FrequencySeconds.ValueInt64(),
-		len(m.Regions.Elements()), len(m.AlertChannelIds.Elements()),
-		len(m.TagIds.Elements()), len(m.Assertions.Elements()),
-		m.IncidentPolicy.IsNull(),
-		m.Enabled.ValueBool(),
-	})
+			IncidentNull                                 bool
+			Enabled                                      bool
+		}{
+			m.ID.ValueString(), m.Name.ValueString(), m.Type.ValueString(),
+			m.Config.ValueString(), m.Auth.ValueString(), m.PingUrl.ValueString(),
+			m.EnvironmentID.ValueString(),
+			m.FrequencySeconds.ValueInt64(),
+			len(m.Regions.Elements()), len(m.AlertChannelIds.Elements()),
+			len(m.TagIds.Elements()), len(m.Assertions.Elements()),
+			m.IncidentPolicy.IsNull(),
+			m.Enabled.ValueBool(),
+		})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -542,7 +553,7 @@ func TestMonitor_AssertionMatching_PreservesUserSeverityCasing(t *testing.T) {
 
 	dto := &generated.MonitorDto{
 		Id:   openapi_types.UUID(uuid.New()),
-		Name: "x", Type: "HTTP", FrequencySeconds: int32Ptr(60), Enabled: boolPtr(true),
+		Name: "x", Type: "HTTP", FrequencySeconds: 60, Enabled: true,
 		Assertions: &[]generated.MonitorAssertionDto{
 			{
 				AssertionType: "status_code",
@@ -588,7 +599,7 @@ func TestMonitor_AssertionMatching_KeepsNullSeverityWhenUserOmitted(t *testing.T
 
 	dto := &generated.MonitorDto{
 		Id:   openapi_types.UUID(uuid.New()),
-		Name: "x", Type: "HTTP", FrequencySeconds: int32Ptr(60), Enabled: boolPtr(true),
+		Name: "x", Type: "HTTP", FrequencySeconds: 60, Enabled: true,
 		Assertions: &[]generated.MonitorAssertionDto{
 			{AssertionType: "status_code", Severity: "fail", Config: asnCfg},
 		},
@@ -631,7 +642,7 @@ func TestMonitor_AssertionMatching_ImportPathPopulatesSeverity(t *testing.T) {
 
 	dto := &generated.MonitorDto{
 		Id:   openapi_types.UUID(uuid.New()),
-		Name: "x", Type: "HTTP", FrequencySeconds: int32Ptr(60), Enabled: boolPtr(true),
+		Name: "x", Type: "HTTP", FrequencySeconds: 60, Enabled: true,
 		Assertions: &[]generated.MonitorAssertionDto{
 			{AssertionType: "status_code", Severity: "fail", Config: asnCfg},
 		},
@@ -665,7 +676,7 @@ func TestMonitor_AssertionMatching_FIFOForDuplicates(t *testing.T) {
 
 	dto := &generated.MonitorDto{
 		Id:   openapi_types.UUID(uuid.New()),
-		Name: "x", Type: "HTTP", FrequencySeconds: int32Ptr(60), Enabled: boolPtr(true),
+		Name: "x", Type: "HTTP", FrequencySeconds: 60, Enabled: true,
 		Assertions: &[]generated.MonitorAssertionDto{
 			{AssertionType: "status_code", Severity: "fail", Config: asnCfg},
 			{AssertionType: "status_code", Severity: "fail", Config: asnCfg},
@@ -684,8 +695,8 @@ func TestMonitor_AssertionMatching_FIFOForDuplicates(t *testing.T) {
 		return obj
 	}
 	priorList, _ := types.ListValue(assertionObjectType(), []attr.Value{
-		mk(types.StringValue("Fail")),  // first prior consumed by first DTO
-		mk(types.StringNull()),         // second prior consumed by second DTO
+		mk(types.StringValue("Fail")), // first prior consumed by first DTO
+		mk(types.StringNull()),        // second prior consumed by second DTO
 	})
 
 	model := &MonitorResourceModel{Assertions: priorList}

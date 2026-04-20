@@ -61,7 +61,11 @@ func (r *DependencyResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				Optional: true, Computed: true,
 				Description: "Alert sensitivity: ALL, INCIDENTS_ONLY, or MAJOR_ONLY (default: ALL, computed by the API)",
 				Validators: []validator.String{
-					stringvalidator.OneOf("ALL", "INCIDENTS_ONLY", "MAJOR_ONLY"),
+					stringvalidator.OneOf(
+					string(generated.ALL),
+					string(generated.INCIDENTSONLY),
+					string(generated.MAJORONLY),
+				),
 				},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
@@ -107,7 +111,7 @@ func (r *DependencyResource) Create(ctx context.Context, req resource.CreateRequ
 
 	sub, err := api.Create[generated.ServiceSubscriptionDto](
 		ctx, r.client,
-		"/api/v1/service-subscriptions/"+api.PathEscape(plan.Service.ValueString()),
+		api.ServiceSubscriptionPath(api.PathEscape(plan.Service.ValueString())),
 		body,
 	)
 	if err != nil {
@@ -129,7 +133,7 @@ func (r *DependencyResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	sub, err := api.Get[generated.ServiceSubscriptionDto](ctx, r.client, "/api/v1/service-subscriptions/"+state.ID.ValueString())
+	sub, err := api.Get[generated.ServiceSubscriptionDto](ctx, r.client, api.ServiceSubscriptionPath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -165,7 +169,7 @@ func (r *DependencyResource) Update(ctx context.Context, req resource.UpdateRequ
 		}
 		_, err := api.Patch[generated.ServiceSubscriptionDto](
 			ctx, r.client,
-			"/api/v1/service-subscriptions/"+state.ID.ValueString()+"/alert-sensitivity",
+			api.ServiceSubscriptionAlertSensitivityPath(state.ID.ValueString()),
 			body,
 		)
 		if err != nil {
@@ -186,14 +190,14 @@ func (r *DependencyResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/service-subscriptions/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.ServiceSubscriptionPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting dependency", err.Error())
 	}
 }
 
 func (r *DependencyResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	subs, err := api.List[generated.ServiceSubscriptionDto](ctx, r.client, "/api/v1/service-subscriptions")
+	subs, err := api.List[generated.ServiceSubscriptionDto](ctx, r.client, api.PathServiceSubscriptions)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing service subscriptions for import", err.Error())
 		return

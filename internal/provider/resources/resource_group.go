@@ -6,6 +6,7 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -87,7 +88,10 @@ func (r *ResourceGroupResource) Schema(_ context.Context, _ resource.SchemaReque
 				Optional: true, Description: "Notification policy ID for group-level alerts",
 			},
 			"default_frequency": schema.Int64Attribute{
-				Optional: true, Description: "Default check frequency in seconds for group members",
+				Optional: true, Description: "Default check frequency in seconds for group members (30–86400)",
+				Validators: []validator.Int64{
+					int64validator.Between(30, 86400),
+				},
 			},
 			"default_regions": schema.ListAttribute{
 				Optional: true, ElementType: types.StringType,
@@ -124,6 +128,12 @@ func (r *ResourceGroupResource) Schema(_ context.Context, _ resource.SchemaReque
 			},
 			"health_threshold_type": schema.StringAttribute{
 				Optional: true, Description: "Health threshold type: COUNT or PERCENTAGE",
+				Validators: []validator.String{
+					stringvalidator.OneOf(
+						string(generated.CreateResourceGroupRequestHealthThresholdTypeCOUNT),
+						string(generated.CreateResourceGroupRequestHealthThresholdTypePERCENTAGE),
+					),
+				},
 			},
 			"health_threshold_value": schema.Float64Attribute{
 				Optional: true, Description: "Health threshold value",
@@ -210,13 +220,13 @@ func (r *ResourceGroupResource) buildUpdateRequest(ctx context.Context, plan *Re
 		return generated.UpdateResourceGroupRequest{}, diags
 	}
 	return generated.UpdateResourceGroupRequest{
-		Name:                     plan.Name.ValueString(),
-		Description:              stringPtrOrNil(plan.Description),
-		AlertPolicyId:            alertPolicyID,
-		DefaultFrequency:         int32PtrOrNil(plan.DefaultFrequency),
-		DefaultRegions:           stringSliceToPtr(plan.DefaultRegions),
-		DefaultAlertChannels:     channels,
-		DefaultEnvironmentId:     envID,
+		Name:                 plan.Name.ValueString(),
+		Description:          stringPtrOrNil(plan.Description),
+		AlertPolicyId:        alertPolicyID,
+		DefaultFrequency:     int32PtrOrNil(plan.DefaultFrequency),
+		DefaultRegions:       stringSliceToPtr(plan.DefaultRegions),
+		DefaultAlertChannels: channels,
+		DefaultEnvironmentId: envID,
 		// API contract: null clears, missing-from-payload preserves. We
 		// always emit (config is the source of truth), so a removed-from-HCL
 		// strategy will be cleared on the server.
@@ -229,7 +239,11 @@ func (r *ResourceGroupResource) buildUpdateRequest(ctx context.Context, plan *Re
 	}, diags
 }
 
-func (r *ResourceGroupResource) mapToState(ctx context.Context, model *ResourceGroupModel, dto *generated.ResourceGroupDto) {
+// mapToState mirrors a ResourceGroupDto onto the Terraform model.
+// Returns framework diagnostics from collection marshaling (END-1141).
+func (r *ResourceGroupResource) mapToState(ctx context.Context, model *ResourceGroupModel, dto *generated.ResourceGroupDto) diag.Diagnostics {
+	var diags diag.Diagnostics
+
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Slug = types.StringValue(dto.Slug)
@@ -239,13 +253,16 @@ func (r *ResourceGroupResource) mapToState(ctx context.Context, model *ResourceG
 	model.DefaultEnvironmentID = uuidPtrValue(dto.DefaultEnvironmentId)
 	model.HealthThresholdType = typedStringPtrValue(dto.HealthThresholdType)
 	model.HealthThresholdValue = float32Value(dto.HealthThresholdValue)
-	model.SuppressMemberAlerts = boolValue(dto.SuppressMemberAlerts)
+	model.SuppressMemberAlerts = types.BoolValue(dto.SuppressMemberAlerts)
 	model.ConfirmationDelaySeconds = int32Value(dto.ConfirmationDelaySeconds)
 	model.RecoveryCooldownMinutes = int32Value(dto.RecoveryCooldownMinutes)
 
 	model.DefaultRegions = ptrStringSliceToList(ctx, dto.DefaultRegions)
 	model.DefaultAlertChannels = ptrUUIDSliceToList(ctx, dto.DefaultAlertChannels)
-	model.DefaultRetryStrategy = retryStrategyObjectFromDto(ctx, dto.DefaultRetryStrategy)
+	var d diag.Diagnostics
+	model.DefaultRetryStrategy, d = retryStrategyObjectFromDto(ctx, dto.DefaultRetryStrategy)
+	diags.Append(d...)
+	return diags
 }
 
 // ── Retry strategy conversion helpers ───────────────────────────────────
@@ -261,17 +278,19 @@ func retryStrategyObjectAttrTypes() map[string]attr.Type {
 // retryStrategyObjectFromDto converts the DTO's RetryStrategy into a TF object.
 // An "empty" DTO (zero-value Type) is treated as "no strategy configured" and
 // rendered as types.ObjectNull so HCL omission stays stable across plans.
-func retryStrategyObjectFromDto(ctx context.Context, rs *generated.RetryStrategy) types.Object {
-	if rs == nil || (rs.Type == "" && rs.Interval == nil && rs.MaxRetries == nil) {
-		return types.ObjectNull(retryStrategyObjectAttrTypes())
+//
+// Returns framework diagnostics so a marshaling failure surfaces to the
+// caller's response instead of being silently swallowed (END-1141).
+func retryStrategyObjectFromDto(ctx context.Context, rs *generated.RetryStrategy) (types.Object, diag.Diagnostics) {
+	if rs == nil || (rs.Type == "" && rs.Interval == 0 && rs.MaxRetries == 0) {
+		return types.ObjectNull(retryStrategyObjectAttrTypes()), nil
 	}
 	model := retryStrategyModel{
 		Type:       types.StringValue(rs.Type),
-		Interval:   int32Value(rs.Interval),
-		MaxRetries: int32Value(rs.MaxRetries),
+		Interval:   types.Int64Value(int64(rs.Interval)),
+		MaxRetries: types.Int64Value(int64(rs.MaxRetries)),
 	}
-	obj, _ := types.ObjectValueFrom(ctx, retryStrategyObjectAttrTypes(), model)
-	return obj
+	return types.ObjectValueFrom(ctx, retryStrategyObjectAttrTypes(), model)
 }
 
 // retryStrategyFromObject converts the TF object into the optional pointer used
@@ -292,8 +311,8 @@ func retryStrategyFromObject(ctx context.Context, obj types.Object) (*generated.
 	}
 	return &generated.RetryStrategy{
 		Type:       model.Type.ValueString(),
-		Interval:   int32PtrOrNil(model.Interval),
-		MaxRetries: int32PtrOrNil(model.MaxRetries),
+		Interval:   int32OrZero(model.Interval),
+		MaxRetries: int32OrZero(model.MaxRetries),
 	}, diags
 }
 
@@ -317,13 +336,16 @@ func (r *ResourceGroupResource) Create(ctx context.Context, req resource.CreateR
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	group, err := api.Create[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups", body)
+	group, err := api.Create[generated.ResourceGroupDto](ctx, r.client, api.PathResourceGroups, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating resource group", err.Error())
 		return
 	}
 
-	r.mapToState(ctx, &plan, group)
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, group)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -334,7 +356,7 @@ func (r *ResourceGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups/"+state.ID.ValueString())
+	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, api.ResourceGroupPath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -344,7 +366,10 @@ func (r *ResourceGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	r.mapToState(ctx, &state, group)
+	resp.Diagnostics.Append(r.mapToState(ctx, &state, group)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -366,13 +391,16 @@ func (r *ResourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	group, err := api.Update[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups/"+state.ID.ValueString(), body)
+	group, err := api.Update[generated.ResourceGroupDto](ctx, r.client, api.ResourceGroupPath(state.ID.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating resource group", err.Error())
 		return
 	}
 
-	r.mapToState(ctx, &plan, group)
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, group)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -383,14 +411,14 @@ func (r *ResourceGroupResource) Delete(ctx context.Context, req resource.DeleteR
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/resource-groups/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.ResourceGroupPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting resource group", err.Error())
 	}
 }
 
 func (r *ResourceGroupResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	groups, err := api.List[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups")
+	groups, err := api.List[generated.ResourceGroupDto](ctx, r.client, api.PathResourceGroups)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing resource groups for import", err.Error())
 		return

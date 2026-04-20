@@ -25,8 +25,7 @@ fmt:
 typegen:
 	./scripts/typegen.sh
 
-generate: typegen
-	go generate ./...
+generate: typegen docs
 
 docs:
 	./scripts/generate-docs.sh

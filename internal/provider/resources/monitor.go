@@ -9,9 +9,11 @@ import (
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/google/uuid"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -23,11 +25,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 var (
-	_ resource.Resource                = &MonitorResource{}
-	_ resource.ResourceWithImportState = &MonitorResource{}
+	_ resource.Resource                   = &MonitorResource{}
+	_ resource.ResourceWithImportState    = &MonitorResource{}
+	_ resource.ResourceWithValidateConfig = &MonitorResource{}
 )
 
 type MonitorResource struct {
@@ -75,7 +79,14 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			"type": schema.StringAttribute{
 				Required: true, Description: "Monitor type: HTTP, DNS, TCP, ICMP, HEARTBEAT, or MCP_SERVER",
 				Validators: []validator.String{
-					stringvalidator.OneOf("HTTP", "DNS", "TCP", "ICMP", "HEARTBEAT", "MCP_SERVER"),
+					stringvalidator.OneOf(
+						string(generated.CreateMonitorRequestTypeHTTP),
+						string(generated.CreateMonitorRequestTypeDNS),
+						string(generated.CreateMonitorRequestTypeTCP),
+						string(generated.CreateMonitorRequestTypeICMP),
+						string(generated.CreateMonitorRequestTypeHEARTBEAT),
+						string(generated.CreateMonitorRequestTypeMCPSERVER),
+					),
 				},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
@@ -84,6 +95,9 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Description: "Check frequency in seconds (30\u201386400). " +
 					"Server applies its default (60s) when omitted on create. " +
 					"Omit on update to preserve the current value; the API has no way to clear this field.",
+				Validators: []validator.Int64{
+					int64validator.Between(30, 86400),
+				},
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},
@@ -176,30 +190,66 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 								"type": schema.StringAttribute{
 									Required:    true,
 									Description: "Rule type: consecutive_failures, failures_in_window, or response_time",
+									Validators: []validator.String{
+										stringvalidator.OneOf(
+											string(generated.TriggerRuleTypeConsecutiveFailures),
+											string(generated.TriggerRuleTypeFailuresInWindow),
+											string(generated.TriggerRuleTypeResponseTime),
+										),
+									},
 								},
 								"severity": schema.StringAttribute{
 									Required:    true,
 									Description: "Incident severity: down or degraded",
+									Validators: []validator.String{
+										stringvalidator.OneOf(
+											string(generated.Down),
+											string(generated.Degraded),
+										),
+									},
 								},
 								"scope": schema.StringAttribute{
 									Optional:    true,
 									Description: "Rule scope: per_region or any_region",
+									Validators: []validator.String{
+										stringvalidator.OneOf(
+											string(generated.PerRegion),
+											string(generated.AnyRegion),
+										),
+									},
 								},
 								"count": schema.Int64Attribute{
 									Optional:    true,
-									Description: "Failure count threshold",
+									Description: "Failure count threshold (1–10)",
+									Validators: []validator.Int64{
+										int64validator.Between(1, 10),
+									},
 								},
 								"window_minutes": schema.Int64Attribute{
 									Optional:    true,
 									Description: "Time window in minutes (for failures_in_window)",
+									Validators: []validator.Int64{
+										int64validator.AtLeast(1),
+									},
 								},
 								"threshold_ms": schema.Int64Attribute{
 									Optional:    true,
 									Description: "Response time threshold in ms (for response_time)",
+									Validators: []validator.Int64{
+										int64validator.AtLeast(1),
+									},
 								},
 								"aggregation_type": schema.StringAttribute{
 									Optional:    true,
 									Description: "Aggregation type: all_exceed, average, p95, max",
+									Validators: []validator.String{
+										stringvalidator.OneOf(
+											string(generated.AllExceed),
+											string(generated.Average),
+											string(generated.P95),
+											string(generated.Max),
+										),
+									},
 								},
 							},
 						},
@@ -223,11 +273,106 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						"severity": schema.StringAttribute{
 							Optional:    true,
 							Description: "Assertion severity: fail or warn (default: fail)",
+							Validators: []validator.String{
+								stringvalidator.OneOf(
+									string(generated.CreateAssertionRequestSeverityFail),
+									string(generated.CreateAssertionRequestSeverityWarn),
+								),
+							},
 						},
 					},
 				},
 			},
 		},
+	}
+}
+
+func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var model MonitorResourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &model)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Config JSON validation: verify it's parseable as JSON.
+	if !model.Config.IsNull() && !model.Config.IsUnknown() {
+		configJSON := model.Config.ValueString()
+		var parsed map[string]json.RawMessage
+		if err := json.Unmarshal([]byte(configJSON), &parsed); err != nil {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("config"),
+				"Invalid JSON in config",
+				fmt.Sprintf("The config attribute must be valid JSON: %s", err),
+			)
+		}
+	}
+
+	// Auth JSON validation: verify it's parseable as JSON with a valid type.
+	if !model.Auth.IsNull() && !model.Auth.IsUnknown() {
+		authJSON := model.Auth.ValueString()
+		if authJSON != "" {
+			var parsed map[string]json.RawMessage
+			if err := json.Unmarshal([]byte(authJSON), &parsed); err != nil {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("auth"),
+					"Invalid JSON in auth",
+					fmt.Sprintf("The auth attribute must be valid JSON: %s", err),
+				)
+			} else if typeRaw, ok := parsed["type"]; ok {
+				var authType string
+				if err := json.Unmarshal(typeRaw, &authType); err == nil {
+					if !generated.MonitorAuthDtoAuthType(authType).Valid() {
+						resp.Diagnostics.AddAttributeError(
+							path.Root("auth"),
+							"Invalid auth type",
+							fmt.Sprintf("Auth type %q is not valid. Must be one of: bearer, basic, header, api_key", authType),
+						)
+					}
+				}
+			}
+		}
+	}
+
+	// Trigger rule conditional validation: count is required for all rule types.
+	if !model.IncidentPolicy.IsNull() && !model.IncidentPolicy.IsUnknown() {
+		var policy incidentPolicyModel
+		diags := model.IncidentPolicy.As(ctx, &policy, basetypes.ObjectAsOptions{
+			UnhandledNullAsEmpty:    true,
+			UnhandledUnknownAsEmpty: true,
+		})
+		if !diags.HasError() && !policy.TriggerRules.IsNull() && !policy.TriggerRules.IsUnknown() {
+			var rules []triggerRuleModel
+			if ruleDiags := policy.TriggerRules.ElementsAs(ctx, &rules, false); !ruleDiags.HasError() {
+				for i, rule := range rules {
+					rulePath := path.Root("incident_policy").AtName("trigger_rules").AtListIndex(i)
+
+					if rule.Count.IsNull() || rule.Count.IsUnknown() {
+						resp.Diagnostics.AddAttributeError(
+							rulePath.AtName("count"),
+							"Missing required attribute",
+							"Trigger rule count is required for all rule types",
+						)
+					}
+
+					ruleType := generated.TriggerRuleType(rule.Type.ValueString())
+					if ruleType == generated.TriggerRuleTypeFailuresInWindow && (rule.WindowMinutes.IsNull() || rule.WindowMinutes.IsUnknown()) {
+						resp.Diagnostics.AddAttributeError(
+							rulePath.AtName("window_minutes"),
+							"Missing required attribute",
+							"window_minutes is required when trigger rule type is failures_in_window",
+						)
+					}
+
+					if ruleType == generated.TriggerRuleTypeResponseTime && (rule.ThresholdMs.IsNull() || rule.ThresholdMs.IsUnknown()) {
+						resp.Diagnostics.AddAttributeError(
+							rulePath.AtName("threshold_ms"),
+							"Missing required attribute",
+							"threshold_ms is required when trigger rule type is response_time",
+						)
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -306,7 +451,7 @@ func buildAssertions(ctx context.Context, list types.List) ([]generated.CreateAs
 
 		req := generated.CreateAssertionRequest{
 			Config:   configUnion,
-			Severity: generated.CreateAssertionRequestSeverity(m.Severity.ValueString()),
+			Severity: typedStringPtrOrNil[generated.CreateAssertionRequestSeverity](m.Severity),
 		}
 		result = append(result, req)
 	}
@@ -337,10 +482,18 @@ func buildIncidentPolicy(ctx context.Context, obj types.Object) (*generated.Upda
 			return nil, fmt.Errorf("parsing trigger rules: %s", ruleDiags.Errors())
 		}
 	}
-	for _, rm := range ruleModels {
+	for i, rm := range ruleModels {
+		ruleType := generated.TriggerRuleType(rm.Type.ValueString())
+		if !ruleType.Valid() {
+			return nil, fmt.Errorf("trigger_rules[%d].type: invalid value %q", i, rm.Type.ValueString())
+		}
+		ruleSeverity := generated.TriggerRuleSeverity(rm.Severity.ValueString())
+		if !ruleSeverity.Valid() {
+			return nil, fmt.Errorf("trigger_rules[%d].severity: invalid value %q", i, rm.Severity.ValueString())
+		}
 		triggerRules = append(triggerRules, generated.TriggerRule{
-			Type:            generated.TriggerRuleType(rm.Type.ValueString()),
-			Severity:        generated.TriggerRuleSeverity(rm.Severity.ValueString()),
+			Type:            ruleType,
+			Severity:        ruleSeverity,
 			Scope:           typedStringPtrOrNil[generated.TriggerRuleScope](rm.Scope),
 			Count:           int32PtrOrNil(rm.Count),
 			WindowMinutes:   int32PtrOrNil(rm.WindowMinutes),
@@ -353,8 +506,8 @@ func buildIncidentPolicy(ctx context.Context, obj types.Object) (*generated.Upda
 		TriggerRules: triggerRules,
 		Confirmation: generated.ConfirmationPolicy{
 			Type:              generated.ConfirmationPolicyType(m.ConfirmationType.ValueString()),
-			MinRegionsFailing: int32PtrOrNil(m.MinRegionsFailing),
-			MaxWaitSeconds:    int32PtrOrNil(m.MaxWaitSeconds),
+			MinRegionsFailing: int32OrZero(m.MinRegionsFailing),
+			MaxWaitSeconds:    int32OrZero(m.MaxWaitSeconds),
 		},
 		Recovery: generated.RecoveryPolicy{
 			ConsecutiveSuccesses: int32OrZero(m.ConsecutiveSuccesses),
@@ -375,8 +528,15 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		return nil, err
 	}
 
+	// oapi-codegen's union UnmarshalJSON accepts raw bytes without
+	// validating JSON structure; pre-flight with json.Valid so we fail
+	// at plan time instead of sending garbage to the API.
+	configBytes := []byte(plan.Config.ValueString())
+	if !json.Valid(configBytes) {
+		return nil, fmt.Errorf("monitor config: invalid JSON")
+	}
 	var configUnion generated.CreateMonitorRequest_Config
-	if err := configUnion.UnmarshalJSON(json.RawMessage(plan.Config.ValueString())); err != nil {
+	if err := configUnion.UnmarshalJSON(configBytes); err != nil {
 		return nil, fmt.Errorf("monitor config: %w", err)
 	}
 
@@ -389,11 +549,16 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		return nil, err
 	}
 
+	monitorType := generated.CreateMonitorRequestType(plan.Type.ValueString())
+	if !monitorType.Valid() {
+		return nil, fmt.Errorf("type: invalid monitor type %q", plan.Type.ValueString())
+	}
+
 	req := &generated.CreateMonitorRequest{
 		Name:             plan.Name.ValueString(),
-		Type:             generated.CreateMonitorRequestType(plan.Type.ValueString()),
+		Type:             monitorType,
 		Config:           configUnion,
-		ManagedBy:        generated.CreateMonitorRequestManagedBy("TERRAFORM"),
+		ManagedBy:        generated.CreateMonitorRequestManagedByTERRAFORM,
 		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
 		Enabled:          boolPtrOrNil(plan.Enabled),
 		Regions:          stringSliceToPtr(plan.Regions),
@@ -436,13 +601,22 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 	}
 
 	name := plan.Name.ValueString()
-	managedBy := generated.UpdateMonitorRequestManagedBy("TERRAFORM")
+	managedBy := generated.UpdateMonitorRequestManagedByTERRAFORM
 
-	// MonitorConfig is a `map[string]interface{}` alias post-spec-sync
-	// (the spec dropped the polymorphic oneOf for the update path), so we
-	// parse the user-supplied JSON into a plain map.
-	var configMap generated.MonitorConfig
-	if err := json.Unmarshal([]byte(plan.Config.ValueString()), &configMap); err != nil {
+	// The spec now exposes `UpdateMonitorRequest.config` as a proper
+	// polymorphic union (DNS | HTTP | TCP | ICMP | Heartbeat |
+	// McpServer), generated by oapi-codegen as a tagged-union wrapper
+	// around raw JSON. oapi-codegen's UnmarshalJSON on the wrapper
+	// accepts raw bytes without validating them — it just stores them
+	// for the later merge/pick step — so we do a pre-flight json.Valid
+	// check to keep the same "invalid JSON errors out at plan time"
+	// guardrail the old map-based path provided.
+	configBytes := []byte(plan.Config.ValueString())
+	if !json.Valid(configBytes) {
+		return nil, fmt.Errorf("monitor config: invalid JSON")
+	}
+	var configUnion generated.UpdateMonitorRequest_Config
+	if err := configUnion.UnmarshalJSON(configBytes); err != nil {
 		return nil, fmt.Errorf("monitor config: %w", err)
 	}
 
@@ -457,7 +631,7 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 
 	req := &generated.UpdateMonitorRequest{
 		Name:             &name,
-		Config:           &configMap,
+		Config:           &configUnion,
 		ManagedBy:        &managedBy,
 		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
 		Enabled:          boolPtrOrNil(plan.Enabled),
@@ -531,12 +705,18 @@ func incidentPolicyObjectType() types.ObjectType {
 // rawAuth is the raw JSON blob for the `auth` field as returned by the API
 // (extracted from the response body via extractRawField) — see the comment in
 // buildCreateRequest for why we cannot rely on the typed dto.Auth field.
-func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResourceModel, dto *generated.MonitorDto, rawAuth string) {
+//
+// Returns any diagnostics produced while marshaling collection-valued
+// attributes (e.g. types.ListValueFrom). Callers should Append the
+// diagnostics to their response so framework-level errors are surfaced
+// instead of being silently swallowed (END-1141).
+func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResourceModel, dto *generated.MonitorDto, rawAuth string) diag.Diagnostics {
+	var diags diag.Diagnostics
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Type = types.StringValue(string(dto.Type))
-	model.FrequencySeconds = int32Value(dto.FrequencySeconds)
-	model.Enabled = boolValue(dto.Enabled)
+	model.FrequencySeconds = types.Int64Value(int64(dto.FrequencySeconds))
+	model.Enabled = types.BoolValue(dto.Enabled)
 	model.PingUrl = stringValue(dto.PingUrl)
 
 	if configBytes, err := dto.Config.MarshalJSON(); err == nil && unionHasData(configBytes) {
@@ -595,9 +775,13 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 		for i, r := range dto.Regions {
 			regionElems[i] = types.StringValue(r)
 		}
-		model.Regions, _ = types.ListValueFrom(ctx, types.StringType, regionElems)
+		var d diag.Diagnostics
+		model.Regions, d = types.ListValueFrom(ctx, types.StringType, regionElems)
+		diags.Append(d...)
 	} else if !model.Regions.IsNull() {
-		model.Regions, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		var d diag.Diagnostics
+		model.Regions, d = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		diags.Append(d...)
 	}
 
 	// Tag IDs
@@ -612,9 +796,13 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 		for i, t := range *dto.Tags {
 			apiIDs[i] = t.Id.String()
 		}
-		model.TagIds = preserveListOrder(ctx, model.TagIds, apiIDs)
+		var d diag.Diagnostics
+		model.TagIds, d = preserveListOrder(ctx, model.TagIds, apiIDs)
+		diags.Append(d...)
 	} else if !model.TagIds.IsNull() {
-		model.TagIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		var d diag.Diagnostics
+		model.TagIds, d = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		diags.Append(d...)
 	}
 
 	// Alert Channel IDs — same set semantics as Tag IDs above.
@@ -623,9 +811,13 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 		for i, id := range *dto.AlertChannelIds {
 			apiIDs[i] = id.String()
 		}
-		model.AlertChannelIds = preserveListOrder(ctx, model.AlertChannelIds, apiIDs)
+		var d diag.Diagnostics
+		model.AlertChannelIds, d = preserveListOrder(ctx, model.AlertChannelIds, apiIDs)
+		diags.Append(d...)
 	} else if !model.AlertChannelIds.IsNull() {
-		model.AlertChannelIds, _ = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		var d diag.Diagnostics
+		model.AlertChannelIds, d = types.ListValueFrom(ctx, types.StringType, []types.String{})
+		diags.Append(d...)
 	}
 
 	// Assertions
@@ -640,7 +832,7 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 		// (or worse, incorrect) plans on the next run.
 		var priorAssertions []assertionModel
 		if !model.Assertions.IsNull() {
-			_ = model.Assertions.ElementsAs(ctx, &priorAssertions, false)
+			diags.Append(model.Assertions.ElementsAs(ctx, &priorAssertions, false)...)
 		}
 
 		// Key = "<type>|<normalized-config-json>". The config is normalized
@@ -706,9 +898,11 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 
 			assertionModels = append(assertionModels, am)
 		}
-		model.Assertions, _ = types.ListValueFrom(ctx, types.ObjectType{
+		var d diag.Diagnostics
+		model.Assertions, d = types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: assertionObjectType().AttrTypes,
 		}, assertionModels)
+		diags.Append(d...)
 	}
 
 	// Incident Policy — schema is a SingleNestedAttribute (Optional+Computed
@@ -719,8 +913,8 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 	if dto.IncidentPolicy != nil && dto.IncidentPolicy.Id.String() != "00000000-0000-0000-0000-000000000000" {
 		policyModel := incidentPolicyModel{
 			ConfirmationType:     types.StringValue(string(dto.IncidentPolicy.Confirmation.Type)),
-			MinRegionsFailing:    int32Value(dto.IncidentPolicy.Confirmation.MinRegionsFailing),
-			MaxWaitSeconds:       int32Value(dto.IncidentPolicy.Confirmation.MaxWaitSeconds),
+			MinRegionsFailing:    types.Int64Value(int64(dto.IncidentPolicy.Confirmation.MinRegionsFailing)),
+			MaxWaitSeconds:       types.Int64Value(int64(dto.IncidentPolicy.Confirmation.MaxWaitSeconds)),
 			ConsecutiveSuccesses: types.Int64Value(int64(dto.IncidentPolicy.Recovery.ConsecutiveSuccesses)),
 			MinRegionsPassing:    types.Int64Value(int64(dto.IncidentPolicy.Recovery.MinRegionsPassing)),
 			CooldownMinutes:      types.Int64Value(int64(dto.IncidentPolicy.Recovery.CooldownMinutes)),
@@ -738,15 +932,20 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 					AggregationType: typedStringPtrValue(tr.AggregationType),
 				})
 			}
-			policyModel.TriggerRules, _ = types.ListValueFrom(ctx, triggerRuleObjectType(), ruleModels)
+			var d diag.Diagnostics
+			policyModel.TriggerRules, d = types.ListValueFrom(ctx, triggerRuleObjectType(), ruleModels)
+			diags.Append(d...)
 		} else {
 			policyModel.TriggerRules = types.ListNull(triggerRuleObjectType())
 		}
-		obj, _ := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+		obj, d := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+		diags.Append(d...)
 		model.IncidentPolicy = obj
 	} else {
 		model.IncidentPolicy = types.ObjectNull(incidentPolicyObjectType().AttrTypes)
 	}
+
+	return diags
 }
 
 // ── CRUD ────────────────────────────────────────────────────────────────
@@ -770,13 +969,16 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	monitor, rawResp, err := api.CreateRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors", bodyJSON)
+	monitor, rawResp, err := api.CreateRaw[generated.MonitorDto](ctx, r.client, api.PathMonitors, bodyJSON)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating monitor", err.Error())
 		return
 	}
 
-	r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -787,7 +989,7 @@ func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
+	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -797,7 +999,10 @@ func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	r.mapToState(ctx, &state, monitor, extractDataField(rawResp, "auth"))
+	resp.Diagnostics.Append(r.mapToState(ctx, &state, monitor, extractDataField(rawResp, "auth"))...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -845,7 +1050,7 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// We deliberately discard the PUT response body: its DTO omits the tag
 	// list entirely (so `monitor.Tags` would be misleading), and we re-GET
 	// below to capture the post-reconciliation state authoritatively.
-	if _, _, err := api.UpdateRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString(), bodyJSON); err != nil {
+	if _, _, err := api.UpdateRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()), bodyJSON); err != nil {
 		resp.Diagnostics.AddError("Error updating monitor", err.Error())
 		return
 	}
@@ -864,13 +1069,16 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// the previous PUT. We must re-GET to capture the post-reconciliation
 	// tag set before calling mapToState, otherwise the persisted state would
 	// describe the monitor as it existed *before* the tag delta was applied.
-	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
+	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
 	if err != nil {
 		resp.Diagnostics.AddError("Error re-reading monitor after tag sync", err.Error())
 		return
 	}
 
-	r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -933,14 +1141,14 @@ func (r *MonitorResource) reconcileTags(ctx context.Context, monitorID string, p
 
 	if len(toAdd) > 0 {
 		addBody := generated.AddMonitorTagsRequest{TagIds: &toAdd}
-		if _, err := api.CreateList[generated.TagDto](ctx, r.client, "/api/v1/monitors/"+monitorID+"/tags", addBody); err != nil {
+		if _, err := api.CreateList[generated.TagDto](ctx, r.client, api.MonitorTagsPath(monitorID), addBody); err != nil {
 			return fmt.Errorf("adding tags: %w", err)
 		}
 	}
 
 	if len(toRemove) > 0 {
 		removeBody := generated.RemoveMonitorTagsRequest{TagIds: toRemove}
-		if err := api.DeleteWithBody(ctx, r.client, "/api/v1/monitors/"+monitorID+"/tags", removeBody); err != nil {
+		if err := api.DeleteWithBody(ctx, r.client, api.MonitorTagsPath(monitorID), removeBody); err != nil {
 			return fmt.Errorf("removing tags: %w", err)
 		}
 	}
@@ -955,14 +1163,14 @@ func (r *MonitorResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/monitors/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.MonitorPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting monitor", err.Error())
 	}
 }
 
 func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	monitors, err := api.List[generated.MonitorDto](ctx, r.client, "/api/v1/monitors")
+	monitors, err := api.List[generated.MonitorDto](ctx, r.client, api.PathMonitors)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing monitors for import", err.Error())
 		return
@@ -1001,7 +1209,7 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 		}
 	}
 
-	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, "/api/v1/monitors/"+monitorID)
+	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(monitorID))
 	if err != nil {
 		resp.Diagnostics.AddError("Error fetching monitor for import", err.Error())
 		return
@@ -1023,6 +1231,9 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 	model.Regions = types.ListNull(types.StringType)
 	model.TagIds = types.ListNull(types.StringType)
 	model.AlertChannelIds = types.ListNull(types.StringType)
-	r.mapToState(ctx, &model, monitor, extractDataField(rawResp, "auth"))
+	resp.Diagnostics.Append(r.mapToState(ctx, &model, monitor, extractDataField(rawResp, "auth"))...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

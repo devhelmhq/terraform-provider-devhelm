@@ -86,7 +86,7 @@ func (r *TagResource) Create(ctx context.Context, req resource.CreateRequest, re
 		Color: stringPtrOrNil(plan.Color),
 	}
 
-	tag, err := api.Create[generated.TagDto](ctx, r.client, "/api/v1/tags", body)
+	tag, err := api.Create[generated.TagDto](ctx, r.client, api.PathTags, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating tag", err.Error())
 		return
@@ -105,7 +105,7 @@ func (r *TagResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 		return
 	}
 
-	tag, err := api.Get[generated.TagDto](ctx, r.client, "/api/v1/tags/"+state.ID.ValueString())
+	tag, err := api.Get[generated.TagDto](ctx, r.client, api.TagPath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -139,7 +139,7 @@ func (r *TagResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		Color: stringPtrOrNil(plan.Color),
 	}
 
-	tag, err := api.Update[generated.TagDto](ctx, r.client, "/api/v1/tags/"+state.ID.ValueString(), body)
+	tag, err := api.Update[generated.TagDto](ctx, r.client, api.TagPath(state.ID.ValueString()), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating tag", err.Error())
 		return
@@ -158,14 +158,14 @@ func (r *TagResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/tags/"+state.ID.ValueString())
+	err := api.Delete(ctx, r.client, api.TagPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting tag", err.Error())
 	}
 }
 
 func (r *TagResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tags, err := api.List[generated.TagDto](ctx, r.client, "/api/v1/tags")
+	tags, err := api.List[generated.TagDto](ctx, r.client, api.PathTags)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing tags for import", err.Error())
 		return

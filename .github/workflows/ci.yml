@@ -38,6 +38,32 @@ jobs:
           go-version: '1.25'
       - run: go build -o terraform-provider-devhelm
 
+  typegen-check:
+    # Verifies that committed types.go matches what typegen.sh produces
+    # from the vendored spec. Catches PRs that update the spec but forget
+    # to regenerate types, or direct edits to the generated file.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # oapi-codegen version is pinned by the `tool` directive in
+      # go.mod; `go tool oapi-codegen` (invoked from typegen.sh) resolves
+      # via the module cache, so no separate install step is needed.
+      - run: make typegen
+      - name: Verify no drift
+        run: |
+          if ! git diff --quiet internal/generated/types.go; then
+            echo ""
+            echo "ERROR: Generated types are out of date. Re-run 'make typegen' and commit."
+            git --no-pager diff --stat internal/generated/types.go
+            exit 1
+          fi
+
   docs:
     # Verifies that the committed docs/ tree is up-to-date with the schema
     # descriptions and the examples/ directory. Catches PRs that bump a

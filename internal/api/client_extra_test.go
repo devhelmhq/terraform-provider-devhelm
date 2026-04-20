@@ -418,6 +418,9 @@ func TestUpdate_RetriesOn503(t *testing.T) {
 // behavior that a 2xx response without a `data` field decodes into the
 // zero value of T. This is what callers fall back on when checking
 // dto.Id != uuid.Nil, and accidentally changing it would mask real bugs.
+// With ValidateDTO wired into all client methods, a response with missing
+// required fields is now properly rejected rather than silently returning
+// a zero-valued DTO.
 func TestSingleValueResponse_ZeroDataDocumentedContract(t *testing.T) {
 	type resp struct {
 		Name string `json:"name"`
@@ -428,15 +431,12 @@ func TestSingleValueResponse_ZeroDataDocumentedContract(t *testing.T) {
 	defer srv.Close()
 
 	c := newTestClient(t, srv)
-	got, err := Get[resp](context.Background(), c, "/things/abc")
-	if err != nil {
-		t.Fatalf("Get: %v", err)
+	_, err := Get[resp](context.Background(), c, "/things/abc")
+	if err == nil {
+		t.Fatal("expected validation error for empty response, got nil")
 	}
-	if got == nil {
-		t.Fatal("Get returned nil for 2xx; want non-nil pointer to zero value")
-	}
-	if got.Name != "" {
-		t.Errorf("Name = %q, want zero value", got.Name)
+	if !strings.Contains(err.Error(), "name: required field is missing or zero") {
+		t.Errorf("expected name validation error, got: %v", err)
 	}
 }
 

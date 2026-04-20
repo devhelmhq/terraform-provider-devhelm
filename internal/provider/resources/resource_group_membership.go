@@ -18,6 +18,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+const (
+	memberTypeMonitor = "monitor"
+	memberTypeService = "service"
+)
+
 var (
 	_ resource.Resource                = &ResourceGroupMembershipResource{}
 	_ resource.ResourceWithImportState = &ResourceGroupMembershipResource{}
@@ -58,7 +63,7 @@ func (r *ResourceGroupMembershipResource) Schema(_ context.Context, _ resource.S
 			"member_type": schema.StringAttribute{
 				Required:    true,
 				Description: "Type of member: monitor or service",
-				Validators:  []validator.String{stringvalidator.OneOf("monitor", "service")},
+				Validators:  []validator.String{stringvalidator.OneOf(memberTypeMonitor, memberTypeService)},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"member_id": schema.StringAttribute{
@@ -100,7 +105,7 @@ func (r *ResourceGroupMembershipResource) Create(ctx context.Context, req resour
 
 	member, err := api.Create[generated.ResourceGroupMemberDto](
 		ctx, r.client,
-		fmt.Sprintf("/api/v1/resource-groups/%s/members", plan.GroupID.ValueString()),
+		api.ResourceGroupMembersPath(plan.GroupID.ValueString()),
 		body,
 	)
 	if err != nil {
@@ -119,7 +124,7 @@ func (r *ResourceGroupMembershipResource) Read(ctx context.Context, req resource
 		return
 	}
 
-	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups/"+state.GroupID.ValueString())
+	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, api.ResourceGroupPath(state.GroupID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
@@ -151,9 +156,9 @@ func (r *ResourceGroupMembershipResource) Read(ctx context.Context, req resource
 	// expects: monitor_id for monitors, subscription_id for services
 	// (NOT service_id — see AddResourceGroupMemberRequest in api/v1).
 	state.MemberType = types.StringValue(matched.MemberType)
-	if matched.MemberType == "monitor" && matched.MonitorId != nil {
+	if matched.MemberType == memberTypeMonitor && matched.MonitorId != nil {
 		state.MemberID = types.StringValue(matched.MonitorId.String())
-	} else if matched.MemberType == "service" && matched.SubscriptionId != nil {
+	} else if matched.MemberType == memberTypeService && matched.SubscriptionId != nil {
 		state.MemberID = types.StringValue(matched.SubscriptionId.String())
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -170,10 +175,7 @@ func (r *ResourceGroupMembershipResource) Delete(ctx context.Context, req resour
 		return
 	}
 
-	p := fmt.Sprintf("/api/v1/resource-groups/%s/members/%s",
-		state.GroupID.ValueString(), state.ID.ValueString())
-
-	err := api.Delete(ctx, r.client, p)
+	err := api.Delete(ctx, r.client, api.ResourceGroupMemberPath(state.GroupID.ValueString(), state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error removing resource group member", err.Error())
 	}
@@ -199,7 +201,7 @@ func (r *ResourceGroupMembershipResource) ImportState(ctx context.Context, req r
 		return
 	}
 
-	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, "/api/v1/resource-groups/"+groupID)
+	group, err := api.Get[generated.ResourceGroupDto](ctx, r.client, api.ResourceGroupPath(groupID))
 	if err != nil {
 		resp.Diagnostics.AddError("Error fetching resource group for import", err.Error())
 		return
@@ -229,11 +231,11 @@ func (r *ResourceGroupMembershipResource) ImportState(ctx context.Context, req r
 
 	memberID := ""
 	switch matched.MemberType {
-	case "monitor":
+	case memberTypeMonitor:
 		if matched.MonitorId != nil {
 			memberID = matched.MonitorId.String()
 		}
-	case "service":
+	case memberTypeService:
 		if matched.SubscriptionId != nil {
 			memberID = matched.SubscriptionId.String()
 		}

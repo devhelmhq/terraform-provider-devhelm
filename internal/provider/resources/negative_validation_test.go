@@ -76,9 +76,11 @@ func TestMonitor_BuildUpdate_InvalidConfigJSONErrors(t *testing.T) {
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
-	// buildUpdateRequest parses config into a plain map via json.Unmarshal,
-	// unlike buildCreateRequest which uses the generated union's UnmarshalJSON
-	// (which accepts raw bytes without validating).
+	// buildUpdateRequest now uses the generated union wrapper (spec exposes
+	// UpdateMonitorRequest.config as a proper oneOf). The wrapper's
+	// UnmarshalJSON accepts raw bytes without validating them, so the
+	// builder does a pre-flight json.Valid check to keep the same
+	// "invalid JSON errors at plan time" guardrail as the create path.
 	_, err := r.buildUpdateRequest(ctx, plan)
 	if err == nil {
 		t.Fatal("expected error for invalid JSON config in update path")
@@ -116,8 +118,8 @@ func TestMonitor_MapToState_NilAssertionsStaysNull(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Assertions:       nil,
 	}
 	model := &MonitorResourceModel{
@@ -136,8 +138,8 @@ func TestMonitor_MapToState_NilAlertChannelIds(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		AlertChannelIds:  nil,
 	}
 	model := &MonitorResourceModel{
@@ -156,8 +158,8 @@ func TestMonitor_MapToState_NilRegions(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Regions:          nil,
 	}
 	model := &MonitorResourceModel{
@@ -176,8 +178,8 @@ func TestMonitor_MapToState_NilTags(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Tags:             nil,
 	}
 	model := &MonitorResourceModel{
@@ -196,8 +198,8 @@ func TestMonitor_MapToState_EmptyAuthStringSetNull(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		Auth:             nil,
 	}
 	model := &MonitorResourceModel{
@@ -216,8 +218,8 @@ func TestMonitor_MapToState_NilPingUrl(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		PingUrl:          nil,
 	}
 	model := &MonitorResourceModel{
@@ -236,8 +238,8 @@ func TestMonitor_MapToState_NilIncidentPolicy(t *testing.T) {
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "x",
 		Type:             "HTTP",
-		FrequencySeconds: int32Ptr(60),
-		Enabled:          boolPtr(true),
+		FrequencySeconds: 60,
+		Enabled:          true,
 		IncidentPolicy:   nil,
 	}
 	model := &MonitorResourceModel{
@@ -283,19 +285,19 @@ func TestAlertChannel_BuildConfig_SlackMissingWebhookUrl(t *testing.T) {
 
 // ── Environment: mapToState with edge-case DTOs ────────────────────────
 
-func TestEnvironment_MapToState_NilIsDefaultSetsNull(t *testing.T) {
+func TestEnvironment_MapToState_FalseIsDefaultMapsToFalse(t *testing.T) {
 	ctx := context.Background()
 	r := &EnvironmentResource{}
 	dto := &generated.EnvironmentDto{
 		Id:        openapi_types.UUID(uuid.New()),
 		Name:      "x",
 		Slug:      "x",
-		IsDefault: nil,
+		IsDefault: false,
 	}
 	model := &EnvironmentResourceModel{}
 	r.mapToState(ctx, model, dto)
-	if !model.IsDefault.IsNull() {
-		t.Errorf("IsDefault should be null when DTO pointer is nil, got %v", model.IsDefault)
+	if model.IsDefault.ValueBool() {
+		t.Errorf("IsDefault should be false for zero-value DTO, got %v", model.IsDefault.ValueBool())
 	}
 }
 
@@ -397,7 +399,7 @@ func TestStatusPage_MapToState_NilDescriptionBecomesNull(t *testing.T) {
 		Slug:         "x",
 		Description:  nil,
 		Visibility:   "PUBLIC",
-		Enabled:      boolPtr(true),
+		Enabled:      true,
 		IncidentMode: "MANUAL",
 	}
 	model := &StatusPageResourceModel{}
@@ -415,7 +417,7 @@ func TestStatusPage_MapToState_SyntheticPageURL(t *testing.T) {
 		Name:         "Acme",
 		Slug:         "acme",
 		Visibility:   "PUBLIC",
-		Enabled:      boolPtr(true),
+		Enabled:      true,
 		IncidentMode: "MANUAL",
 	}
 	model := &StatusPageResourceModel{}
@@ -680,5 +682,84 @@ func TestUnionHasData_EmptyObjectReturnsFalse(t *testing.T) {
 func TestUnionHasData_PopulatedReturnsTrue(t *testing.T) {
 	if !unionHasData([]byte(`{"type":"bearer"}`)) {
 		t.Error("populated object should return true")
+	}
+}
+
+// ── Enum Valid() apply-time checks ──────────────────────────────────────
+
+func TestMonitor_BuildCreate_InvalidMonitorType(t *testing.T) {
+	ctx := context.Background()
+	r := &MonitorResource{}
+	plan := &MonitorResourceModel{
+		Name:           types.StringValue("neg"),
+		Type:           types.StringValue("INVALID_TYPE"),
+		Config:         types.StringValue(`{"url":"https://example.com"}`),
+		Assertions:     types.ListNull(assertionObjectType()),
+		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
+	}
+	_, err := r.buildCreateRequest(ctx, plan)
+	if err == nil {
+		t.Fatal("expected error for invalid monitor type")
+	}
+	if !strings.Contains(err.Error(), "INVALID_TYPE") {
+		t.Errorf("error should mention the invalid type, got: %s", err.Error())
+	}
+}
+
+func TestMonitor_BuildIncidentPolicy_InvalidTriggerRuleType(t *testing.T) {
+	ctx := context.Background()
+	ruleModel := triggerRuleModel{
+		Type:     types.StringValue("invalid_rule_type"),
+		Severity: types.StringValue("down"),
+		Count:    types.Int64Value(3),
+	}
+	rulesList, diags := types.ListValueFrom(ctx, triggerRuleObjectType(), []triggerRuleModel{ruleModel})
+	if diags.HasError() {
+		t.Fatalf("ListValueFrom diagnostics: %v", diags)
+	}
+	policyModel := incidentPolicyModel{
+		ConfirmationType: types.StringValue("multi_region"),
+		TriggerRules:     rulesList,
+	}
+	policyObj, diags := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+	if diags.HasError() {
+		t.Fatalf("ObjectValueFrom diagnostics: %v", diags)
+	}
+
+	_, err := buildIncidentPolicy(ctx, policyObj)
+	if err == nil {
+		t.Fatal("expected error for invalid trigger rule type")
+	}
+	if !strings.Contains(err.Error(), "invalid_rule_type") {
+		t.Errorf("error should mention the invalid type, got: %s", err.Error())
+	}
+}
+
+func TestMonitor_BuildIncidentPolicy_InvalidTriggerRuleSeverity(t *testing.T) {
+	ctx := context.Background()
+	ruleModel := triggerRuleModel{
+		Type:     types.StringValue("consecutive_failures"),
+		Severity: types.StringValue("critical"),
+		Count:    types.Int64Value(3),
+	}
+	rulesList, diags := types.ListValueFrom(ctx, triggerRuleObjectType(), []triggerRuleModel{ruleModel})
+	if diags.HasError() {
+		t.Fatalf("ListValueFrom diagnostics: %v", diags)
+	}
+	policyModel := incidentPolicyModel{
+		ConfirmationType: types.StringValue("multi_region"),
+		TriggerRules:     rulesList,
+	}
+	policyObj, diags := types.ObjectValueFrom(ctx, incidentPolicyObjectType().AttrTypes, policyModel)
+	if diags.HasError() {
+		t.Fatalf("ObjectValueFrom diagnostics: %v", diags)
+	}
+
+	_, err := buildIncidentPolicy(ctx, policyObj)
+	if err == nil {
+		t.Fatal("expected error for invalid trigger rule severity")
+	}
+	if !strings.Contains(err.Error(), "critical") {
+		t.Errorf("error should mention the invalid severity, got: %s", err.Error())
 	}
 }

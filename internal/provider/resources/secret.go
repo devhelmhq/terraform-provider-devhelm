@@ -95,7 +95,7 @@ func (r *SecretResource) Create(ctx context.Context, req resource.CreateRequest,
 		Value: plan.Value.ValueString(),
 	}
 
-	secret, err := api.Create[generated.SecretDto](ctx, r.client, "/api/v1/secrets", body)
+	secret, err := api.Create[generated.SecretDto](ctx, r.client, api.PathSecrets, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating secret", err.Error())
 		return
@@ -113,7 +113,7 @@ func (r *SecretResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
-	secrets, err := api.List[generated.SecretDto](ctx, r.client, "/api/v1/secrets")
+	secrets, err := api.List[generated.SecretDto](ctx, r.client, api.PathSecrets)
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading secrets", err.Error())
 		return
@@ -148,7 +148,7 @@ func (r *SecretResource) Update(ctx context.Context, req resource.UpdateRequest,
 		Value: plan.Value.ValueString(),
 	}
 
-	_, err := api.Update[generated.SecretDto](ctx, r.client, "/api/v1/secrets/"+api.PathEscape(plan.Key.ValueString()), body)
+	_, err := api.Update[generated.SecretDto](ctx, r.client, api.SecretPath(api.PathEscape(plan.Key.ValueString())), body)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating secret", err.Error())
 		return
@@ -165,14 +165,14 @@ func (r *SecretResource) Delete(ctx context.Context, req resource.DeleteRequest,
 		return
 	}
 
-	err := api.Delete(ctx, r.client, "/api/v1/secrets/"+api.PathEscape(state.Key.ValueString()))
+	err := api.Delete(ctx, r.client, api.SecretPath(api.PathEscape(state.Key.ValueString())))
 	if err != nil && !api.IsNotFound(err) {
 		resp.Diagnostics.AddError("Error deleting secret", err.Error())
 	}
 }
 
 func (r *SecretResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	secrets, err := api.List[generated.SecretDto](ctx, r.client, "/api/v1/secrets")
+	secrets, err := api.List[generated.SecretDto](ctx, r.client, api.PathSecrets)
 	if err != nil {
 		resp.Diagnostics.AddError("Error listing secrets for import", err.Error())
 		return

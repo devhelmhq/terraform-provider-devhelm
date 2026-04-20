@@ -5,6 +5,7 @@ package generated
 
 import (
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/oapi-codegen/runtime"
@@ -68,31 +69,31 @@ func (e AffectedComponentStatus) Valid() bool {
 
 // Defines values for AlertChannelDtoChannelType.
 const (
-	Discord   AlertChannelDtoChannelType = "discord"
-	Email     AlertChannelDtoChannelType = "email"
-	Opsgenie  AlertChannelDtoChannelType = "opsgenie"
-	Pagerduty AlertChannelDtoChannelType = "pagerduty"
-	Slack     AlertChannelDtoChannelType = "slack"
-	Teams     AlertChannelDtoChannelType = "teams"
-	Webhook   AlertChannelDtoChannelType = "webhook"
+	AlertChannelDtoChannelTypeDiscord   AlertChannelDtoChannelType = "discord"
+	AlertChannelDtoChannelTypeEmail     AlertChannelDtoChannelType = "email"
+	AlertChannelDtoChannelTypeOpsgenie  AlertChannelDtoChannelType = "opsgenie"
+	AlertChannelDtoChannelTypePagerduty AlertChannelDtoChannelType = "pagerduty"
+	AlertChannelDtoChannelTypeSlack     AlertChannelDtoChannelType = "slack"
+	AlertChannelDtoChannelTypeTeams     AlertChannelDtoChannelType = "teams"
+	AlertChannelDtoChannelTypeWebhook   AlertChannelDtoChannelType = "webhook"
 )
 
 // Valid indicates whether the value is a known member of the AlertChannelDtoChannelType enum.
 func (e AlertChannelDtoChannelType) Valid() bool {
 	switch e {
-	case Discord:
+	case AlertChannelDtoChannelTypeDiscord:
 		return true
-	case Email:
+	case AlertChannelDtoChannelTypeEmail:
 		return true
-	case Opsgenie:
+	case AlertChannelDtoChannelTypeOpsgenie:
 		return true
-	case Pagerduty:
+	case AlertChannelDtoChannelTypePagerduty:
 		return true
-	case Slack:
+	case AlertChannelDtoChannelTypeSlack:
 		return true
-	case Teams:
+	case AlertChannelDtoChannelTypeTeams:
 		return true
-	case Webhook:
+	case AlertChannelDtoChannelTypeWebhook:
 		return true
 	default:
 		return false
@@ -141,6 +142,21 @@ func (e AlertDeliveryDtoStatus) Valid() bool {
 	case AlertDeliveryDtoStatusPENDING:
 		return true
 	case AlertDeliveryDtoStatusRETRYPENDING:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ApiKeyAuthConfigType.
+const (
+	ApiKeyAuthConfigTypeApiKey ApiKeyAuthConfigType = "api_key"
+)
+
+// Valid indicates whether the value is a known member of the ApiKeyAuthConfigType enum.
+func (e ApiKeyAuthConfigType) Valid() bool {
+	switch e {
+	case ApiKeyAuthConfigTypeApiKey:
 		return true
 	default:
 		return false
@@ -315,6 +331,51 @@ func (e AssertionTestResultDtoSeverity) Valid() bool {
 	case AssertionTestResultDtoSeverityFail:
 		return true
 	case AssertionTestResultDtoSeverityWarn:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for BasicAuthConfigType.
+const (
+	Basic BasicAuthConfigType = "basic"
+)
+
+// Valid indicates whether the value is a known member of the BasicAuthConfigType enum.
+func (e BasicAuthConfigType) Valid() bool {
+	switch e {
+	case Basic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for BearerAuthConfigType.
+const (
+	Bearer BearerAuthConfigType = "bearer"
+)
+
+// Valid indicates whether the value is a known member of the BearerAuthConfigType enum.
+func (e BearerAuthConfigType) Valid() bool {
+	switch e {
+	case Bearer:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for BodyContainsAssertionType.
+const (
+	BodyContainsAssertionTypeBodyContains BodyContainsAssertionType = "body_contains"
+)
+
+// Valid indicates whether the value is a known member of the BodyContainsAssertionType enum.
+func (e BodyContainsAssertionType) Valid() bool {
+	switch e {
+	case BodyContainsAssertionTypeBodyContains:
 		return true
 	default:
 		return false
@@ -726,6 +787,96 @@ func (e DayIncidentStatus) Valid() bool {
 	}
 }
 
+// Defines values for DiscordChannelConfigChannelType.
+const (
+	DiscordChannelConfigChannelTypeDiscord DiscordChannelConfigChannelType = "discord"
+)
+
+// Valid indicates whether the value is a known member of the DiscordChannelConfigChannelType enum.
+func (e DiscordChannelConfigChannelType) Valid() bool {
+	switch e {
+	case DiscordChannelConfigChannelTypeDiscord:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsCheckType.
+const (
+	DnsCheckTypeDns DnsCheckType = "dns"
+)
+
+// Valid indicates whether the value is a known member of the DnsCheckType enum.
+func (e DnsCheckType) Valid() bool {
+	switch e {
+	case DnsCheckTypeDns:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsExpectedCnameAssertionType.
+const (
+	DnsExpectedCnameAssertionTypeDnsExpectedCname DnsExpectedCnameAssertionType = "dns_expected_cname"
+)
+
+// Valid indicates whether the value is a known member of the DnsExpectedCnameAssertionType enum.
+func (e DnsExpectedCnameAssertionType) Valid() bool {
+	switch e {
+	case DnsExpectedCnameAssertionTypeDnsExpectedCname:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsExpectedIpsAssertionType.
+const (
+	DnsExpectedIps DnsExpectedIpsAssertionType = "dns_expected_ips"
+)
+
+// Valid indicates whether the value is a known member of the DnsExpectedIpsAssertionType enum.
+func (e DnsExpectedIpsAssertionType) Valid() bool {
+	switch e {
+	case DnsExpectedIps:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsMaxAnswersAssertionType.
+const (
+	DnsMaxAnswers DnsMaxAnswersAssertionType = "dns_max_answers"
+)
+
+// Valid indicates whether the value is a known member of the DnsMaxAnswersAssertionType enum.
+func (e DnsMaxAnswersAssertionType) Valid() bool {
+	switch e {
+	case DnsMaxAnswers:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsMinAnswersAssertionType.
+const (
+	DnsMinAnswers DnsMinAnswersAssertionType = "dns_min_answers"
+)
+
+// Valid indicates whether the value is a known member of the DnsMinAnswersAssertionType enum.
+func (e DnsMinAnswersAssertionType) Valid() bool {
+	switch e {
+	case DnsMinAnswers:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for DnsMonitorConfigRecordTypes.
 const (
 	DnsMonitorConfigRecordTypesA     DnsMonitorConfigRecordTypes = "A"
@@ -768,6 +919,156 @@ func (e DnsMonitorConfigRecordTypes) Valid() bool {
 	}
 }
 
+// Defines values for DnsRecordContainsAssertionType.
+const (
+	DnsRecordContains DnsRecordContainsAssertionType = "dns_record_contains"
+)
+
+// Valid indicates whether the value is a known member of the DnsRecordContainsAssertionType enum.
+func (e DnsRecordContainsAssertionType) Valid() bool {
+	switch e {
+	case DnsRecordContains:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsRecordEqualsAssertionType.
+const (
+	DnsRecordEquals DnsRecordEqualsAssertionType = "dns_record_equals"
+)
+
+// Valid indicates whether the value is a known member of the DnsRecordEqualsAssertionType enum.
+func (e DnsRecordEqualsAssertionType) Valid() bool {
+	switch e {
+	case DnsRecordEquals:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsResolvesAssertionType.
+const (
+	DnsResolves DnsResolvesAssertionType = "dns_resolves"
+)
+
+// Valid indicates whether the value is a known member of the DnsResolvesAssertionType enum.
+func (e DnsResolvesAssertionType) Valid() bool {
+	switch e {
+	case DnsResolves:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsResponseTimeAssertionType.
+const (
+	DnsResponseTime DnsResponseTimeAssertionType = "dns_response_time"
+)
+
+// Valid indicates whether the value is a known member of the DnsResponseTimeAssertionType enum.
+func (e DnsResponseTimeAssertionType) Valid() bool {
+	switch e {
+	case DnsResponseTime:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsResponseTimeWarnAssertionType.
+const (
+	DnsResponseTimeWarn DnsResponseTimeWarnAssertionType = "dns_response_time_warn"
+)
+
+// Valid indicates whether the value is a known member of the DnsResponseTimeWarnAssertionType enum.
+func (e DnsResponseTimeWarnAssertionType) Valid() bool {
+	switch e {
+	case DnsResponseTimeWarn:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsTtlHighAssertionType.
+const (
+	DnsTtlHigh DnsTtlHighAssertionType = "dns_ttl_high"
+)
+
+// Valid indicates whether the value is a known member of the DnsTtlHighAssertionType enum.
+func (e DnsTtlHighAssertionType) Valid() bool {
+	switch e {
+	case DnsTtlHigh:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsTtlLowAssertionType.
+const (
+	DnsTtlLow DnsTtlLowAssertionType = "dns_ttl_low"
+)
+
+// Valid indicates whether the value is a known member of the DnsTtlLowAssertionType enum.
+func (e DnsTtlLowAssertionType) Valid() bool {
+	switch e {
+	case DnsTtlLow:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DnsTxtContainsAssertionType.
+const (
+	DnsTxtContains DnsTxtContainsAssertionType = "dns_txt_contains"
+)
+
+// Valid indicates whether the value is a known member of the DnsTxtContainsAssertionType enum.
+func (e DnsTxtContainsAssertionType) Valid() bool {
+	switch e {
+	case DnsTxtContains:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EmailChannelConfigChannelType.
+const (
+	Email EmailChannelConfigChannelType = "email"
+)
+
+// Valid indicates whether the value is a known member of the EmailChannelConfigChannelType enum.
+func (e EmailChannelConfigChannelType) Valid() bool {
+	switch e {
+	case Email:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for HeaderAuthConfigType.
+const (
+	Header HeaderAuthConfigType = "header"
+)
+
+// Valid indicates whether the value is a known member of the HeaderAuthConfigType enum.
+func (e HeaderAuthConfigType) Valid() bool {
+	switch e {
+	case Header:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for HeaderValueAssertionOperator.
 const (
 	HeaderValueAssertionOperatorContains    HeaderValueAssertionOperator = "contains"
@@ -798,6 +1099,96 @@ func (e HeaderValueAssertionOperator) Valid() bool {
 	}
 }
 
+// Defines values for HeaderValueAssertionType.
+const (
+	HeaderValue HeaderValueAssertionType = "header_value"
+)
+
+// Valid indicates whether the value is a known member of the HeaderValueAssertionType enum.
+func (e HeaderValueAssertionType) Valid() bool {
+	switch e {
+	case HeaderValue:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for HeartbeatIntervalDriftAssertionType.
+const (
+	HeartbeatIntervalDrift HeartbeatIntervalDriftAssertionType = "heartbeat_interval_drift"
+)
+
+// Valid indicates whether the value is a known member of the HeartbeatIntervalDriftAssertionType enum.
+func (e HeartbeatIntervalDriftAssertionType) Valid() bool {
+	switch e {
+	case HeartbeatIntervalDrift:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for HeartbeatMaxIntervalAssertionType.
+const (
+	HeartbeatMaxInterval HeartbeatMaxIntervalAssertionType = "heartbeat_max_interval"
+)
+
+// Valid indicates whether the value is a known member of the HeartbeatMaxIntervalAssertionType enum.
+func (e HeartbeatMaxIntervalAssertionType) Valid() bool {
+	switch e {
+	case HeartbeatMaxInterval:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for HeartbeatPayloadContainsAssertionType.
+const (
+	HeartbeatPayloadContains HeartbeatPayloadContainsAssertionType = "heartbeat_payload_contains"
+)
+
+// Valid indicates whether the value is a known member of the HeartbeatPayloadContainsAssertionType enum.
+func (e HeartbeatPayloadContainsAssertionType) Valid() bool {
+	switch e {
+	case HeartbeatPayloadContains:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for HeartbeatReceivedAssertionType.
+const (
+	HeartbeatReceived HeartbeatReceivedAssertionType = "heartbeat_received"
+)
+
+// Valid indicates whether the value is a known member of the HeartbeatReceivedAssertionType enum.
+func (e HeartbeatReceivedAssertionType) Valid() bool {
+	switch e {
+	case HeartbeatReceived:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for HttpCheckType.
+const (
+	HttpCheckTypeHttp HttpCheckType = "http"
+)
+
+// Valid indicates whether the value is a known member of the HttpCheckType enum.
+func (e HttpCheckType) Valid() bool {
+	switch e {
+	case HttpCheckTypeHttp:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for HttpMonitorConfigMethod.
 const (
 	HttpMonitorConfigMethodDELETE HttpMonitorConfigMethod = "DELETE"
@@ -822,6 +1213,81 @@ func (e HttpMonitorConfigMethod) Valid() bool {
 	case HttpMonitorConfigMethodPOST:
 		return true
 	case HttpMonitorConfigMethodPUT:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IcmpCheckType.
+const (
+	IcmpCheckTypeIcmp IcmpCheckType = "icmp"
+)
+
+// Valid indicates whether the value is a known member of the IcmpCheckType enum.
+func (e IcmpCheckType) Valid() bool {
+	switch e {
+	case IcmpCheckTypeIcmp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IcmpPacketLossAssertionType.
+const (
+	IcmpPacketLoss IcmpPacketLossAssertionType = "icmp_packet_loss"
+)
+
+// Valid indicates whether the value is a known member of the IcmpPacketLossAssertionType enum.
+func (e IcmpPacketLossAssertionType) Valid() bool {
+	switch e {
+	case IcmpPacketLoss:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IcmpReachableAssertionType.
+const (
+	IcmpReachable IcmpReachableAssertionType = "icmp_reachable"
+)
+
+// Valid indicates whether the value is a known member of the IcmpReachableAssertionType enum.
+func (e IcmpReachableAssertionType) Valid() bool {
+	switch e {
+	case IcmpReachable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IcmpResponseTimeAssertionType.
+const (
+	IcmpResponseTime IcmpResponseTimeAssertionType = "icmp_response_time"
+)
+
+// Valid indicates whether the value is a known member of the IcmpResponseTimeAssertionType enum.
+func (e IcmpResponseTimeAssertionType) Valid() bool {
+	switch e {
+	case IcmpResponseTime:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IcmpResponseTimeWarnAssertionType.
+const (
+	IcmpResponseTimeWarn IcmpResponseTimeWarnAssertionType = "icmp_response_time_warn"
+)
+
+// Valid indicates whether the value is a known member of the IcmpResponseTimeWarnAssertionType enum.
+func (e IcmpResponseTimeWarnAssertionType) Valid() bool {
+	switch e {
+	case IcmpResponseTimeWarn:
 		return true
 	default:
 		return false
@@ -1140,6 +1606,21 @@ func (e JsonPathAssertionOperator) Valid() bool {
 	}
 }
 
+// Defines values for JsonPathAssertionType.
+const (
+	JsonPath JsonPathAssertionType = "json_path"
+)
+
+// Valid indicates whether the value is a known member of the JsonPathAssertionType enum.
+func (e JsonPathAssertionType) Valid() bool {
+	switch e {
+	case JsonPath:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for LinkedStatusPageIncidentDtoImpact.
 const (
 	LinkedStatusPageIncidentDtoImpactCRITICAL LinkedStatusPageIncidentDtoImpact = "CRITICAL"
@@ -1182,6 +1663,141 @@ func (e LinkedStatusPageIncidentDtoStatus) Valid() bool {
 	case LinkedStatusPageIncidentDtoStatusMONITORING:
 		return true
 	case LinkedStatusPageIncidentDtoStatusRESOLVED:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for McpConnectsAssertionType.
+const (
+	McpConnects McpConnectsAssertionType = "mcp_connects"
+)
+
+// Valid indicates whether the value is a known member of the McpConnectsAssertionType enum.
+func (e McpConnectsAssertionType) Valid() bool {
+	switch e {
+	case McpConnects:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for McpHasCapabilityAssertionType.
+const (
+	McpHasCapability McpHasCapabilityAssertionType = "mcp_has_capability"
+)
+
+// Valid indicates whether the value is a known member of the McpHasCapabilityAssertionType enum.
+func (e McpHasCapabilityAssertionType) Valid() bool {
+	switch e {
+	case McpHasCapability:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for McpMinToolsAssertionType.
+const (
+	McpMinTools McpMinToolsAssertionType = "mcp_min_tools"
+)
+
+// Valid indicates whether the value is a known member of the McpMinToolsAssertionType enum.
+func (e McpMinToolsAssertionType) Valid() bool {
+	switch e {
+	case McpMinTools:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for McpProtocolVersionAssertionType.
+const (
+	McpProtocolVersion McpProtocolVersionAssertionType = "mcp_protocol_version"
+)
+
+// Valid indicates whether the value is a known member of the McpProtocolVersionAssertionType enum.
+func (e McpProtocolVersionAssertionType) Valid() bool {
+	switch e {
+	case McpProtocolVersion:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for McpResponseTimeAssertionType.
+const (
+	McpResponseTime McpResponseTimeAssertionType = "mcp_response_time"
+)
+
+// Valid indicates whether the value is a known member of the McpResponseTimeAssertionType enum.
+func (e McpResponseTimeAssertionType) Valid() bool {
+	switch e {
+	case McpResponseTime:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for McpResponseTimeWarnAssertionType.
+const (
+	McpResponseTimeWarn McpResponseTimeWarnAssertionType = "mcp_response_time_warn"
+)
+
+// Valid indicates whether the value is a known member of the McpResponseTimeWarnAssertionType enum.
+func (e McpResponseTimeWarnAssertionType) Valid() bool {
+	switch e {
+	case McpResponseTimeWarn:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for McpServerCheckType.
+const (
+	McpServerCheckTypeMcpServer McpServerCheckType = "mcp_server"
+)
+
+// Valid indicates whether the value is a known member of the McpServerCheckType enum.
+func (e McpServerCheckType) Valid() bool {
+	switch e {
+	case McpServerCheckTypeMcpServer:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for McpToolAvailableAssertionType.
+const (
+	McpToolAvailable McpToolAvailableAssertionType = "mcp_tool_available"
+)
+
+// Valid indicates whether the value is a known member of the McpToolAvailableAssertionType enum.
+func (e McpToolAvailableAssertionType) Valid() bool {
+	switch e {
+	case McpToolAvailable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for McpToolCountChangedAssertionType.
+const (
+	McpToolCountChanged McpToolCountChangedAssertionType = "mcp_tool_count_changed"
+)
+
+// Valid indicates whether the value is a known member of the McpToolCountChangedAssertionType enum.
+func (e McpToolCountChangedAssertionType) Valid() bool {
+	switch e {
+	case McpToolCountChanged:
 		return true
 	default:
 		return false
@@ -1397,22 +2013,22 @@ func (e MonitorAssertionDtoSeverity) Valid() bool {
 
 // Defines values for MonitorAuthDtoAuthType.
 const (
-	ApiKey MonitorAuthDtoAuthType = "api_key"
-	Basic  MonitorAuthDtoAuthType = "basic"
-	Bearer MonitorAuthDtoAuthType = "bearer"
-	Header MonitorAuthDtoAuthType = "header"
+	MonitorAuthDtoAuthTypeApiKey MonitorAuthDtoAuthType = "api_key"
+	MonitorAuthDtoAuthTypeBasic  MonitorAuthDtoAuthType = "basic"
+	MonitorAuthDtoAuthTypeBearer MonitorAuthDtoAuthType = "bearer"
+	MonitorAuthDtoAuthTypeHeader MonitorAuthDtoAuthType = "header"
 )
 
 // Valid indicates whether the value is a known member of the MonitorAuthDtoAuthType enum.
 func (e MonitorAuthDtoAuthType) Valid() bool {
 	switch e {
-	case ApiKey:
+	case MonitorAuthDtoAuthTypeApiKey:
 		return true
-	case Basic:
+	case MonitorAuthDtoAuthTypeBasic:
 		return true
-	case Bearer:
+	case MonitorAuthDtoAuthTypeBearer:
 		return true
-	case Header:
+	case MonitorAuthDtoAuthTypeHeader:
 		return true
 	default:
 		return false
@@ -1575,6 +2191,36 @@ func (e NotificationDispatchDtoStatus) Valid() bool {
 	}
 }
 
+// Defines values for OpsGenieChannelConfigChannelType.
+const (
+	Opsgenie OpsGenieChannelConfigChannelType = "opsgenie"
+)
+
+// Valid indicates whether the value is a known member of the OpsGenieChannelConfigChannelType enum.
+func (e OpsGenieChannelConfigChannelType) Valid() bool {
+	switch e {
+	case Opsgenie:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PagerDutyChannelConfigChannelType.
+const (
+	Pagerduty PagerDutyChannelConfigChannelType = "pagerduty"
+)
+
+// Valid indicates whether the value is a known member of the PagerDutyChannelConfigChannelType enum.
+func (e PagerDutyChannelConfigChannelType) Valid() bool {
+	switch e {
+	case Pagerduty:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for PlanInfoTier.
 const (
 	PlanInfoTierBUSINESS   PlanInfoTier = "BUSINESS"
@@ -1653,6 +2299,21 @@ func (e PublishStatusPageIncidentRequestStatus) Valid() bool {
 	}
 }
 
+// Defines values for RedirectCountAssertionType.
+const (
+	RedirectCount RedirectCountAssertionType = "redirect_count"
+)
+
+// Valid indicates whether the value is a known member of the RedirectCountAssertionType enum.
+func (e RedirectCountAssertionType) Valid() bool {
+	switch e {
+	case RedirectCount:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for RedirectTargetAssertionOperator.
 const (
 	RedirectTargetAssertionOperatorContains    RedirectTargetAssertionOperator = "contains"
@@ -1677,6 +2338,36 @@ func (e RedirectTargetAssertionOperator) Valid() bool {
 	case RedirectTargetAssertionOperatorMatches:
 		return true
 	case RedirectTargetAssertionOperatorRange:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RedirectTargetAssertionType.
+const (
+	RedirectTarget RedirectTargetAssertionType = "redirect_target"
+)
+
+// Valid indicates whether the value is a known member of the RedirectTargetAssertionType enum.
+func (e RedirectTargetAssertionType) Valid() bool {
+	switch e {
+	case RedirectTarget:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RegexBodyAssertionType.
+const (
+	RegexBody RegexBodyAssertionType = "regex_body"
+)
+
+// Valid indicates whether the value is a known member of the RegexBodyAssertionType enum.
+func (e RegexBodyAssertionType) Valid() bool {
+	switch e {
+	case RegexBody:
 		return true
 	default:
 		return false
@@ -1770,6 +2461,51 @@ func (e ResourceGroupMemberDtoStatus) Valid() bool {
 	}
 }
 
+// Defines values for ResponseSizeAssertionType.
+const (
+	ResponseSize ResponseSizeAssertionType = "response_size"
+)
+
+// Valid indicates whether the value is a known member of the ResponseSizeAssertionType enum.
+func (e ResponseSizeAssertionType) Valid() bool {
+	switch e {
+	case ResponseSize:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ResponseTimeAssertionType.
+const (
+	ResponseTimeAssertionTypeResponseTime ResponseTimeAssertionType = "response_time"
+)
+
+// Valid indicates whether the value is a known member of the ResponseTimeAssertionType enum.
+func (e ResponseTimeAssertionType) Valid() bool {
+	switch e {
+	case ResponseTimeAssertionTypeResponseTime:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ResponseTimeWarnAssertionType.
+const (
+	ResponseTimeWarn ResponseTimeWarnAssertionType = "response_time_warn"
+)
+
+// Valid indicates whether the value is a known member of the ResponseTimeWarnAssertionType enum.
+func (e ResponseTimeWarnAssertionType) Valid() bool {
+	switch e {
+	case ResponseTimeWarn:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ResultSummaryDtoCurrentStatus.
 const (
 	ResultSummaryDtoCurrentStatusDegraded ResultSummaryDtoCurrentStatus = "degraded"
@@ -1815,6 +2551,36 @@ func (e ServiceSubscriptionDtoAlertSensitivity) Valid() bool {
 	}
 }
 
+// Defines values for SlackChannelConfigChannelType.
+const (
+	Slack SlackChannelConfigChannelType = "slack"
+)
+
+// Valid indicates whether the value is a known member of the SlackChannelConfigChannelType enum.
+func (e SlackChannelConfigChannelType) Valid() bool {
+	switch e {
+	case Slack:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SslExpiryAssertionType.
+const (
+	SslExpiry SslExpiryAssertionType = "ssl_expiry"
+)
+
+// Valid indicates whether the value is a known member of the SslExpiryAssertionType enum.
+func (e SslExpiryAssertionType) Valid() bool {
+	switch e {
+	case SslExpiry:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for StatusCodeAssertionOperator.
 const (
 	StatusCodeAssertionOperatorContains    StatusCodeAssertionOperator = "contains"
@@ -1839,6 +2605,21 @@ func (e StatusCodeAssertionOperator) Valid() bool {
 	case StatusCodeAssertionOperatorMatches:
 		return true
 	case StatusCodeAssertionOperatorRange:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StatusCodeAssertionType.
+const (
+	StatusCode StatusCodeAssertionType = "status_code"
+)
+
+// Valid indicates whether the value is a known member of the StatusCodeAssertionType enum.
+func (e StatusCodeAssertionType) Valid() bool {
+	switch e {
+	case StatusCode:
 		return true
 	default:
 		return false
@@ -2130,6 +2911,81 @@ func (e StatusPageIncidentUpdateDtoStatus) Valid() bool {
 	}
 }
 
+// Defines values for TcpCheckType.
+const (
+	TcpCheckTypeTcp TcpCheckType = "tcp"
+)
+
+// Valid indicates whether the value is a known member of the TcpCheckType enum.
+func (e TcpCheckType) Valid() bool {
+	switch e {
+	case TcpCheckTypeTcp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TcpConnectsAssertionType.
+const (
+	TcpConnects TcpConnectsAssertionType = "tcp_connects"
+)
+
+// Valid indicates whether the value is a known member of the TcpConnectsAssertionType enum.
+func (e TcpConnectsAssertionType) Valid() bool {
+	switch e {
+	case TcpConnects:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TcpResponseTimeAssertionType.
+const (
+	TcpResponseTime TcpResponseTimeAssertionType = "tcp_response_time"
+)
+
+// Valid indicates whether the value is a known member of the TcpResponseTimeAssertionType enum.
+func (e TcpResponseTimeAssertionType) Valid() bool {
+	switch e {
+	case TcpResponseTime:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TcpResponseTimeWarnAssertionType.
+const (
+	TcpResponseTimeWarn TcpResponseTimeWarnAssertionType = "tcp_response_time_warn"
+)
+
+// Valid indicates whether the value is a known member of the TcpResponseTimeWarnAssertionType enum.
+func (e TcpResponseTimeWarnAssertionType) Valid() bool {
+	switch e {
+	case TcpResponseTimeWarn:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TeamsChannelConfigChannelType.
+const (
+	Teams TeamsChannelConfigChannelType = "teams"
+)
+
+// Valid indicates whether the value is a known member of the TeamsChannelConfigChannelType enum.
+func (e TeamsChannelConfigChannelType) Valid() bool {
+	switch e {
+	case Teams:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TriggerRuleAggregationType.
 const (
 	AllExceed TriggerRuleAggregationType = "all_exceed"
@@ -2192,19 +3048,19 @@ func (e TriggerRuleSeverity) Valid() bool {
 
 // Defines values for TriggerRuleType.
 const (
-	ConsecutiveFailures TriggerRuleType = "consecutive_failures"
-	FailuresInWindow    TriggerRuleType = "failures_in_window"
-	ResponseTime        TriggerRuleType = "response_time"
+	TriggerRuleTypeConsecutiveFailures TriggerRuleType = "consecutive_failures"
+	TriggerRuleTypeFailuresInWindow    TriggerRuleType = "failures_in_window"
+	TriggerRuleTypeResponseTime        TriggerRuleType = "response_time"
 )
 
 // Valid indicates whether the value is a known member of the TriggerRuleType enum.
 func (e TriggerRuleType) Valid() bool {
 	switch e {
-	case ConsecutiveFailures:
+	case TriggerRuleTypeConsecutiveFailures:
 		return true
-	case FailuresInWindow:
+	case TriggerRuleTypeFailuresInWindow:
 		return true
-	case ResponseTime:
+	case TriggerRuleTypeResponseTime:
 		return true
 	default:
 		return false
@@ -2352,6 +3208,21 @@ func (e UpdateStatusPageRequestVisibility) Valid() bool {
 	case PASSWORD:
 		return true
 	case PUBLIC:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for WebhookChannelConfigChannelType.
+const (
+	Webhook WebhookChannelConfigChannelType = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the WebhookChannelConfigChannelType enum.
+func (e WebhookChannelConfigChannelType) Valid() bool {
+	switch e {
+	case Webhook:
 		return true
 	default:
 		return false
@@ -2758,7 +3629,7 @@ type AlertChannelDtoChannelType string
 // AlertDeliveryDto Delivery record for a single channel within a notification dispatch
 type AlertDeliveryDto struct {
 	// AttemptCount Number of delivery attempts made
-	AttemptCount *int32 `json:"attemptCount,omitempty"`
+	AttemptCount int32 `json:"attemptCount"`
 
 	// Channel Human-readable channel name
 	Channel string `json:"channel"`
@@ -2783,7 +3654,7 @@ type AlertDeliveryDto struct {
 	EventType AlertDeliveryDtoEventType `json:"eventType"`
 
 	// FireCount Fire sequence within the step: 1 = initial, 2+ = repeat re-fires
-	FireCount *int32             `json:"fireCount,omitempty"`
+	FireCount int32              `json:"fireCount"`
 	Id        openapi_types.UUID `json:"id"`
 
 	// IncidentId Incident that triggered this delivery
@@ -2799,7 +3670,7 @@ type AlertDeliveryDto struct {
 	Status AlertDeliveryDtoStatus `json:"status"`
 
 	// StepNumber 1-based escalation step this delivery belongs to
-	StepNumber *int32 `json:"stepNumber,omitempty"`
+	StepNumber int32 `json:"stepNumber"`
 }
 
 // AlertDeliveryDtoEventType Incident lifecycle event that triggered this delivery
@@ -2811,12 +3682,15 @@ type AlertDeliveryDtoStatus string
 // ApiKeyAuthConfig defines model for ApiKeyAuthConfig.
 type ApiKeyAuthConfig struct {
 	// HeaderName HTTP header name that carries the API key
-	HeaderName string `json:"headerName"`
-	Type       string `json:"type"`
+	HeaderName string               `json:"headerName"`
+	Type       ApiKeyAuthConfigType `json:"type"`
 
 	// VaultSecretId Vault secret ID for the API key value
 	VaultSecretId *openapi_types.UUID `json:"vaultSecretId,omitempty"`
 }
+
+// ApiKeyAuthConfigType defines model for ApiKeyAuthConfig.Type.
+type ApiKeyAuthConfigType string
 
 // ApiKeyCreateResponse Created API key with the full key value — store it now, it won't be shown again
 type ApiKeyCreateResponse struct {
@@ -2827,7 +3701,7 @@ type ApiKeyCreateResponse struct {
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
 
 	// Id Unique API key identifier
-	Id *int32 `json:"id,omitempty"`
+	Id int32 `json:"id"`
 
 	// Key Full API key value in dh_live_* format; store this now
 	Key string `json:"key"`
@@ -2845,7 +3719,7 @@ type ApiKeyDto struct {
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
 
 	// Id Unique API key identifier
-	Id *int32 `json:"id,omitempty"`
+	Id int32 `json:"id"`
 
 	// Key Full API key value in dh_live_* format
 	Key string `json:"key"`
@@ -2863,11 +3737,6 @@ type ApiKeyDto struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-// AssertionConfig New assertion configuration (full replacement)
-type AssertionConfig struct {
-	Type string `json:"type"`
-}
-
 // AssertionResultDto Result of evaluating a single assertion against a check result
 type AssertionResultDto struct {
 	// Actual Actual value observed
@@ -2880,7 +3749,7 @@ type AssertionResultDto struct {
 	Message *string `json:"message,omitempty"`
 
 	// Passed Whether the assertion passed
-	Passed *bool `json:"passed,omitempty"`
+	Passed bool `json:"passed"`
 
 	// Severity Assertion severity
 	Severity AssertionResultDtoSeverity `json:"severity"`
@@ -2907,7 +3776,7 @@ type AssertionTestResultDto struct {
 	Message string `json:"message"`
 
 	// Passed Whether the assertion passed
-	Passed *bool `json:"passed,omitempty"`
+	Passed bool `json:"passed"`
 
 	// Severity Assertion severity: FAIL or WARN
 	Severity AssertionTestResultDtoSeverity `json:"severity"`
@@ -2934,7 +3803,7 @@ type AuditEventDto struct {
 	CreatedAt time.Time `json:"createdAt"`
 
 	// Id Unique audit event identifier
-	Id *int64 `json:"id,omitempty"`
+	Id int64 `json:"id"`
 
 	// Metadata Additional context about the action
 	Metadata *map[string]*map[string]interface{} `json:"metadata,omitempty"`
@@ -2966,30 +3835,45 @@ type AuthMeResponse struct {
 
 // BasicAuthConfig defines model for BasicAuthConfig.
 type BasicAuthConfig struct {
-	Type string `json:"type"`
+	Type BasicAuthConfigType `json:"type"`
 
 	// VaultSecretId Vault secret ID holding Basic auth username and password
 	VaultSecretId *openapi_types.UUID `json:"vaultSecretId,omitempty"`
 }
 
+// BasicAuthConfigType defines model for BasicAuthConfig.Type.
+type BasicAuthConfigType string
+
+// BatchComponentUptimeDto Batch daily uptime per component, keyed by component ID
+type BatchComponentUptimeDto struct {
+	// Components Map of component ID → list of per-day uptime entries (oldest → newest)
+	Components map[string][]ComponentUptimeDayDto `json:"components"`
+}
+
 // BearerAuthConfig defines model for BearerAuthConfig.
 type BearerAuthConfig struct {
-	Type string `json:"type"`
+	Type BearerAuthConfigType `json:"type"`
 
 	// VaultSecretId Vault secret ID holding the bearer token value
 	VaultSecretId *openapi_types.UUID `json:"vaultSecretId,omitempty"`
 }
 
+// BearerAuthConfigType defines model for BearerAuthConfig.Type.
+type BearerAuthConfigType string
+
 // BodyContainsAssertion defines model for BodyContainsAssertion.
 type BodyContainsAssertion struct {
 	// Substring Substring that must appear in the response body
-	Substring string `json:"substring"`
-	Type      string `json:"type"`
+	Substring string                    `json:"substring"`
+	Type      BodyContainsAssertionType `json:"type"`
 }
+
+// BodyContainsAssertionType defines model for BodyContainsAssertion.Type.
+type BodyContainsAssertionType string
 
 // BulkMonitorActionRequest Request body for performing a bulk action on multiple monitors
 type BulkMonitorActionRequest struct {
-	// Action Action to perform: PAUSE, RESUME, DELETE, ADD_TAG, REMOVE_TAG
+	// Action Action to apply to every monitor in the bulk request
 	Action BulkMonitorActionRequestAction `json:"action"`
 
 	// MonitorIds IDs of monitors to act on (max 200)
@@ -3002,7 +3886,7 @@ type BulkMonitorActionRequest struct {
 	TagIds *[]openapi_types.UUID `json:"tagIds,omitempty"`
 }
 
-// BulkMonitorActionRequestAction Action to perform: PAUSE, RESUME, DELETE, ADD_TAG, REMOVE_TAG
+// BulkMonitorActionRequestAction Action to apply to every monitor in the bulk request
 type BulkMonitorActionRequestAction string
 
 // BulkMonitorActionResult Result of a bulk monitor action, including partial-success details
@@ -3020,7 +3904,7 @@ type CategoryDto struct {
 	Category string `json:"category"`
 
 	// ServiceCount Number of services in this category
-	ServiceCount *int64 `json:"serviceCount,omitempty"`
+	ServiceCount int64 `json:"serviceCount"`
 }
 
 // ChangeRoleRequest Update an organization member's role
@@ -3040,11 +3924,6 @@ type ChangeStatusRequest struct {
 
 // ChangeStatusRequestStatus New membership status (ACTIVE or SUSPENDED)
 type ChangeStatusRequestStatus string
-
-// ChannelConfig New channel configuration (full replacement, not partial update)
-type ChannelConfig struct {
-	ChannelType string `json:"channelType"`
-}
 
 // ChartBucketDto Aggregated metrics for a time bucket
 type ChartBucketDto struct {
@@ -3103,7 +3982,7 @@ type CheckResultDto struct {
 	Id openapi_types.UUID `json:"id"`
 
 	// Passed Whether the check passed
-	Passed *bool `json:"passed,omitempty"`
+	Passed bool `json:"passed"`
 
 	// Region Region where the check was executed
 	Region string `json:"region"`
@@ -3120,7 +3999,7 @@ type CheckResultDto struct {
 
 // CheckTypeDetailsDto Check-type-specific details — polymorphic by check_type discriminator
 type CheckTypeDetailsDto struct {
-	CheckType string `json:"check_type"`
+	union json.RawMessage
 }
 
 // ComponentImpact One component's uptime contribution for the day
@@ -3135,13 +4014,13 @@ type ComponentImpact struct {
 	GroupName *string `json:"groupName,omitempty"`
 
 	// MajorOutageSeconds Seconds of major outage observed on this day
-	MajorOutageSeconds *int32 `json:"majorOutageSeconds,omitempty"`
+	MajorOutageSeconds int32 `json:"majorOutageSeconds"`
 
 	// PartialOutageSeconds Seconds of partial outage observed on this day
-	PartialOutageSeconds *int32 `json:"partialOutageSeconds,omitempty"`
+	PartialOutageSeconds int32 `json:"partialOutageSeconds"`
 
 	// UptimePercentage Computed uptime % for this component on this day
-	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
+	UptimePercentage float64 `json:"uptimePercentage"`
 }
 
 // ComponentPosition A single component position
@@ -3150,7 +4029,7 @@ type ComponentPosition struct {
 	ComponentId openapi_types.UUID `json:"componentId"`
 
 	// DisplayOrder New display order (0-based)
-	DisplayOrder *int32 `json:"displayOrder,omitempty"`
+	DisplayOrder int32 `json:"displayOrder"`
 
 	// GroupId Target group ID, null for ungrouped
 	GroupId *openapi_types.UUID `json:"groupId,omitempty"`
@@ -3168,22 +4047,28 @@ type ComponentStatusDto struct {
 	Status string `json:"status"`
 }
 
-// ComponentUptimeDayDto Daily uptime data for a status page component
+// ComponentUptimeDayDto Daily uptime data for a component
 type ComponentUptimeDayDto struct {
-	// Date Start-of-day timestamp for this bucket (UTC midnight)
+	// Date Date of the daily bucket (ISO 8601)
 	Date time.Time `json:"date"`
 
-	// Incidents Incidents that overlapped this day
-	Incidents *[]IncidentRef `json:"incidents,omitempty"`
+	// DegradedSeconds Seconds the component spent in degraded performance on this day
+	DegradedSeconds int32 `json:"degradedSeconds"`
 
-	// MajorOutageSeconds Seconds of major outage on this day
-	MajorOutageSeconds *int32 `json:"majorOutageSeconds,omitempty"`
+	// EventsJson Incident event references for this day as raw JSON
+	EventsJson *string `json:"eventsJson,omitempty"`
 
-	// PartialOutageSeconds Seconds of partial outage on this day
-	PartialOutageSeconds *int32 `json:"partialOutageSeconds,omitempty"`
+	// MajorOutageSeconds Seconds of major outage observed on this day
+	MajorOutageSeconds int32 `json:"majorOutageSeconds"`
 
-	// UptimePercentage Computed uptime percentage using weighted formula
-	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
+	// PartialOutageSeconds Seconds of partial outage observed on this day
+	PartialOutageSeconds int32 `json:"partialOutageSeconds"`
+
+	// Source Data source: vendor_reported or incident_derived
+	Source string `json:"source"`
+
+	// UptimePercentage Computed uptime percentage for the day
+	UptimePercentage float64 `json:"uptimePercentage"`
 }
 
 // ComponentUptimeSummaryDto Inline uptime percentages for 24h, 7d, 30d
@@ -3204,10 +4089,10 @@ type ComponentUptimeSummaryDto struct {
 // ConfirmationPolicy Multi-region confirmation settings
 type ConfirmationPolicy struct {
 	// MaxWaitSeconds Maximum seconds to wait for enough regions to fail after first trigger
-	MaxWaitSeconds *int32 `json:"maxWaitSeconds,omitempty"`
+	MaxWaitSeconds int32 `json:"maxWaitSeconds"`
 
 	// MinRegionsFailing Minimum failing regions required to confirm an incident
-	MinRegionsFailing *int32 `json:"minRegionsFailing,omitempty"`
+	MinRegionsFailing int32 `json:"minRegionsFailing"`
 
 	// Type How incident confirmation is coordinated across regions
 	Type ConfirmationPolicyType `json:"type"`
@@ -3242,8 +4127,8 @@ type CreateApiKeyRequest struct {
 type CreateAssertionRequest struct {
 	Config CreateAssertionRequest_Config `json:"config"`
 
-	// Severity Outcome severity: FAIL (fails the check) or WARN (warns without failing)
-	Severity CreateAssertionRequestSeverity `json:"severity"`
+	// Severity Outcome severity: FAIL (fails the check) or WARN (warns without failing, default: FAIL)
+	Severity *CreateAssertionRequestSeverity `json:"severity,omitempty"`
 }
 
 // CreateAssertionRequest_Config defines model for CreateAssertionRequest.Config.
@@ -3251,13 +4136,13 @@ type CreateAssertionRequest_Config struct {
 	union json.RawMessage
 }
 
-// CreateAssertionRequestSeverity Outcome severity: FAIL (fails the check) or WARN (warns without failing)
+// CreateAssertionRequestSeverity Outcome severity: FAIL (fails the check) or WARN (warns without failing, default: FAIL)
 type CreateAssertionRequestSeverity string
 
 // CreateEnvironmentRequest defines model for CreateEnvironmentRequest.
 type CreateEnvironmentRequest struct {
 	// IsDefault Whether this is the default environment for new monitors
-	IsDefault *bool `json:"isDefault,omitempty"`
+	IsDefault bool `json:"isDefault"`
 
 	// Name Human-readable environment name
 	Name string `json:"name"`
@@ -3368,19 +4253,19 @@ type CreateMonitorRequestType string
 // CreateNotificationPolicyRequest Request body for creating a notification policy
 type CreateNotificationPolicyRequest struct {
 	// Enabled Whether this policy is enabled (default true)
-	Enabled bool `json:"enabled"`
+	Enabled *bool `json:"enabled,omitempty"`
 
 	// Escalation Escalation chain defining which channels to notify; null preserves current
 	Escalation EscalationChain `json:"escalation"`
 
 	// MatchRules Match rules to evaluate (all must pass; omit or empty for catch-all)
-	MatchRules []MatchRule `json:"matchRules"`
+	MatchRules *[]MatchRule `json:"matchRules,omitempty"`
 
 	// Name Human-readable name for this policy
 	Name string `json:"name"`
 
 	// Priority Evaluation priority; higher value = evaluated first (default 0)
-	Priority int32 `json:"priority"`
+	Priority *int32 `json:"priority,omitempty"`
 }
 
 // CreateResourceGroupRequest Request body for creating a resource group
@@ -3599,25 +4484,13 @@ type CreateWorkspaceRequest struct {
 	Name string `json:"name"`
 }
 
-// CursorPage Cursor-paginated response for time-series and append-only data
-type CursorPage struct {
-	// Data Items on this page
-	Data []map[string]interface{} `json:"data"`
-
-	// HasMore Whether more results exist beyond this page
-	HasMore *bool `json:"hasMore,omitempty"`
-
-	// NextCursor Opaque cursor for the next page; null when there are no more results
-	NextCursor *string `json:"nextCursor,omitempty"`
-}
-
 // CursorPageCheckResultDto Cursor-paginated response for time-series and append-only data
 type CursorPageCheckResultDto struct {
 	// Data Items on this page
 	Data []CheckResultDto `json:"data"`
 
 	// HasMore Whether more results exist beyond this page
-	HasMore *bool `json:"hasMore,omitempty"`
+	HasMore bool `json:"hasMore"`
 
 	// NextCursor Opaque cursor for the next page; null when there are no more results
 	NextCursor *string `json:"nextCursor,omitempty"`
@@ -3629,7 +4502,7 @@ type CursorPageServiceCatalogDto struct {
 	Data []ServiceCatalogDto `json:"data"`
 
 	// HasMore Whether more results exist beyond this page
-	HasMore *bool `json:"hasMore,omitempty"`
+	HasMore bool `json:"hasMore"`
 
 	// NextCursor Opaque cursor for the next page; null when there are no more results
 	NextCursor *string `json:"nextCursor,omitempty"`
@@ -3641,7 +4514,7 @@ type CursorPageServicePollResultDto struct {
 	Data []ServicePollResultDto `json:"data"`
 
 	// HasMore Whether more results exist beyond this page
-	HasMore *bool `json:"hasMore,omitempty"`
+	HasMore bool `json:"hasMore"`
 
 	// NextCursor Opaque cursor for the next page; null when there are no more results
 	NextCursor *string `json:"nextCursor,omitempty"`
@@ -3671,7 +4544,7 @@ type DayIncident struct {
 	ResolvedAt *time.Time `json:"resolvedAt,omitempty"`
 
 	// Scheduled True for scheduled maintenances; false for unplanned incidents
-	Scheduled *bool `json:"scheduled,omitempty"`
+	Scheduled bool `json:"scheduled"`
 
 	// StartedAt Incident start timestamp
 	StartedAt *time.Time `json:"startedAt,omitempty"`
@@ -3692,19 +4565,19 @@ type DayIncidentStatus string
 // DekRotationResultDto Result of a data encryption key rotation operation
 type DekRotationResultDto struct {
 	// ChannelsReEncrypted Number of alert channels re-encrypted with the new DEK
-	ChannelsReEncrypted *int32 `json:"channelsReEncrypted,omitempty"`
+	ChannelsReEncrypted int32 `json:"channelsReEncrypted"`
 
 	// NewDekVersion DEK version after rotation
-	NewDekVersion *int32 `json:"newDekVersion,omitempty"`
+	NewDekVersion int32 `json:"newDekVersion"`
 
 	// PreviousDekVersion DEK version before rotation
-	PreviousDekVersion *int32 `json:"previousDekVersion,omitempty"`
+	PreviousDekVersion int32 `json:"previousDekVersion"`
 
 	// RotatedAt Timestamp when the rotation was performed
 	RotatedAt time.Time `json:"rotatedAt"`
 
 	// SecretsReEncrypted Number of secrets re-encrypted with the new DEK
-	SecretsReEncrypted *int32 `json:"secretsReEncrypted,omitempty"`
+	SecretsReEncrypted int32 `json:"secretsReEncrypted"`
 }
 
 // DeleteChannelResult Summary of policies affected by channel deletion
@@ -3719,7 +4592,7 @@ type DeleteChannelResult struct {
 // DeliveryAttemptDto Single delivery attempt with request/response audit data
 type DeliveryAttemptDto struct {
 	// AttemptNumber 1-based attempt number
-	AttemptNumber *int32             `json:"attemptNumber,omitempty"`
+	AttemptNumber int32              `json:"attemptNumber"`
 	AttemptedAt   time.Time          `json:"attemptedAt"`
 	DeliveryId    openapi_types.UUID `json:"deliveryId"`
 
@@ -3766,7 +4639,7 @@ type DeployLockDto struct {
 
 // DiscordChannelConfig defines model for DiscordChannelConfig.
 type DiscordChannelConfig struct {
-	ChannelType string `json:"channelType"`
+	ChannelType DiscordChannelConfigChannelType `json:"channelType"`
 
 	// MentionRoleId Optional Discord role ID to mention in notifications
 	MentionRoleId *string `json:"mentionRoleId,omitempty"`
@@ -3775,20 +4648,54 @@ type DiscordChannelConfig struct {
 	WebhookUrl string `json:"webhookUrl"`
 }
 
+// DiscordChannelConfigChannelType defines model for DiscordChannelConfig.ChannelType.
+type DiscordChannelConfigChannelType string
+
+// Dns DNS check-type-specific details
+type Dns struct {
+	// Attempts DNS resolution attempts
+	Attempts  *[]*map[string]*map[string]interface{} `json:"attempts,omitempty"`
+	CheckType DnsCheckType                           `json:"check_type"`
+
+	// FailureKind Kind of DNS failure, if any
+	FailureKind *string `json:"failureKind,omitempty"`
+
+	// Hostname Target hostname
+	Hostname *string `json:"hostname,omitempty"`
+
+	// Records Resolved DNS records keyed by record type
+	Records *map[string]*[]*map[string]*map[string]interface{} `json:"records,omitempty"`
+
+	// RequestedTypes Requested DNS record types
+	RequestedTypes *[]*string `json:"requestedTypes,omitempty"`
+
+	// UsedResolver Resolver used for lookup
+	UsedResolver *string `json:"usedResolver,omitempty"`
+}
+
+// DnsCheckType defines model for Dns.CheckType.
+type DnsCheckType string
+
 // DnsExpectedCnameAssertion defines model for DnsExpectedCnameAssertion.
 type DnsExpectedCnameAssertion struct {
-	Type string `json:"type"`
+	Type DnsExpectedCnameAssertionType `json:"type"`
 
 	// Value Expected CNAME target the resolution must include
 	Value string `json:"value"`
 }
 
+// DnsExpectedCnameAssertionType defines model for DnsExpectedCnameAssertion.Type.
+type DnsExpectedCnameAssertionType string
+
 // DnsExpectedIpsAssertion defines model for DnsExpectedIpsAssertion.
 type DnsExpectedIpsAssertion struct {
 	// Ips Allowed IP addresses; at least one resolved address must match
-	Ips  []string `json:"ips"`
-	Type string   `json:"type"`
+	Ips  []string                    `json:"ips"`
+	Type DnsExpectedIpsAssertionType `json:"type"`
 }
+
+// DnsExpectedIpsAssertionType defines model for DnsExpectedIpsAssertion.Type.
+type DnsExpectedIpsAssertionType string
 
 // DnsMaxAnswersAssertion defines model for DnsMaxAnswersAssertion.
 type DnsMaxAnswersAssertion struct {
@@ -3796,9 +4703,12 @@ type DnsMaxAnswersAssertion struct {
 	Max int32 `json:"max"`
 
 	// RecordType DNS record type whose answer count is checked
-	RecordType string `json:"recordType"`
-	Type       string `json:"type"`
+	RecordType string                     `json:"recordType"`
+	Type       DnsMaxAnswersAssertionType `json:"type"`
 }
+
+// DnsMaxAnswersAssertionType defines model for DnsMaxAnswersAssertion.Type.
+type DnsMaxAnswersAssertionType string
 
 // DnsMinAnswersAssertion defines model for DnsMinAnswersAssertion.
 type DnsMinAnswersAssertion struct {
@@ -3806,9 +4716,12 @@ type DnsMinAnswersAssertion struct {
 	Min int32 `json:"min"`
 
 	// RecordType DNS record type whose answer count is checked
-	RecordType string `json:"recordType"`
-	Type       string `json:"type"`
+	RecordType string                     `json:"recordType"`
+	Type       DnsMinAnswersAssertionType `json:"type"`
 }
+
+// DnsMinAnswersAssertionType defines model for DnsMinAnswersAssertion.Type.
+type DnsMinAnswersAssertionType string
 
 // DnsMonitorConfig defines model for DnsMonitorConfig.
 type DnsMonitorConfig struct {
@@ -3837,80 +4750,109 @@ type DnsRecordContainsAssertion struct {
 	RecordType string `json:"recordType"`
 
 	// Substring Substring that must appear in a matching record value
-	Substring string `json:"substring"`
-	Type      string `json:"type"`
+	Substring string                         `json:"substring"`
+	Type      DnsRecordContainsAssertionType `json:"type"`
 }
+
+// DnsRecordContainsAssertionType defines model for DnsRecordContainsAssertion.Type.
+type DnsRecordContainsAssertionType string
 
 // DnsRecordEqualsAssertion defines model for DnsRecordEqualsAssertion.
 type DnsRecordEqualsAssertion struct {
 	// RecordType DNS record type to assert on (A, AAAA, CNAME, MX, TXT)
-	RecordType string `json:"recordType"`
-	Type       string `json:"type"`
+	RecordType string                       `json:"recordType"`
+	Type       DnsRecordEqualsAssertionType `json:"type"`
 
 	// Value Expected DNS record value for an exact match
 	Value string `json:"value"`
 }
 
-// DnsResolvesAssertion New assertion configuration (full replacement)
-type DnsResolvesAssertion = AssertionConfig
+// DnsRecordEqualsAssertionType defines model for DnsRecordEqualsAssertion.Type.
+type DnsRecordEqualsAssertionType string
+
+// DnsResolvesAssertion defines model for DnsResolvesAssertion.
+type DnsResolvesAssertion struct {
+	Type DnsResolvesAssertionType `json:"type"`
+}
+
+// DnsResolvesAssertionType defines model for DnsResolvesAssertion.Type.
+type DnsResolvesAssertionType string
 
 // DnsResponseTimeAssertion defines model for DnsResponseTimeAssertion.
 type DnsResponseTimeAssertion struct {
 	// MaxMs Maximum allowed DNS resolution time in milliseconds
-	MaxMs int32  `json:"maxMs"`
-	Type  string `json:"type"`
+	MaxMs int32                        `json:"maxMs"`
+	Type  DnsResponseTimeAssertionType `json:"type"`
 }
+
+// DnsResponseTimeAssertionType defines model for DnsResponseTimeAssertion.Type.
+type DnsResponseTimeAssertionType string
 
 // DnsResponseTimeWarnAssertion defines model for DnsResponseTimeWarnAssertion.
 type DnsResponseTimeWarnAssertion struct {
-	Type string `json:"type"`
+	Type DnsResponseTimeWarnAssertionType `json:"type"`
 
 	// WarnMs DNS resolution time in milliseconds that triggers a warning only
 	WarnMs int32 `json:"warnMs"`
 }
 
+// DnsResponseTimeWarnAssertionType defines model for DnsResponseTimeWarnAssertion.Type.
+type DnsResponseTimeWarnAssertionType string
+
 // DnsTtlHighAssertion defines model for DnsTtlHighAssertion.
 type DnsTtlHighAssertion struct {
 	// MaxTtl Maximum TTL in seconds before a high-TTL warning is raised
-	MaxTtl int32  `json:"maxTtl"`
-	Type   string `json:"type"`
+	MaxTtl int32                   `json:"maxTtl"`
+	Type   DnsTtlHighAssertionType `json:"type"`
 }
+
+// DnsTtlHighAssertionType defines model for DnsTtlHighAssertion.Type.
+type DnsTtlHighAssertionType string
 
 // DnsTtlLowAssertion defines model for DnsTtlLowAssertion.
 type DnsTtlLowAssertion struct {
 	// MinTtl Minimum acceptable TTL in seconds before a warning is raised
-	MinTtl int32  `json:"minTtl"`
-	Type   string `json:"type"`
+	MinTtl int32                  `json:"minTtl"`
+	Type   DnsTtlLowAssertionType `json:"type"`
 }
+
+// DnsTtlLowAssertionType defines model for DnsTtlLowAssertion.Type.
+type DnsTtlLowAssertionType string
 
 // DnsTxtContainsAssertion defines model for DnsTxtContainsAssertion.
 type DnsTxtContainsAssertion struct {
 	// Substring Substring that must appear in at least one TXT record
-	Substring string `json:"substring"`
-	Type      string `json:"type"`
+	Substring string                      `json:"substring"`
+	Type      DnsTxtContainsAssertionType `json:"type"`
 }
+
+// DnsTxtContainsAssertionType defines model for DnsTxtContainsAssertion.Type.
+type DnsTxtContainsAssertionType string
 
 // EmailChannelConfig defines model for EmailChannelConfig.
 type EmailChannelConfig struct {
-	ChannelType string `json:"channelType"`
+	ChannelType EmailChannelConfigChannelType `json:"channelType"`
 
 	// Recipients Email addresses to send notifications to
 	Recipients []openapi_types.Email `json:"recipients"`
 }
 
+// EmailChannelConfigChannelType defines model for EmailChannelConfig.ChannelType.
+type EmailChannelConfigChannelType string
+
 // EntitlementDto A single resolved entitlement for the organization
 type EntitlementDto struct {
 	// DefaultValue Plan-tier default value before overrides
-	DefaultValue *int64 `json:"defaultValue,omitempty"`
+	DefaultValue int64 `json:"defaultValue"`
 
 	// Key Entitlement key
 	Key string `json:"key"`
 
 	// Overridden Whether this entitlement has an org-level override
-	Overridden *bool `json:"overridden,omitempty"`
+	Overridden bool `json:"overridden"`
 
 	// Value Effective limit value (overrides applied)
-	Value *int64 `json:"value,omitempty"`
+	Value int64 `json:"value"`
 }
 
 // EnvironmentDto Environment with variable substitutions for monitor configs
@@ -3922,16 +4864,16 @@ type EnvironmentDto struct {
 	Id openapi_types.UUID `json:"id"`
 
 	// IsDefault Whether this is the default environment for new monitors
-	IsDefault *bool `json:"isDefault,omitempty"`
+	IsDefault bool `json:"isDefault"`
 
 	// MonitorCount Number of monitors using this environment
-	MonitorCount *int32 `json:"monitorCount,omitempty"`
+	MonitorCount int32 `json:"monitorCount"`
 
 	// Name Human-readable environment name
 	Name string `json:"name"`
 
 	// OrgId Organization this environment belongs to
-	OrgId *int32 `json:"orgId,omitempty"`
+	OrgId int32 `json:"orgId"`
 
 	// Slug URL-safe identifier
 	Slug string `json:"slug"`
@@ -3941,6 +4883,18 @@ type EnvironmentDto struct {
 
 	// Variables Key-value variable pairs available for interpolation
 	Variables map[string]string `json:"variables"`
+}
+
+// ErrorResponse Uniform error envelope returned for every non-2xx response
+type ErrorResponse struct {
+	// Message Human-readable error message; safe to surface to end users
+	Message string `json:"message"`
+
+	// Status HTTP status code (mirrors the response status line)
+	Status int32 `json:"status"`
+
+	// Timestamp Server time when the error was produced (epoch milliseconds)
+	Timestamp int64 `json:"timestamp"`
 }
 
 // EscalationChain Escalation chain defining which channels to notify; null preserves current
@@ -3961,7 +4915,7 @@ type EscalationStep struct {
 	ChannelIds []openapi_types.UUID `json:"channelIds"`
 
 	// DelayMinutes Minutes to wait before executing this step (0 = immediate)
-	DelayMinutes *int32 `json:"delayMinutes,omitempty"`
+	DelayMinutes int32 `json:"delayMinutes"`
 
 	// RepeatIntervalSeconds Repeat notification interval in seconds until acknowledged
 	RepeatIntervalSeconds *int32 `json:"repeatIntervalSeconds,omitempty"`
@@ -3982,31 +4936,31 @@ type FailureDetail struct {
 // GlobalStatusSummaryDto Global status summary across all subscribed vendor services
 type GlobalStatusSummaryDto struct {
 	// ActiveIncidentCount Total number of active incidents across all services
-	ActiveIncidentCount *int64 `json:"activeIncidentCount,omitempty"`
+	ActiveIncidentCount int64 `json:"activeIncidentCount"`
 
 	// DegradedCount Number of services with degraded status
-	DegradedCount *int32 `json:"degradedCount,omitempty"`
+	DegradedCount int32 `json:"degradedCount"`
 
 	// MaintenanceCount Number of services currently under maintenance
-	MaintenanceCount *int32 `json:"maintenanceCount,omitempty"`
+	MaintenanceCount int32 `json:"maintenanceCount"`
 
 	// MajorOutageCount Number of services with major outage
-	MajorOutageCount *int32 `json:"majorOutageCount,omitempty"`
+	MajorOutageCount int32 `json:"majorOutageCount"`
 
 	// OperationalCount Number of services currently fully operational
-	OperationalCount *int32 `json:"operationalCount,omitempty"`
+	OperationalCount int32 `json:"operationalCount"`
 
 	// PartialOutageCount Number of services with partial outage
-	PartialOutageCount *int32 `json:"partialOutageCount,omitempty"`
+	PartialOutageCount int32 `json:"partialOutageCount"`
 
 	// ServicesWithIssues Services that are not fully operational
 	ServicesWithIssues []ServiceCatalogDto `json:"servicesWithIssues"`
 
 	// TotalServices Total number of services in the catalog
-	TotalServices *int32 `json:"totalServices,omitempty"`
+	TotalServices int32 `json:"totalServices"`
 
 	// UnknownCount Number of services with unknown or null status
-	UnknownCount *int32 `json:"unknownCount,omitempty"`
+	UnknownCount int32 `json:"unknownCount"`
 }
 
 // GroupComponentOrder Component ordering within a single group
@@ -4021,12 +4975,15 @@ type GroupComponentOrder struct {
 // HeaderAuthConfig defines model for HeaderAuthConfig.
 type HeaderAuthConfig struct {
 	// HeaderName Custom HTTP header name for the secret value
-	HeaderName string `json:"headerName"`
-	Type       string `json:"type"`
+	HeaderName string               `json:"headerName"`
+	Type       HeaderAuthConfigType `json:"type"`
 
 	// VaultSecretId Vault secret ID for the header value
 	VaultSecretId *openapi_types.UUID `json:"vaultSecretId,omitempty"`
 }
+
+// HeaderAuthConfigType defines model for HeaderAuthConfig.Type.
+type HeaderAuthConfigType string
 
 // HeaderValueAssertion defines model for HeaderValueAssertion.
 type HeaderValueAssertion struct {
@@ -4038,25 +4995,34 @@ type HeaderValueAssertion struct {
 
 	// Operator Comparison operator (equals, contains, less_than, greater_than, etc.)
 	Operator HeaderValueAssertionOperator `json:"operator"`
-	Type     string                       `json:"type"`
+	Type     HeaderValueAssertionType     `json:"type"`
 }
 
 // HeaderValueAssertionOperator Comparison operator (equals, contains, less_than, greater_than, etc.)
 type HeaderValueAssertionOperator string
 
+// HeaderValueAssertionType defines model for HeaderValueAssertion.Type.
+type HeaderValueAssertionType string
+
 // HeartbeatIntervalDriftAssertion defines model for HeartbeatIntervalDriftAssertion.
 type HeartbeatIntervalDriftAssertion struct {
 	// MaxDeviationPercent Max percent drift from expected ping interval before warning (non-fatal)
-	MaxDeviationPercent int32  `json:"maxDeviationPercent"`
-	Type                string `json:"type"`
+	MaxDeviationPercent int32                               `json:"maxDeviationPercent"`
+	Type                HeartbeatIntervalDriftAssertionType `json:"type"`
 }
+
+// HeartbeatIntervalDriftAssertionType defines model for HeartbeatIntervalDriftAssertion.Type.
+type HeartbeatIntervalDriftAssertionType string
 
 // HeartbeatMaxIntervalAssertion defines model for HeartbeatMaxIntervalAssertion.
 type HeartbeatMaxIntervalAssertion struct {
 	// MaxSeconds Maximum allowed gap in seconds between consecutive heartbeat pings
-	MaxSeconds int32  `json:"maxSeconds"`
-	Type       string `json:"type"`
+	MaxSeconds int32                             `json:"maxSeconds"`
+	Type       HeartbeatMaxIntervalAssertionType `json:"type"`
 }
+
+// HeartbeatMaxIntervalAssertionType defines model for HeartbeatMaxIntervalAssertion.Type.
+type HeartbeatMaxIntervalAssertionType string
 
 // HeartbeatMonitorConfig defines model for HeartbeatMonitorConfig.
 type HeartbeatMonitorConfig struct {
@@ -4070,15 +5036,42 @@ type HeartbeatMonitorConfig struct {
 // HeartbeatPayloadContainsAssertion defines model for HeartbeatPayloadContainsAssertion.
 type HeartbeatPayloadContainsAssertion struct {
 	// Path JSONPath expression into the heartbeat ping JSON payload
-	Path string `json:"path"`
-	Type string `json:"type"`
+	Path string                                `json:"path"`
+	Type HeartbeatPayloadContainsAssertionType `json:"type"`
 
 	// Value Expected value to compare against at that path
 	Value string `json:"value"`
 }
 
-// HeartbeatReceivedAssertion New assertion configuration (full replacement)
-type HeartbeatReceivedAssertion = AssertionConfig
+// HeartbeatPayloadContainsAssertionType defines model for HeartbeatPayloadContainsAssertion.Type.
+type HeartbeatPayloadContainsAssertionType string
+
+// HeartbeatPingResponse Acknowledgement that a heartbeat ping was accepted
+type HeartbeatPingResponse struct {
+	// Ok Always true on a 2xx response
+	Ok bool `json:"ok"`
+}
+
+// HeartbeatReceivedAssertion defines model for HeartbeatReceivedAssertion.
+type HeartbeatReceivedAssertion struct {
+	Type HeartbeatReceivedAssertionType `json:"type"`
+}
+
+// HeartbeatReceivedAssertionType defines model for HeartbeatReceivedAssertion.Type.
+type HeartbeatReceivedAssertionType string
+
+// Http HTTP check-type-specific details
+type Http struct {
+	// BodyTruncated Whether the response body was truncated before storage
+	BodyTruncated *bool         `json:"bodyTruncated,omitempty"`
+	CheckType     HttpCheckType `json:"check_type"`
+
+	// Timing Request phase timing breakdown
+	Timing *map[string]*map[string]interface{} `json:"timing,omitempty"`
+}
+
+// HttpCheckType defines model for Http.CheckType.
+type HttpCheckType string
 
 // HttpMonitorConfig defines model for HttpMonitorConfig.
 type HttpMonitorConfig struct {
@@ -4104,6 +5097,37 @@ type HttpMonitorConfig struct {
 // HttpMonitorConfigMethod HTTP method: GET, POST, PUT, PATCH, DELETE, or HEAD
 type HttpMonitorConfigMethod string
 
+// Icmp ICMP (ping) check-type-specific details
+type Icmp struct {
+	// AvgRttMs Average round-trip time in ms
+	AvgRttMs  *float64      `json:"avgRttMs,omitempty"`
+	CheckType IcmpCheckType `json:"check_type"`
+
+	// Host Target host
+	Host string `json:"host"`
+
+	// JitterMs Jitter in ms
+	JitterMs *float64 `json:"jitterMs,omitempty"`
+
+	// MaxRttMs Maximum round-trip time in ms
+	MaxRttMs *float64 `json:"maxRttMs,omitempty"`
+
+	// MinRttMs Minimum round-trip time in ms
+	MinRttMs *float64 `json:"minRttMs,omitempty"`
+
+	// PacketLoss Packet loss percentage
+	PacketLoss *float64 `json:"packetLoss,omitempty"`
+
+	// PacketsReceived Number of ICMP packets received
+	PacketsReceived *int32 `json:"packetsReceived,omitempty"`
+
+	// PacketsSent Number of ICMP packets sent
+	PacketsSent *int32 `json:"packetsSent,omitempty"`
+}
+
+// IcmpCheckType defines model for Icmp.CheckType.
+type IcmpCheckType string
+
 // IcmpMonitorConfig defines model for IcmpMonitorConfig.
 type IcmpMonitorConfig struct {
 	// Host Target hostname or IP address to ping
@@ -4119,27 +5143,41 @@ type IcmpMonitorConfig struct {
 // IcmpPacketLossAssertion defines model for IcmpPacketLossAssertion.
 type IcmpPacketLossAssertion struct {
 	// MaxPercent Maximum allowed packet loss percentage before the check fails (0–100)
-	MaxPercent float64 `json:"maxPercent"`
-	Type       string  `json:"type"`
+	MaxPercent float64                     `json:"maxPercent"`
+	Type       IcmpPacketLossAssertionType `json:"type"`
 }
 
-// IcmpReachableAssertion New assertion configuration (full replacement)
-type IcmpReachableAssertion = AssertionConfig
+// IcmpPacketLossAssertionType defines model for IcmpPacketLossAssertion.Type.
+type IcmpPacketLossAssertionType string
+
+// IcmpReachableAssertion defines model for IcmpReachableAssertion.
+type IcmpReachableAssertion struct {
+	Type IcmpReachableAssertionType `json:"type"`
+}
+
+// IcmpReachableAssertionType defines model for IcmpReachableAssertion.Type.
+type IcmpReachableAssertionType string
 
 // IcmpResponseTimeAssertion defines model for IcmpResponseTimeAssertion.
 type IcmpResponseTimeAssertion struct {
 	// MaxMs Maximum average ICMP round-trip time in milliseconds
-	MaxMs int32  `json:"maxMs"`
-	Type  string `json:"type"`
+	MaxMs int32                         `json:"maxMs"`
+	Type  IcmpResponseTimeAssertionType `json:"type"`
 }
+
+// IcmpResponseTimeAssertionType defines model for IcmpResponseTimeAssertion.Type.
+type IcmpResponseTimeAssertionType string
 
 // IcmpResponseTimeWarnAssertion defines model for IcmpResponseTimeWarnAssertion.
 type IcmpResponseTimeWarnAssertion struct {
-	Type string `json:"type"`
+	Type IcmpResponseTimeWarnAssertionType `json:"type"`
 
 	// WarnMs ICMP round-trip time in milliseconds that triggers a warning only
 	WarnMs int32 `json:"warnMs"`
 }
+
+// IcmpResponseTimeWarnAssertionType defines model for IcmpResponseTimeWarnAssertion.Type.
+type IcmpResponseTimeWarnAssertionType string
 
 // IncidentDetailDto defines model for IncidentDetailDto.
 type IncidentDetailDto struct {
@@ -4178,17 +5216,17 @@ type IncidentDto struct {
 	// MonitorId Monitor that triggered the incident; null for service or manual incidents
 	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
 
-	// MonitorName Name of the associated monitor; populated on list responses
+	// MonitorName Name of the associated monitor; populated on list responses. Omitted from JSON (undefined to SDKs) on detail responses, treat missing as null.
 	MonitorName *string `json:"monitorName,omitempty"`
 
-	// MonitorType Type of the associated monitor; populated on list responses
+	// MonitorType Type of the associated monitor; populated on list responses. Omitted from JSON (undefined to SDKs) on detail responses, treat missing as null.
 	MonitorType *string `json:"monitorType,omitempty"`
 
 	// OrganizationId Organization this incident belongs to
-	OrganizationId *int32 `json:"organizationId,omitempty"`
+	OrganizationId int32 `json:"organizationId"`
 
 	// ReopenCount Number of times this incident has been reopened
-	ReopenCount *int32 `json:"reopenCount,omitempty"`
+	ReopenCount int32 `json:"reopenCount"`
 
 	// ResolutionReason How the incident was resolved (AUTO_RECOVERED, MANUAL, etc.)
 	ResolutionReason *IncidentDtoResolutionReason `json:"resolutionReason,omitempty"`
@@ -4199,7 +5237,7 @@ type IncidentDto struct {
 	// ResourceGroupId Resource group that owns this incident; null when not group-managed
 	ResourceGroupId *openapi_types.UUID `json:"resourceGroupId,omitempty"`
 
-	// ResourceGroupName Name of the resource group; populated on list responses
+	// ResourceGroupName Name of the resource group; populated on list responses. Omitted from JSON (undefined to SDKs) on detail responses, treat missing as null.
 	ResourceGroupName *string `json:"resourceGroupName,omitempty"`
 
 	// ServiceId Linked service catalog ID; null for monitor incidents
@@ -4208,10 +5246,10 @@ type IncidentDto struct {
 	// ServiceIncidentId Linked vendor service incident ID; null for monitor incidents
 	ServiceIncidentId *openapi_types.UUID `json:"serviceIncidentId,omitempty"`
 
-	// ServiceName Name of the associated service; populated on list responses
+	// ServiceName Name of the associated service; populated on list responses. Omitted from JSON (undefined to SDKs) on detail responses, treat missing as null.
 	ServiceName *string `json:"serviceName,omitempty"`
 
-	// ServiceSlug Slug of the associated service; populated on list responses
+	// ServiceSlug Slug of the associated service; populated on list responses. Omitted from JSON (undefined to SDKs) on detail responses, treat missing as null.
 	ServiceSlug *string `json:"serviceSlug,omitempty"`
 
 	// Severity Severity level: DOWN, DEGRADED, or MAINTENANCE
@@ -4230,7 +5268,7 @@ type IncidentDto struct {
 	Status IncidentDtoStatus `json:"status"`
 
 	// StatusPageVisible Whether this incident is visible on the status page
-	StatusPageVisible *bool `json:"statusPageVisible,omitempty"`
+	StatusPageVisible bool `json:"statusPageVisible"`
 
 	// Title Short summary of the incident; null for auto-generated incidents
 	Title *string `json:"title,omitempty"`
@@ -4256,27 +5294,50 @@ type IncidentDtoStatus string
 
 // IncidentFilterParams defines model for IncidentFilterParams.
 type IncidentFilterParams struct {
-	EnvironmentId   *openapi_types.UUID           `json:"environmentId,omitempty"`
-	MonitorId       openapi_types.UUID            `json:"monitorId"`
-	Page            *int32                        `json:"page,omitempty"`
-	ResourceGroupId openapi_types.UUID            `json:"resourceGroupId"`
-	ServiceId       *openapi_types.UUID           `json:"serviceId,omitempty"`
-	Severity        *IncidentFilterParamsSeverity `json:"severity,omitempty"`
-	Size            *int32                        `json:"size,omitempty"`
-	Source          IncidentFilterParamsSource    `json:"source"`
-	StartedFrom     *time.Time                    `json:"startedFrom,omitempty"`
-	StartedTo       *time.Time                    `json:"startedTo,omitempty"`
-	Status          IncidentFilterParamsStatus    `json:"status"`
-	TagId           *openapi_types.UUID           `json:"tagId,omitempty"`
+	// EnvironmentId Only return incidents whose monitor lives in this environment
+	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
+
+	// MonitorId Only return incidents tied to this monitor ID
+	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
+
+	// Page Zero-based page index (default: 0)
+	Page int32 `json:"page"`
+
+	// ResourceGroupId Only return incidents whose monitor belongs to this resource group
+	ResourceGroupId *openapi_types.UUID `json:"resourceGroupId,omitempty"`
+
+	// ServiceId Only return incidents tied to this service ID (third-party services)
+	ServiceId *openapi_types.UUID `json:"serviceId,omitempty"`
+
+	// Severity Filter by severity; null returns every severity
+	Severity *IncidentFilterParamsSeverity `json:"severity,omitempty"`
+
+	// Size Number of incidents per page (1–200, default: 10)
+	Size int32 `json:"size"`
+
+	// Source Filter by where the incident originated (auto, manual, third-party)
+	Source *IncidentFilterParamsSource `json:"source,omitempty"`
+
+	// StartedFrom Earliest startedAt to include (inclusive, ISO 8601)
+	StartedFrom *time.Time `json:"startedFrom,omitempty"`
+
+	// StartedTo Latest startedAt to include (inclusive, ISO 8601)
+	StartedTo *time.Time `json:"startedTo,omitempty"`
+
+	// Status Filter by incident lifecycle status; null returns every status
+	Status *IncidentFilterParamsStatus `json:"status,omitempty"`
+
+	// TagId Only return incidents whose monitor carries this tag
+	TagId *openapi_types.UUID `json:"tagId,omitempty"`
 }
 
-// IncidentFilterParamsSeverity defines model for IncidentFilterParams.Severity.
+// IncidentFilterParamsSeverity Filter by severity; null returns every severity
 type IncidentFilterParamsSeverity string
 
-// IncidentFilterParamsSource defines model for IncidentFilterParams.Source.
+// IncidentFilterParamsSource Filter by where the incident originated (auto, manual, third-party)
 type IncidentFilterParamsSource string
 
-// IncidentFilterParamsStatus defines model for IncidentFilterParams.Status.
+// IncidentFilterParamsStatus Filter by incident lifecycle status; null returns every status
 type IncidentFilterParamsStatus string
 
 // IncidentPolicyDto Incident detection, confirmation, and recovery policy for a monitor
@@ -4329,7 +5390,7 @@ type IncidentUpdateDto struct {
 	Id                openapi_types.UUID          `json:"id"`
 	IncidentId        openapi_types.UUID          `json:"incidentId"`
 	NewStatus         *IncidentUpdateDtoNewStatus `json:"newStatus,omitempty"`
-	NotifySubscribers *bool                       `json:"notifySubscribers,omitempty"`
+	NotifySubscribers bool                        `json:"notifySubscribers"`
 	OldStatus         *IncidentUpdateDtoOldStatus `json:"oldStatus,omitempty"`
 }
 
@@ -4396,7 +5457,7 @@ type InviteDto struct {
 	ExpiresAt time.Time `json:"expiresAt"`
 
 	// InviteId Unique invite identifier
-	InviteId *int32 `json:"inviteId,omitempty"`
+	InviteId int32 `json:"inviteId"`
 
 	// RevokedAt Timestamp when the invite was revoked; null if active
 	RevokedAt *time.Time `json:"revokedAt,omitempty"`
@@ -4417,12 +5478,15 @@ type JsonPathAssertion struct {
 	Operator JsonPathAssertionOperator `json:"operator"`
 
 	// Path JSONPath expression to extract a value from the response body
-	Path string `json:"path"`
-	Type string `json:"type"`
+	Path string                `json:"path"`
+	Type JsonPathAssertionType `json:"type"`
 }
 
 // JsonPathAssertionOperator Comparison operator (equals, contains, less_than, greater_than, etc.)
 type JsonPathAssertionOperator string
+
+// JsonPathAssertionType defines model for JsonPathAssertion.Type.
+type JsonPathAssertionType string
 
 // KeyInfo API key metadata
 type KeyInfo struct {
@@ -4433,7 +5497,7 @@ type KeyInfo struct {
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
 
 	// Id Key ID
-	Id *int32 `json:"id,omitempty"`
+	Id int32 `json:"id"`
 
 	// LastUsedAt Last time the key was used
 	LastUsedAt *time.Time `json:"lastUsedAt,omitempty"`
@@ -4447,7 +5511,7 @@ type LinkedStatusPageIncidentDto struct {
 	Id             openapi_types.UUID                `json:"id"`
 	Impact         LinkedStatusPageIncidentDtoImpact `json:"impact"`
 	PublishedAt    *time.Time                        `json:"publishedAt,omitempty"`
-	Scheduled      *bool                             `json:"scheduled,omitempty"`
+	Scheduled      bool                              `json:"scheduled"`
 	Status         LinkedStatusPageIncidentDtoStatus `json:"status"`
 	StatusPageId   openapi_types.UUID                `json:"statusPageId"`
 	StatusPageName string                            `json:"statusPageName"`
@@ -4503,7 +5567,7 @@ type MaintenanceWindowDto struct {
 	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
 
 	// OrganizationId Organization this maintenance window belongs to
-	OrganizationId *int32 `json:"organizationId,omitempty"`
+	OrganizationId int32 `json:"organizationId"`
 
 	// Reason Human-readable reason for the maintenance
 	Reason *string `json:"reason,omitempty"`
@@ -4515,7 +5579,7 @@ type MaintenanceWindowDto struct {
 	StartsAt time.Time `json:"startsAt"`
 
 	// SuppressAlerts Whether alerts are suppressed during this window
-	SuppressAlerts *bool `json:"suppressAlerts,omitempty"`
+	SuppressAlerts bool `json:"suppressAlerts"`
 }
 
 // MatchRule Match rules to evaluate (all must pass; omit or empty for catch-all)
@@ -4536,45 +5600,91 @@ type MatchRule struct {
 	Values *[]string `json:"values,omitempty"`
 }
 
-// McpConnectsAssertion New assertion configuration (full replacement)
-type McpConnectsAssertion = AssertionConfig
+// McpConnectsAssertion defines model for McpConnectsAssertion.
+type McpConnectsAssertion struct {
+	Type McpConnectsAssertionType `json:"type"`
+}
+
+// McpConnectsAssertionType defines model for McpConnectsAssertion.Type.
+type McpConnectsAssertionType string
 
 // McpHasCapabilityAssertion defines model for McpHasCapabilityAssertion.
 type McpHasCapabilityAssertion struct {
 	// Capability Capability name the server must advertise, e.g. tools or resources
-	Capability string `json:"capability"`
-	Type       string `json:"type"`
+	Capability string                        `json:"capability"`
+	Type       McpHasCapabilityAssertionType `json:"type"`
 }
+
+// McpHasCapabilityAssertionType defines model for McpHasCapabilityAssertion.Type.
+type McpHasCapabilityAssertionType string
 
 // McpMinToolsAssertion defines model for McpMinToolsAssertion.
 type McpMinToolsAssertion struct {
 	// Min Minimum number of tools the server must expose
-	Min  int32  `json:"min"`
-	Type string `json:"type"`
+	Min  int32                    `json:"min"`
+	Type McpMinToolsAssertionType `json:"type"`
 }
+
+// McpMinToolsAssertionType defines model for McpMinToolsAssertion.Type.
+type McpMinToolsAssertionType string
 
 // McpProtocolVersionAssertion defines model for McpProtocolVersionAssertion.
 type McpProtocolVersionAssertion struct {
-	Type string `json:"type"`
+	Type McpProtocolVersionAssertionType `json:"type"`
 
 	// Version Expected MCP protocol version string from the server handshake
 	Version string `json:"version"`
 }
 
+// McpProtocolVersionAssertionType defines model for McpProtocolVersionAssertion.Type.
+type McpProtocolVersionAssertionType string
+
 // McpResponseTimeAssertion defines model for McpResponseTimeAssertion.
 type McpResponseTimeAssertion struct {
 	// MaxMs Maximum allowed MCP check duration in milliseconds
-	MaxMs int32  `json:"maxMs"`
-	Type  string `json:"type"`
+	MaxMs int32                        `json:"maxMs"`
+	Type  McpResponseTimeAssertionType `json:"type"`
 }
+
+// McpResponseTimeAssertionType defines model for McpResponseTimeAssertion.Type.
+type McpResponseTimeAssertionType string
 
 // McpResponseTimeWarnAssertion defines model for McpResponseTimeWarnAssertion.
 type McpResponseTimeWarnAssertion struct {
-	Type string `json:"type"`
+	Type McpResponseTimeWarnAssertionType `json:"type"`
 
 	// WarnMs MCP check duration in milliseconds that triggers a warning only
 	WarnMs int32 `json:"warnMs"`
 }
+
+// McpResponseTimeWarnAssertionType defines model for McpResponseTimeWarnAssertion.Type.
+type McpResponseTimeWarnAssertionType string
+
+// McpServer MCP server check-type-specific details
+type McpServer struct {
+	CheckType McpServerCheckType `json:"check_type"`
+
+	// PromptCount Number of prompts exposed
+	PromptCount *int32 `json:"promptCount,omitempty"`
+
+	// ProtocolVersion MCP protocol version
+	ProtocolVersion *string `json:"protocolVersion,omitempty"`
+
+	// ResourceCount Number of resources exposed
+	ResourceCount *int32 `json:"resourceCount,omitempty"`
+
+	// ServerInfo MCP server info (name, version, etc.)
+	ServerInfo *map[string]*map[string]interface{} `json:"serverInfo,omitempty"`
+
+	// ToolCount Number of tools exposed
+	ToolCount *int32 `json:"toolCount,omitempty"`
+
+	// Url MCP server URL
+	Url *string `json:"url,omitempty"`
+}
+
+// McpServerCheckType defines model for McpServer.CheckType.
+type McpServerCheckType string
 
 // McpServerMonitorConfig defines model for McpServerMonitorConfig.
 type McpServerMonitorConfig struct {
@@ -4591,16 +5701,22 @@ type McpServerMonitorConfig struct {
 // McpToolAvailableAssertion defines model for McpToolAvailableAssertion.
 type McpToolAvailableAssertion struct {
 	// ToolName MCP tool name that must appear in the server's tool list
-	ToolName string `json:"toolName"`
-	Type     string `json:"type"`
+	ToolName string                        `json:"toolName"`
+	Type     McpToolAvailableAssertionType `json:"type"`
 }
+
+// McpToolAvailableAssertionType defines model for McpToolAvailableAssertion.Type.
+type McpToolAvailableAssertionType string
 
 // McpToolCountChangedAssertion defines model for McpToolCountChangedAssertion.
 type McpToolCountChangedAssertion struct {
 	// ExpectedCount Expected tool count; warns when the live count differs
-	ExpectedCount int32  `json:"expectedCount"`
-	Type          string `json:"type"`
+	ExpectedCount int32                            `json:"expectedCount"`
+	Type          McpToolCountChangedAssertionType `json:"type"`
 }
+
+// McpToolCountChangedAssertionType defines model for McpToolCountChangedAssertion.Type.
+type McpToolCountChangedAssertionType string
 
 // MemberDto Organization member with role and status
 type MemberDto struct {
@@ -4620,7 +5736,7 @@ type MemberDto struct {
 	Status MemberDtoStatus `json:"status"`
 
 	// UserId User identifier of the member
-	UserId *int32 `json:"userId,omitempty"`
+	UserId int32 `json:"userId"`
 }
 
 // MemberDtoOrgRole Member role within this organization (OWNER, ADMIN, MEMBER)
@@ -4651,7 +5767,7 @@ type MonitorAssertionDtoSeverity string
 
 // MonitorAuthConfig New authentication configuration (full replacement)
 type MonitorAuthConfig struct {
-	Type string `json:"type"`
+	union json.RawMessage
 }
 
 // MonitorAuthDto defines model for MonitorAuthDto.
@@ -4670,9 +5786,6 @@ type MonitorAuthDto_Config struct {
 	union json.RawMessage
 }
 
-// MonitorConfig Protocol-specific monitor configuration
-type MonitorConfig = map[string]interface{}
-
 // MonitorDto Full monitor representation
 type MonitorDto struct {
 	// AlertChannelIds Alert channel IDs linked to this monitor; populated on single-monitor responses
@@ -4687,11 +5800,11 @@ type MonitorDto struct {
 	CreatedAt time.Time `json:"createdAt"`
 
 	// Enabled Whether the monitor is active
-	Enabled     *bool    `json:"enabled,omitempty"`
+	Enabled     bool     `json:"enabled"`
 	Environment *Summary `json:"environment,omitempty"`
 
 	// FrequencySeconds Check frequency in seconds (30–86400)
-	FrequencySeconds *int32 `json:"frequencySeconds,omitempty"`
+	FrequencySeconds int32 `json:"frequencySeconds"`
 
 	// Id Unique monitor identifier
 	Id             openapi_types.UUID `json:"id"`
@@ -4704,7 +5817,7 @@ type MonitorDto struct {
 	Name string `json:"name"`
 
 	// OrganizationId Organization this monitor belongs to
-	OrganizationId *int32 `json:"organizationId,omitempty"`
+	OrganizationId int32 `json:"organizationId"`
 
 	// PingUrl Heartbeat ping URL; populated for HEARTBEAT monitors only
 	PingUrl *string `json:"pingUrl,omitempty"`
@@ -4764,7 +5877,7 @@ type MonitorTestResultDto struct {
 	BodyPreview       *string                  `json:"bodyPreview,omitempty"`
 	Error             *string                  `json:"error,omitempty"`
 	FinalUrl          *string                  `json:"finalUrl,omitempty"`
-	Passed            *bool                    `json:"passed,omitempty"`
+	Passed            bool                     `json:"passed"`
 	RedirectCount     *int32                   `json:"redirectCount,omitempty"`
 	ResponseHeaders   *map[string]*[]*string   `json:"responseHeaders,omitempty"`
 	ResponseSizeBytes *int64                   `json:"responseSizeBytes,omitempty"`
@@ -4797,7 +5910,7 @@ type MonitorVersionDto struct {
 	Snapshot MonitorDto `json:"snapshot"`
 
 	// Version Monotonically increasing version number
-	Version *int32 `json:"version,omitempty"`
+	Version int32 `json:"version"`
 }
 
 // MonitorVersionDtoChangedVia Change source (DASHBOARD, CLI, API)
@@ -4848,7 +5961,7 @@ type NotificationDispatchDto struct {
 	CreatedAt time.Time `json:"createdAt"`
 
 	// CurrentStep 1-based index of the currently active escalation step
-	CurrentStep *int32 `json:"currentStep,omitempty"`
+	CurrentStep int32 `json:"currentStep"`
 
 	// Deliveries Delivery records for all channels associated with this dispatch
 	Deliveries []AlertDeliveryDto `json:"deliveries"`
@@ -4896,10 +6009,10 @@ type NotificationDto struct {
 	CreatedAt time.Time `json:"createdAt"`
 
 	// Id Unique notification identifier
-	Id *int64 `json:"id,omitempty"`
+	Id int64 `json:"id"`
 
 	// Read Whether the notification has been read
-	Read *bool `json:"read,omitempty"`
+	Read bool `json:"read"`
 
 	// ResourceId ID of the resource this notification is about
 	ResourceId *string `json:"resourceId,omitempty"`
@@ -4920,7 +6033,7 @@ type NotificationPolicyDto struct {
 	CreatedAt time.Time `json:"createdAt"`
 
 	// Enabled Whether this policy is active
-	Enabled *bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled"`
 
 	// Escalation Escalation chain defining which channels to notify; null preserves current
 	Escalation EscalationChain `json:"escalation"`
@@ -4935,10 +6048,10 @@ type NotificationPolicyDto struct {
 	Name string `json:"name"`
 
 	// OrganizationId Organization this policy belongs to
-	OrganizationId *int32 `json:"organizationId,omitempty"`
+	OrganizationId int32 `json:"organizationId"`
 
 	// Priority Evaluation order; higher value = evaluated first
-	Priority *int32 `json:"priority,omitempty"`
+	Priority int32 `json:"priority"`
 
 	// UpdatedAt Timestamp when the policy was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -4947,17 +6060,20 @@ type NotificationPolicyDto struct {
 // OpsGenieChannelConfig defines model for OpsGenieChannelConfig.
 type OpsGenieChannelConfig struct {
 	// ApiKey OpsGenie API key for alert creation
-	ApiKey      string `json:"apiKey"`
-	ChannelType string `json:"channelType"`
+	ApiKey      string                           `json:"apiKey"`
+	ChannelType OpsGenieChannelConfigChannelType `json:"channelType"`
 
 	// Region OpsGenie API region: us or eu
 	Region *string `json:"region,omitempty"`
 }
 
+// OpsGenieChannelConfigChannelType defines model for OpsGenieChannelConfig.ChannelType.
+type OpsGenieChannelConfigChannelType string
+
 // OrgInfo Organization the key belongs to
 type OrgInfo struct {
 	// Id Organization ID
-	Id *int32 `json:"id,omitempty"`
+	Id int32 `json:"id"`
 
 	// Name Organization name
 	Name string `json:"name"`
@@ -4969,7 +6085,7 @@ type OrganizationDto struct {
 	Email *string `json:"email"`
 
 	// Id Unique organization identifier
-	Id *int32 `json:"id,omitempty"`
+	Id int32 `json:"id"`
 
 	// Industry Industry vertical (e.g. SaaS, Fintech)
 	Industry *string `json:"industry,omitempty"`
@@ -5005,7 +6121,7 @@ type Pageable struct {
 
 // PagerDutyChannelConfig defines model for PagerDutyChannelConfig.
 type PagerDutyChannelConfig struct {
-	ChannelType string `json:"channelType"`
+	ChannelType PagerDutyChannelConfigChannelType `json:"channelType"`
 
 	// RoutingKey PagerDuty Events API v2 routing (integration) key
 	RoutingKey string `json:"routingKey"`
@@ -5013,6 +6129,9 @@ type PagerDutyChannelConfig struct {
 	// SeverityOverride Override PagerDuty severity mapping
 	SeverityOverride *string `json:"severityOverride,omitempty"`
 }
+
+// PagerDutyChannelConfigChannelType defines model for PagerDutyChannelConfig.ChannelType.
+type PagerDutyChannelConfigChannelType string
 
 // PlanInfo Billing plan and entitlement state
 type PlanInfo struct {
@@ -5026,7 +6145,7 @@ type PlanInfo struct {
 	Tier PlanInfoTier `json:"tier"`
 
 	// TrialActive Whether the org is on a trial
-	TrialActive *bool `json:"trialActive,omitempty"`
+	TrialActive bool `json:"trialActive"`
 
 	// TrialExpiresAt Trial expiry (null if not trialing)
 	TrialExpiresAt *time.Time `json:"trialExpiresAt,omitempty"`
@@ -5047,7 +6166,7 @@ type PollChartBucketDto struct {
 	Bucket time.Time `json:"bucket"`
 
 	// TotalPolls Total polls in this bucket
-	TotalPolls *int64 `json:"totalPolls,omitempty"`
+	TotalPolls int64 `json:"totalPolls"`
 
 	// UptimePercent Uptime percentage for this bucket; null when no data
 	UptimePercent *float64 `json:"uptimePercent,omitempty"`
@@ -5107,9 +6226,12 @@ type RecoveryPolicy struct {
 // RedirectCountAssertion defines model for RedirectCountAssertion.
 type RedirectCountAssertion struct {
 	// MaxCount Maximum number of HTTP redirects allowed before the check fails
-	MaxCount int32  `json:"maxCount"`
-	Type     string `json:"type"`
+	MaxCount int32                      `json:"maxCount"`
+	Type     RedirectCountAssertionType `json:"type"`
 }
+
+// RedirectCountAssertionType defines model for RedirectCountAssertion.Type.
+type RedirectCountAssertionType string
 
 // RedirectTargetAssertion defines model for RedirectTargetAssertion.
 type RedirectTargetAssertion struct {
@@ -5118,23 +6240,29 @@ type RedirectTargetAssertion struct {
 
 	// Operator Comparison operator (equals, contains, less_than, greater_than, etc.)
 	Operator RedirectTargetAssertionOperator `json:"operator"`
-	Type     string                          `json:"type"`
+	Type     RedirectTargetAssertionType     `json:"type"`
 }
 
 // RedirectTargetAssertionOperator Comparison operator (equals, contains, less_than, greater_than, etc.)
 type RedirectTargetAssertionOperator string
 
+// RedirectTargetAssertionType defines model for RedirectTargetAssertion.Type.
+type RedirectTargetAssertionType string
+
 // RegexBodyAssertion defines model for RegexBodyAssertion.
 type RegexBodyAssertion struct {
 	// Pattern Regular expression the response body must match
-	Pattern string `json:"pattern"`
-	Type    string `json:"type"`
+	Pattern string                 `json:"pattern"`
+	Type    RegexBodyAssertionType `json:"type"`
 }
+
+// RegexBodyAssertionType defines model for RegexBodyAssertion.Type.
+type RegexBodyAssertionType string
 
 // RegionStatusDto Latest check result for a single region
 type RegionStatusDto struct {
 	// Passed Whether the last check in this region passed
-	Passed *bool `json:"passed,omitempty"`
+	Passed bool `json:"passed"`
 
 	// Region Region identifier
 	Region string `json:"region"`
@@ -5173,7 +6301,7 @@ type ReorderPageLayoutRequest struct {
 // ResolveIncidentRequest defines model for ResolveIncidentRequest.
 type ResolveIncidentRequest struct {
 	// Body Optional resolution message or post-mortem notes
-	Body string `json:"body"`
+	Body *string `json:"body,omitempty"`
 }
 
 // ResourceGroupDto Resource group with health summary and optional member details
@@ -5222,7 +6350,7 @@ type ResourceGroupDto struct {
 	Name string `json:"name"`
 
 	// OrganizationId Organization this group belongs to
-	OrganizationId *int32 `json:"organizationId,omitempty"`
+	OrganizationId int32 `json:"organizationId"`
 
 	// RecoveryCooldownMinutes Cooldown minutes after group incident resolves before a new one can open
 	RecoveryCooldownMinutes *int32 `json:"recoveryCooldownMinutes,omitempty"`
@@ -5231,7 +6359,7 @@ type ResourceGroupDto struct {
 	Slug string `json:"slug"`
 
 	// SuppressMemberAlerts When true, member-level incidents skip notification dispatch; only group alerts fire
-	SuppressMemberAlerts *bool `json:"suppressMemberAlerts,omitempty"`
+	SuppressMemberAlerts bool `json:"suppressMemberAlerts"`
 
 	// UpdatedAt Timestamp when the group was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -5243,13 +6371,13 @@ type ResourceGroupDtoHealthThresholdType string
 // ResourceGroupHealthDto Aggregated health summary for a resource group
 type ResourceGroupHealthDto struct {
 	// ActiveIncidents Number of members with an active incident or non-operational status
-	ActiveIncidents *int32 `json:"activeIncidents,omitempty"`
+	ActiveIncidents int32 `json:"activeIncidents"`
 
 	// FailingCount Number of failing members at time of last evaluation
 	FailingCount *int32 `json:"failingCount,omitempty"`
 
 	// OperationalCount Number of members currently in operational status
-	OperationalCount *int32 `json:"operationalCount,omitempty"`
+	OperationalCount int32 `json:"operationalCount"`
 
 	// Status Worst-of health status across all members
 	Status ResourceGroupHealthDtoStatus `json:"status"`
@@ -5258,7 +6386,7 @@ type ResourceGroupHealthDto struct {
 	ThresholdStatus *ResourceGroupHealthDtoThresholdStatus `json:"thresholdStatus,omitempty"`
 
 	// TotalMembers Total number of members in the group
-	TotalMembers *int32 `json:"totalMembers,omitempty"`
+	TotalMembers int32 `json:"totalMembers"`
 }
 
 // ResourceGroupHealthDtoStatus Worst-of health status across all members
@@ -5330,24 +6458,33 @@ type ResourceGroupMemberDtoStatus string
 // ResponseSizeAssertion defines model for ResponseSizeAssertion.
 type ResponseSizeAssertion struct {
 	// MaxBytes Maximum response body size in bytes before the check fails
-	MaxBytes int32  `json:"maxBytes"`
-	Type     string `json:"type"`
+	MaxBytes int32                     `json:"maxBytes"`
+	Type     ResponseSizeAssertionType `json:"type"`
 }
+
+// ResponseSizeAssertionType defines model for ResponseSizeAssertion.Type.
+type ResponseSizeAssertionType string
 
 // ResponseTimeAssertion defines model for ResponseTimeAssertion.
 type ResponseTimeAssertion struct {
 	// ThresholdMs Maximum allowed response time in milliseconds before the check fails
-	ThresholdMs int32  `json:"thresholdMs"`
-	Type        string `json:"type"`
+	ThresholdMs int32                     `json:"thresholdMs"`
+	Type        ResponseTimeAssertionType `json:"type"`
 }
+
+// ResponseTimeAssertionType defines model for ResponseTimeAssertion.Type.
+type ResponseTimeAssertionType string
 
 // ResponseTimeWarnAssertion defines model for ResponseTimeWarnAssertion.
 type ResponseTimeWarnAssertion struct {
-	Type string `json:"type"`
+	Type ResponseTimeWarnAssertionType `json:"type"`
 
 	// WarnMs HTTP response time in milliseconds that triggers a warning only
 	WarnMs int32 `json:"warnMs"`
 }
+
+// ResponseTimeWarnAssertionType defines model for ResponseTimeWarnAssertion.Type.
+type ResponseTimeWarnAssertionType string
 
 // ResultSummaryDto Dashboard summary: current status, per-region latest results, and chart data
 type ResultSummaryDto struct {
@@ -5373,10 +6510,10 @@ type ResultSummaryDtoCurrentStatus string
 // RetryStrategy Default retry strategy for member monitors; null clears
 type RetryStrategy struct {
 	// Interval Delay between retry attempts in seconds
-	Interval *int32 `json:"interval,omitempty"`
+	Interval int32 `json:"interval"`
 
 	// MaxRetries Maximum number of retries after a failed check
-	MaxRetries *int32 `json:"maxRetries,omitempty"`
+	MaxRetries int32 `json:"maxRetries"`
 
 	// Type Retry strategy kind, e.g. fixed interval between attempts
 	Type string `json:"type"`
@@ -5427,7 +6564,7 @@ type SecretDto struct {
 	CreatedAt time.Time `json:"createdAt"`
 
 	// DekVersion DEK version at the time of last encryption
-	DekVersion *int32 `json:"dekVersion,omitempty"`
+	DekVersion int32 `json:"dekVersion"`
 
 	// Id Unique secret identifier
 	Id openapi_types.UUID `json:"id"`
@@ -5459,21 +6596,21 @@ type SeoMetadataDto struct {
 
 // ServiceCatalogDto Related services
 type ServiceCatalogDto struct {
-	ActiveIncidentCount    *int64             `json:"activeIncidentCount,omitempty"`
+	ActiveIncidentCount    int64              `json:"activeIncidentCount"`
 	AdapterType            string             `json:"adapterType"`
 	Category               *string            `json:"category,omitempty"`
-	ComponentCount         *int64             `json:"componentCount,omitempty"`
+	ComponentCount         int64              `json:"componentCount"`
 	CreatedAt              time.Time          `json:"createdAt"`
 	DataCompleteness       string             `json:"dataCompleteness"`
 	DeveloperContext       *string            `json:"developerContext,omitempty"`
-	Enabled                *bool              `json:"enabled,omitempty"`
+	Enabled                bool               `json:"enabled"`
 	Id                     openapi_types.UUID `json:"id"`
 	LogoUrl                *string            `json:"logoUrl,omitempty"`
 	Name                   string             `json:"name"`
 	OfficialStatusUrl      *string            `json:"officialStatusUrl,omitempty"`
 	OverallStatus          *string            `json:"overallStatus,omitempty"`
-	PollingIntervalSeconds *int32             `json:"pollingIntervalSeconds,omitempty"`
-	Published              *bool              `json:"published,omitempty"`
+	PollingIntervalSeconds int32              `json:"pollingIntervalSeconds"`
+	Published              bool               `json:"published"`
 	Slug                   string             `json:"slug"`
 	UpdatedAt              time.Time          `json:"updatedAt"`
 
@@ -5491,7 +6628,7 @@ type ServiceComponentDto struct {
 	Description *string `json:"description,omitempty"`
 
 	// DisplayAggregatedUptime Group-only: render an aggregated uptime bar above this group's children
-	DisplayAggregatedUptime *bool               `json:"displayAggregatedUptime,omitempty"`
+	DisplayAggregatedUptime bool                `json:"displayAggregatedUptime"`
 	ExternalId              string              `json:"externalId"`
 	FirstSeenAt             time.Time           `json:"firstSeenAt"`
 	GroupId                 *openapi_types.UUID `json:"groupId,omitempty"`
@@ -5500,18 +6637,18 @@ type ServiceComponentDto struct {
 	GroupName *string `json:"groupName,omitempty"`
 
 	// HasUptime Whether uptime data is available for this component
-	HasUptime          *bool              `json:"hasUptime,omitempty"`
+	HasUptime          bool               `json:"hasUptime"`
 	Id                 openapi_types.UUID `json:"id"`
-	IsGroup            *bool              `json:"isGroup,omitempty"`
+	IsGroup            bool               `json:"isGroup"`
 	LastSeenAt         time.Time          `json:"lastSeenAt"`
 	LifecycleStatus    string             `json:"lifecycleStatus"`
 	Name               string             `json:"name"`
-	OnlyShowIfDegraded *bool              `json:"onlyShowIfDegraded,omitempty"`
+	OnlyShowIfDegraded bool               `json:"onlyShowIfDegraded"`
 	Position           *int32             `json:"position,omitempty"`
 
 	// Region Geographic region for regional components (AWS, GCP, Azure)
 	Region          *string                    `json:"region,omitempty"`
-	Showcase        *bool                      `json:"showcase,omitempty"`
+	Showcase        bool                       `json:"showcase"`
 	StartDate       *time.Time                 `json:"startDate,omitempty"`
 	Status          string                     `json:"status"`
 	StatusChangedAt *time.Time                 `json:"statusChangedAt,omitempty"`
@@ -5533,11 +6670,14 @@ type ServiceDayDetailDto struct {
 	// OverallUptimePercentage Average uptime % across leaf components with uptime data; null if no data
 	OverallUptimePercentage *float64 `json:"overallUptimePercentage,omitempty"`
 
+	// TotalDegradedSeconds Sum of degraded performance seconds across all leaf components
+	TotalDegradedSeconds int64 `json:"totalDegradedSeconds"`
+
 	// TotalMajorOutageSeconds Sum of major outage seconds across all leaf components
-	TotalMajorOutageSeconds *int64 `json:"totalMajorOutageSeconds,omitempty"`
+	TotalMajorOutageSeconds int64 `json:"totalMajorOutageSeconds"`
 
 	// TotalPartialOutageSeconds Sum of partial outage seconds across all leaf components
-	TotalPartialOutageSeconds *int64 `json:"totalPartialOutageSeconds,omitempty"`
+	TotalPartialOutageSeconds int64 `json:"totalPartialOutageSeconds"`
 }
 
 // ServiceDetailDto defines model for ServiceDetailDto.
@@ -5550,12 +6690,12 @@ type ServiceDetailDto struct {
 	CurrentStatus          *ServiceStatusDto          `json:"currentStatus,omitempty"`
 	DataCompleteness       string                     `json:"dataCompleteness"`
 	DeveloperContext       *string                    `json:"developerContext,omitempty"`
-	Enabled                *bool                      `json:"enabled,omitempty"`
+	Enabled                bool                       `json:"enabled"`
 	Id                     openapi_types.UUID         `json:"id"`
 	LogoUrl                *string                    `json:"logoUrl,omitempty"`
 	Name                   string                     `json:"name"`
 	OfficialStatusUrl      *string                    `json:"officialStatusUrl,omitempty"`
-	PollingIntervalSeconds *int32                     `json:"pollingIntervalSeconds,omitempty"`
+	PollingIntervalSeconds int32                      `json:"pollingIntervalSeconds"`
 	RecentIncidents        []ServiceIncidentDto       `json:"recentIncidents"`
 	RelatedServices        *[]ServiceCatalogDto       `json:"relatedServices,omitempty"`
 	SeoMetadata            *SeoMetadataDto            `json:"seoMetadata,omitempty"`
@@ -5606,7 +6746,7 @@ type ServiceIncidentUpdateDto struct {
 // ServiceLiveStatusDto defines model for ServiceLiveStatusDto.
 type ServiceLiveStatusDto struct {
 	// ActiveIncidentCount Number of currently unresolved incidents
-	ActiveIncidentCount *int32 `json:"activeIncidentCount,omitempty"`
+	ActiveIncidentCount int32 `json:"activeIncidentCount"`
 
 	// ComponentStatuses Current status of each active component
 	ComponentStatuses []ComponentStatusDto `json:"componentStatuses"`
@@ -5621,10 +6761,10 @@ type ServiceLiveStatusDto struct {
 // ServicePollResultDto A single poll result from the status poller
 type ServicePollResultDto struct {
 	// ComponentCount Number of components reported by the service
-	ComponentCount *int32 `json:"componentCount,omitempty"`
+	ComponentCount int32 `json:"componentCount"`
 
 	// DegradedCount Number of degraded or non-operational components
-	DegradedCount *int32 `json:"degradedCount,omitempty"`
+	DegradedCount int32 `json:"degradedCount"`
 
 	// FailureReason Reason for failure when passed=false
 	FailureReason *string `json:"failureReason,omitempty"`
@@ -5636,7 +6776,7 @@ type ServicePollResultDto struct {
 	OverallStatus *string `json:"overallStatus,omitempty"`
 
 	// Passed Whether the poll succeeded
-	Passed *bool `json:"passed,omitempty"`
+	Passed bool `json:"passed"`
 
 	// ResponseTimeMs Response time of the poll in milliseconds
 	ResponseTimeMs *int32 `json:"responseTimeMs,omitempty"`
@@ -5660,10 +6800,10 @@ type ServicePollSummaryDto struct {
 	P95ResponseTimeMs *float64 `json:"p95ResponseTimeMs,omitempty"`
 
 	// PassedPolls Number of polls that succeeded
-	PassedPolls *int64 `json:"passedPolls,omitempty"`
+	PassedPolls int64 `json:"passedPolls"`
 
 	// TotalPolls Total number of polls executed
-	TotalPolls *int64 `json:"totalPolls,omitempty"`
+	TotalPolls int64 `json:"totalPolls"`
 
 	// UptimePercentage Uptime percentage over the requested window; null when no data
 	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
@@ -5698,7 +6838,7 @@ type ServiceSubscriptionDto struct {
 
 	// ComponentId Subscribed component id; null for whole-service subscription
 	ComponentId *openapi_types.UUID `json:"componentId,omitempty"`
-	Enabled     *bool               `json:"enabled,omitempty"`
+	Enabled     bool                `json:"enabled"`
 
 	// LogoUrl Logo URL from the service catalog
 	LogoUrl           *string `json:"logoUrl,omitempty"`
@@ -5707,7 +6847,7 @@ type ServiceSubscriptionDto struct {
 
 	// OverallStatus Current overall status; null when the service has never been polled
 	OverallStatus          *string `json:"overallStatus,omitempty"`
-	PollingIntervalSeconds *int32  `json:"pollingIntervalSeconds,omitempty"`
+	PollingIntervalSeconds int32   `json:"pollingIntervalSeconds"`
 
 	// ServiceId Service identifier
 	ServiceId openapi_types.UUID `json:"serviceId"`
@@ -5787,6 +6927,12 @@ type SingleValueResponseAuthMeResponse struct {
 	Data AuthMeResponse `json:"data"`
 }
 
+// SingleValueResponseBatchComponentUptimeDto defines model for SingleValueResponseBatchComponentUptimeDto.
+type SingleValueResponseBatchComponentUptimeDto struct {
+	// Data Batch daily uptime per component, keyed by component ID
+	Data BatchComponentUptimeDto `json:"data"`
+}
+
 // SingleValueResponseBulkMonitorActionResult defines model for SingleValueResponseBulkMonitorActionResult.
 type SingleValueResponseBulkMonitorActionResult struct {
 	// Data Result of a bulk monitor action, including partial-success details
@@ -5854,11 +7000,6 @@ type SingleValueResponseLong struct {
 type SingleValueResponseMaintenanceWindowDto struct {
 	// Data Scheduled maintenance window for a monitor
 	Data MaintenanceWindowDto `json:"data"`
-}
-
-// SingleValueResponseMapStringListComponentUptimeDayDto defines model for SingleValueResponseMapStringListComponentUptimeDayDto.
-type SingleValueResponseMapStringListComponentUptimeDayDto struct {
-	Data map[string][]ComponentUptimeDayDto `json:"data"`
 }
 
 // SingleValueResponseMonitorAssertionDto defines model for SingleValueResponseMonitorAssertionDto.
@@ -6057,7 +7198,7 @@ type SingleValueResponseWorkspaceDto struct {
 
 // SlackChannelConfig defines model for SlackChannelConfig.
 type SlackChannelConfig struct {
-	ChannelType string `json:"channelType"`
+	ChannelType SlackChannelConfigChannelType `json:"channelType"`
 
 	// MentionText Optional mention text included in notifications, e.g. @channel
 	MentionText *string `json:"mentionText,omitempty"`
@@ -6066,12 +7207,18 @@ type SlackChannelConfig struct {
 	WebhookUrl string `json:"webhookUrl"`
 }
 
+// SlackChannelConfigChannelType defines model for SlackChannelConfig.ChannelType.
+type SlackChannelConfigChannelType string
+
 // SslExpiryAssertion defines model for SslExpiryAssertion.
 type SslExpiryAssertion struct {
 	// MinDaysRemaining Minimum days before TLS certificate expiry; fails or warns below this threshold
-	MinDaysRemaining int32  `json:"minDaysRemaining"`
-	Type             string `json:"type"`
+	MinDaysRemaining int32                  `json:"minDaysRemaining"`
+	Type             SslExpiryAssertionType `json:"type"`
 }
+
+// SslExpiryAssertionType defines model for SslExpiryAssertion.Type.
+type SslExpiryAssertionType string
 
 // StatusCodeAssertion defines model for StatusCodeAssertion.
 type StatusCodeAssertion struct {
@@ -6080,11 +7227,14 @@ type StatusCodeAssertion struct {
 
 	// Operator Comparison operator (equals, contains, less_than, greater_than, etc.)
 	Operator StatusCodeAssertionOperator `json:"operator"`
-	Type     string                      `json:"type"`
+	Type     StatusCodeAssertionType     `json:"type"`
 }
 
 // StatusCodeAssertionOperator Comparison operator (equals, contains, less_than, greater_than, etc.)
 type StatusCodeAssertionOperator string
+
+// StatusCodeAssertionType defines model for StatusCodeAssertion.Type.
+type StatusCodeAssertionType string
 
 // StatusPageBranding Updated branding configuration; null preserves current
 type StatusPageBranding struct {
@@ -6109,8 +7259,8 @@ type StatusPageBranding struct {
 	// HeaderStyle Header layout style (reserved for future use)
 	HeaderStyle *string `json:"headerStyle,omitempty"`
 
-	// HidePoweredBy Whether to hide the 'Powered by DevHelm' footer badge
-	HidePoweredBy bool `json:"hidePoweredBy"`
+	// HidePoweredBy Whether to hide the 'Powered by DevHelm' footer badge (default: false)
+	HidePoweredBy *bool `json:"hidePoweredBy,omitempty"`
 
 	// LogoUrl URL for the logo image displayed in the header
 	LogoUrl *string `json:"logoUrl,omitempty"`
@@ -6133,15 +7283,15 @@ type StatusPageComponentDto struct {
 	CreatedAt          time.Time                           `json:"createdAt"`
 	CurrentStatus      StatusPageComponentDtoCurrentStatus `json:"currentStatus"`
 	Description        *string                             `json:"description,omitempty"`
-	DisplayOrder       *int32                              `json:"displayOrder,omitempty"`
-	ExcludeFromOverall *bool                               `json:"excludeFromOverall,omitempty"`
+	DisplayOrder       int32                               `json:"displayOrder"`
+	ExcludeFromOverall bool                                `json:"excludeFromOverall"`
 	GroupId            *openapi_types.UUID                 `json:"groupId,omitempty"`
 	Id                 openapi_types.UUID                  `json:"id"`
 	MonitorId          *openapi_types.UUID                 `json:"monitorId,omitempty"`
 	Name               string                              `json:"name"`
-	PageOrder          *int32                              `json:"pageOrder,omitempty"`
+	PageOrder          int32                               `json:"pageOrder"`
 	ResourceGroupId    *openapi_types.UUID                 `json:"resourceGroupId,omitempty"`
-	ShowUptime         *bool                               `json:"showUptime,omitempty"`
+	ShowUptime         bool                                `json:"showUptime"`
 	StartDate          *time.Time                          `json:"startDate,omitempty"`
 	StatusPageId       openapi_types.UUID                  `json:"statusPageId"`
 	Type               StatusPageComponentDtoType          `json:"type"`
@@ -6156,16 +7306,34 @@ type StatusPageComponentDtoType string
 
 // StatusPageComponentGroupDto defines model for StatusPageComponentGroupDto.
 type StatusPageComponentGroupDto struct {
-	Collapsed    *bool                     `json:"collapsed,omitempty"`
+	Collapsed    bool                      `json:"collapsed"`
 	Components   *[]StatusPageComponentDto `json:"components,omitempty"`
 	CreatedAt    time.Time                 `json:"createdAt"`
 	Description  *string                   `json:"description,omitempty"`
-	DisplayOrder *int32                    `json:"displayOrder,omitempty"`
+	DisplayOrder int32                     `json:"displayOrder"`
 	Id           openapi_types.UUID        `json:"id"`
 	Name         string                    `json:"name"`
-	PageOrder    *int32                    `json:"pageOrder,omitempty"`
+	PageOrder    int32                     `json:"pageOrder"`
 	StatusPageId openapi_types.UUID        `json:"statusPageId"`
 	UpdatedAt    time.Time                 `json:"updatedAt"`
+}
+
+// StatusPageComponentUptimeDayDto Daily uptime data for a status page component
+type StatusPageComponentUptimeDayDto struct {
+	// Date Start-of-day timestamp for this bucket (UTC midnight)
+	Date time.Time `json:"date"`
+
+	// Incidents Incidents that overlapped this day
+	Incidents *[]IncidentRef `json:"incidents,omitempty"`
+
+	// MajorOutageSeconds Seconds of major outage on this day
+	MajorOutageSeconds int32 `json:"majorOutageSeconds"`
+
+	// PartialOutageSeconds Seconds of partial outage on this day
+	PartialOutageSeconds int32 `json:"partialOutageSeconds"`
+
+	// UptimePercentage Computed uptime percentage using weighted formula
+	UptimePercentage float64 `json:"uptimePercentage"`
 }
 
 // StatusPageCustomDomainDto defines model for StatusPageCustomDomainDto.
@@ -6173,7 +7341,7 @@ type StatusPageCustomDomainDto struct {
 	CreatedAt               time.Time                                   `json:"createdAt"`
 	Hostname                string                                      `json:"hostname"`
 	Id                      openapi_types.UUID                          `json:"id"`
-	Primary                 *bool                                       `json:"primary,omitempty"`
+	Primary                 bool                                        `json:"primary"`
 	Status                  StatusPageCustomDomainDtoStatus             `json:"status"`
 	UpdatedAt               time.Time                                   `json:"updatedAt"`
 	VerificationCnameTarget string                                      `json:"verificationCnameTarget"`
@@ -6196,17 +7364,17 @@ type StatusPageDto struct {
 	ComponentCount  *int32                      `json:"componentCount,omitempty"`
 	CreatedAt       time.Time                   `json:"createdAt"`
 	Description     *string                     `json:"description,omitempty"`
-	Enabled         *bool                       `json:"enabled,omitempty"`
+	Enabled         bool                        `json:"enabled"`
 	Id              openapi_types.UUID          `json:"id"`
 	IncidentMode    StatusPageDtoIncidentMode   `json:"incidentMode"`
 	Name            string                      `json:"name"`
-	OrganizationId  *int32                      `json:"organizationId,omitempty"`
+	OrganizationId  int32                       `json:"organizationId"`
 	OverallStatus   *StatusPageDtoOverallStatus `json:"overallStatus,omitempty"`
 	Slug            string                      `json:"slug"`
 	SubscriberCount *int64                      `json:"subscriberCount,omitempty"`
 	UpdatedAt       time.Time                   `json:"updatedAt"`
 	Visibility      StatusPageDtoVisibility     `json:"visibility"`
-	WorkspaceId     *int32                      `json:"workspaceId,omitempty"`
+	WorkspaceId     int32                       `json:"workspaceId"`
 }
 
 // StatusPageDtoIncidentMode defines model for StatusPageDto.IncidentMode.
@@ -6231,7 +7399,7 @@ type StatusPageIncidentComponentDtoComponentStatus string
 // StatusPageIncidentDto defines model for StatusPageIncidentDto.
 type StatusPageIncidentDto struct {
 	AffectedComponents *[]StatusPageIncidentComponentDto `json:"affectedComponents,omitempty"`
-	AutoResolve        *bool                             `json:"autoResolve,omitempty"`
+	AutoResolve        bool                              `json:"autoResolve"`
 	CreatedAt          time.Time                         `json:"createdAt"`
 	CreatedByUserId    *int32                            `json:"createdByUserId,omitempty"`
 	Id                 openapi_types.UUID                `json:"id"`
@@ -6241,7 +7409,7 @@ type StatusPageIncidentDto struct {
 	PostmortemUrl      *string                           `json:"postmortemUrl,omitempty"`
 	PublishedAt        *time.Time                        `json:"publishedAt,omitempty"`
 	ResolvedAt         *time.Time                        `json:"resolvedAt,omitempty"`
-	Scheduled          *bool                             `json:"scheduled,omitempty"`
+	Scheduled          bool                              `json:"scheduled"`
 	ScheduledFor       *time.Time                        `json:"scheduledFor,omitempty"`
 	ScheduledUntil     *time.Time                        `json:"scheduledUntil,omitempty"`
 	StartedAt          time.Time                         `json:"startedAt"`
@@ -6265,7 +7433,7 @@ type StatusPageIncidentUpdateDto struct {
 	CreatedBy         *StatusPageIncidentUpdateDtoCreatedBy `json:"createdBy,omitempty"`
 	CreatedByUserId   *int32                                `json:"createdByUserId,omitempty"`
 	Id                openapi_types.UUID                    `json:"id"`
-	NotifySubscribers *bool                                 `json:"notifySubscribers,omitempty"`
+	NotifySubscribers bool                                  `json:"notifySubscribers"`
 	Status            StatusPageIncidentUpdateDtoStatus     `json:"status"`
 }
 
@@ -6277,7 +7445,7 @@ type StatusPageIncidentUpdateDtoStatus string
 
 // StatusPageSubscriberDto defines model for StatusPageSubscriberDto.
 type StatusPageSubscriberDto struct {
-	Confirmed *bool              `json:"confirmed,omitempty"`
+	Confirmed bool               `json:"confirmed"`
 	CreatedAt time.Time          `json:"createdAt"`
 	Email     string             `json:"email"`
 	Id        openapi_types.UUID `json:"id"`
@@ -6293,8 +7461,8 @@ type Summary struct {
 // TableValueResultAlertChannelDto defines model for TableValueResultAlertChannelDto.
 type TableValueResultAlertChannelDto struct {
 	Data          []AlertChannelDto `json:"data"`
-	HasNext       *bool             `json:"hasNext,omitempty"`
-	HasPrev       *bool             `json:"hasPrev,omitempty"`
+	HasNext       bool              `json:"hasNext"`
+	HasPrev       bool              `json:"hasPrev"`
 	TotalElements *int64            `json:"totalElements,omitempty"`
 	TotalPages    *int32            `json:"totalPages,omitempty"`
 }
@@ -6302,8 +7470,8 @@ type TableValueResultAlertChannelDto struct {
 // TableValueResultAlertDeliveryDto defines model for TableValueResultAlertDeliveryDto.
 type TableValueResultAlertDeliveryDto struct {
 	Data          []AlertDeliveryDto `json:"data"`
-	HasNext       *bool              `json:"hasNext,omitempty"`
-	HasPrev       *bool              `json:"hasPrev,omitempty"`
+	HasNext       bool               `json:"hasNext"`
+	HasPrev       bool               `json:"hasPrev"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
 }
@@ -6311,8 +7479,8 @@ type TableValueResultAlertDeliveryDto struct {
 // TableValueResultApiKeyDto defines model for TableValueResultApiKeyDto.
 type TableValueResultApiKeyDto struct {
 	Data          []ApiKeyDto `json:"data"`
-	HasNext       *bool       `json:"hasNext,omitempty"`
-	HasPrev       *bool       `json:"hasPrev,omitempty"`
+	HasNext       bool        `json:"hasNext"`
+	HasPrev       bool        `json:"hasPrev"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -6320,8 +7488,8 @@ type TableValueResultApiKeyDto struct {
 // TableValueResultAuditEventDto defines model for TableValueResultAuditEventDto.
 type TableValueResultAuditEventDto struct {
 	Data          []AuditEventDto `json:"data"`
-	HasNext       *bool           `json:"hasNext,omitempty"`
-	HasPrev       *bool           `json:"hasPrev,omitempty"`
+	HasNext       bool            `json:"hasNext"`
+	HasPrev       bool            `json:"hasPrev"`
 	TotalElements *int64          `json:"totalElements,omitempty"`
 	TotalPages    *int32          `json:"totalPages,omitempty"`
 }
@@ -6329,8 +7497,8 @@ type TableValueResultAuditEventDto struct {
 // TableValueResultCategoryDto defines model for TableValueResultCategoryDto.
 type TableValueResultCategoryDto struct {
 	Data          []CategoryDto `json:"data"`
-	HasNext       *bool         `json:"hasNext,omitempty"`
-	HasPrev       *bool         `json:"hasPrev,omitempty"`
+	HasNext       bool          `json:"hasNext"`
+	HasPrev       bool          `json:"hasPrev"`
 	TotalElements *int64        `json:"totalElements,omitempty"`
 	TotalPages    *int32        `json:"totalPages,omitempty"`
 }
@@ -6338,8 +7506,8 @@ type TableValueResultCategoryDto struct {
 // TableValueResultComponentUptimeDayDto defines model for TableValueResultComponentUptimeDayDto.
 type TableValueResultComponentUptimeDayDto struct {
 	Data          []ComponentUptimeDayDto `json:"data"`
-	HasNext       *bool                   `json:"hasNext,omitempty"`
-	HasPrev       *bool                   `json:"hasPrev,omitempty"`
+	HasNext       bool                    `json:"hasNext"`
+	HasPrev       bool                    `json:"hasPrev"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
@@ -6347,8 +7515,8 @@ type TableValueResultComponentUptimeDayDto struct {
 // TableValueResultDeliveryAttemptDto defines model for TableValueResultDeliveryAttemptDto.
 type TableValueResultDeliveryAttemptDto struct {
 	Data          []DeliveryAttemptDto `json:"data"`
-	HasNext       *bool                `json:"hasNext,omitempty"`
-	HasPrev       *bool                `json:"hasPrev,omitempty"`
+	HasNext       bool                 `json:"hasNext"`
+	HasPrev       bool                 `json:"hasPrev"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -6356,8 +7524,8 @@ type TableValueResultDeliveryAttemptDto struct {
 // TableValueResultEnvironmentDto defines model for TableValueResultEnvironmentDto.
 type TableValueResultEnvironmentDto struct {
 	Data          []EnvironmentDto `json:"data"`
-	HasNext       *bool            `json:"hasNext,omitempty"`
-	HasPrev       *bool            `json:"hasPrev,omitempty"`
+	HasNext       bool             `json:"hasNext"`
+	HasPrev       bool             `json:"hasPrev"`
 	TotalElements *int64           `json:"totalElements,omitempty"`
 	TotalPages    *int32           `json:"totalPages,omitempty"`
 }
@@ -6365,8 +7533,8 @@ type TableValueResultEnvironmentDto struct {
 // TableValueResultIncidentDto defines model for TableValueResultIncidentDto.
 type TableValueResultIncidentDto struct {
 	Data          []IncidentDto `json:"data"`
-	HasNext       *bool         `json:"hasNext,omitempty"`
-	HasPrev       *bool         `json:"hasPrev,omitempty"`
+	HasNext       bool          `json:"hasNext"`
+	HasPrev       bool          `json:"hasPrev"`
 	TotalElements *int64        `json:"totalElements,omitempty"`
 	TotalPages    *int32        `json:"totalPages,omitempty"`
 }
@@ -6374,8 +7542,8 @@ type TableValueResultIncidentDto struct {
 // TableValueResultIntegrationDto defines model for TableValueResultIntegrationDto.
 type TableValueResultIntegrationDto struct {
 	Data          []IntegrationDto `json:"data"`
-	HasNext       *bool            `json:"hasNext,omitempty"`
-	HasPrev       *bool            `json:"hasPrev,omitempty"`
+	HasNext       bool             `json:"hasNext"`
+	HasPrev       bool             `json:"hasPrev"`
 	TotalElements *int64           `json:"totalElements,omitempty"`
 	TotalPages    *int32           `json:"totalPages,omitempty"`
 }
@@ -6383,8 +7551,8 @@ type TableValueResultIntegrationDto struct {
 // TableValueResultInviteDto defines model for TableValueResultInviteDto.
 type TableValueResultInviteDto struct {
 	Data          []InviteDto `json:"data"`
-	HasNext       *bool       `json:"hasNext,omitempty"`
-	HasPrev       *bool       `json:"hasPrev,omitempty"`
+	HasNext       bool        `json:"hasNext"`
+	HasPrev       bool        `json:"hasPrev"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -6392,8 +7560,8 @@ type TableValueResultInviteDto struct {
 // TableValueResultMaintenanceWindowDto defines model for TableValueResultMaintenanceWindowDto.
 type TableValueResultMaintenanceWindowDto struct {
 	Data          []MaintenanceWindowDto `json:"data"`
-	HasNext       *bool                  `json:"hasNext,omitempty"`
-	HasPrev       *bool                  `json:"hasPrev,omitempty"`
+	HasNext       bool                   `json:"hasNext"`
+	HasPrev       bool                   `json:"hasPrev"`
 	TotalElements *int64                 `json:"totalElements,omitempty"`
 	TotalPages    *int32                 `json:"totalPages,omitempty"`
 }
@@ -6401,8 +7569,8 @@ type TableValueResultMaintenanceWindowDto struct {
 // TableValueResultMemberDto defines model for TableValueResultMemberDto.
 type TableValueResultMemberDto struct {
 	Data          []MemberDto `json:"data"`
-	HasNext       *bool       `json:"hasNext,omitempty"`
-	HasPrev       *bool       `json:"hasPrev,omitempty"`
+	HasNext       bool        `json:"hasNext"`
+	HasPrev       bool        `json:"hasPrev"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -6410,8 +7578,8 @@ type TableValueResultMemberDto struct {
 // TableValueResultMonitorDto defines model for TableValueResultMonitorDto.
 type TableValueResultMonitorDto struct {
 	Data          []MonitorDto `json:"data"`
-	HasNext       *bool        `json:"hasNext,omitempty"`
-	HasPrev       *bool        `json:"hasPrev,omitempty"`
+	HasNext       bool         `json:"hasNext"`
+	HasPrev       bool         `json:"hasPrev"`
 	TotalElements *int64       `json:"totalElements,omitempty"`
 	TotalPages    *int32       `json:"totalPages,omitempty"`
 }
@@ -6419,8 +7587,8 @@ type TableValueResultMonitorDto struct {
 // TableValueResultMonitorVersionDto defines model for TableValueResultMonitorVersionDto.
 type TableValueResultMonitorVersionDto struct {
 	Data          []MonitorVersionDto `json:"data"`
-	HasNext       *bool               `json:"hasNext,omitempty"`
-	HasPrev       *bool               `json:"hasPrev,omitempty"`
+	HasNext       bool                `json:"hasNext"`
+	HasPrev       bool                `json:"hasPrev"`
 	TotalElements *int64              `json:"totalElements,omitempty"`
 	TotalPages    *int32              `json:"totalPages,omitempty"`
 }
@@ -6428,8 +7596,8 @@ type TableValueResultMonitorVersionDto struct {
 // TableValueResultNotificationDispatchDto defines model for TableValueResultNotificationDispatchDto.
 type TableValueResultNotificationDispatchDto struct {
 	Data          []NotificationDispatchDto `json:"data"`
-	HasNext       *bool                     `json:"hasNext,omitempty"`
-	HasPrev       *bool                     `json:"hasPrev,omitempty"`
+	HasNext       bool                      `json:"hasNext"`
+	HasPrev       bool                      `json:"hasPrev"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -6437,8 +7605,8 @@ type TableValueResultNotificationDispatchDto struct {
 // TableValueResultNotificationDto defines model for TableValueResultNotificationDto.
 type TableValueResultNotificationDto struct {
 	Data          []NotificationDto `json:"data"`
-	HasNext       *bool             `json:"hasNext,omitempty"`
-	HasPrev       *bool             `json:"hasPrev,omitempty"`
+	HasNext       bool              `json:"hasNext"`
+	HasPrev       bool              `json:"hasPrev"`
 	TotalElements *int64            `json:"totalElements,omitempty"`
 	TotalPages    *int32            `json:"totalPages,omitempty"`
 }
@@ -6446,8 +7614,8 @@ type TableValueResultNotificationDto struct {
 // TableValueResultNotificationPolicyDto defines model for TableValueResultNotificationPolicyDto.
 type TableValueResultNotificationPolicyDto struct {
 	Data          []NotificationPolicyDto `json:"data"`
-	HasNext       *bool                   `json:"hasNext,omitempty"`
-	HasPrev       *bool                   `json:"hasPrev,omitempty"`
+	HasNext       bool                    `json:"hasNext"`
+	HasPrev       bool                    `json:"hasPrev"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
@@ -6455,8 +7623,8 @@ type TableValueResultNotificationPolicyDto struct {
 // TableValueResultResourceGroupDto defines model for TableValueResultResourceGroupDto.
 type TableValueResultResourceGroupDto struct {
 	Data          []ResourceGroupDto `json:"data"`
-	HasNext       *bool              `json:"hasNext,omitempty"`
-	HasPrev       *bool              `json:"hasPrev,omitempty"`
+	HasNext       bool               `json:"hasNext"`
+	HasPrev       bool               `json:"hasPrev"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
 }
@@ -6464,8 +7632,8 @@ type TableValueResultResourceGroupDto struct {
 // TableValueResultScheduledMaintenanceDto defines model for TableValueResultScheduledMaintenanceDto.
 type TableValueResultScheduledMaintenanceDto struct {
 	Data          []ScheduledMaintenanceDto `json:"data"`
-	HasNext       *bool                     `json:"hasNext,omitempty"`
-	HasPrev       *bool                     `json:"hasPrev,omitempty"`
+	HasNext       bool                      `json:"hasNext"`
+	HasPrev       bool                      `json:"hasPrev"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -6473,8 +7641,8 @@ type TableValueResultScheduledMaintenanceDto struct {
 // TableValueResultSecretDto defines model for TableValueResultSecretDto.
 type TableValueResultSecretDto struct {
 	Data          []SecretDto `json:"data"`
-	HasNext       *bool       `json:"hasNext,omitempty"`
-	HasPrev       *bool       `json:"hasPrev,omitempty"`
+	HasNext       bool        `json:"hasNext"`
+	HasPrev       bool        `json:"hasPrev"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -6482,8 +7650,8 @@ type TableValueResultSecretDto struct {
 // TableValueResultServiceComponentDto defines model for TableValueResultServiceComponentDto.
 type TableValueResultServiceComponentDto struct {
 	Data          []ServiceComponentDto `json:"data"`
-	HasNext       *bool                 `json:"hasNext,omitempty"`
-	HasPrev       *bool                 `json:"hasPrev,omitempty"`
+	HasNext       bool                  `json:"hasNext"`
+	HasPrev       bool                  `json:"hasPrev"`
 	TotalElements *int64                `json:"totalElements,omitempty"`
 	TotalPages    *int32                `json:"totalPages,omitempty"`
 }
@@ -6491,8 +7659,8 @@ type TableValueResultServiceComponentDto struct {
 // TableValueResultServiceIncidentDto defines model for TableValueResultServiceIncidentDto.
 type TableValueResultServiceIncidentDto struct {
 	Data          []ServiceIncidentDto `json:"data"`
-	HasNext       *bool                `json:"hasNext,omitempty"`
-	HasPrev       *bool                `json:"hasPrev,omitempty"`
+	HasNext       bool                 `json:"hasNext"`
+	HasPrev       bool                 `json:"hasPrev"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -6500,8 +7668,8 @@ type TableValueResultServiceIncidentDto struct {
 // TableValueResultServiceSubscriptionDto defines model for TableValueResultServiceSubscriptionDto.
 type TableValueResultServiceSubscriptionDto struct {
 	Data          []ServiceSubscriptionDto `json:"data"`
-	HasNext       *bool                    `json:"hasNext,omitempty"`
-	HasPrev       *bool                    `json:"hasPrev,omitempty"`
+	HasNext       bool                     `json:"hasNext"`
+	HasPrev       bool                     `json:"hasPrev"`
 	TotalElements *int64                   `json:"totalElements,omitempty"`
 	TotalPages    *int32                   `json:"totalPages,omitempty"`
 }
@@ -6509,8 +7677,8 @@ type TableValueResultServiceSubscriptionDto struct {
 // TableValueResultStatusPageComponentDto defines model for TableValueResultStatusPageComponentDto.
 type TableValueResultStatusPageComponentDto struct {
 	Data          []StatusPageComponentDto `json:"data"`
-	HasNext       *bool                    `json:"hasNext,omitempty"`
-	HasPrev       *bool                    `json:"hasPrev,omitempty"`
+	HasNext       bool                     `json:"hasNext"`
+	HasPrev       bool                     `json:"hasPrev"`
 	TotalElements *int64                   `json:"totalElements,omitempty"`
 	TotalPages    *int32                   `json:"totalPages,omitempty"`
 }
@@ -6518,17 +7686,26 @@ type TableValueResultStatusPageComponentDto struct {
 // TableValueResultStatusPageComponentGroupDto defines model for TableValueResultStatusPageComponentGroupDto.
 type TableValueResultStatusPageComponentGroupDto struct {
 	Data          []StatusPageComponentGroupDto `json:"data"`
-	HasNext       *bool                         `json:"hasNext,omitempty"`
-	HasPrev       *bool                         `json:"hasPrev,omitempty"`
+	HasNext       bool                          `json:"hasNext"`
+	HasPrev       bool                          `json:"hasPrev"`
 	TotalElements *int64                        `json:"totalElements,omitempty"`
 	TotalPages    *int32                        `json:"totalPages,omitempty"`
+}
+
+// TableValueResultStatusPageComponentUptimeDayDto defines model for TableValueResultStatusPageComponentUptimeDayDto.
+type TableValueResultStatusPageComponentUptimeDayDto struct {
+	Data          []StatusPageComponentUptimeDayDto `json:"data"`
+	HasNext       bool                              `json:"hasNext"`
+	HasPrev       bool                              `json:"hasPrev"`
+	TotalElements *int64                            `json:"totalElements,omitempty"`
+	TotalPages    *int32                            `json:"totalPages,omitempty"`
 }
 
 // TableValueResultStatusPageCustomDomainDto defines model for TableValueResultStatusPageCustomDomainDto.
 type TableValueResultStatusPageCustomDomainDto struct {
 	Data          []StatusPageCustomDomainDto `json:"data"`
-	HasNext       *bool                       `json:"hasNext,omitempty"`
-	HasPrev       *bool                       `json:"hasPrev,omitempty"`
+	HasNext       bool                        `json:"hasNext"`
+	HasPrev       bool                        `json:"hasPrev"`
 	TotalElements *int64                      `json:"totalElements,omitempty"`
 	TotalPages    *int32                      `json:"totalPages,omitempty"`
 }
@@ -6536,8 +7713,8 @@ type TableValueResultStatusPageCustomDomainDto struct {
 // TableValueResultStatusPageDto defines model for TableValueResultStatusPageDto.
 type TableValueResultStatusPageDto struct {
 	Data          []StatusPageDto `json:"data"`
-	HasNext       *bool           `json:"hasNext,omitempty"`
-	HasPrev       *bool           `json:"hasPrev,omitempty"`
+	HasNext       bool            `json:"hasNext"`
+	HasPrev       bool            `json:"hasPrev"`
 	TotalElements *int64          `json:"totalElements,omitempty"`
 	TotalPages    *int32          `json:"totalPages,omitempty"`
 }
@@ -6545,8 +7722,8 @@ type TableValueResultStatusPageDto struct {
 // TableValueResultStatusPageIncidentDto defines model for TableValueResultStatusPageIncidentDto.
 type TableValueResultStatusPageIncidentDto struct {
 	Data          []StatusPageIncidentDto `json:"data"`
-	HasNext       *bool                   `json:"hasNext,omitempty"`
-	HasPrev       *bool                   `json:"hasPrev,omitempty"`
+	HasNext       bool                    `json:"hasNext"`
+	HasPrev       bool                    `json:"hasPrev"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
@@ -6554,8 +7731,8 @@ type TableValueResultStatusPageIncidentDto struct {
 // TableValueResultStatusPageSubscriberDto defines model for TableValueResultStatusPageSubscriberDto.
 type TableValueResultStatusPageSubscriberDto struct {
 	Data          []StatusPageSubscriberDto `json:"data"`
-	HasNext       *bool                     `json:"hasNext,omitempty"`
-	HasPrev       *bool                     `json:"hasPrev,omitempty"`
+	HasNext       bool                      `json:"hasNext"`
+	HasPrev       bool                      `json:"hasPrev"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -6563,8 +7740,8 @@ type TableValueResultStatusPageSubscriberDto struct {
 // TableValueResultTagDto defines model for TableValueResultTagDto.
 type TableValueResultTagDto struct {
 	Data          []TagDto `json:"data"`
-	HasNext       *bool    `json:"hasNext,omitempty"`
-	HasPrev       *bool    `json:"hasPrev,omitempty"`
+	HasNext       bool     `json:"hasNext"`
+	HasPrev       bool     `json:"hasPrev"`
 	TotalElements *int64   `json:"totalElements,omitempty"`
 	TotalPages    *int32   `json:"totalPages,omitempty"`
 }
@@ -6572,8 +7749,8 @@ type TableValueResultTagDto struct {
 // TableValueResultWebhookDeliveryDto defines model for TableValueResultWebhookDeliveryDto.
 type TableValueResultWebhookDeliveryDto struct {
 	Data          []WebhookDeliveryDto `json:"data"`
-	HasNext       *bool                `json:"hasNext,omitempty"`
-	HasPrev       *bool                `json:"hasPrev,omitempty"`
+	HasNext       bool                 `json:"hasNext"`
+	HasPrev       bool                 `json:"hasPrev"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -6581,8 +7758,8 @@ type TableValueResultWebhookDeliveryDto struct {
 // TableValueResultWebhookEndpointDto defines model for TableValueResultWebhookEndpointDto.
 type TableValueResultWebhookEndpointDto struct {
 	Data          []WebhookEndpointDto `json:"data"`
-	HasNext       *bool                `json:"hasNext,omitempty"`
-	HasPrev       *bool                `json:"hasPrev,omitempty"`
+	HasNext       bool                 `json:"hasNext"`
+	HasPrev       bool                 `json:"hasPrev"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -6590,8 +7767,8 @@ type TableValueResultWebhookEndpointDto struct {
 // TableValueResultWorkspaceDto defines model for TableValueResultWorkspaceDto.
 type TableValueResultWorkspaceDto struct {
 	Data          []WorkspaceDto `json:"data"`
-	HasNext       *bool          `json:"hasNext,omitempty"`
-	HasPrev       *bool          `json:"hasPrev,omitempty"`
+	HasNext       bool           `json:"hasNext"`
+	HasPrev       bool           `json:"hasPrev"`
 	TotalElements *int64         `json:"totalElements,omitempty"`
 	TotalPages    *int32         `json:"totalPages,omitempty"`
 }
@@ -6611,14 +7788,36 @@ type TagDto struct {
 	Name string `json:"name"`
 
 	// OrganizationId Organization this tag belongs to
-	OrganizationId *int32 `json:"organizationId,omitempty"`
+	OrganizationId int32 `json:"organizationId"`
 
 	// UpdatedAt Timestamp when the tag was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-// TcpConnectsAssertion New assertion configuration (full replacement)
-type TcpConnectsAssertion = AssertionConfig
+// Tcp TCP check-type-specific details
+type Tcp struct {
+	CheckType TcpCheckType `json:"check_type"`
+
+	// Connected Whether a TCP connection was established
+	Connected bool `json:"connected"`
+
+	// Host Target host
+	Host string `json:"host"`
+
+	// Port Target port
+	Port int32 `json:"port"`
+}
+
+// TcpCheckType defines model for Tcp.CheckType.
+type TcpCheckType string
+
+// TcpConnectsAssertion defines model for TcpConnectsAssertion.
+type TcpConnectsAssertion struct {
+	Type TcpConnectsAssertionType `json:"type"`
+}
+
+// TcpConnectsAssertionType defines model for TcpConnectsAssertion.Type.
+type TcpConnectsAssertionType string
 
 // TcpMonitorConfig defines model for TcpMonitorConfig.
 type TcpMonitorConfig struct {
@@ -6635,25 +7834,34 @@ type TcpMonitorConfig struct {
 // TcpResponseTimeAssertion defines model for TcpResponseTimeAssertion.
 type TcpResponseTimeAssertion struct {
 	// MaxMs Maximum TCP connect time in milliseconds before the check fails
-	MaxMs int32  `json:"maxMs"`
-	Type  string `json:"type"`
+	MaxMs int32                        `json:"maxMs"`
+	Type  TcpResponseTimeAssertionType `json:"type"`
 }
+
+// TcpResponseTimeAssertionType defines model for TcpResponseTimeAssertion.Type.
+type TcpResponseTimeAssertionType string
 
 // TcpResponseTimeWarnAssertion defines model for TcpResponseTimeWarnAssertion.
 type TcpResponseTimeWarnAssertion struct {
-	Type string `json:"type"`
+	Type TcpResponseTimeWarnAssertionType `json:"type"`
 
 	// WarnMs TCP connect time in milliseconds that triggers a warning only
 	WarnMs int32 `json:"warnMs"`
 }
 
+// TcpResponseTimeWarnAssertionType defines model for TcpResponseTimeWarnAssertion.Type.
+type TcpResponseTimeWarnAssertionType string
+
 // TeamsChannelConfig defines model for TeamsChannelConfig.
 type TeamsChannelConfig struct {
-	ChannelType string `json:"channelType"`
+	ChannelType TeamsChannelConfigChannelType `json:"channelType"`
 
 	// WebhookUrl Microsoft Teams incoming webhook URL
 	WebhookUrl string `json:"webhookUrl"`
 }
+
+// TeamsChannelConfigChannelType defines model for TeamsChannelConfig.ChannelType.
+type TeamsChannelConfigChannelType string
 
 // TestAlertChannelRequest Alert channel configuration to test without saving
 type TestAlertChannelRequest struct {
@@ -6668,13 +7876,13 @@ type TestAlertChannelRequest_Config struct {
 // TestChannelResult defines model for TestChannelResult.
 type TestChannelResult struct {
 	Message string `json:"message"`
-	Success *bool  `json:"success,omitempty"`
+	Success bool   `json:"success"`
 }
 
 // TestMatchResult Result of a dry-run match evaluation against a notification policy
 type TestMatchResult struct {
 	// Matched Whether the policy would match the supplied incident context
-	Matched *bool `json:"matched,omitempty"`
+	Matched bool `json:"matched"`
 
 	// MatchedRules Rules that passed evaluation
 	MatchedRules []string `json:"matchedRules"`
@@ -6894,8 +8102,8 @@ type UpdateMonitorRequest struct {
 	ClearAuth *bool `json:"clearAuth,omitempty"`
 
 	// ClearEnvironmentId Set to true to remove the environment association
-	ClearEnvironmentId *bool          `json:"clearEnvironmentId,omitempty"`
-	Config             *MonitorConfig `json:"config,omitempty"`
+	ClearEnvironmentId *bool                        `json:"clearEnvironmentId,omitempty"`
+	Config             *UpdateMonitorRequest_Config `json:"config,omitempty"`
 
 	// Enabled Enable or disable the monitor; null preserves current
 	Enabled *bool `json:"enabled,omitempty"`
@@ -6916,6 +8124,11 @@ type UpdateMonitorRequest struct {
 	// Regions New probe regions; null preserves current
 	Regions *[]string              `json:"regions,omitempty"`
 	Tags    *AddMonitorTagsRequest `json:"tags,omitempty"`
+}
+
+// UpdateMonitorRequest_Config defines model for UpdateMonitorRequest.Config.
+type UpdateMonitorRequest_Config struct {
+	union json.RawMessage
 }
 
 // UpdateMonitorRequestManagedBy New management source; null preserves current
@@ -7135,7 +8348,7 @@ type UptimeBucketDto struct {
 	Timestamp time.Time `json:"timestamp"`
 
 	// TotalPolls Total number of polls recorded in this bucket
-	TotalPolls *int64 `json:"totalPolls,omitempty"`
+	TotalPolls int64 `json:"totalPolls"`
 
 	// UptimePct Uptime percentage for this bucket; null when no polls occurred
 	UptimePct *float64 `json:"uptimePct,omitempty"`
@@ -7161,7 +8374,7 @@ type UptimeDto struct {
 
 // WebhookChannelConfig defines model for WebhookChannelConfig.
 type WebhookChannelConfig struct {
-	ChannelType string `json:"channelType"`
+	ChannelType WebhookChannelConfigChannelType `json:"channelType"`
 
 	// CustomHeaders Additional HTTP headers to include in webhook requests
 	CustomHeaders *map[string]*string `json:"customHeaders,omitempty"`
@@ -7173,9 +8386,12 @@ type WebhookChannelConfig struct {
 	Url string `json:"url"`
 }
 
+// WebhookChannelConfigChannelType defines model for WebhookChannelConfig.ChannelType.
+type WebhookChannelConfigChannelType string
+
 // WebhookDeliveryDto defines model for WebhookDeliveryDto.
 type WebhookDeliveryDto struct {
-	AttemptCount      *int32             `json:"attemptCount,omitempty"`
+	AttemptCount      int32              `json:"attemptCount"`
 	CreatedAt         time.Time          `json:"createdAt"`
 	DeliveredAt       *time.Time         `json:"deliveredAt,omitempty"`
 	EndpointId        openapi_types.UUID `json:"endpointId"`
@@ -7184,7 +8400,7 @@ type WebhookDeliveryDto struct {
 	EventType         string             `json:"eventType"`
 	FailedAt          *time.Time         `json:"failedAt,omitempty"`
 	Id                openapi_types.UUID `json:"id"`
-	MaxAttempts       *int32             `json:"maxAttempts,omitempty"`
+	MaxAttempts       int32              `json:"maxAttempts"`
 	NextRetryAt       *time.Time         `json:"nextRetryAt,omitempty"`
 	ResponseLatencyMs *int32             `json:"responseLatencyMs,omitempty"`
 	ResponseStatus    *int32             `json:"responseStatus,omitempty"`
@@ -7194,7 +8410,7 @@ type WebhookDeliveryDto struct {
 // WebhookEndpointDto Webhook endpoint that receives event delivery payloads
 type WebhookEndpointDto struct {
 	// ConsecutiveFailures Number of consecutive delivery failures
-	ConsecutiveFailures *int32 `json:"consecutiveFailures,omitempty"`
+	ConsecutiveFailures int32 `json:"consecutiveFailures"`
 
 	// CreatedAt Timestamp when the endpoint was created
 	CreatedAt time.Time `json:"createdAt"`
@@ -7209,7 +8425,7 @@ type WebhookEndpointDto struct {
 	DisabledReason *string `json:"disabledReason,omitempty"`
 
 	// Enabled Whether delivery is enabled for this endpoint
-	Enabled *bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled"`
 
 	// Id Unique webhook endpoint identifier
 	Id openapi_types.UUID `json:"id"`
@@ -7253,7 +8469,7 @@ type WebhookTestResult struct {
 	DurationMs *int64 `json:"durationMs,omitempty"`
 	Message    string `json:"message"`
 	StatusCode *int32 `json:"statusCode,omitempty"`
-	Success    *bool  `json:"success,omitempty"`
+	Success    bool   `json:"success"`
 }
 
 // WorkspaceDto Workspace within an organization
@@ -7262,13 +8478,13 @@ type WorkspaceDto struct {
 	CreatedAt time.Time `json:"createdAt"`
 
 	// Id Unique workspace identifier
-	Id *int32 `json:"id,omitempty"`
+	Id int32 `json:"id"`
 
 	// Name Workspace name
 	Name string `json:"name"`
 
 	// OrgId Organization this workspace belongs to
-	OrgId *int32 `json:"orgId,omitempty"`
+	OrgId int32 `json:"orgId"`
 
 	// UpdatedAt Timestamp when the workspace was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -7441,8 +8657,14 @@ type ListCrossServiceIncidentsParamsStatus string
 
 // GetBatchComponentUptimeParams defines parameters for GetBatchComponentUptime.
 type GetBatchComponentUptimeParams struct {
-	// Period Time window
+	// Period Preset time window (used when ``from`` is omitted)
 	Period *GetBatchComponentUptimeParamsPeriod `form:"period,omitempty" json:"period,omitempty"`
+
+	// From Explicit window start (ISO date); overrides ``period``
+	From *openapi_types.Date `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Explicit window end (ISO date); defaults to today
+	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
 }
 
 // GetBatchComponentUptimeParamsPeriod defines parameters for GetBatchComponentUptime.
@@ -7450,8 +8672,14 @@ type GetBatchComponentUptimeParamsPeriod string
 
 // GetComponentUptimeParams defines parameters for GetComponentUptime.
 type GetComponentUptimeParams struct {
-	// Period Time window
+	// Period Preset time window (used when ``from`` is omitted)
 	Period *GetComponentUptimeParamsPeriod `form:"period,omitempty" json:"period,omitempty"`
+
+	// From Explicit window start (ISO date); overrides ``period``
+	From *openapi_types.Date `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Explicit window end (ISO date); defaults to today
+	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
 }
 
 // GetComponentUptimeParamsPeriod defines parameters for GetComponentUptime.
@@ -7733,6 +8961,185 @@ type Create2JSONRequestBody = CreateWorkspaceRequest
 
 // UpdateJSONRequestBody defines body for Update for application/json ContentType.
 type UpdateJSONRequestBody = UpdateWorkspaceRequest
+
+// AsHttp returns the union data inside the CheckTypeDetailsDto as a Http
+func (t CheckTypeDetailsDto) AsHttp() (Http, error) {
+	var body Http
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromHttp overwrites any union data inside the CheckTypeDetailsDto as the provided Http
+func (t *CheckTypeDetailsDto) FromHttp(v Http) error {
+	v.CheckType = "http"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeHttp performs a merge with any union data inside the CheckTypeDetailsDto, using the provided Http
+func (t *CheckTypeDetailsDto) MergeHttp(v Http) error {
+	v.CheckType = "http"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsTcp returns the union data inside the CheckTypeDetailsDto as a Tcp
+func (t CheckTypeDetailsDto) AsTcp() (Tcp, error) {
+	var body Tcp
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTcp overwrites any union data inside the CheckTypeDetailsDto as the provided Tcp
+func (t *CheckTypeDetailsDto) FromTcp(v Tcp) error {
+	v.CheckType = "tcp"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeTcp performs a merge with any union data inside the CheckTypeDetailsDto, using the provided Tcp
+func (t *CheckTypeDetailsDto) MergeTcp(v Tcp) error {
+	v.CheckType = "tcp"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIcmp returns the union data inside the CheckTypeDetailsDto as a Icmp
+func (t CheckTypeDetailsDto) AsIcmp() (Icmp, error) {
+	var body Icmp
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIcmp overwrites any union data inside the CheckTypeDetailsDto as the provided Icmp
+func (t *CheckTypeDetailsDto) FromIcmp(v Icmp) error {
+	v.CheckType = "icmp"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIcmp performs a merge with any union data inside the CheckTypeDetailsDto, using the provided Icmp
+func (t *CheckTypeDetailsDto) MergeIcmp(v Icmp) error {
+	v.CheckType = "icmp"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDns returns the union data inside the CheckTypeDetailsDto as a Dns
+func (t CheckTypeDetailsDto) AsDns() (Dns, error) {
+	var body Dns
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDns overwrites any union data inside the CheckTypeDetailsDto as the provided Dns
+func (t *CheckTypeDetailsDto) FromDns(v Dns) error {
+	v.CheckType = "dns"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDns performs a merge with any union data inside the CheckTypeDetailsDto, using the provided Dns
+func (t *CheckTypeDetailsDto) MergeDns(v Dns) error {
+	v.CheckType = "dns"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMcpServer returns the union data inside the CheckTypeDetailsDto as a McpServer
+func (t CheckTypeDetailsDto) AsMcpServer() (McpServer, error) {
+	var body McpServer
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMcpServer overwrites any union data inside the CheckTypeDetailsDto as the provided McpServer
+func (t *CheckTypeDetailsDto) FromMcpServer(v McpServer) error {
+	v.CheckType = "mcp_server"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMcpServer performs a merge with any union data inside the CheckTypeDetailsDto, using the provided McpServer
+func (t *CheckTypeDetailsDto) MergeMcpServer(v McpServer) error {
+	v.CheckType = "mcp_server"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CheckTypeDetailsDto) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"check_type"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t CheckTypeDetailsDto) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "dns":
+		return t.AsDns()
+	case "http":
+		return t.AsHttp()
+	case "icmp":
+		return t.AsIcmp()
+	case "mcp_server":
+		return t.AsMcpServer()
+	case "tcp":
+		return t.AsTcp()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t CheckTypeDetailsDto) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CheckTypeDetailsDto) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsDiscordChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a DiscordChannelConfig
 func (t CreateAlertChannelRequest_Config) AsDiscordChannelConfig() (DiscordChannelConfig, error) {
@@ -10296,6 +11703,155 @@ func (t *MonitorAssertionDto_Config) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsBearerAuthConfig returns the union data inside the MonitorAuthConfig as a BearerAuthConfig
+func (t MonitorAuthConfig) AsBearerAuthConfig() (BearerAuthConfig, error) {
+	var body BearerAuthConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBearerAuthConfig overwrites any union data inside the MonitorAuthConfig as the provided BearerAuthConfig
+func (t *MonitorAuthConfig) FromBearerAuthConfig(v BearerAuthConfig) error {
+	v.Type = "bearer"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBearerAuthConfig performs a merge with any union data inside the MonitorAuthConfig, using the provided BearerAuthConfig
+func (t *MonitorAuthConfig) MergeBearerAuthConfig(v BearerAuthConfig) error {
+	v.Type = "bearer"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBasicAuthConfig returns the union data inside the MonitorAuthConfig as a BasicAuthConfig
+func (t MonitorAuthConfig) AsBasicAuthConfig() (BasicAuthConfig, error) {
+	var body BasicAuthConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBasicAuthConfig overwrites any union data inside the MonitorAuthConfig as the provided BasicAuthConfig
+func (t *MonitorAuthConfig) FromBasicAuthConfig(v BasicAuthConfig) error {
+	v.Type = "basic"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBasicAuthConfig performs a merge with any union data inside the MonitorAuthConfig, using the provided BasicAuthConfig
+func (t *MonitorAuthConfig) MergeBasicAuthConfig(v BasicAuthConfig) error {
+	v.Type = "basic"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsHeaderAuthConfig returns the union data inside the MonitorAuthConfig as a HeaderAuthConfig
+func (t MonitorAuthConfig) AsHeaderAuthConfig() (HeaderAuthConfig, error) {
+	var body HeaderAuthConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromHeaderAuthConfig overwrites any union data inside the MonitorAuthConfig as the provided HeaderAuthConfig
+func (t *MonitorAuthConfig) FromHeaderAuthConfig(v HeaderAuthConfig) error {
+	v.Type = "header"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeHeaderAuthConfig performs a merge with any union data inside the MonitorAuthConfig, using the provided HeaderAuthConfig
+func (t *MonitorAuthConfig) MergeHeaderAuthConfig(v HeaderAuthConfig) error {
+	v.Type = "header"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsApiKeyAuthConfig returns the union data inside the MonitorAuthConfig as a ApiKeyAuthConfig
+func (t MonitorAuthConfig) AsApiKeyAuthConfig() (ApiKeyAuthConfig, error) {
+	var body ApiKeyAuthConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromApiKeyAuthConfig overwrites any union data inside the MonitorAuthConfig as the provided ApiKeyAuthConfig
+func (t *MonitorAuthConfig) FromApiKeyAuthConfig(v ApiKeyAuthConfig) error {
+	v.Type = "api_key"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeApiKeyAuthConfig performs a merge with any union data inside the MonitorAuthConfig, using the provided ApiKeyAuthConfig
+func (t *MonitorAuthConfig) MergeApiKeyAuthConfig(v ApiKeyAuthConfig) error {
+	v.Type = "api_key"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t MonitorAuthConfig) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"type"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t MonitorAuthConfig) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "api_key":
+		return t.AsApiKeyAuthConfig()
+	case "basic":
+		return t.AsBasicAuthConfig()
+	case "bearer":
+		return t.AsBearerAuthConfig()
+	case "header":
+		return t.AsHeaderAuthConfig()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t MonitorAuthConfig) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *MonitorAuthConfig) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsApiKeyAuthConfig returns the union data inside the MonitorAuthDto_Config as a ApiKeyAuthConfig
 func (t MonitorAuthDto_Config) AsApiKeyAuthConfig() (ApiKeyAuthConfig, error) {
 	var body ApiKeyAuthConfig
@@ -12452,6 +14008,172 @@ func (t UpdateMonitorAuthRequest_Config) MarshalJSON() ([]byte, error) {
 }
 
 func (t *UpdateMonitorAuthRequest_Config) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDnsMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a DnsMonitorConfig
+func (t UpdateMonitorRequest_Config) AsDnsMonitorConfig() (DnsMonitorConfig, error) {
+	var body DnsMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDnsMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided DnsMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromDnsMonitorConfig(v DnsMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDnsMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided DnsMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeDnsMonitorConfig(v DnsMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsHeartbeatMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a HeartbeatMonitorConfig
+func (t UpdateMonitorRequest_Config) AsHeartbeatMonitorConfig() (HeartbeatMonitorConfig, error) {
+	var body HeartbeatMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromHeartbeatMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided HeartbeatMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromHeartbeatMonitorConfig(v HeartbeatMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeHeartbeatMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided HeartbeatMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeHeartbeatMonitorConfig(v HeartbeatMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsHttpMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a HttpMonitorConfig
+func (t UpdateMonitorRequest_Config) AsHttpMonitorConfig() (HttpMonitorConfig, error) {
+	var body HttpMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromHttpMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided HttpMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromHttpMonitorConfig(v HttpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeHttpMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided HttpMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeHttpMonitorConfig(v HttpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIcmpMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a IcmpMonitorConfig
+func (t UpdateMonitorRequest_Config) AsIcmpMonitorConfig() (IcmpMonitorConfig, error) {
+	var body IcmpMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIcmpMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided IcmpMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromIcmpMonitorConfig(v IcmpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIcmpMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided IcmpMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeIcmpMonitorConfig(v IcmpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMcpServerMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a McpServerMonitorConfig
+func (t UpdateMonitorRequest_Config) AsMcpServerMonitorConfig() (McpServerMonitorConfig, error) {
+	var body McpServerMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMcpServerMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided McpServerMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromMcpServerMonitorConfig(v McpServerMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMcpServerMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided McpServerMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeMcpServerMonitorConfig(v McpServerMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsTcpMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a TcpMonitorConfig
+func (t UpdateMonitorRequest_Config) AsTcpMonitorConfig() (TcpMonitorConfig, error) {
+	var body TcpMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTcpMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided TcpMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromTcpMonitorConfig(v TcpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeTcpMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided TcpMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeTcpMonitorConfig(v TcpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t UpdateMonitorRequest_Config) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *UpdateMonitorRequest_Config) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }

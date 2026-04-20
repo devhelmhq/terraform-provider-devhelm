@@ -36,7 +36,7 @@ func secretFixture(key, valueHash string) generated.SecretDto {
 		Id:         openapi_types.UUID(id),
 		Key:        key,
 		ValueHash:  valueHash,
-		DekVersion: int32Ptr(1),
+		DekVersion: 1,
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	}

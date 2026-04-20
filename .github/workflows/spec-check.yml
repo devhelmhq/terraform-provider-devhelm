@@ -20,15 +20,17 @@ jobs:
 
       - name: Download latest OpenAPI spec from monorepo
         run: |
-          gh api repos/devhelmhq/mono/contents/docs/openapi/monitoring-api.yaml \
+          gh api repos/devhelmhq/mono/contents/docs/openapi/monitoring-api.json \
             -H "Accept: application/vnd.github.raw+json" \
             -o docs/openapi/monitoring-api.json
         env:
           GH_TOKEN: ${{ secrets.MONOREPO_DISPATCH_TOKEN }}
 
-      - name: Install oapi-codegen
-        run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
-
+      # oapi-codegen version is pinned by the `tool` directive in
+      # go.mod; typegen.sh invokes `go tool oapi-codegen` so no separate
+      # install step is required. Bumping the version requires
+      # `go get -tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@<new>`
+      # plus a typegen.sh re-run committed in the same change.
       - name: Regenerate types from spec
         run: ./scripts/typegen.sh
 
