@@ -17,7 +17,7 @@
 # Preprocessing resolution order:
 #   1. $OPENAPI_TOOLS env var (explicit override)
 #   2. Local monorepo sibling (../mini/packages/openapi-tools)
-#   3. npx from npm (CI / standalone)
+#   3. Vendored preprocessor at scripts/preprocess.mjs (default — used in CI)
 #
 set -euo pipefail
 
@@ -39,23 +39,29 @@ if ! command -v go >/dev/null 2>&1; then
   exit 1
 fi
 
-resolve_openapi_tools() {
+if ! command -v node >/dev/null 2>&1; then
+  echo "error: node not found in PATH (required by the OpenAPI preprocessor)" >&2
+  exit 1
+fi
+
+resolve_preprocessor() {
   if [[ -n "${OPENAPI_TOOLS:-}" ]]; then
-    echo "$OPENAPI_TOOLS"
+    # Honour `OPENAPI_TOOLS="node /path/to/cli.js"` style overrides.
+    echo "$OPENAPI_TOOLS preprocess"
     return
   fi
   local local_cli="$ROOT_DIR/../mini/packages/openapi-tools/dist/cli.js"
   if [[ -f "$local_cli" ]]; then
-    echo "node $local_cli"
+    echo "node $local_cli preprocess"
     return
   fi
-  echo "npx --yes --package=@devhelm/openapi-tools devhelm-openapi"
+  echo "node $SCRIPT_DIR/preprocess.mjs"
 }
 
-TOOLS_CMD=$(resolve_openapi_tools)
+PREPROCESS_CMD=$(resolve_preprocessor)
 
-echo "=> Preprocessing OpenAPI spec (via @devhelm/openapi-tools)..."
-$TOOLS_CMD preprocess "$INPUT" "$PREPROCESSED"
+echo "=> Preprocessing OpenAPI spec (via $PREPROCESS_CMD)..."
+$PREPROCESS_CMD "$INPUT" "$PREPROCESSED"
 
 echo "=> Generating Go types from preprocessed spec..."
 

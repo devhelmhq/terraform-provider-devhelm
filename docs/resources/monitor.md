@@ -144,7 +144,7 @@ Required:
 Optional:
 
 - `aggregation_type` (String) Aggregation type: all_exceed, average, p95, max
-- `count` (Number) Failure count threshold
+- `count` (Number) Failure count threshold (1–10)
 - `scope` (String) Rule scope: per_region or any_region
 - `threshold_ms` (Number) Response time threshold in ms (for response_time)
 - `window_minutes` (Number) Time window in minutes (for failures_in_window)
