@@ -76,9 +76,11 @@ func TestMonitor_BuildUpdate_InvalidConfigJSONErrors(t *testing.T) {
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
-	// buildUpdateRequest parses config into a plain map via json.Unmarshal,
-	// unlike buildCreateRequest which uses the generated union's UnmarshalJSON
-	// (which accepts raw bytes without validating).
+	// buildUpdateRequest now uses the generated union wrapper (spec exposes
+	// UpdateMonitorRequest.config as a proper oneOf). The wrapper's
+	// UnmarshalJSON accepts raw bytes without validating them, so the
+	// builder does a pre-flight json.Valid check to keep the same
+	// "invalid JSON errors at plan time" guardrail as the create path.
 	_, err := r.buildUpdateRequest(ctx, plan)
 	if err == nil {
 		t.Fatal("expected error for invalid JSON config in update path")

@@ -5786,9 +5786,6 @@ type MonitorAuthDto_Config struct {
 	union json.RawMessage
 }
 
-// MonitorConfig Protocol-specific monitor configuration; concrete type is deduced from the JSON shape
-type MonitorConfig = map[string]interface{}
-
 // MonitorDto Full monitor representation
 type MonitorDto struct {
 	// AlertChannelIds Alert channel IDs linked to this monitor; populated on single-monitor responses
@@ -8105,8 +8102,8 @@ type UpdateMonitorRequest struct {
 	ClearAuth *bool `json:"clearAuth,omitempty"`
 
 	// ClearEnvironmentId Set to true to remove the environment association
-	ClearEnvironmentId *bool          `json:"clearEnvironmentId,omitempty"`
-	Config             *MonitorConfig `json:"config,omitempty"`
+	ClearEnvironmentId *bool                        `json:"clearEnvironmentId,omitempty"`
+	Config             *UpdateMonitorRequest_Config `json:"config,omitempty"`
 
 	// Enabled Enable or disable the monitor; null preserves current
 	Enabled *bool `json:"enabled,omitempty"`
@@ -8127,6 +8124,11 @@ type UpdateMonitorRequest struct {
 	// Regions New probe regions; null preserves current
 	Regions *[]string              `json:"regions,omitempty"`
 	Tags    *AddMonitorTagsRequest `json:"tags,omitempty"`
+}
+
+// UpdateMonitorRequest_Config defines model for UpdateMonitorRequest.Config.
+type UpdateMonitorRequest_Config struct {
+	union json.RawMessage
 }
 
 // UpdateMonitorRequestManagedBy New management source; null preserves current
@@ -14006,6 +14008,172 @@ func (t UpdateMonitorAuthRequest_Config) MarshalJSON() ([]byte, error) {
 }
 
 func (t *UpdateMonitorAuthRequest_Config) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDnsMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a DnsMonitorConfig
+func (t UpdateMonitorRequest_Config) AsDnsMonitorConfig() (DnsMonitorConfig, error) {
+	var body DnsMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDnsMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided DnsMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromDnsMonitorConfig(v DnsMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDnsMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided DnsMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeDnsMonitorConfig(v DnsMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsHeartbeatMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a HeartbeatMonitorConfig
+func (t UpdateMonitorRequest_Config) AsHeartbeatMonitorConfig() (HeartbeatMonitorConfig, error) {
+	var body HeartbeatMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromHeartbeatMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided HeartbeatMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromHeartbeatMonitorConfig(v HeartbeatMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeHeartbeatMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided HeartbeatMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeHeartbeatMonitorConfig(v HeartbeatMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsHttpMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a HttpMonitorConfig
+func (t UpdateMonitorRequest_Config) AsHttpMonitorConfig() (HttpMonitorConfig, error) {
+	var body HttpMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromHttpMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided HttpMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromHttpMonitorConfig(v HttpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeHttpMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided HttpMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeHttpMonitorConfig(v HttpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIcmpMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a IcmpMonitorConfig
+func (t UpdateMonitorRequest_Config) AsIcmpMonitorConfig() (IcmpMonitorConfig, error) {
+	var body IcmpMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIcmpMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided IcmpMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromIcmpMonitorConfig(v IcmpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIcmpMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided IcmpMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeIcmpMonitorConfig(v IcmpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMcpServerMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a McpServerMonitorConfig
+func (t UpdateMonitorRequest_Config) AsMcpServerMonitorConfig() (McpServerMonitorConfig, error) {
+	var body McpServerMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMcpServerMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided McpServerMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromMcpServerMonitorConfig(v McpServerMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMcpServerMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided McpServerMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeMcpServerMonitorConfig(v McpServerMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsTcpMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a TcpMonitorConfig
+func (t UpdateMonitorRequest_Config) AsTcpMonitorConfig() (TcpMonitorConfig, error) {
+	var body TcpMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTcpMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided TcpMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromTcpMonitorConfig(v TcpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeTcpMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided TcpMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeTcpMonitorConfig(v TcpMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t UpdateMonitorRequest_Config) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *UpdateMonitorRequest_Config) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
