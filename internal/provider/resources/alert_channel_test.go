@@ -92,8 +92,8 @@ func TestAlertChannel_BuildConfig_WebhookCustomHeadersRoundTrip(t *testing.T) {
 			ChannelType: types.StringValue("webhook"),
 			URL:         types.StringValue("https://example.com/hook"),
 			CustomHeaders: types.MapValueMust(types.StringType, map[string]attr.Value{
-				"X-Source":  types.StringValue("devhelm"),
-				"X-Trace":   types.StringValue("abc"),
+				"X-Source": types.StringValue("devhelm"),
+				"X-Trace":  types.StringValue("abc"),
 			}),
 		}
 		raw, err := r.buildConfig(&model)

@@ -283,15 +283,15 @@ func fullyPopulatedResourceGroupDto(t *testing.T) *generated.ResourceGroupDto {
 	channels := []openapi_types.UUID{cid}
 
 	return &generated.ResourceGroupDto{
-		Id:                       id,
-		Name:                     "backend",
-		Slug:                     "backend",
-		Description:              &desc,
-		AlertPolicyId:            &pid,
-		DefaultFrequency:         &freq,
-		DefaultRegions:           &regions,
-		DefaultAlertChannels:     &channels,
-		DefaultEnvironmentId:     &envID,
+		Id:                   id,
+		Name:                 "backend",
+		Slug:                 "backend",
+		Description:          &desc,
+		AlertPolicyId:        &pid,
+		DefaultFrequency:     &freq,
+		DefaultRegions:       &regions,
+		DefaultAlertChannels: &channels,
+		DefaultEnvironmentId: &envID,
 		DefaultRetryStrategy: &generated.RetryStrategy{
 			Type:       "fixed",
 			Interval:   60,

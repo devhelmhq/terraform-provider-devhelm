@@ -7,6 +7,7 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -16,6 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -105,8 +107,15 @@ func (r *NotificationPolicyResource) Schema(_ context.Context, _ resource.Schema
 				NestedObject: schema.NestedBlockObject{
 					Attributes: map[string]schema.Attribute{
 						"type": schema.StringAttribute{
-							Required:    true,
-							Description: "Rule type (e.g. monitor_name, tag, region)",
+							Required: true,
+							Description: "Rule type discriminator. One of: " +
+								"component_name_in, incident_status, monitor_id_in, " +
+								"monitor_type_in, region_in, resource_group_id_in, " +
+								"service_id_in, severity_gte. Spec source of truth: " +
+								"`MatchRuleType` enum.",
+							Validators: []validator.String{
+								stringvalidator.OneOf(api.MatchRuleTypes...),
+							},
 						},
 						"value": schema.StringAttribute{
 							Optional: true, Description: "Single match value",

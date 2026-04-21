@@ -129,18 +129,18 @@ func (r *StatusPageCustomDomainResource) Schema(_ context.Context, _ resource.Sc
 			"```\n",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Computed:    true,
-				Description: "Unique identifier for this custom domain",
+				Computed:      true,
+				Description:   "Unique identifier for this custom domain",
 				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"status_page_id": schema.StringAttribute{
-				Required:    true,
-				Description: "ID of the status page this domain belongs to. Changing this forces a new resource.",
+				Required:      true,
+				Description:   "ID of the status page this domain belongs to. Changing this forces a new resource.",
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"hostname": schema.StringAttribute{
-				Required:    true,
-				Description: "Custom hostname to attach to the status page (e.g. status.acme.com). Changing this forces a new resource.",
+				Required:      true,
+				Description:   "Custom hostname to attach to the status page (e.g. status.acme.com). Changing this forces a new resource.",
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"status": schema.StringAttribute{

@@ -187,4 +187,3 @@ func hasTerraformBinary() bool {
 	}
 	return false
 }
-

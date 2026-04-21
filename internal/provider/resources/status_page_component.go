@@ -138,10 +138,10 @@ func (r *StatusPageComponentResource) Schema(_ context.Context, _ resource.Schem
 					"check status), or GROUP (rolls up a resource group). Changing forces replacement.",
 				Validators: []validator.String{
 					stringvalidator.OneOf(
-					string(generated.CreateStatusPageComponentRequestTypeSTATIC),
-					string(generated.CreateStatusPageComponentRequestTypeMONITOR),
-					string(generated.CreateStatusPageComponentRequestTypeGROUP),
-				),
+						string(generated.CreateStatusPageComponentRequestTypeSTATIC),
+						string(generated.CreateStatusPageComponentRequestTypeMONITOR),
+						string(generated.CreateStatusPageComponentRequestTypeGROUP),
+					),
 				},
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
@@ -232,9 +232,14 @@ func (r *StatusPageComponentResource) ValidateConfig(ctx context.Context, req re
 
 	compType := generated.CreateStatusPageComponentRequestType(model.Type.ValueString())
 
+	// Required-attribute checks treat Unknown as "set" (a cross-resource
+	// reference like `devhelm_monitor.m.id` is unknown at plan time but
+	// will resolve to a real value at apply time). Only Null counts as
+	// genuinely missing. The symmetric Conflicting-attribute checks
+	// below already skip Unknown for the same reason.
 	switch compType {
 	case generated.CreateStatusPageComponentRequestTypeMONITOR:
-		if model.MonitorID.IsNull() || model.MonitorID.IsUnknown() {
+		if model.MonitorID.IsNull() {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("monitor_id"),
 				"Missing required attribute",
@@ -242,7 +247,7 @@ func (r *StatusPageComponentResource) ValidateConfig(ctx context.Context, req re
 			)
 		}
 	case generated.CreateStatusPageComponentRequestTypeGROUP:
-		if model.ResourceGroupID.IsNull() || model.ResourceGroupID.IsUnknown() {
+		if model.ResourceGroupID.IsNull() {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("resource_group_id"),
 				"Missing required attribute",

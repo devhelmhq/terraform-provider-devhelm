@@ -172,58 +172,58 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 					"actual secret material lives on `devhelm_secret.value` which is " +
 					"sensitive.",
 				Attributes: map[string]schema.Attribute{
-				"bearer": schema.SingleNestedAttribute{
-					Optional:    true,
-					Description: "Bearer token sent in the `Authorization` header. Reference the token via `vault_secret_id`.",
-					Attributes: map[string]schema.Attribute{
-						"vault_secret_id": schema.StringAttribute{
-							Required:    true,
-							Description: "Vault secret ID holding the bearer token value (UUID).",
-							Validators:  []validator.String{uuidStringValidator{}},
+					"bearer": schema.SingleNestedAttribute{
+						Optional:    true,
+						Description: "Bearer token sent in the `Authorization` header. Reference the token via `vault_secret_id`.",
+						Attributes: map[string]schema.Attribute{
+							"vault_secret_id": schema.StringAttribute{
+								Required:    true,
+								Description: "Vault secret ID holding the bearer token value (UUID).",
+								Validators:  []validator.String{uuidStringValidator{}},
+							},
 						},
 					},
-				},
-				"basic": schema.SingleNestedAttribute{
-					Optional:    true,
-					Description: "HTTP Basic auth. Reference the username/password vault secret via `vault_secret_id`.",
-					Attributes: map[string]schema.Attribute{
-						"vault_secret_id": schema.StringAttribute{
-							Required:    true,
-							Description: "Vault secret ID holding Basic auth username and password (UUID).",
-							Validators:  []validator.String{uuidStringValidator{}},
+					"basic": schema.SingleNestedAttribute{
+						Optional:    true,
+						Description: "HTTP Basic auth. Reference the username/password vault secret via `vault_secret_id`.",
+						Attributes: map[string]schema.Attribute{
+							"vault_secret_id": schema.StringAttribute{
+								Required:    true,
+								Description: "Vault secret ID holding Basic auth username and password (UUID).",
+								Validators:  []validator.String{uuidStringValidator{}},
+							},
 						},
 					},
-				},
-				"header": schema.SingleNestedAttribute{
-					Optional:    true,
-					Description: "Custom header with an arbitrary name and a secret value resolved from the vault.",
-					Attributes: map[string]schema.Attribute{
-						"header_name": schema.StringAttribute{
-							Required:    true,
-							Description: "Custom HTTP header name for the secret value (matches `^[A-Za-z0-9\\-_]+$`).",
-						},
-						"vault_secret_id": schema.StringAttribute{
-							Required:    true,
-							Description: "Vault secret ID for the header value (UUID).",
-							Validators:  []validator.String{uuidStringValidator{}},
-						},
-					},
-				},
-				"api_key": schema.SingleNestedAttribute{
-					Optional:    true,
-					Description: "API key sent in a configurable header.",
-					Attributes: map[string]schema.Attribute{
-						"header_name": schema.StringAttribute{
-							Required:    true,
-							Description: "HTTP header name that carries the API key (matches `^[A-Za-z0-9\\-_]+$`).",
-						},
-						"vault_secret_id": schema.StringAttribute{
-							Required:    true,
-							Description: "Vault secret ID for the API key value (UUID).",
-							Validators:  []validator.String{uuidStringValidator{}},
+					"header": schema.SingleNestedAttribute{
+						Optional:    true,
+						Description: "Custom header with an arbitrary name and a secret value resolved from the vault.",
+						Attributes: map[string]schema.Attribute{
+							"header_name": schema.StringAttribute{
+								Required:    true,
+								Description: "Custom HTTP header name for the secret value (matches `^[A-Za-z0-9\\-_]+$`).",
+							},
+							"vault_secret_id": schema.StringAttribute{
+								Required:    true,
+								Description: "Vault secret ID for the header value (UUID).",
+								Validators:  []validator.String{uuidStringValidator{}},
+							},
 						},
 					},
-				},
+					"api_key": schema.SingleNestedAttribute{
+						Optional:    true,
+						Description: "API key sent in a configurable header.",
+						Attributes: map[string]schema.Attribute{
+							"header_name": schema.StringAttribute{
+								Required:    true,
+								Description: "HTTP header name that carries the API key (matches `^[A-Za-z0-9\\-_]+$`).",
+							},
+							"vault_secret_id": schema.StringAttribute{
+								Required:    true,
+								Description: "Vault secret ID for the API key value (UUID).",
+								Validators:  []validator.String{uuidStringValidator{}},
+							},
+						},
+					},
 				},
 			},
 			"incident_policy": schema.SingleNestedAttribute{
@@ -293,7 +293,7 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									},
 								},
 								"scope": schema.StringAttribute{
-									Optional:    true,
+									Optional: true, Computed: true,
 									Description: "Rule scope: per_region or any_region",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
@@ -301,30 +301,34 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 											string(generated.AnyRegion),
 										),
 									},
+									PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 								},
 								"count": schema.Int64Attribute{
-									Optional:    true,
+									Optional: true, Computed: true,
 									Description: "Failure count threshold (1–10)",
 									Validators: []validator.Int64{
 										int64validator.Between(1, 10),
 									},
+									PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
 								},
 								"window_minutes": schema.Int64Attribute{
-									Optional:    true,
+									Optional: true, Computed: true,
 									Description: "Time window in minutes (for failures_in_window)",
 									Validators: []validator.Int64{
 										int64validator.AtLeast(1),
 									},
+									PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
 								},
 								"threshold_ms": schema.Int64Attribute{
-									Optional:    true,
+									Optional: true, Computed: true,
 									Description: "Response time threshold in ms (for response_time)",
 									Validators: []validator.Int64{
 										int64validator.AtLeast(1),
 									},
+									PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
 								},
 								"aggregation_type": schema.StringAttribute{
-									Optional:    true,
+									Optional: true, Computed: true,
 									Description: "Aggregation type: all_exceed, average, p95, max",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
@@ -334,6 +338,7 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 											string(generated.Max),
 										),
 									},
+									PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 								},
 							},
 						},

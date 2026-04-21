@@ -83,4 +83,3 @@ func (m useStateForUnknownAlwaysList) PlanModifyList(_ context.Context, req plan
 func UseStateForUnknownAlwaysList() planmodifier.List {
 	return useStateForUnknownAlwaysList{}
 }
-

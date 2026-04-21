@@ -5,7 +5,18 @@
 // types declare each enum constant individually, so we re-export them as
 // flat slices here. Codegen stays the source of truth — a new spec value
 // will appear as a new constant in the generated package, and the test
-// `TestEnumSliceCoverage` verifies these slices stay exhaustive.
+// `TestEnumSliceCoverage` (in `enums_coverage_test.go`) verifies these
+// slices stay exhaustive by reflecting over the generated package.
+//
+// Adding a new slice for a generated enum type:
+//
+//  1. Add the slice here, populated from the generated constants.
+//  2. Wire it into the relevant `Schema()` via `stringvalidator.OneOf(api.<X>...)`
+//     instead of literal string lists — this both eliminates DRY drift
+//     and keeps `TestEnumSliceCoverage` exhaustiveness in one place.
+//  3. Add the slice to the `enumSliceCoverage` table in
+//     `enums_coverage_test.go` so future spec additions force-fail until
+//     the slice is updated.
 package api
 
 import "github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
@@ -57,15 +68,6 @@ var AssertionTypes = []string{
 	string(generated.MonitorAssertionDtoAssertionTypeTcpResponseTimeWarn),
 }
 
-// MonitorAuthTypes lists every wire-format monitor auth scheme. Used by
-// the monitor resource's `auth.type` validator.
-var MonitorAuthTypes = []string{
-	string(generated.MonitorAuthDtoAuthTypeBearer),
-	string(generated.MonitorAuthDtoAuthTypeBasic),
-	string(generated.MonitorAuthDtoAuthTypeHeader),
-	string(generated.MonitorAuthDtoAuthTypeApiKey),
-}
-
 // AlertChannelTypes lists every wire-format alert channel kind. Used by
 // the alert_channel resource's `channel_type` validator (and by anything
 // else that needs to discriminate channels by wire type).
@@ -77,4 +79,18 @@ var AlertChannelTypes = []string{
 	string(generated.AlertChannelDtoChannelTypeOpsgenie),
 	string(generated.AlertChannelDtoChannelTypeTeams),
 	string(generated.AlertChannelDtoChannelTypeDiscord),
+}
+
+// MatchRuleTypes lists every wire-format notification-policy match-rule
+// kind. Used by the notification_policy resource's
+// `match_rule[*].type` validator.
+var MatchRuleTypes = []string{
+	string(generated.ComponentNameIn),
+	string(generated.IncidentStatus),
+	string(generated.MonitorIdIn),
+	string(generated.MonitorTypeIn),
+	string(generated.RegionIn),
+	string(generated.ResourceGroupIdIn),
+	string(generated.ServiceIdIn),
+	string(generated.SeverityGte),
 }

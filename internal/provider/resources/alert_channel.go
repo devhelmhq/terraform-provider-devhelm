@@ -18,8 +18,9 @@ import (
 )
 
 var (
-	_ resource.Resource                = &AlertChannelResource{}
-	_ resource.ResourceWithImportState = &AlertChannelResource{}
+	_ resource.Resource                   = &AlertChannelResource{}
+	_ resource.ResourceWithImportState    = &AlertChannelResource{}
+	_ resource.ResourceWithValidateConfig = &AlertChannelResource{}
 )
 
 type AlertChannelResource struct {
@@ -75,18 +76,15 @@ func (r *AlertChannelResource) Schema(_ context.Context, _ resource.SchemaReques
 				Required: true, Description: "Human-readable name for this alert channel",
 			},
 			"channel_type": schema.StringAttribute{
-				Required:    true,
-				Description: "Channel type: slack, email, pagerduty, opsgenie, discord, teams, webhook",
+				Required: true,
+				Description: "Channel type discriminator. One of: " +
+					"slack, email, pagerduty, opsgenie, discord, teams, webhook. " +
+					"Spec source of truth: `AlertChannelDto.channelType` enum. " +
+					"Each value gates a specific subset of optional attributes; " +
+					"see ValidateConfig in `alert_channel_validate.go` for the " +
+					"per-type required + forbidden field matrix.",
 				Validators: []validator.String{
-					stringvalidator.OneOf(
-						string(generated.AlertChannelDtoChannelTypeSlack),
-						string(generated.AlertChannelDtoChannelTypeEmail),
-						string(generated.AlertChannelDtoChannelTypePagerduty),
-						string(generated.AlertChannelDtoChannelTypeOpsgenie),
-						string(generated.AlertChannelDtoChannelTypeDiscord),
-						string(generated.AlertChannelDtoChannelTypeTeams),
-						string(generated.AlertChannelDtoChannelTypeWebhook),
-					),
+					stringvalidator.OneOf(api.AlertChannelTypes...),
 				},
 			},
 			"config_hash": schema.StringAttribute{

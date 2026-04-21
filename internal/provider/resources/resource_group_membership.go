@@ -33,10 +33,10 @@ type ResourceGroupMembershipResource struct {
 }
 
 type ResourceGroupMembershipModel struct {
-	ID          types.String `tfsdk:"id"`
-	GroupID     types.String `tfsdk:"group_id"`
-	MemberType  types.String `tfsdk:"member_type"`
-	MemberID    types.String `tfsdk:"member_id"`
+	ID         types.String `tfsdk:"id"`
+	GroupID    types.String `tfsdk:"group_id"`
+	MemberType types.String `tfsdk:"member_type"`
+	MemberID   types.String `tfsdk:"member_id"`
 }
 
 func NewResourceGroupMembershipResource() resource.Resource {
@@ -61,9 +61,9 @@ func (r *ResourceGroupMembershipResource) Schema(_ context.Context, _ resource.S
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"member_type": schema.StringAttribute{
-				Required:    true,
-				Description: "Type of member: monitor or service",
-				Validators:  []validator.String{stringvalidator.OneOf(memberTypeMonitor, memberTypeService)},
+				Required:      true,
+				Description:   "Type of member: monitor or service",
+				Validators:    []validator.String{stringvalidator.OneOf(memberTypeMonitor, memberTypeService)},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"member_id": schema.StringAttribute{
