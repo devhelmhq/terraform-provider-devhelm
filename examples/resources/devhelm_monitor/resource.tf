@@ -45,8 +45,9 @@ output "etl_ping_url" {
   value       = devhelm_monitor.nightly_etl.ping_url
 }
 
-# Authenticated HTTP monitor with a secret-backed bearer token. Storing the
-# token in `devhelm_secret` keeps it out of state files and CI logs.
+# Authenticated HTTP monitor with a vault-backed bearer token. The actual
+# secret material lives in `devhelm_secret` and is referenced by ID — it
+# never enters Terraform state.
 resource "devhelm_secret" "api_token" {
   key   = "api_token"
   value = var.api_token # mark as sensitive in your variables.tf
@@ -59,8 +60,42 @@ resource "devhelm_monitor" "private_api" {
 
   config = jsonencode({ url = "https://api.example.com/internal/health" })
 
-  auth = jsonencode({
-    type  = "bearer"
-    token = "{{ secret.api_token }}" # interpolated by the API at probe time
-  })
+  # Pick exactly one of: bearer / basic / header / api_key.
+  # The API resolves `vault_secret_id` at probe time and attaches the
+  # credential — no plaintext ever transits the wire from Terraform.
+  auth = {
+    bearer = {
+      vault_secret_id = devhelm_secret.api_token.id
+    }
+  }
+}
+
+# Custom header (e.g. CF-Access-Client-Secret, X-Auth-Token, …).
+resource "devhelm_monitor" "header_protected" {
+  name = "Header-protected service"
+  type = "HTTP"
+
+  config = jsonencode({ url = "https://internal.example.com/health" })
+
+  auth = {
+    header = {
+      header_name     = "X-Auth-Token"
+      vault_secret_id = devhelm_secret.api_token.id
+    }
+  }
+}
+
+# Basic auth — username:password are stored in the vault entry as a
+# colon-separated pair. Provider only references the secret by ID.
+resource "devhelm_monitor" "basic_auth" {
+  name = "Legacy admin endpoint"
+  type = "HTTP"
+
+  config = jsonencode({ url = "https://legacy.example.com/admin/health" })
+
+  auth = {
+    basic = {
+      vault_secret_id = devhelm_secret.api_token.id
+    }
+  }
 }

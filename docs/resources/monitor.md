@@ -60,8 +60,9 @@ output "etl_ping_url" {
   value       = devhelm_monitor.nightly_etl.ping_url
 }
 
-# Authenticated HTTP monitor with a secret-backed bearer token. Storing the
-# token in `devhelm_secret` keeps it out of state files and CI logs.
+# Authenticated HTTP monitor with a vault-backed bearer token. The actual
+# secret material lives in `devhelm_secret` and is referenced by ID — it
+# never enters Terraform state.
 resource "devhelm_secret" "api_token" {
   key   = "api_token"
   value = var.api_token # mark as sensitive in your variables.tf
@@ -74,10 +75,44 @@ resource "devhelm_monitor" "private_api" {
 
   config = jsonencode({ url = "https://api.example.com/internal/health" })
 
-  auth = jsonencode({
-    type  = "bearer"
-    token = "{{ secret.api_token }}" # interpolated by the API at probe time
-  })
+  # Pick exactly one of: bearer / basic / header / api_key.
+  # The API resolves `vault_secret_id` at probe time and attaches the
+  # credential — no plaintext ever transits the wire from Terraform.
+  auth = {
+    bearer = {
+      vault_secret_id = devhelm_secret.api_token.id
+    }
+  }
+}
+
+# Custom header (e.g. CF-Access-Client-Secret, X-Auth-Token, …).
+resource "devhelm_monitor" "header_protected" {
+  name = "Header-protected service"
+  type = "HTTP"
+
+  config = jsonencode({ url = "https://internal.example.com/health" })
+
+  auth = {
+    header = {
+      header_name     = "X-Auth-Token"
+      vault_secret_id = devhelm_secret.api_token.id
+    }
+  }
+}
+
+# Basic auth — username:password are stored in the vault entry as a
+# colon-separated pair. Provider only references the secret by ID.
+resource "devhelm_monitor" "basic_auth" {
+  name = "Legacy admin endpoint"
+  type = "HTTP"
+
+  config = jsonencode({ url = "https://legacy.example.com/admin/health" })
+
+  auth = {
+    basic = {
+      vault_secret_id = devhelm_secret.api_token.id
+    }
+  }
 }
 ```
 
@@ -94,7 +129,7 @@ resource "devhelm_monitor" "private_api" {
 
 - `alert_channel_ids` (List of String) Alert channel IDs to notify on incidents. Omit to preserve the current list; explicitly set to `[]` to clear all channels.
 - `assertions` (Block List) Monitor assertions that define pass/fail criteria. (see [below for nested schema](#nestedblock--assertions))
-- `auth` (String, Sensitive) Authentication configuration as JSON. Discriminator field `type` selects the auth scheme: `bearer`, `basic`, `header`, or `api_key`. Example: `jsonencode({type = "bearer", token = var.api_token})`
+- `auth` (Attributes) Monitor authentication. Specify exactly one variant (`bearer`, `basic`, `header`, or `api_key`). Credentials are never sent through the API in plaintext — set `vault_secret_id` to a `devhelm_secret` ID; the probe resolves the secret server-side at check time. The block itself is not marked sensitive because it carries only UUID references; the actual secret material lives on `devhelm_secret.value` which is sensitive. (see [below for nested schema](#nestedatt--auth))
 - `enabled` (Boolean) Whether the monitor is active (default: true)
 - `environment_id` (String) Environment ID for variable substitution
 - `frequency_seconds` (Number) Check frequency in seconds (30–86400). Server applies its default (60s) when omitted on create. Omit on update to preserve the current value; the API has no way to clear this field.
@@ -118,6 +153,51 @@ Required:
 Optional:
 
 - `severity` (String) Assertion severity: fail or warn (default: fail)
+
+
+<a id="nestedatt--auth"></a>
+### Nested Schema for `auth`
+
+Optional:
+
+- `api_key` (Attributes) API key sent in a configurable header. (see [below for nested schema](#nestedatt--auth--api_key))
+- `basic` (Attributes) HTTP Basic auth. Reference the username/password vault secret via `vault_secret_id`. (see [below for nested schema](#nestedatt--auth--basic))
+- `bearer` (Attributes) Bearer token sent in the `Authorization` header. Reference the token via `vault_secret_id`. (see [below for nested schema](#nestedatt--auth--bearer))
+- `header` (Attributes) Custom header with an arbitrary name and a secret value resolved from the vault. (see [below for nested schema](#nestedatt--auth--header))
+
+<a id="nestedatt--auth--api_key"></a>
+### Nested Schema for `auth.api_key`
+
+Required:
+
+- `header_name` (String) HTTP header name that carries the API key (matches `^[A-Za-z0-9\-_]+$`).
+- `vault_secret_id` (String) Vault secret ID for the API key value (UUID).
+
+
+<a id="nestedatt--auth--basic"></a>
+### Nested Schema for `auth.basic`
+
+Required:
+
+- `vault_secret_id` (String) Vault secret ID holding Basic auth username and password (UUID).
+
+
+<a id="nestedatt--auth--bearer"></a>
+### Nested Schema for `auth.bearer`
+
+Required:
+
+- `vault_secret_id` (String) Vault secret ID holding the bearer token value (UUID).
+
+
+<a id="nestedatt--auth--header"></a>
+### Nested Schema for `auth.header`
+
+Required:
+
+- `header_name` (String) Custom HTTP header name for the secret value (matches `^[A-Za-z0-9\-_]+$`).
+- `vault_secret_id` (String) Vault secret ID for the header value (UUID).
+
 
 
 <a id="nestedatt--incident_policy"></a>
