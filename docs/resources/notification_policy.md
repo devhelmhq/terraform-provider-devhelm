@@ -99,7 +99,7 @@ Optional:
 
 Required:
 
-- `type` (String) Rule type (e.g. monitor_name, tag, region)
+- `type` (String) Rule type discriminator. One of: component_name_in, incident_status, monitor_id_in, monitor_type_in, region_in, resource_group_id_in, service_id_in, severity_gte. Spec source of truth: `MatchRuleType` enum.
 
 Optional:
 

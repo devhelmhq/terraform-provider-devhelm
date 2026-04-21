@@ -79,7 +79,7 @@ resource "devhelm_alert_channel" "internal_webhook" {
 
 ### Required
 
-- `channel_type` (String) Channel type: slack, email, pagerduty, opsgenie, discord, teams, webhook
+- `channel_type` (String) Channel type discriminator. One of: slack, email, pagerduty, opsgenie, discord, teams, webhook. Spec source of truth: `AlertChannelDto.channelType` enum. Each value gates a specific subset of optional attributes; see ValidateConfig in `alert_channel_validate.go` for the per-type required + forbidden field matrix.
 - `name` (String) Human-readable name for this alert channel
 
 ### Optional
