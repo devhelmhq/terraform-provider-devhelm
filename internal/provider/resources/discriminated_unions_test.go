@@ -38,90 +38,186 @@ import (
 // `400 Bad Request: unknown variant` at apply time.
 // ───────────────────────────────────────────────────────────────────────
 
-// ── Flow 1: Monitor auth (raw-JSON injection) ───────────────────────────
+// ── Flow 1: Monitor auth (typed discriminated-union round-trip) ─────────
 //
-// The OpenAPI spec defines `MonitorAuthConfig` as a discriminator-only base
-// type with a `oneOf` mapping to BearerAuthConfig / BasicAuthConfig /
-// HeaderAuthConfig / ApiKeyAuthConfig. oapi-codegen does NOT synthesize a
-// proper union for this shape — it only emits the base struct with `type`,
-// dropping every variant-specific field on a typed unmarshal.
+// The OpenAPI spec defines `MonitorAuthConfig` as a discriminated `oneOf`
+// over BearerAuthConfig / BasicAuthConfig / HeaderAuthConfig /
+// ApiKeyAuthConfig. The codegen emits proper From*/As* methods that
+// preserve every variant field; the provider exposes this union as a
+// nested `auth { bearer = {...} | basic = {...} | header = {...} |
+// api_key = {...} }` block with exactly-one validation at plan time.
 //
-// To preserve the polymorphic blob the provider routes auth through
-// marshalWithRawAuth (request) and extractDataField (response) instead of
-// the typed `MonitorAuthConfig`. This test pins that contract: every variant
-// must round-trip its variant-specific keys verbatim through the request
-// body the API client will actually send.
+// Since the API never accepts raw secret material on the wire (credentials
+// live in vault, referenced by `vault_secret_id`), the typed roundtrip is
+// lossless and we no longer need a raw-JSON workaround. These tests pin
+// down that:
+//
+//  1. buildMonitorAuthConfig produces the expected wire JSON for every
+//     variant (discriminator + non-secret fields).
+//  2. The wire JSON deserializes back through the same variant via
+//     mapMonitorAuthToTF, with every field round-tripping byte-for-byte.
 
-func TestMonitorAuth_RawInjectionPreservesEveryVariant(t *testing.T) {
+func TestMonitorAuth_TypedUnionRoundTripsEveryVariant(t *testing.T) {
+	ctx := context.Background()
 	cases := []struct {
-		name        string
-		auth        string
-		mustContain []string
+		name             string
+		variantKey       string // "bearer" | "basic" | "header" | "api_key"
+		headerName       string
+		vaultSecretID    string
+		wantWireContains []string
 	}{
 		{
-			name:        "bearer",
-			auth:        `{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000001"}`,
-			mustContain: []string{`"type":"bearer"`, `"vaultSecretId":"00000000-0000-0000-0000-000000000001"`},
+			name:             "bearer",
+			variantKey:       "bearer",
+			vaultSecretID:    "00000000-0000-0000-0000-000000000001",
+			wantWireContains: []string{`"type":"bearer"`, `"vaultSecretId":"00000000-0000-0000-0000-000000000001"`},
 		},
 		{
-			name:        "basic",
-			auth:        `{"type":"basic","vaultSecretId":"00000000-0000-0000-0000-000000000002"}`,
-			mustContain: []string{`"type":"basic"`, `"vaultSecretId":"00000000-0000-0000-0000-000000000002"`},
+			name:             "basic",
+			variantKey:       "basic",
+			vaultSecretID:    "00000000-0000-0000-0000-000000000002",
+			wantWireContains: []string{`"type":"basic"`, `"vaultSecretId":"00000000-0000-0000-0000-000000000002"`},
 		},
 		{
-			name:        "header",
-			auth:        `{"type":"header","headerName":"X-API","vaultSecretId":"00000000-0000-0000-0000-000000000003"}`,
-			mustContain: []string{`"type":"header"`, `"headerName":"X-API"`, `"vaultSecretId":"00000000-0000-0000-0000-000000000003"`},
+			name:             "header",
+			variantKey:       "header",
+			headerName:       "X-API",
+			vaultSecretID:    "00000000-0000-0000-0000-000000000003",
+			wantWireContains: []string{`"type":"header"`, `"headerName":"X-API"`, `"vaultSecretId":"00000000-0000-0000-0000-000000000003"`},
 		},
 		{
-			name:        "api_key",
-			auth:        `{"type":"api_key","headerName":"X-Key","vaultSecretId":"00000000-0000-0000-0000-000000000004"}`,
-			mustContain: []string{`"type":"api_key"`, `"headerName":"X-Key"`, `"vaultSecretId":"00000000-0000-0000-0000-000000000004"`},
+			name:             "api_key",
+			variantKey:       "api_key",
+			headerName:       "X-Key",
+			vaultSecretID:    "00000000-0000-0000-0000-000000000004",
+			wantWireContains: []string{`"type":"api_key"`, `"headerName":"X-Key"`, `"vaultSecretId":"00000000-0000-0000-0000-000000000004"`},
 		},
 	}
 	for _, tc := range cases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			body := map[string]any{
-				"name": "m",
-				"type": "HTTP",
-			}
-			out, err := marshalWithRawAuth(body, types.StringValue(tc.auth))
+			authObj := mustAuthObject(t, tc.variantKey, tc.headerName, tc.vaultSecretID)
+			union, err := buildMonitorAuthConfig(ctx, authObj)
 			if err != nil {
-				t.Fatalf("marshalWithRawAuth: %v", err)
+				t.Fatalf("buildMonitorAuthConfig: %v", err)
 			}
-			s := string(out)
-			for _, want := range tc.mustContain {
+			if union == nil {
+				t.Fatalf("buildMonitorAuthConfig returned nil for non-null auth")
+			}
+			wire, err := union.MarshalJSON()
+			if err != nil {
+				t.Fatalf("marshal union: %v", err)
+			}
+			s := string(wire)
+			for _, want := range tc.wantWireContains {
 				if !strings.Contains(s, want) {
-					t.Errorf("body missing %q\nbody=%s", want, s)
+					t.Errorf("wire body missing %q\nbody=%s", want, s)
 				}
 			}
-			// extractDataField is the inverse — wrap the body in the
-			// API envelope and assert we recover the original auth blob.
-			env := []byte(`{"data":` + s + `}`)
-			got := extractDataField(env, "auth")
-			var gotMap, wantMap map[string]any
-			_ = json.Unmarshal([]byte(got), &gotMap)
-			_ = json.Unmarshal([]byte(tc.auth), &wantMap)
-			if len(gotMap) != len(wantMap) {
-				t.Errorf("extractDataField round-trip lost keys: got %v want %v", gotMap, wantMap)
+
+			// Round-trip back into a TF object and verify every field
+			// survives the typed mapping.
+			roundTrip, diags := mapMonitorAuthToTF(ctx, union)
+			if diags.HasError() {
+				t.Fatalf("mapMonitorAuthToTF: %v", diags)
+			}
+			rtBytes, _ := json.Marshal(roundTrip.String())
+			origBytes, _ := json.Marshal(authObj.String())
+			if string(rtBytes) != string(origBytes) {
+				t.Errorf("round-trip mismatch:\n  before=%s\n  after =%s", origBytes, rtBytes)
 			}
 		})
 	}
 }
 
-func TestMonitorAuth_RawInjectionRejectsInvalidJSON(t *testing.T) {
-	if _, err := marshalWithRawAuth(map[string]any{}, types.StringValue("not json")); err == nil {
-		t.Fatal("expected error for invalid auth JSON")
+// mustAuthObject builds a populated auth nested object for the given
+// variant; helper for the discriminated-union round-trip table tests.
+func mustAuthObject(t *testing.T, variant, headerName, vaultID string) types.Object {
+	t.Helper()
+	bearer := types.ObjectNull(authBearerObjectType().AttrTypes)
+	basic := types.ObjectNull(authBasicObjectType().AttrTypes)
+	header := types.ObjectNull(authHeaderObjectType().AttrTypes)
+	apikey := types.ObjectNull(authApiKeyObjectType().AttrTypes)
+
+	switch variant {
+	case "bearer":
+		obj, _ := types.ObjectValue(authBearerObjectType().AttrTypes, map[string]attr.Value{
+			"vault_secret_id": types.StringValue(vaultID),
+		})
+		bearer = obj
+	case "basic":
+		obj, _ := types.ObjectValue(authBasicObjectType().AttrTypes, map[string]attr.Value{
+			"vault_secret_id": types.StringValue(vaultID),
+		})
+		basic = obj
+	case "header":
+		obj, _ := types.ObjectValue(authHeaderObjectType().AttrTypes, map[string]attr.Value{
+			"header_name":     types.StringValue(headerName),
+			"vault_secret_id": types.StringValue(vaultID),
+		})
+		header = obj
+	case "api_key":
+		obj, _ := types.ObjectValue(authApiKeyObjectType().AttrTypes, map[string]attr.Value{
+			"header_name":     types.StringValue(headerName),
+			"vault_secret_id": types.StringValue(vaultID),
+		})
+		apikey = obj
+	default:
+		t.Fatalf("unknown variant %q", variant)
+	}
+	out, _ := types.ObjectValue(monitorAuthObjectType().AttrTypes, map[string]attr.Value{
+		"bearer":  bearer,
+		"basic":   basic,
+		"header":  header,
+		"api_key": apikey,
+	})
+	return out
+}
+
+func TestMonitorAuth_BuildReturnsNilWhenAuthIsNull(t *testing.T) {
+	ctx := context.Background()
+	union, err := buildMonitorAuthConfig(ctx, types.ObjectNull(monitorAuthObjectType().AttrTypes))
+	if err != nil {
+		t.Fatalf("buildMonitorAuthConfig: %v", err)
+	}
+	if union != nil {
+		t.Errorf("expected nil union for null auth, got %v", union)
 	}
 }
 
-func TestMonitorAuth_RawInjectionPassthroughOnNullAuth(t *testing.T) {
-	out, err := marshalWithRawAuth(map[string]any{"name": "m"}, types.StringNull())
-	if err != nil {
-		t.Fatalf("marshalWithRawAuth: %v", err)
+func TestMonitorAuth_BuildRejectsMultipleVariants(t *testing.T) {
+	ctx := context.Background()
+	bearerObj, _ := types.ObjectValue(authBearerObjectType().AttrTypes, map[string]attr.Value{
+		"vault_secret_id": types.StringValue("00000000-0000-0000-0000-000000000001"),
+	})
+	basicObj, _ := types.ObjectValue(authBasicObjectType().AttrTypes, map[string]attr.Value{
+		"vault_secret_id": types.StringValue("00000000-0000-0000-0000-000000000002"),
+	})
+	authObj, _ := types.ObjectValue(monitorAuthObjectType().AttrTypes, map[string]attr.Value{
+		"bearer":  bearerObj,
+		"basic":   basicObj,
+		"header":  types.ObjectNull(authHeaderObjectType().AttrTypes),
+		"api_key": types.ObjectNull(authApiKeyObjectType().AttrTypes),
+	})
+	if _, err := buildMonitorAuthConfig(ctx, authObj); err == nil {
+		t.Fatal("expected error for multi-variant auth, got nil")
 	}
-	if strings.Contains(string(out), `"auth"`) {
-		t.Errorf("body should not contain auth when plan is null: %s", out)
+}
+
+func TestMonitorAuth_BuildRejectsHeaderVariantMissingHeaderName(t *testing.T) {
+	ctx := context.Background()
+	headerObj, _ := types.ObjectValue(authHeaderObjectType().AttrTypes, map[string]attr.Value{
+		"header_name":     types.StringNull(),
+		"vault_secret_id": types.StringValue("00000000-0000-0000-0000-000000000001"),
+	})
+	authObj, _ := types.ObjectValue(monitorAuthObjectType().AttrTypes, map[string]attr.Value{
+		"bearer":  types.ObjectNull(authBearerObjectType().AttrTypes),
+		"basic":   types.ObjectNull(authBasicObjectType().AttrTypes),
+		"header":  headerObj,
+		"api_key": types.ObjectNull(authApiKeyObjectType().AttrTypes),
+	})
+	if _, err := buildMonitorAuthConfig(ctx, authObj); err == nil {
+		t.Fatal("expected error when auth.header.header_name is missing, got nil")
 	}
 }
 

@@ -97,7 +97,7 @@ func (r *SecretResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	secret, err := api.Create[generated.SecretDto](ctx, r.client, api.PathSecrets, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating secret", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create secret", err, path.Root("name"))
 		return
 	}
 
@@ -115,7 +115,7 @@ func (r *SecretResource) Read(ctx context.Context, req resource.ReadRequest, res
 
 	secrets, err := api.List[generated.SecretDto](ctx, r.client, api.PathSecrets)
 	if err != nil {
-		resp.Diagnostics.AddError("Error reading secrets", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read secrets", err, path.Root("id"))
 		return
 	}
 
@@ -150,7 +150,7 @@ func (r *SecretResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	_, err := api.Update[generated.SecretDto](ctx, r.client, api.SecretPath(api.PathEscape(plan.Key.ValueString())), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating secret", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update secret", err, path.Root("name"))
 		return
 	}
 
@@ -167,7 +167,7 @@ func (r *SecretResource) Delete(ctx context.Context, req resource.DeleteRequest,
 
 	err := api.Delete(ctx, r.client, api.SecretPath(api.PathEscape(state.Key.ValueString())))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting secret", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete secret", err, path.Root("id"))
 	}
 }
 

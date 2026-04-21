@@ -8,6 +8,7 @@ import (
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -125,7 +126,7 @@ func TestMonitor_MapToState_NilAssertionsStaysNull(t *testing.T) {
 	model := &MonitorResourceModel{
 		Assertions: types.ListNull(assertionObjectType()),
 	}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 	if !model.Assertions.IsNull() {
 		t.Errorf("Assertions should be null when DTO has nil assertions, got %v", model.Assertions)
 	}
@@ -145,7 +146,7 @@ func TestMonitor_MapToState_NilAlertChannelIds(t *testing.T) {
 	model := &MonitorResourceModel{
 		Assertions: types.ListNull(assertionObjectType()),
 	}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 	if !model.AlertChannelIds.IsNull() {
 		t.Errorf("AlertChannelIds should be null when DTO is nil, got %v", model.AlertChannelIds)
 	}
@@ -165,7 +166,7 @@ func TestMonitor_MapToState_NilRegions(t *testing.T) {
 	model := &MonitorResourceModel{
 		Assertions: types.ListNull(assertionObjectType()),
 	}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 	if !model.Regions.IsNull() {
 		t.Errorf("Regions should be null when DTO regions is nil, got %v", model.Regions)
 	}
@@ -185,7 +186,7 @@ func TestMonitor_MapToState_NilTags(t *testing.T) {
 	model := &MonitorResourceModel{
 		Assertions: types.ListNull(assertionObjectType()),
 	}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 	if !model.TagIds.IsNull() {
 		t.Errorf("TagIds should be null when DTO tags is nil, got %v", model.TagIds)
 	}
@@ -205,7 +206,7 @@ func TestMonitor_MapToState_EmptyAuthStringSetNull(t *testing.T) {
 	model := &MonitorResourceModel{
 		Assertions: types.ListNull(assertionObjectType()),
 	}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 	if !model.Auth.IsNull() {
 		t.Errorf("Auth should be null when rawAuth is empty and DTO auth is nil, got %v", model.Auth)
 	}
@@ -225,7 +226,7 @@ func TestMonitor_MapToState_NilPingUrl(t *testing.T) {
 	model := &MonitorResourceModel{
 		Assertions: types.ListNull(assertionObjectType()),
 	}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 	if !model.PingUrl.IsNull() {
 		t.Errorf("PingUrl should be null when DTO value is nil, got %q", model.PingUrl.ValueString())
 	}
@@ -246,7 +247,7 @@ func TestMonitor_MapToState_NilIncidentPolicy(t *testing.T) {
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 	if !model.IncidentPolicy.IsNull() {
 		t.Errorf("IncidentPolicy should stay null when DTO is nil, got %v", model.IncidentPolicy)
 	}
@@ -513,73 +514,124 @@ func TestNotificationPolicy_BuildUpdate_EmptyEscalation(t *testing.T) {
 	}
 }
 
-// ── marshalWithRawAuth: negative cases ─────────────────────────────────
+// ── validateMonitorAuth: negative cases ────────────────────────────────
+//
+// validateMonitorAuth is the plan-time gate for the typed `auth { ... }`
+// block. We exercise every failure mode it must catch BEFORE the request
+// reaches the API:
+//
+//   • zero variants set under a non-null `auth` block
+//   • multiple variants set simultaneously
+//   • header / api_key without the required `header_name`
+//
+// Each failure must surface as an attribute-pathed diagnostic so editors
+// underline the offending block and `terraform plan` exits non-zero with
+// an actionable message.
 
-func TestMarshalWithRawAuth_InvalidJSONErrors(t *testing.T) {
-	body := map[string]string{"name": "x"}
-	_, err := marshalWithRawAuth(body, types.StringValue(`{not valid json`))
-	if err == nil {
-		t.Fatal("expected error for invalid auth JSON")
+func TestValidateMonitorAuth_NoVariantsSetIsError(t *testing.T) {
+	ctx := context.Background()
+	authObj, _ := types.ObjectValue(monitorAuthObjectType().AttrTypes, map[string]attr.Value{
+		"bearer":  types.ObjectNull(authBearerObjectType().AttrTypes),
+		"basic":   types.ObjectNull(authBasicObjectType().AttrTypes),
+		"header":  types.ObjectNull(authHeaderObjectType().AttrTypes),
+		"api_key": types.ObjectNull(authApiKeyObjectType().AttrTypes),
+	})
+	var diags diag.Diagnostics
+	validateMonitorAuth(ctx, &diags, authObj)
+	if !diags.HasError() {
+		t.Fatalf("expected error for empty auth block, got %v", diags)
 	}
-	if !strings.Contains(err.Error(), "not valid JSON") {
-		t.Errorf("error %q should mention invalid JSON", err.Error())
+	if !strings.Contains(diags.Errors()[0].Summary(), "Missing auth variant") {
+		t.Errorf("expected missing-variant summary, got %q", diags.Errors()[0].Summary())
 	}
 }
 
-func TestMarshalWithRawAuth_NullAuthReturnsUnchanged(t *testing.T) {
-	body := map[string]string{"name": "x"}
-	result, err := marshalWithRawAuth(body, types.StringNull())
-	if err != nil {
-		t.Fatalf("marshalWithRawAuth: %v", err)
+func TestValidateMonitorAuth_MultipleVariantsIsError(t *testing.T) {
+	ctx := context.Background()
+	bearer, _ := types.ObjectValue(authBearerObjectType().AttrTypes, map[string]attr.Value{
+		"vault_secret_id": types.StringValue("00000000-0000-0000-0000-000000000001"),
+	})
+	basic, _ := types.ObjectValue(authBasicObjectType().AttrTypes, map[string]attr.Value{
+		"vault_secret_id": types.StringValue("00000000-0000-0000-0000-000000000002"),
+	})
+	authObj, _ := types.ObjectValue(monitorAuthObjectType().AttrTypes, map[string]attr.Value{
+		"bearer":  bearer,
+		"basic":   basic,
+		"header":  types.ObjectNull(authHeaderObjectType().AttrTypes),
+		"api_key": types.ObjectNull(authApiKeyObjectType().AttrTypes),
+	})
+	var diags diag.Diagnostics
+	validateMonitorAuth(ctx, &diags, authObj)
+	if !diags.HasError() {
+		t.Fatalf("expected error for multi-variant auth, got %v", diags)
 	}
-	if !strings.Contains(string(result), `"name":"x"`) {
-		t.Errorf("body not preserved: %s", result)
-	}
-	if strings.Contains(string(result), "auth") {
-		t.Errorf("auth should not appear in output: %s", result)
-	}
-}
-
-func TestMarshalWithRawAuth_EmptyStringAuthReturnsUnchanged(t *testing.T) {
-	body := map[string]string{"name": "x"}
-	result, err := marshalWithRawAuth(body, types.StringValue(""))
-	if err != nil {
-		t.Fatalf("marshalWithRawAuth: %v", err)
-	}
-	if strings.Contains(string(result), "auth") {
-		t.Errorf("empty auth string should not inject 'auth' key: %s", result)
-	}
-}
-
-// ── extractDataField: edge cases ────────────────────────────────────────
-
-func TestExtractDataField_EmptyBody(t *testing.T) {
-	if got := extractDataField(nil, "auth"); got != "" {
-		t.Errorf("nil body should return empty, got %q", got)
-	}
-	if got := extractDataField([]byte{}, "auth"); got != "" {
-		t.Errorf("empty body should return empty, got %q", got)
+	if !strings.Contains(diags.Errors()[0].Summary(), "Multiple auth variants") {
+		t.Errorf("expected multi-variant summary, got %q", diags.Errors()[0].Summary())
 	}
 }
 
-func TestExtractDataField_MissingField(t *testing.T) {
-	body := []byte(`{"data":{"name":"x"}}`)
-	if got := extractDataField(body, "auth"); got != "" {
-		t.Errorf("missing field should return empty, got %q", got)
+func TestValidateMonitorAuth_HeaderVariantRequiresHeaderName(t *testing.T) {
+	ctx := context.Background()
+	header, _ := types.ObjectValue(authHeaderObjectType().AttrTypes, map[string]attr.Value{
+		"header_name":     types.StringNull(),
+		"vault_secret_id": types.StringValue("00000000-0000-0000-0000-000000000001"),
+	})
+	authObj, _ := types.ObjectValue(monitorAuthObjectType().AttrTypes, map[string]attr.Value{
+		"bearer":  types.ObjectNull(authBearerObjectType().AttrTypes),
+		"basic":   types.ObjectNull(authBasicObjectType().AttrTypes),
+		"header":  header,
+		"api_key": types.ObjectNull(authApiKeyObjectType().AttrTypes),
+	})
+	var diags diag.Diagnostics
+	validateMonitorAuth(ctx, &diags, authObj)
+	if !diags.HasError() {
+		t.Fatalf("expected error for header without header_name, got %v", diags)
 	}
 }
 
-func TestExtractDataField_NullField(t *testing.T) {
-	body := []byte(`{"data":{"auth":null}}`)
-	if got := extractDataField(body, "auth"); got != "" {
-		t.Errorf("null field should return empty, got %q", got)
+func TestValidateMonitorAuth_ApiKeyVariantRequiresHeaderName(t *testing.T) {
+	ctx := context.Background()
+	apikey, _ := types.ObjectValue(authApiKeyObjectType().AttrTypes, map[string]attr.Value{
+		"header_name":     types.StringNull(),
+		"vault_secret_id": types.StringValue("00000000-0000-0000-0000-000000000001"),
+	})
+	authObj, _ := types.ObjectValue(monitorAuthObjectType().AttrTypes, map[string]attr.Value{
+		"bearer":  types.ObjectNull(authBearerObjectType().AttrTypes),
+		"basic":   types.ObjectNull(authBasicObjectType().AttrTypes),
+		"header":  types.ObjectNull(authHeaderObjectType().AttrTypes),
+		"api_key": apikey,
+	})
+	var diags diag.Diagnostics
+	validateMonitorAuth(ctx, &diags, authObj)
+	if !diags.HasError() {
+		t.Fatalf("expected error for api_key without header_name, got %v", diags)
 	}
 }
 
-func TestExtractDataField_InvalidJSON(t *testing.T) {
-	body := []byte(`not json`)
-	if got := extractDataField(body, "auth"); got != "" {
-		t.Errorf("invalid JSON should return empty, got %q", got)
+func TestValidateMonitorAuth_NullAuthIsNoOp(t *testing.T) {
+	ctx := context.Background()
+	var diags diag.Diagnostics
+	validateMonitorAuth(ctx, &diags, types.ObjectNull(monitorAuthObjectType().AttrTypes))
+	if diags.HasError() {
+		t.Fatalf("null auth should not produce diagnostics, got %v", diags)
+	}
+}
+
+func TestValidateMonitorAuth_HappyPathBearer(t *testing.T) {
+	ctx := context.Background()
+	bearer, _ := types.ObjectValue(authBearerObjectType().AttrTypes, map[string]attr.Value{
+		"vault_secret_id": types.StringValue("00000000-0000-0000-0000-000000000001"),
+	})
+	authObj, _ := types.ObjectValue(monitorAuthObjectType().AttrTypes, map[string]attr.Value{
+		"bearer":  bearer,
+		"basic":   types.ObjectNull(authBasicObjectType().AttrTypes),
+		"header":  types.ObjectNull(authHeaderObjectType().AttrTypes),
+		"api_key": types.ObjectNull(authApiKeyObjectType().AttrTypes),
+	})
+	var diags diag.Diagnostics
+	validateMonitorAuth(ctx, &diags, authObj)
+	if diags.HasError() {
+		t.Fatalf("expected no errors for valid bearer auth, got %v", diags)
 	}
 }
 

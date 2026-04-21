@@ -18,8 +18,9 @@ import (
 )
 
 var (
-	_ resource.Resource                = &AlertChannelResource{}
-	_ resource.ResourceWithImportState = &AlertChannelResource{}
+	_ resource.Resource                   = &AlertChannelResource{}
+	_ resource.ResourceWithImportState    = &AlertChannelResource{}
+	_ resource.ResourceWithValidateConfig = &AlertChannelResource{}
 )
 
 type AlertChannelResource struct {
@@ -75,18 +76,15 @@ func (r *AlertChannelResource) Schema(_ context.Context, _ resource.SchemaReques
 				Required: true, Description: "Human-readable name for this alert channel",
 			},
 			"channel_type": schema.StringAttribute{
-				Required:    true,
-				Description: "Channel type: slack, email, pagerduty, opsgenie, discord, teams, webhook",
+				Required: true,
+				Description: "Channel type discriminator. One of: " +
+					"slack, email, pagerduty, opsgenie, discord, teams, webhook. " +
+					"Spec source of truth: `AlertChannelDto.channelType` enum. " +
+					"Each value gates a specific subset of optional attributes; " +
+					"see ValidateConfig in `alert_channel_validate.go` for the " +
+					"per-type required + forbidden field matrix.",
 				Validators: []validator.String{
-					stringvalidator.OneOf(
-						string(generated.AlertChannelDtoChannelTypeSlack),
-						string(generated.AlertChannelDtoChannelTypeEmail),
-						string(generated.AlertChannelDtoChannelTypePagerduty),
-						string(generated.AlertChannelDtoChannelTypeOpsgenie),
-						string(generated.AlertChannelDtoChannelTypeDiscord),
-						string(generated.AlertChannelDtoChannelTypeTeams),
-						string(generated.AlertChannelDtoChannelTypeWebhook),
-					),
+					stringvalidator.OneOf(api.AlertChannelTypes...),
 				},
 			},
 			"config_hash": schema.StringAttribute{
@@ -237,7 +235,7 @@ func (r *AlertChannelResource) Create(ctx context.Context, req resource.CreateRe
 
 	ch, err := api.Create[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating alert channel", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create alert channel", err, path.Root("name"))
 		return
 	}
 
@@ -255,7 +253,7 @@ func (r *AlertChannelResource) Read(ctx context.Context, req resource.ReadReques
 
 	channels, err := api.List[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels)
 	if err != nil {
-		resp.Diagnostics.AddError("Error reading alert channels", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read alert channels", err, path.Root("id"))
 		return
 	}
 
@@ -315,7 +313,7 @@ func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRe
 
 	ch, err := api.Update[generated.AlertChannelDto](ctx, r.client, api.AlertChannelPath(state.ID.ValueString()), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating alert channel", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update alert channel", err, path.Root("name"))
 		return
 	}
 
@@ -333,7 +331,7 @@ func (r *AlertChannelResource) Delete(ctx context.Context, req resource.DeleteRe
 
 	err := api.Delete(ctx, r.client, api.AlertChannelPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting alert channel", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete alert channel", err, path.Root("id"))
 	}
 }
 

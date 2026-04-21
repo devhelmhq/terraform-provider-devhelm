@@ -26,15 +26,17 @@ import (
 func statusPageFixture() generated.StatusPageDto {
 	id, _ := uuid.Parse("33333333-3333-3333-3333-333333333333")
 	return generated.StatusPageDto{
-		Id:           openapi_types.UUID(id),
-		Name:         "Initial",
-		Slug:         "initial-slug",
-		Visibility:   generated.StatusPageDtoVisibilityPUBLIC,
-		IncidentMode: generated.StatusPageDtoIncidentModeAUTOMATIC,
-		Enabled:      true,
-		Branding:     generated.StatusPageBranding{},
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
+		Id:             openapi_types.UUID(id),
+		Name:           "Initial",
+		Slug:           "initial-slug",
+		Visibility:     generated.StatusPageDtoVisibilityPUBLIC,
+		IncidentMode:   generated.StatusPageDtoIncidentModeAUTOMATIC,
+		Enabled:        true,
+		Branding:       generated.StatusPageBranding{},
+		OrganizationId: 1,
+		WorkspaceId:    1,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 }
 

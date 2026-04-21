@@ -412,6 +412,17 @@ func TestSchemaValidatorAudit(t *testing.T) {
 		// Resource group enums
 		{&ResourceGroupResource{}, "health_threshold_type", []string{"COUNT", "PERCENTAGE"}, "health threshold type"},
 		{&ResourceGroupResource{}, "default_frequency", nil, "resource group default frequency range"},
+		// Notification policy enums
+		{&NotificationPolicyResource{}, "match_rule.type", []string{
+			"component_name_in",
+			"incident_status",
+			"monitor_id_in",
+			"monitor_type_in",
+			"region_in",
+			"resource_group_id_in",
+			"service_id_in",
+			"severity_gte",
+		}, "match rule type"},
 	}
 
 	for _, tc := range cases {
@@ -441,6 +452,7 @@ func TestValidateConfigImplemented(t *testing.T) {
 	}{
 		{"monitor", &MonitorResource{}},
 		{"status_page_component", &StatusPageComponentResource{}},
+		{"alert_channel", &AlertChannelResource{}},
 	}
 
 	for _, tc := range resources {

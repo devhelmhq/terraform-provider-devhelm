@@ -739,6 +739,51 @@ func (e CreateStatusPageRequestVisibility) Valid() bool {
 	}
 }
 
+// Defines values for CreateWebhookEndpointRequestSubscribedEvents.
+const (
+	CreateWebhookEndpointRequestSubscribedEventsIncidentCreated         CreateWebhookEndpointRequestSubscribedEvents = "incident.created"
+	CreateWebhookEndpointRequestSubscribedEventsIncidentReopened        CreateWebhookEndpointRequestSubscribedEvents = "incident.reopened"
+	CreateWebhookEndpointRequestSubscribedEventsIncidentResolved        CreateWebhookEndpointRequestSubscribedEvents = "incident.resolved"
+	CreateWebhookEndpointRequestSubscribedEventsMonitorCreated          CreateWebhookEndpointRequestSubscribedEvents = "monitor.created"
+	CreateWebhookEndpointRequestSubscribedEventsMonitorDeleted          CreateWebhookEndpointRequestSubscribedEvents = "monitor.deleted"
+	CreateWebhookEndpointRequestSubscribedEventsMonitorUpdated          CreateWebhookEndpointRequestSubscribedEvents = "monitor.updated"
+	CreateWebhookEndpointRequestSubscribedEventsServiceComponentChanged CreateWebhookEndpointRequestSubscribedEvents = "service.component_changed"
+	CreateWebhookEndpointRequestSubscribedEventsServiceIncidentCreated  CreateWebhookEndpointRequestSubscribedEvents = "service.incident_created"
+	CreateWebhookEndpointRequestSubscribedEventsServiceIncidentResolved CreateWebhookEndpointRequestSubscribedEvents = "service.incident_resolved"
+	CreateWebhookEndpointRequestSubscribedEventsServiceIncidentUpdated  CreateWebhookEndpointRequestSubscribedEvents = "service.incident_updated"
+	CreateWebhookEndpointRequestSubscribedEventsServiceStatusChanged    CreateWebhookEndpointRequestSubscribedEvents = "service.status_changed"
+)
+
+// Valid indicates whether the value is a known member of the CreateWebhookEndpointRequestSubscribedEvents enum.
+func (e CreateWebhookEndpointRequestSubscribedEvents) Valid() bool {
+	switch e {
+	case CreateWebhookEndpointRequestSubscribedEventsIncidentCreated:
+		return true
+	case CreateWebhookEndpointRequestSubscribedEventsIncidentReopened:
+		return true
+	case CreateWebhookEndpointRequestSubscribedEventsIncidentResolved:
+		return true
+	case CreateWebhookEndpointRequestSubscribedEventsMonitorCreated:
+		return true
+	case CreateWebhookEndpointRequestSubscribedEventsMonitorDeleted:
+		return true
+	case CreateWebhookEndpointRequestSubscribedEventsMonitorUpdated:
+		return true
+	case CreateWebhookEndpointRequestSubscribedEventsServiceComponentChanged:
+		return true
+	case CreateWebhookEndpointRequestSubscribedEventsServiceIncidentCreated:
+		return true
+	case CreateWebhookEndpointRequestSubscribedEventsServiceIncidentResolved:
+		return true
+	case CreateWebhookEndpointRequestSubscribedEventsServiceIncidentUpdated:
+		return true
+	case CreateWebhookEndpointRequestSubscribedEventsServiceStatusChanged:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for DayIncidentImpact.
 const (
 	DayIncidentImpactCRITICAL DayIncidentImpact = "CRITICAL"
@@ -1663,6 +1708,42 @@ func (e LinkedStatusPageIncidentDtoStatus) Valid() bool {
 	case LinkedStatusPageIncidentDtoStatusMONITORING:
 		return true
 	case LinkedStatusPageIncidentDtoStatusRESOLVED:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MatchRuleType.
+const (
+	ComponentNameIn   MatchRuleType = "component_name_in"
+	IncidentStatus    MatchRuleType = "incident_status"
+	MonitorIdIn       MatchRuleType = "monitor_id_in"
+	MonitorTypeIn     MatchRuleType = "monitor_type_in"
+	RegionIn          MatchRuleType = "region_in"
+	ResourceGroupIdIn MatchRuleType = "resource_group_id_in"
+	ServiceIdIn       MatchRuleType = "service_id_in"
+	SeverityGte       MatchRuleType = "severity_gte"
+)
+
+// Valid indicates whether the value is a known member of the MatchRuleType enum.
+func (e MatchRuleType) Valid() bool {
+	switch e {
+	case ComponentNameIn:
+		return true
+	case IncidentStatus:
+		return true
+	case MonitorIdIn:
+		return true
+	case MonitorTypeIn:
+		return true
+	case RegionIn:
+		return true
+	case ResourceGroupIdIn:
+		return true
+	case ServiceIdIn:
+		return true
+	case SeverityGte:
 		return true
 	default:
 		return false
@@ -3214,6 +3295,51 @@ func (e UpdateStatusPageRequestVisibility) Valid() bool {
 	}
 }
 
+// Defines values for UpdateWebhookEndpointRequestSubscribedEvents.
+const (
+	UpdateWebhookEndpointRequestSubscribedEventsIncidentCreated         UpdateWebhookEndpointRequestSubscribedEvents = "incident.created"
+	UpdateWebhookEndpointRequestSubscribedEventsIncidentReopened        UpdateWebhookEndpointRequestSubscribedEvents = "incident.reopened"
+	UpdateWebhookEndpointRequestSubscribedEventsIncidentResolved        UpdateWebhookEndpointRequestSubscribedEvents = "incident.resolved"
+	UpdateWebhookEndpointRequestSubscribedEventsMonitorCreated          UpdateWebhookEndpointRequestSubscribedEvents = "monitor.created"
+	UpdateWebhookEndpointRequestSubscribedEventsMonitorDeleted          UpdateWebhookEndpointRequestSubscribedEvents = "monitor.deleted"
+	UpdateWebhookEndpointRequestSubscribedEventsMonitorUpdated          UpdateWebhookEndpointRequestSubscribedEvents = "monitor.updated"
+	UpdateWebhookEndpointRequestSubscribedEventsServiceComponentChanged UpdateWebhookEndpointRequestSubscribedEvents = "service.component_changed"
+	UpdateWebhookEndpointRequestSubscribedEventsServiceIncidentCreated  UpdateWebhookEndpointRequestSubscribedEvents = "service.incident_created"
+	UpdateWebhookEndpointRequestSubscribedEventsServiceIncidentResolved UpdateWebhookEndpointRequestSubscribedEvents = "service.incident_resolved"
+	UpdateWebhookEndpointRequestSubscribedEventsServiceIncidentUpdated  UpdateWebhookEndpointRequestSubscribedEvents = "service.incident_updated"
+	UpdateWebhookEndpointRequestSubscribedEventsServiceStatusChanged    UpdateWebhookEndpointRequestSubscribedEvents = "service.status_changed"
+)
+
+// Valid indicates whether the value is a known member of the UpdateWebhookEndpointRequestSubscribedEvents enum.
+func (e UpdateWebhookEndpointRequestSubscribedEvents) Valid() bool {
+	switch e {
+	case UpdateWebhookEndpointRequestSubscribedEventsIncidentCreated:
+		return true
+	case UpdateWebhookEndpointRequestSubscribedEventsIncidentReopened:
+		return true
+	case UpdateWebhookEndpointRequestSubscribedEventsIncidentResolved:
+		return true
+	case UpdateWebhookEndpointRequestSubscribedEventsMonitorCreated:
+		return true
+	case UpdateWebhookEndpointRequestSubscribedEventsMonitorDeleted:
+		return true
+	case UpdateWebhookEndpointRequestSubscribedEventsMonitorUpdated:
+		return true
+	case UpdateWebhookEndpointRequestSubscribedEventsServiceComponentChanged:
+		return true
+	case UpdateWebhookEndpointRequestSubscribedEventsServiceIncidentCreated:
+		return true
+	case UpdateWebhookEndpointRequestSubscribedEventsServiceIncidentResolved:
+		return true
+	case UpdateWebhookEndpointRequestSubscribedEventsServiceIncidentUpdated:
+		return true
+	case UpdateWebhookEndpointRequestSubscribedEventsServiceStatusChanged:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for WebhookChannelConfigChannelType.
 const (
 	Webhook WebhookChannelConfigChannelType = "webhook"
@@ -4472,11 +4598,14 @@ type CreateWebhookEndpointRequest struct {
 	Description *string `json:"description,omitempty"`
 
 	// SubscribedEvents Event types to deliver, e.g. monitor.created, incident.resolved
-	SubscribedEvents []string `json:"subscribedEvents"`
+	SubscribedEvents []CreateWebhookEndpointRequestSubscribedEvents `json:"subscribedEvents"`
 
 	// Url HTTPS endpoint that receives webhook event payloads
 	Url string `json:"url"`
 }
+
+// CreateWebhookEndpointRequestSubscribedEvents Event types to deliver, e.g. monitor.created, incident.resolved
+type CreateWebhookEndpointRequestSubscribedEvents string
 
 // CreateWorkspaceRequest Create a new workspace within the organization
 type CreateWorkspaceRequest struct {
@@ -5591,7 +5720,7 @@ type MatchRule struct {
 	Regions *[]string `json:"regions,omitempty"`
 
 	// Type Rule type, e.g. severity_gte, monitor_id_in, region_in
-	Type string `json:"type"`
+	Type MatchRuleType `json:"type"`
 
 	// Value Comparison value for single-value rules like severity_gte
 	Value *string `json:"value,omitempty"`
@@ -5599,6 +5728,9 @@ type MatchRule struct {
 	// Values Values list for multi-value rules like monitor_type_in
 	Values *[]string `json:"values,omitempty"`
 }
+
+// MatchRuleType Rule type, e.g. severity_gte, monitor_id_in, region_in
+type MatchRuleType string
 
 // McpConnectsAssertion defines model for McpConnectsAssertion.
 type McpConnectsAssertion struct {
@@ -8330,11 +8462,14 @@ type UpdateWebhookEndpointRequest struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// SubscribedEvents Replace subscribed events; null preserves current
-	SubscribedEvents *[]string `json:"subscribedEvents,omitempty"`
+	SubscribedEvents *[]UpdateWebhookEndpointRequestSubscribedEvents `json:"subscribedEvents,omitempty"`
 
 	// Url New webhook URL; null preserves current
 	Url *string `json:"url,omitempty"`
 }
+
+// UpdateWebhookEndpointRequestSubscribedEvents Replace subscribed events; null preserves current
+type UpdateWebhookEndpointRequestSubscribedEvents string
 
 // UpdateWorkspaceRequest Update workspace details
 type UpdateWorkspaceRequest struct {

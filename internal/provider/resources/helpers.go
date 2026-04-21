@@ -381,64 +381,6 @@ func unionHasData(raw []byte) bool {
 	return s != "null" && s != "{}"
 }
 
-// marshalWithRawAuth marshals body as JSON, then injects the user-supplied
-// `auth` blob as raw JSON. This is necessary because the generated
-// MonitorAuthConfig type lost its polymorphic shape during the OpenAPI sync
-// (the discriminator-based oneOf collapsed to {type: string} only). Sending
-// the typed value would silently drop every credential field. When auth is
-// null/unknown the body is returned unchanged so the caller's `clearAuth`
-// flag remains the only auth-related signal.
-func marshalWithRawAuth(body any, auth types.String) (json.RawMessage, error) {
-	b, err := json.Marshal(body)
-	if err != nil {
-		return nil, fmt.Errorf("encoding monitor body: %w", err)
-	}
-	if auth.IsNull() || auth.IsUnknown() {
-		return b, nil
-	}
-	rawAuth := auth.ValueString()
-	if rawAuth == "" {
-		return b, nil
-	}
-	if !json.Valid([]byte(rawAuth)) {
-		return nil, fmt.Errorf("monitor auth is not valid JSON")
-	}
-	var m map[string]json.RawMessage
-	if err := json.Unmarshal(b, &m); err != nil {
-		return nil, fmt.Errorf("re-decoding monitor body for auth merge: %w", err)
-	}
-	m["auth"] = json.RawMessage(rawAuth)
-	out, err := json.Marshal(m)
-	if err != nil {
-		return nil, fmt.Errorf("re-encoding monitor body with auth: %w", err)
-	}
-	return out, nil
-}
-
-// extractDataField pulls a single top-level field out of the standard
-// {"data": {...}} response envelope. Used to recover polymorphic JSON blobs
-// (e.g. the monitor `auth` field) that the typed generated structs cannot
-// round-trip losslessly. Returns "" when the field is missing or null.
-func extractDataField(body []byte, field string) string {
-	if len(body) == 0 {
-		return ""
-	}
-	var env struct {
-		Data map[string]json.RawMessage `json:"data"`
-	}
-	if err := json.Unmarshal(body, &env); err != nil {
-		return ""
-	}
-	raw, ok := env.Data[field]
-	if !ok {
-		return ""
-	}
-	if len(raw) == 0 || string(raw) == "null" {
-		return ""
-	}
-	return string(raw)
-}
-
 // priorHasConfigType reports whether the prior Terraform value for a
 // monitor `config` attribute already contained a top-level `type` key.
 // We use this as the trigger for re-injecting the discriminator on

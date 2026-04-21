@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
@@ -51,9 +52,32 @@ type MonitorResourceModel struct {
 	PingUrl          types.String `tfsdk:"ping_url"`
 
 	Config         types.String `tfsdk:"config"`
-	Auth           types.String `tfsdk:"auth"`
+	Auth           types.Object `tfsdk:"auth"`
 	Assertions     types.List   `tfsdk:"assertions"`
 	IncidentPolicy types.Object `tfsdk:"incident_policy"`
+}
+
+// authSecretOnlyVariantModel mirrors the bearer/basic variants: the only
+// HCL-exposed field is `vault_secret_id` (the credential itself lives in
+// vault). Required-field semantics are enforced by validateMonitorAuth.
+type authSecretOnlyVariantModel struct {
+	VaultSecretID types.String `tfsdk:"vault_secret_id"`
+}
+
+// authHeaderVariantModel mirrors the header/api_key variants which add
+// the wire-level `header_name` attribute on top of `vault_secret_id`.
+type authHeaderVariantModel struct {
+	HeaderName    types.String `tfsdk:"header_name"`
+	VaultSecretID types.String `tfsdk:"vault_secret_id"`
+}
+
+// authModel mirrors the shape of the `auth` attribute. Exactly one of
+// the four variant fields must be non-null at plan time.
+type authModel struct {
+	Bearer types.Object `tfsdk:"bearer"`
+	Basic  types.Object `tfsdk:"basic"`
+	Header types.Object `tfsdk:"header"`
+	ApiKey types.Object `tfsdk:"api_key"`
 }
 
 func NewMonitorResource() resource.Resource {
@@ -137,10 +161,70 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Required:    true,
 				Description: "Monitor configuration as JSON. Shape depends on type (HttpMonitorConfig, DnsMonitorConfig, etc.)",
 			},
-			"auth": schema.StringAttribute{
-				Optional:    true,
-				Sensitive:   true,
-				Description: "Authentication configuration as JSON. Discriminator field `type` selects the auth scheme: `bearer`, `basic`, `header`, or `api_key`. Example: `jsonencode({type = \"bearer\", token = var.api_token})`",
+			"auth": schema.SingleNestedAttribute{
+				Optional: true,
+				Description: "Monitor authentication. Specify exactly one variant " +
+					"(`bearer`, `basic`, `header`, or `api_key`). Credentials are " +
+					"never sent through the API in plaintext — set " +
+					"`vault_secret_id` to a `devhelm_secret` ID; the probe resolves " +
+					"the secret server-side at check time. The block itself is not " +
+					"marked sensitive because it carries only UUID references; the " +
+					"actual secret material lives on `devhelm_secret.value` which is " +
+					"sensitive.",
+				Attributes: map[string]schema.Attribute{
+					"bearer": schema.SingleNestedAttribute{
+						Optional:    true,
+						Description: "Bearer token sent in the `Authorization` header. Reference the token via `vault_secret_id`.",
+						Attributes: map[string]schema.Attribute{
+							"vault_secret_id": schema.StringAttribute{
+								Required:    true,
+								Description: "Vault secret ID holding the bearer token value (UUID).",
+								Validators:  []validator.String{uuidStringValidator{}},
+							},
+						},
+					},
+					"basic": schema.SingleNestedAttribute{
+						Optional:    true,
+						Description: "HTTP Basic auth. Reference the username/password vault secret via `vault_secret_id`.",
+						Attributes: map[string]schema.Attribute{
+							"vault_secret_id": schema.StringAttribute{
+								Required:    true,
+								Description: "Vault secret ID holding Basic auth username and password (UUID).",
+								Validators:  []validator.String{uuidStringValidator{}},
+							},
+						},
+					},
+					"header": schema.SingleNestedAttribute{
+						Optional:    true,
+						Description: "Custom header with an arbitrary name and a secret value resolved from the vault.",
+						Attributes: map[string]schema.Attribute{
+							"header_name": schema.StringAttribute{
+								Required:    true,
+								Description: "Custom HTTP header name for the secret value (matches `^[A-Za-z0-9\\-_]+$`).",
+							},
+							"vault_secret_id": schema.StringAttribute{
+								Required:    true,
+								Description: "Vault secret ID for the header value (UUID).",
+								Validators:  []validator.String{uuidStringValidator{}},
+							},
+						},
+					},
+					"api_key": schema.SingleNestedAttribute{
+						Optional:    true,
+						Description: "API key sent in a configurable header.",
+						Attributes: map[string]schema.Attribute{
+							"header_name": schema.StringAttribute{
+								Required:    true,
+								Description: "HTTP header name that carries the API key (matches `^[A-Za-z0-9\\-_]+$`).",
+							},
+							"vault_secret_id": schema.StringAttribute{
+								Required:    true,
+								Description: "Vault secret ID for the API key value (UUID).",
+								Validators:  []validator.String{uuidStringValidator{}},
+							},
+						},
+					},
+				},
 			},
 			"incident_policy": schema.SingleNestedAttribute{
 				Optional: true, Computed: true,
@@ -209,7 +293,7 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									},
 								},
 								"scope": schema.StringAttribute{
-									Optional:    true,
+									Optional: true, Computed: true,
 									Description: "Rule scope: per_region or any_region",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
@@ -217,30 +301,34 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 											string(generated.AnyRegion),
 										),
 									},
+									PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 								},
 								"count": schema.Int64Attribute{
-									Optional:    true,
+									Optional: true, Computed: true,
 									Description: "Failure count threshold (1–10)",
 									Validators: []validator.Int64{
 										int64validator.Between(1, 10),
 									},
+									PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
 								},
 								"window_minutes": schema.Int64Attribute{
-									Optional:    true,
+									Optional: true, Computed: true,
 									Description: "Time window in minutes (for failures_in_window)",
 									Validators: []validator.Int64{
 										int64validator.AtLeast(1),
 									},
+									PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
 								},
 								"threshold_ms": schema.Int64Attribute{
-									Optional:    true,
+									Optional: true, Computed: true,
 									Description: "Response time threshold in ms (for response_time)",
 									Validators: []validator.Int64{
 										int64validator.AtLeast(1),
 									},
+									PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
 								},
 								"aggregation_type": schema.StringAttribute{
-									Optional:    true,
+									Optional: true, Computed: true,
 									Description: "Aggregation type: all_exceed, average, p95, max",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
@@ -250,6 +338,7 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 											string(generated.Max),
 										),
 									},
+									PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 								},
 							},
 						},
@@ -265,6 +354,9 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						"type": schema.StringAttribute{
 							Required:    true,
 							Description: "Assertion type discriminator in snake_case wire format (e.g. `status_code`, `response_time`, `body_contains`, `header_value`, `dns_resolves`, `ssl_expiry`, `tcp_connects`). Must match an AssertionType enum value as serialized by the API.",
+							Validators: []validator.String{
+								stringvalidator.OneOf(api.AssertionTypes...),
+							},
 						},
 						"config": schema.StringAttribute{
 							Required:    true,
@@ -294,44 +386,28 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 		return
 	}
 
-	// Config JSON validation: verify it's parseable as JSON.
+	// Config validation: parse as JSON, then validate the payload against
+	// the generated monitor-config struct that matches the declared `type`.
+	// We use json.Decoder with DisallowUnknownFields so unknown keys are
+	// caught at plan time instead of being silently dropped (or surfacing
+	// as a confusing 400 from the API). Required fields are caught by the
+	// generated struct's required-field tags via ValidateDTO. Wire field
+	// names are camelCase (HttpMonitorConfig.url, dnsMonitorConfig.hostname,
+	// etc.) — the JSON key names map directly to the struct's `json:"…"`
+	// tags, which is what users put inside `jsonencode({…})`.
 	if !model.Config.IsNull() && !model.Config.IsUnknown() {
 		configJSON := model.Config.ValueString()
-		var parsed map[string]json.RawMessage
-		if err := json.Unmarshal([]byte(configJSON), &parsed); err != nil {
-			resp.Diagnostics.AddAttributeError(
-				path.Root("config"),
-				"Invalid JSON in config",
-				fmt.Sprintf("The config attribute must be valid JSON: %s", err),
-			)
-		}
+		monitorType := generated.CreateMonitorRequestType(model.Type.ValueString())
+		validateMonitorConfigJSON(&resp.Diagnostics, configJSON, monitorType)
 	}
 
-	// Auth JSON validation: verify it's parseable as JSON with a valid type.
-	if !model.Auth.IsNull() && !model.Auth.IsUnknown() {
-		authJSON := model.Auth.ValueString()
-		if authJSON != "" {
-			var parsed map[string]json.RawMessage
-			if err := json.Unmarshal([]byte(authJSON), &parsed); err != nil {
-				resp.Diagnostics.AddAttributeError(
-					path.Root("auth"),
-					"Invalid JSON in auth",
-					fmt.Sprintf("The auth attribute must be valid JSON: %s", err),
-				)
-			} else if typeRaw, ok := parsed["type"]; ok {
-				var authType string
-				if err := json.Unmarshal(typeRaw, &authType); err == nil {
-					if !generated.MonitorAuthDtoAuthType(authType).Valid() {
-						resp.Diagnostics.AddAttributeError(
-							path.Root("auth"),
-							"Invalid auth type",
-							fmt.Sprintf("Auth type %q is not valid. Must be one of: bearer, basic, header, api_key", authType),
-						)
-					}
-				}
-			}
-		}
-	}
+	// Auth validation: enforce the exactly-one-variant invariant and
+	// per-variant required fields at plan time. The schema cannot express
+	// "exactly one of bearer/basic/header/api_key" on its own (every
+	// sub-attribute is optional so the user can choose any single variant),
+	// so we resolve the constraint here and route diagnostics to the
+	// offending nested path.
+	validateMonitorAuth(ctx, &resp.Diagnostics, model.Auth)
 
 	// Trigger rule conditional validation: count is required for all rule types.
 	if !model.IncidentPolicy.IsNull() && !model.IncidentPolicy.IsUnknown() {
@@ -386,6 +462,198 @@ func (r *MonitorResource) Configure(_ context.Context, req resource.ConfigureReq
 		return
 	}
 	r.client = client
+}
+
+// validateMonitorConfigJSON parses the JSON-string `config` payload and
+// validates it against the generated Go struct that matches the declared
+// monitor `type`. Three classes of bugs surface at plan time instead of
+// apply time:
+//
+//  1. Invalid JSON (parse failure).
+//  2. Unknown keys (typos like `mehtod` or `verifyTLS` instead of `verifyTls`).
+//     Caught by `json.Decoder.DisallowUnknownFields()`.
+//  3. Missing required fields (e.g. HTTP without `url`, DNS without
+//     `hostname`). Caught by walking the parsed struct with `api.ValidateDTO`,
+//     which uses oapi-codegen's "non-pointer = required" convention to flag
+//     zero-valued required fields.
+//
+// All diagnostics are emitted on the `config` attribute path so the editor
+// underlines the offending block instead of the resource root.
+//
+// Why we still keep `config` as a JSON-string overall (not a per-variant
+// nested block):
+//   - The OpenAPI spec for `auth` is incomplete (collapsed `oneOf` + omits
+//     fields the API actually accepts), which would require either breaking
+//     existing users or hardcoding undocumented fields.
+//   - A full `config` nested-block migration touches 70+ surface fixtures,
+//     ~60 examples/docs entries, and 5 acc tests — properly a dedicated
+//     epic with a state-migration design doc, not a phase-2 bolt-on.
+//   - Plan-time JSON validation here closes ~95% of the actual bug class
+//     (typos, wrong field for type, missing required) without any of the
+//     migration risk.
+func validateMonitorConfigJSON(diags *diag.Diagnostics, raw string, monitorType generated.CreateMonitorRequestType) {
+	if raw == "" {
+		return
+	}
+	if !json.Valid([]byte(raw)) {
+		diags.AddAttributeError(
+			path.Root("config"),
+			"Invalid JSON in config",
+			fmt.Sprintf("The config attribute must be valid JSON; got %q", truncate(raw, 80)),
+		)
+		return
+	}
+
+	var validateAgainst func(decoder *json.Decoder) (any, error)
+	switch monitorType {
+	case generated.CreateMonitorRequestTypeHTTP:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.HttpMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeDNS:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.DnsMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeTCP:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.TcpMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeICMP:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.IcmpMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeHEARTBEAT:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.HeartbeatMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeMCPSERVER:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.McpServerMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	default:
+		// Unknown type — `type`'s OneOf validator will already have flagged it.
+		return
+	}
+
+	dec := json.NewDecoder(strings.NewReader(raw))
+	dec.DisallowUnknownFields()
+	parsed, err := validateAgainst(dec)
+	if err != nil {
+		diags.AddAttributeError(
+			path.Root("config"),
+			fmt.Sprintf("Invalid config for monitor type %q", string(monitorType)),
+			fmt.Sprintf("%s. Allowed fields depend on monitor type; refer to the %sMonitorConfig schema in the OpenAPI spec.",
+				err, configSchemaName(monitorType)),
+		)
+		return
+	}
+
+	// Go's encoding/json matches struct field tags case-insensitively, so
+	// `verifyTLS` happily decodes into `verifyTls` even with
+	// DisallowUnknownFields. Walk the raw JSON top-level keys and compare
+	// against the typed struct's json tags case-sensitively to catch this
+	// class of typo at plan time.
+	if extra := caseSensitiveUnknownKeys(raw, parsed); len(extra) > 0 {
+		diags.AddAttributeError(
+			path.Root("config"),
+			fmt.Sprintf("Unknown field(s) in %q config", string(monitorType)),
+			fmt.Sprintf("Field name(s) %v are not in the %sMonitorConfig schema. "+
+				"JSON keys are case-sensitive — check that the field name matches the spec exactly.",
+				extra, configSchemaName(monitorType)),
+		)
+		return
+	}
+
+	if validationErr := api.ValidateDTO(parsed, fmt.Sprintf("%s monitor config", monitorType)); validationErr != nil {
+		diags.AddAttributeError(
+			path.Root("config"),
+			fmt.Sprintf("Missing or invalid fields in %q config", string(monitorType)),
+			validationErr.Error(),
+		)
+	}
+}
+
+// caseSensitiveUnknownKeys returns top-level JSON keys in `raw` that have
+// no exact-case match against a json tag on `target`'s fields. It exists
+// because `encoding/json` accepts case-insensitive matches even with
+// DisallowUnknownFields, which silently masks typos like `verifyTLS` →
+// `verifyTls`. Always-camelCase wire format is the API contract; flagging
+// case mismatches here keeps Terraform plans honest.
+func caseSensitiveUnknownKeys(raw string, target any) []string {
+	var top map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(raw), &top); err != nil {
+		return nil
+	}
+
+	v := reflect.ValueOf(target)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	if v.Kind() != reflect.Struct {
+		return nil
+	}
+
+	allowed := make(map[string]struct{}, v.NumField())
+	rt := v.Type()
+	for i := 0; i < rt.NumField(); i++ {
+		tag := rt.Field(i).Tag.Get("json")
+		if tag == "" || tag == "-" {
+			continue
+		}
+		name, _, _ := strings.Cut(tag, ",")
+		if name == "" {
+			continue
+		}
+		allowed[name] = struct{}{}
+	}
+
+	var bad []string
+	for k := range top {
+		if _, ok := allowed[k]; !ok {
+			bad = append(bad, k)
+		}
+	}
+	return bad
+}
+
+// configSchemaName returns the OpenAPI schema name that the user can grep
+// for to look up the full set of fields allowed for a given monitor type.
+func configSchemaName(t generated.CreateMonitorRequestType) string {
+	switch t {
+	case generated.CreateMonitorRequestTypeHTTP:
+		return "Http"
+	case generated.CreateMonitorRequestTypeDNS:
+		return "Dns"
+	case generated.CreateMonitorRequestTypeTCP:
+		return "Tcp"
+	case generated.CreateMonitorRequestTypeICMP:
+		return "Icmp"
+	case generated.CreateMonitorRequestTypeHEARTBEAT:
+		return "Heartbeat"
+	case generated.CreateMonitorRequestTypeMCPSERVER:
+		return "McpServer"
+	default:
+		return "Monitor"
+	}
+}
+
+func truncate(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	return s[:n] + "…"
 }
 
 // ── TF → API mapping ───────────────────────────────────────────────────
@@ -554,6 +822,11 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		return nil, fmt.Errorf("type: invalid monitor type %q", plan.Type.ValueString())
 	}
 
+	authUnion, err := buildMonitorAuthConfig(ctx, plan.Auth)
+	if err != nil {
+		return nil, err
+	}
+
 	req := &generated.CreateMonitorRequest{
 		Name:             plan.Name.ValueString(),
 		Type:             monitorType,
@@ -566,15 +839,8 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		Assertions:       &assertions,
 		AlertChannelIds:  alertChannels,
 		IncidentPolicy:   incidentPolicy,
+		Auth:             authUnion,
 	}
-
-	// NOTE: req.Auth is intentionally left nil here. The generated
-	// `MonitorAuthConfig` collapsed the polymorphic oneOf into a flat
-	// {type: string} struct (the OpenAPI generator does not synthesize a
-	// proper union type for a discriminator-only base schema), so writing
-	// the typed field would drop every credential beyond `type`. The auth
-	// blob is injected as raw JSON in (*MonitorResource).Create — see
-	// marshalWithRawAuth.
 
 	tagUUIDs, err := uuidSliceFromStringListChecked(plan.TagIds, "tag_ids")
 	if err != nil {
@@ -629,6 +895,11 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 		return nil, err
 	}
 
+	authUnion, err := buildMonitorAuthConfig(ctx, plan.Auth)
+	if err != nil {
+		return nil, err
+	}
+
 	req := &generated.UpdateMonitorRequest{
 		Name:             &name,
 		Config:           &configUnion,
@@ -640,6 +911,7 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 		Assertions:       &assertions,
 		AlertChannelIds:  alertChannels,
 		IncidentPolicy:   incidentPolicy,
+		Auth:             authUnion,
 	}
 
 	if plan.EnvironmentID.IsNull() {
@@ -647,9 +919,14 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 		req.ClearEnvironmentId = &clearEnv
 	}
 
-	// req.Auth left nil; raw auth JSON is merged into the request body in
-	// (*MonitorResource).Update via marshalWithRawAuth. ClearAuth is also
-	// set there so we never send `auth: null` and `clearAuth: true` together.
+	// Auth: when the user removes the entire `auth` block we set
+	// `clearAuth: true` so the server drops any previously-attached
+	// credential. When auth is supplied, ClearAuth stays nil — the typed
+	// `Auth` union above carries the full payload. We never send both.
+	if authUnion == nil {
+		clearAuth := true
+		req.ClearAuth = &clearAuth
+	}
 
 	// NOTE: Tag add/remove reconciliation is handled outside the PUT body
 	// in (*MonitorResource).reconcileTags. PUT /monitors/{id} only supports
@@ -702,15 +979,18 @@ func incidentPolicyObjectType() types.ObjectType {
 // ── API → TF mapping ───────────────────────────────────────────────────
 
 // mapToState mirrors a freshly-fetched MonitorDto onto the Terraform model.
-// rawAuth is the raw JSON blob for the `auth` field as returned by the API
-// (extracted from the response body via extractRawField) — see the comment in
-// buildCreateRequest for why we cannot rely on the typed dto.Auth field.
+//
+// The `auth` round-trip uses the typed `generated.MonitorAuthConfig` union
+// directly: the API echoes back only the public, non-secret discriminator
+// + variant fields (e.g. `{type, vaultSecretId}`), which the codegen union
+// faithfully decodes into the matching variant. We never need to bypass
+// the typed shape because the API never returns secret material.
 //
 // Returns any diagnostics produced while marshaling collection-valued
 // attributes (e.g. types.ListValueFrom). Callers should Append the
 // diagnostics to their response so framework-level errors are surfaced
 // instead of being silently swallowed (END-1141).
-func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResourceModel, dto *generated.MonitorDto, rawAuth string) diag.Diagnostics {
+func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResourceModel, dto *generated.MonitorDto) diag.Diagnostics {
 	var diags diag.Diagnostics
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
@@ -741,33 +1021,15 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 		model.EnvironmentID = types.StringNull()
 	}
 
-	// Auth: the API stores credential fields server-side (in a vault) and
-	// only echoes back the public discriminator/handle (e.g. `{type, vaultSecretId}`),
-	// stripping the actual `token`/`password`/etc. that the user supplied.
-	// If we overwrote model.Auth with the API echo we'd lose those fields
-	// from state, producing both a plan diff and a "Provider produced
-	// inconsistent result after apply: .auth: inconsistent values for
-	// sensitive attribute" error from Terraform on the very first Create.
-	//
-	// Strategy: when the user already has an auth value in plan/state we
-	// preserve it verbatim. We only adopt the API echo when our local
-	// value is null (e.g. import flow), and we clear local state only when
-	// the API explicitly returned an empty/missing auth.
-	switch {
-	case rawAuth == "":
-		// API returned no auth — only clear if state currently has one and
-		// the resource genuinely has no auth attached server-side.
-		if !model.Auth.IsNull() && !model.Auth.IsUnknown() {
-			model.Auth = types.StringNull()
-		}
-	case model.Auth.IsNull() || model.Auth.IsUnknown():
-		// Initial state has no auth (Read after import, or refresh of a
-		// resource we don't yet have credential bytes for) — adopt the API
-		// echo, even though it only contains the public handle.
-		model.Auth = types.StringValue(normalizeJSON(json.RawMessage(rawAuth)))
-		// Otherwise: keep the user-supplied value untouched. The token/secret
-		// in plan is the source of truth; the API echo is a redacted handle.
-	}
+	// Auth: decode the typed `MonitorAuthConfig` union the API returned.
+	// The API only echoes public, non-secret material (the discriminator
+	// + `vaultSecretId` + per-variant non-secret fields like `headerName`),
+	// which round-trips losslessly through the typed shape. There is no
+	// "redacted credential" concern here — credentials live in vault and
+	// are referenced by `vault_secret_id`.
+	authObj, authDiags := mapMonitorAuthToTF(ctx, dto.Auth)
+	diags.Append(authDiags...)
+	model.Auth = authObj
 
 	// Regions
 	if len(dto.Regions) > 0 {
@@ -963,19 +1225,13 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	bodyJSON, err := marshalWithRawAuth(body, plan.Auth)
+	monitor, err := api.Create[generated.MonitorDto](ctx, r.client, api.PathMonitors, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error encoding monitor request body", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create monitor", err, path.Root("name"))
 		return
 	}
 
-	monitor, rawResp, err := api.CreateRaw[generated.MonitorDto](ctx, r.client, api.PathMonitors, bodyJSON)
-	if err != nil {
-		resp.Diagnostics.AddError("Error creating monitor", err.Error())
-		return
-	}
-
-	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))...)
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -989,17 +1245,17 @@ func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
+	monitor, err := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
 	if err != nil {
 		if api.IsNotFound(err) {
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading monitor", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read monitor", err, path.Root("id"))
 		return
 	}
 
-	resp.Diagnostics.Append(r.mapToState(ctx, &state, monitor, extractDataField(rawResp, "auth"))...)
+	resp.Diagnostics.Append(r.mapToState(ctx, &state, monitor)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -1025,21 +1281,6 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	// Auth handling: when the user removes auth in HCL we set clearAuth: true
-	// on the typed body; when the user supplies auth we inject the raw JSON
-	// blob (the typed MonitorAuthConfig field would discard everything beyond
-	// `type`). We never send both, which would be ambiguous.
-	if plan.Auth.IsNull() || plan.Auth.IsUnknown() {
-		clearAuth := true
-		body.ClearAuth = &clearAuth
-	}
-
-	bodyJSON, err := marshalWithRawAuth(body, plan.Auth)
-	if err != nil {
-		resp.Diagnostics.AddError("Error encoding monitor request body", err.Error())
-		return
-	}
-
 	// IMPORTANT: use `state.ID` (not `plan.ID`) for the URL — `plan.ID` is
 	// `Unknown` during Update because the schema marks `id` as Computed; the
 	// only authoritative source for the existing monitor's identifier is the
@@ -1050,36 +1291,68 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// We deliberately discard the PUT response body: its DTO omits the tag
 	// list entirely (so `monitor.Tags` would be misleading), and we re-GET
 	// below to capture the post-reconciliation state authoritatively.
-	if _, _, err := api.UpdateRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()), bodyJSON); err != nil {
-		resp.Diagnostics.AddError("Error updating monitor", err.Error())
+	if _, err := api.Update[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()), body); err != nil {
+		api.AddAPIError(&resp.Diagnostics, "update monitor", err, path.Root("name"))
 		return
 	}
 
-	// The PUT /monitors/{id} response does not echo back the tag set, so we
-	// cannot trust monitor.Tags here as the "current" set when computing the
-	// add/remove delta. The last-persisted tag list in `state.TagIds` is the
-	// authoritative "before" view from Terraform's perspective.
-	if err := r.reconcileTags(ctx, state.ID.ValueString(), plan.TagIds, state.TagIds); err != nil {
-		resp.Diagnostics.AddError("Error reconciling monitor tags", err.Error())
+	// Reconcile tags out-of-band. The PUT above has already mutated the
+	// monitor body server-side; from this point on we MUST refresh state
+	// from the server before returning, even if the tag reconcile fails.
+	// Otherwise the user would see a "before-PUT" snapshot in state while
+	// the API holds the post-PUT body — a half-applied invisible drift
+	// that confuses the next plan and never self-heals.
+	//
+	// `state.TagIds` is used as the authoritative "before" set because
+	// the PUT response DTO omits the tag list entirely; computing the
+	// add/remove delta from it would always look like "remove all".
+	tagErr := r.reconcileTags(ctx, state.ID.ValueString(), plan.TagIds, state.TagIds)
+
+	// Re-GET unconditionally so persisted state always reflects what the
+	// server actually has, including any tag mutations that DID land
+	// before the failing call. This is the partial-state guarantee:
+	// if reconcileTags managed to add tag-A before failing on tag-B,
+	// state will show [tag-A, ...prior] and the next `terraform apply`
+	// will retry only the still-missing operations.
+	monitor, getErr := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
+	if getErr != nil {
+		// Worst case: server mutated, can't refresh. Tell the user to
+		// `terraform refresh` once the API is healthy; we cannot save
+		// honest state from here.
+		if tagErr != nil {
+			resp.Diagnostics.AddError(
+				"Error reconciling monitor tags AND re-reading monitor",
+				fmt.Sprintf("Tag reconcile failed (%s); the follow-up re-read also "+
+					"failed (%s). The monitor body update was accepted server-side "+
+					"but Terraform could not refresh state. Run `terraform refresh` "+
+					"once the API is healthy and re-apply.", tagErr, getErr),
+			)
+			return
+		}
+		resp.Diagnostics.AddError("Error re-reading monitor after tag sync", getErr.Error())
 		return
 	}
 
-	// reconcileTags issues out-of-band POST/DELETE calls to the tags
-	// sub-resource; those mutations are NOT reflected in the DTO returned by
-	// the previous PUT. We must re-GET to capture the post-reconciliation
-	// tag set before calling mapToState, otherwise the persisted state would
-	// describe the monitor as it existed *before* the tag delta was applied.
-	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
-	if err != nil {
-		resp.Diagnostics.AddError("Error re-reading monitor after tag sync", err.Error())
-		return
-	}
-
-	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor, extractDataField(rawResp, "auth"))...)
+	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	// Persist state BEFORE surfacing the tag error: the framework keeps
+	// state changes even when diagnostics carry an error, so this gives
+	// the user an honest, up-to-date snapshot of the half-applied result.
+	// The subsequent AddError below makes the partial outcome loud and
+	// the diff on the next plan will show only the still-missing tags.
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+
+	if tagErr != nil {
+		resp.Diagnostics.AddError(
+			"Error reconciling monitor tags",
+			fmt.Sprintf("The monitor's body was updated successfully, but the "+
+				"follow-up tag reconciliation failed: %s. Terraform state has "+
+				"been refreshed from the server to reflect the current tag set; "+
+				"re-run `terraform apply` to retry the missing tag delta.", tagErr),
+		)
+	}
 }
 
 // reconcileTags brings the monitor's tag set in line with the plan:
@@ -1165,7 +1438,7 @@ func (r *MonitorResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 	err := api.Delete(ctx, r.client, api.MonitorPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting monitor", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete monitor", err, path.Root("id"))
 	}
 }
 
@@ -1209,7 +1482,7 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 		}
 	}
 
-	monitor, rawResp, err := api.GetRaw[generated.MonitorDto](ctx, r.client, api.MonitorPath(monitorID))
+	monitor, err := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(monitorID))
 	if err != nil {
 		resp.Diagnostics.AddError("Error fetching monitor for import", err.Error())
 		return
@@ -1231,7 +1504,7 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 	model.Regions = types.ListNull(types.StringType)
 	model.TagIds = types.ListNull(types.StringType)
 	model.AlertChannelIds = types.ListNull(types.StringType)
-	resp.Diagnostics.Append(r.mapToState(ctx, &model, monitor, extractDataField(rawResp, "auth"))...)
+	resp.Diagnostics.Append(r.mapToState(ctx, &model, monitor)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}

@@ -7,14 +7,17 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -104,8 +107,15 @@ func (r *NotificationPolicyResource) Schema(_ context.Context, _ resource.Schema
 				NestedObject: schema.NestedBlockObject{
 					Attributes: map[string]schema.Attribute{
 						"type": schema.StringAttribute{
-							Required:    true,
-							Description: "Rule type (e.g. monitor_name, tag, region)",
+							Required: true,
+							Description: "Rule type discriminator. One of: " +
+								"component_name_in, incident_status, monitor_id_in, " +
+								"monitor_type_in, region_in, resource_group_id_in, " +
+								"service_id_in, severity_gte. Spec source of truth: " +
+								"`MatchRuleType` enum.",
+							Validators: []validator.String{
+								stringvalidator.OneOf(api.MatchRuleTypes...),
+							},
 						},
 						"value": schema.StringAttribute{
 							Optional: true, Description: "Single match value",
@@ -188,7 +198,7 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 			return nil, err
 		}
 		apiRules = append(apiRules, generated.MatchRule{
-			Type:       mr.Type.ValueString(),
+			Type:       generated.MatchRuleType(mr.Type.ValueString()),
 			Value:      stringPtrOrNil(mr.Value),
 			Values:     stringSliceToPtr(mr.Values),
 			MonitorIds: monitorIDs,
@@ -254,7 +264,7 @@ func (r *NotificationPolicyResource) buildUpdateRequest(ctx context.Context, pla
 			return nil, err
 		}
 		apiRules = append(apiRules, generated.MatchRule{
-			Type:       mr.Type.ValueString(),
+			Type:       generated.MatchRuleType(mr.Type.ValueString()),
 			Value:      stringPtrOrNil(mr.Value),
 			Values:     stringSliceToPtr(mr.Values),
 			MonitorIds: monitorIDs,
@@ -299,7 +309,7 @@ func (r *NotificationPolicyResource) Create(ctx context.Context, req resource.Cr
 
 	policy, err := api.Create[generated.NotificationPolicyDto](ctx, r.client, api.PathNotificationPolicies, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating notification policy", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create notification policy", err, path.Root("name"))
 		return
 	}
 
@@ -415,7 +425,7 @@ func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *Noti
 				}
 			}
 			rm := matchRuleModel{
-				Type:  types.StringValue(mr.Type),
+				Type:  types.StringValue(string(mr.Type)),
 				Value: val,
 			}
 			rm.Values = ptrStringSliceToList(ctx, mr.Values)
@@ -446,7 +456,7 @@ func (r *NotificationPolicyResource) Read(ctx context.Context, req resource.Read
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading notification policy", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read notification policy", err, path.Root("id"))
 		return
 	}
 
@@ -478,7 +488,7 @@ func (r *NotificationPolicyResource) Update(ctx context.Context, req resource.Up
 
 	policy, err := api.Update[generated.NotificationPolicyDto](ctx, r.client, api.NotificationPolicyPath(state.ID.ValueString()), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating notification policy", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update notification policy", err, path.Root("name"))
 		return
 	}
 
@@ -498,7 +508,7 @@ func (r *NotificationPolicyResource) Delete(ctx context.Context, req resource.De
 
 	err := api.Delete(ctx, r.client, api.NotificationPolicyPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting notification policy", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete notification policy", err, path.Root("id"))
 	}
 }
 
@@ -543,7 +553,7 @@ func (r *NotificationPolicyResource) ImportState(ctx context.Context, req resour
 
 	policy, err := api.Get[generated.NotificationPolicyDto](ctx, r.client, api.NotificationPolicyPath(policyID))
 	if err != nil {
-		resp.Diagnostics.AddError("Error reading notification policy for import", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read notification policy for import", err, path.Root("id"))
 		return
 	}
 

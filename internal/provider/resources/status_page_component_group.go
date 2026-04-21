@@ -160,7 +160,7 @@ func (r *StatusPageComponentGroupResource) Create(ctx context.Context, req resou
 		body,
 	)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating component group", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create component group", err, path.Root("name"))
 		return
 	}
 
@@ -188,7 +188,7 @@ func (r *StatusPageComponentGroupResource) Read(ctx context.Context, req resourc
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading component groups", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read component groups", err, path.Root("id"))
 		return
 	}
 
@@ -230,7 +230,7 @@ func (r *StatusPageComponentGroupResource) Update(ctx context.Context, req resou
 		body,
 	)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating component group", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update component group", err, path.Root("name"))
 		return
 	}
 
@@ -249,7 +249,7 @@ func (r *StatusPageComponentGroupResource) Delete(ctx context.Context, req resou
 		api.StatusPageGroupPath(state.StatusPageID.ValueString(), state.ID.ValueString()),
 	)
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting component group", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete component group", err, path.Root("id"))
 	}
 }
 

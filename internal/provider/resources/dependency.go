@@ -62,10 +62,10 @@ func (r *DependencyResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				Description: "Alert sensitivity: ALL, INCIDENTS_ONLY, or MAJOR_ONLY (default: ALL, computed by the API)",
 				Validators: []validator.String{
 					stringvalidator.OneOf(
-					string(generated.ALL),
-					string(generated.INCIDENTSONLY),
-					string(generated.MAJORONLY),
-				),
+						string(generated.ALL),
+						string(generated.INCIDENTSONLY),
+						string(generated.MAJORONLY),
+					),
 				},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
@@ -115,7 +115,7 @@ func (r *DependencyResource) Create(ctx context.Context, req resource.CreateRequ
 		body,
 	)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating dependency", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create dependency", err, path.Root("name"))
 		return
 	}
 
@@ -139,7 +139,7 @@ func (r *DependencyResource) Read(ctx context.Context, req resource.ReadRequest,
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading dependency", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read dependency", err, path.Root("id"))
 		return
 	}
 
@@ -173,7 +173,7 @@ func (r *DependencyResource) Update(ctx context.Context, req resource.UpdateRequ
 			body,
 		)
 		if err != nil {
-			resp.Diagnostics.AddError("Error updating alert sensitivity", err.Error())
+			api.AddAPIError(&resp.Diagnostics, "update alert sensitivity", err, path.Root("name"))
 			return
 		}
 	}
@@ -192,7 +192,7 @@ func (r *DependencyResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 	err := api.Delete(ctx, r.client, api.ServiceSubscriptionPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting dependency", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete dependency", err, path.Root("id"))
 	}
 }
 

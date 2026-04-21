@@ -93,13 +93,13 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 
 	body := generated.CreateWebhookEndpointRequest{
 		Url:              plan.URL.ValueString(),
-		SubscribedEvents: stringSetToSlice(plan.SubscribedEvents),
+		SubscribedEvents: subscribedEventsCreateFromSet(plan.SubscribedEvents),
 		Description:      stringPtrOrNil(plan.Description),
 	}
 
 	wh, err := api.Create[generated.WebhookEndpointDto](ctx, r.client, api.PathWebhooks, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating webhook", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create webhook", err, path.Root("name"))
 		return
 	}
 
@@ -116,10 +116,47 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 			ctx, r.client, api.WebhookPath(wh.Id.String()), updateBody,
 		)
 		if updateErr != nil {
+			// Orphan cleanup: the webhook was created server-side but
+			// could not be flipped to the user's requested disabled
+			// state. Best-effort DELETE removes the half-created
+			// resource so a re-apply doesn't accumulate a fresh
+			// webhook (with a new id) on every retry.
+			//
+			// If the DELETE itself fails we cannot clean up — at that
+			// point we save partial state containing the orphan id so
+			// `terraform destroy` (or a future Update with
+			// `enabled = true`) can take over, and we surface BOTH
+			// errors so the operator can investigate.
+			delErr := api.Delete(ctx, r.client, api.WebhookPath(wh.Id.String()))
+			if delErr != nil && !api.IsNotFound(delErr) {
+				// Save the orphan into state so the next plan owns it
+				// and `terraform destroy` cleans it up. Mirror the
+				// post-POST DTO (enabled=true, since the disable
+				// failed) so the next plan accurately shows the
+				// pending `enabled: true -> false` diff.
+				plan.ID = types.StringValue(wh.Id.String())
+				plan.URL = types.StringValue(wh.Url)
+				plan.Description = stringValue(wh.Description)
+				plan.Enabled = types.BoolValue(wh.Enabled)
+				plan.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
+				resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+
+				resp.Diagnostics.AddError(
+					"Error disabling webhook after create (orphan cleanup also failed)",
+					fmt.Sprintf("Webhook was created (id=%s) but the follow-up "+
+						"disable request failed: %s. The follow-up DELETE intended "+
+						"to remove the orphan also failed: %s. Terraform state has "+
+						"been populated with the orphaned id so `terraform destroy` "+
+						"or a re-apply with `enabled = true` can take over.", wh.Id, updateErr, delErr),
+				)
+				return
+			}
 			resp.Diagnostics.AddError(
 				"Error disabling webhook after create",
-				fmt.Sprintf("Webhook was created (id=%s) but the follow-up disable request failed: %s. "+
-					"Re-run `terraform apply` to retry, or set `enabled = true` in your config.", wh.Id, updateErr),
+				fmt.Sprintf("Webhook was created (id=%s) and then deleted because "+
+					"the follow-up disable request failed: %s. Re-run "+
+					"`terraform apply` to retry the create+disable sequence, or "+
+					"set `enabled = true` in your config.", wh.Id, updateErr),
 			)
 			return
 		}
@@ -147,7 +184,7 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading webhook", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read webhook", err, path.Root("id"))
 		return
 	}
 
@@ -176,12 +213,12 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 		Url:              &urlStr,
 		Description:      stringPtrOrNil(plan.Description),
 		Enabled:          boolPtrOrNil(plan.Enabled),
-		SubscribedEvents: stringSliceToPtrFromSet(plan.SubscribedEvents),
+		SubscribedEvents: subscribedEventsUpdateFromSet(plan.SubscribedEvents),
 	}
 
 	wh, err := api.Update[generated.WebhookEndpointDto](ctx, r.client, api.WebhookPath(state.ID.ValueString()), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating webhook", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update webhook", err, path.Root("name"))
 		return
 	}
 
@@ -202,7 +239,7 @@ func (r *WebhookResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 	err := api.Delete(ctx, r.client, api.WebhookPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting webhook", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete webhook", err, path.Root("id"))
 	}
 }
 
@@ -226,3 +263,44 @@ func (r *WebhookResource) ImportState(ctx context.Context, req resource.ImportSt
 
 	resp.Diagnostics.AddError("Webhook not found", fmt.Sprintf("No webhook found with URL or ID %q", req.ID))
 }
+
+// subscribedEventsCreateFromSet converts the TF Set of strings into the
+// strongly-typed `[]CreateWebhookEndpointRequestSubscribedEvents` slice the
+// generated request body expects. Each enum constant is a string typedef,
+// so a direct conversion is safe (stringValidator on the schema attribute
+// already rejects unknown values at plan time).
+func subscribedEventsCreateFromSet(set types.Set) []generated.CreateWebhookEndpointRequestSubscribedEvents {
+	if set.IsNull() || set.IsUnknown() {
+		return nil
+	}
+	out := make([]generated.CreateWebhookEndpointRequestSubscribedEvents, 0, len(set.Elements()))
+	for _, v := range set.Elements() {
+		if sv, ok := v.(types.String); ok {
+			out = append(out, generated.CreateWebhookEndpointRequestSubscribedEvents(sv.ValueString()))
+		}
+	}
+	return out
+}
+
+// subscribedEventsUpdateFromSet mirrors the above for the update payload's
+// nullable `*[]UpdateWebhookEndpointRequestSubscribedEvents`. Returns nil
+// (preserves the current value) when the user omits the attribute.
+func subscribedEventsUpdateFromSet(set types.Set) *[]generated.UpdateWebhookEndpointRequestSubscribedEvents {
+	if set.IsNull() || set.IsUnknown() {
+		return nil
+	}
+	out := make([]generated.UpdateWebhookEndpointRequestSubscribedEvents, 0, len(set.Elements()))
+	for _, v := range set.Elements() {
+		if sv, ok := v.(types.String); ok {
+			out = append(out, generated.UpdateWebhookEndpointRequestSubscribedEvents(sv.ValueString()))
+		}
+	}
+	return &out
+}
+
+// Note on read-path symmetry: WebhookEndpointDto.SubscribedEvents is still
+// `[]string` in the spec (only the request types got the enum upgrade in
+// the latest spec push). The existing stringSliceToSet helper handles it
+// directly. If the response type ever picks up the same enum typedef,
+// add a `subscribedEventsToStringSlice[T ~string]` helper here mirroring
+// the create/update converters above.

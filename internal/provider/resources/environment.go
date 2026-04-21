@@ -6,6 +6,7 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -105,7 +106,7 @@ func (r *EnvironmentResource) Create(ctx context.Context, req resource.CreateReq
 
 	env, err := api.Create[generated.EnvironmentDto](ctx, r.client, api.PathEnvironments, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating environment", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create environment", err, path.Root("name"))
 		return
 	}
 
@@ -126,7 +127,7 @@ func (r *EnvironmentResource) Read(ctx context.Context, req resource.ReadRequest
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading environment", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read environment", err, path.Root("id"))
 		return
 	}
 
@@ -150,7 +151,7 @@ func (r *EnvironmentResource) Update(ctx context.Context, req resource.UpdateReq
 
 	env, err := api.Update[generated.EnvironmentDto](ctx, r.client, api.EnvironmentPath(plan.Slug.ValueString()), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating environment", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update environment", err, path.Root("name"))
 		return
 	}
 
@@ -167,7 +168,7 @@ func (r *EnvironmentResource) Delete(ctx context.Context, req resource.DeleteReq
 
 	err := api.Delete(ctx, r.client, api.EnvironmentPath(state.Slug.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting environment", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete environment", err, path.Root("id"))
 	}
 }
 

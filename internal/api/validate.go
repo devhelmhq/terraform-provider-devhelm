@@ -108,10 +108,24 @@ func validateStruct(v reflect.Value, prefix string, errs *[]string) {
 		}
 
 		// Non-pointer fields are required — check for zero value.
-		// Bool is excluded: `false` is the zero value but a perfectly valid
-		// API response, and json.Unmarshal cannot distinguish "absent" from
-		// "explicitly false".
-		if fv.IsZero() && field.Type.Kind() != reflect.Bool {
+		// Exclusions (kinds where the zero value is a legitimate API
+		// response and indistinguishable from "absent" after
+		// json.Unmarshal):
+		//   - Bool: `false` is valid (e.g. `enabled: false`).
+		//   - Numerics (Int*, Uint*, Float*): `0` is valid (e.g.
+		//     `consecutiveFailures: 0` on a fresh webhook,
+		//     `monitorCount: 0` on an empty resource group,
+		//     `priority: 0` on a default notification policy).
+		//   - Nested struct: a zero struct may legitimately come from
+		//     a JSON `{}` payload when every field of the nested type
+		//     is optional. Recursion below validates whatever fields
+		//     are present without false-positiving on this case.
+		//
+		// Strings, UUIDs, time.Time (handled above), slices, and
+		// enum-typed fields are still zero-checked because either
+		// (a) the empty value is not a meaningful API output, or
+		// (b) the spec does not allow it for required fields.
+		if fv.IsZero() && !isZeroValidKind(field.Type.Kind()) {
 			if field.Type.Kind() == reflect.Slice {
 				*errs = append(*errs, fmt.Sprintf("%s: required array is missing", fullName))
 			} else {
@@ -132,6 +146,29 @@ func validateStruct(v reflect.Value, prefix string, errs *[]string) {
 		if fv.Kind() == reflect.Struct {
 			validateStruct(fv, fullName, errs)
 		}
+	}
+}
+
+// isZeroValidKind reports whether the zero value of the given Kind is a
+// legitimate API response value that the validator must NOT reject.
+//
+// The OpenAPI generator emits required scalars as Go value types (no
+// pointer), so reflect.IsZero cannot distinguish "the API sent 0/false"
+// from "the API omitted the field". For these kinds the spec allows 0
+// or false as a valid value, so we trust the type-system contract
+// (required ⇒ value-typed) and accept the zero value. For string, UUID,
+// time.Time, and enum-typed fields the zero value is not a valid
+// required output, so we keep the zero-check.
+func isZeroValidKind(k reflect.Kind) bool {
+	switch k {
+	case reflect.Bool,
+		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+		reflect.Float32, reflect.Float64,
+		reflect.Struct:
+		return true
+	default:
+		return false
 	}
 }
 

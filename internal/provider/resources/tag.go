@@ -88,7 +88,7 @@ func (r *TagResource) Create(ctx context.Context, req resource.CreateRequest, re
 
 	tag, err := api.Create[generated.TagDto](ctx, r.client, api.PathTags, body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating tag", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "create tag", err, path.Root("name"))
 		return
 	}
 
@@ -111,7 +111,7 @@ func (r *TagResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 			resp.State.RemoveResource(ctx)
 			return
 		}
-		resp.Diagnostics.AddError("Error reading tag", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "read tag", err, path.Root("id"))
 		return
 	}
 
@@ -141,7 +141,7 @@ func (r *TagResource) Update(ctx context.Context, req resource.UpdateRequest, re
 
 	tag, err := api.Update[generated.TagDto](ctx, r.client, api.TagPath(state.ID.ValueString()), body)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating tag", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "update tag", err, path.Root("name"))
 		return
 	}
 
@@ -160,14 +160,14 @@ func (r *TagResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 
 	err := api.Delete(ctx, r.client, api.TagPath(state.ID.ValueString()))
 	if err != nil && !api.IsNotFound(err) {
-		resp.Diagnostics.AddError("Error deleting tag", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "delete tag", err, path.Root("id"))
 	}
 }
 
 func (r *TagResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tags, err := api.List[generated.TagDto](ctx, r.client, api.PathTags)
 	if err != nil {
-		resp.Diagnostics.AddError("Error listing tags for import", err.Error())
+		api.AddAPIError(&resp.Diagnostics, "list tags for import", err, path.Root("id"))
 		return
 	}
 
@@ -189,7 +189,7 @@ func (r *TagResource) ImportState(ctx context.Context, req resource.ImportStateR
 	if matched == nil {
 		switch len(matchedByName) {
 		case 0:
-			resp.Diagnostics.AddError("Tag not found", fmt.Sprintf("No tag found with name or ID %q", req.ID))
+			api.AddNotFoundError(&resp.Diagnostics, "Tag", req.ID)
 			return
 		case 1:
 			matched = matchedByName[0]
@@ -198,7 +198,8 @@ func (r *TagResource) ImportState(ctx context.Context, req resource.ImportStateR
 			for i, t := range matchedByName {
 				ids[i] = t.Id.String()
 			}
-			resp.Diagnostics.AddError(
+			resp.Diagnostics.AddAttributeError(
+				path.Root("id"),
 				"Ambiguous tag import",
 				fmt.Sprintf("%d tags share the name %q (ids: %v). Import by UUID instead.", len(matchedByName), req.ID, ids),
 			)

@@ -9,7 +9,9 @@ import (
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -59,7 +61,7 @@ func TestBuildCreateRequest_PopulatesEveryRequiredField(t *testing.T) {
 			types.StringValue(tagID),
 		}),
 		Config:         types.StringValue(`{"url":"https://acme.com","method":"GET"}`),
-		Auth:           types.StringValue(`{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`),
+		Auth:           mustAuthObject(t, "bearer", "", "00000000-0000-0000-0000-000000000123"),
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
@@ -93,19 +95,22 @@ func TestBuildCreateRequest_PopulatesEveryRequiredField(t *testing.T) {
 	if body.AlertChannelIds == nil || len(*body.AlertChannelIds) != 1 {
 		t.Errorf("AlertChannelIds = %v, want 1 entry", body.AlertChannelIds)
 	}
-	// req.Auth is intentionally nil: the typed MonitorAuthConfig field
-	// would drop every credential beyond `type`. The auth blob is merged
-	// in via marshalWithRawAuth at request-encode time. Verify here that
-	// the merge produces a final JSON containing the user's raw auth.
-	if body.Auth != nil {
-		t.Errorf("body.Auth = %v, want nil (auth is injected via raw JSON merge, not via typed field)", body.Auth)
+	// body.Auth must be the typed MonitorAuthConfig union populated
+	// from the user's HCL `auth { bearer = {...} }` block. Verify both
+	// the discriminator and the vaultSecretId round-trip via the typed
+	// shape — no raw-JSON merge needed.
+	if body.Auth == nil {
+		t.Fatal("body.Auth = nil, want populated MonitorAuthConfig")
 	}
-	merged, err := marshalWithRawAuth(body, plan.Auth)
+	wire, err := body.Auth.MarshalJSON()
 	if err != nil {
-		t.Fatalf("marshalWithRawAuth: %v", err)
+		t.Fatalf("marshal Auth: %v", err)
 	}
-	if !strings.Contains(string(merged), `"vaultSecretId":"00000000-0000-0000-0000-000000000123"`) {
-		t.Errorf("marshaled body does not preserve raw auth credentials: %s", merged)
+	if !strings.Contains(string(wire), `"type":"bearer"`) {
+		t.Errorf("wire body missing bearer discriminator: %s", wire)
+	}
+	if !strings.Contains(string(wire), `"vaultSecretId":"00000000-0000-0000-0000-000000000123"`) {
+		t.Errorf("wire body missing vaultSecretId: %s", wire)
 	}
 	if body.Tags == nil || body.Tags.TagIds == nil || len(*body.Tags.TagIds) != 1 {
 		t.Errorf("Tags = %v, want 1 entry passed through embedded create body", body.Tags)
@@ -120,7 +125,7 @@ func TestBuildCreateRequest_AuthOmittedReachesAPIAsNil(t *testing.T) {
 		Name:           types.StringValue("noauth"),
 		Type:           types.StringValue("HTTP"),
 		Config:         types.StringValue(`{"url":"https://example.com"}`),
-		Auth:           types.StringNull(),
+		Auth:           types.ObjectNull(monitorAuthObjectType().AttrTypes),
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
@@ -144,6 +149,7 @@ func TestBuildCreateRequest_InvalidUUIDInChannelIdsErrors(t *testing.T) {
 		AlertChannelIds: types.ListValueMust(types.StringType, []attr.Value{
 			types.StringValue("not-a-uuid"),
 		}),
+		Auth:           types.ObjectNull(monitorAuthObjectType().AttrTypes),
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
@@ -154,12 +160,11 @@ func TestBuildCreateRequest_InvalidUUIDInChannelIdsErrors(t *testing.T) {
 
 // ── buildUpdateRequest (Class D + E) ────────────────────────────────────
 
-// TestBuildUpdateRequest_AuthNullProducesClearAuthInWireBody mirrors
-// the post-spec-sync design: buildUpdateRequest leaves req.Auth nil
-// (typed field would discard everything but `type`), and the Update
-// handler sets ClearAuth=true when plan.Auth is null. Verify the final
-// wire JSON has clearAuth:true and no auth payload.
-func TestBuildUpdateRequest_AuthNullProducesClearAuthInWireBody(t *testing.T) {
+// TestBuildUpdateRequest_AuthNullProducesClearAuth mirrors the
+// post-spec-sync design: buildUpdateRequest sets ClearAuth=true and
+// leaves Auth nil when plan.Auth is null, so the API drops any
+// previously-attached credential.
+func TestBuildUpdateRequest_AuthNullProducesClearAuth(t *testing.T) {
 	ctx := context.Background()
 	r := &MonitorResource{}
 
@@ -167,7 +172,7 @@ func TestBuildUpdateRequest_AuthNullProducesClearAuthInWireBody(t *testing.T) {
 		Name:           types.StringValue("noauth"),
 		Type:           types.StringValue("HTTP"),
 		Config:         types.StringValue(`{"url":"https://example.com"}`),
-		Auth:           types.StringNull(),
+		Auth:           types.ObjectNull(monitorAuthObjectType().AttrTypes),
 		EnvironmentID:  types.StringValue(uuid.New().String()),
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
@@ -177,33 +182,35 @@ func TestBuildUpdateRequest_AuthNullProducesClearAuthInWireBody(t *testing.T) {
 		t.Fatalf("buildUpdateRequest: %v", err)
 	}
 	if body.Auth != nil {
-		t.Errorf("body.Auth = %v, want nil (auth managed via raw JSON merge / clearAuth flag)", body.Auth)
+		t.Errorf("body.Auth = %v, want nil (null plan auth must produce nil Auth + ClearAuth=true)", body.Auth)
 	}
-	// Simulate Update()'s clearAuth wiring.
-	clearAuth := true
-	body.ClearAuth = &clearAuth
+	if body.ClearAuth == nil || !*body.ClearAuth {
+		t.Errorf("ClearAuth = %v, want true (auth-null update must explicitly clear so the API drops the existing credential)", body.ClearAuth)
+	}
 
-	wire, err := marshalWithRawAuth(body, plan.Auth)
+	// The full wire body must serialize Auth as omitted (`omitempty`)
+	// while keeping `clearAuth: true` present.
+	wire, err := json.Marshal(body)
 	if err != nil {
-		t.Fatalf("marshalWithRawAuth: %v", err)
+		t.Fatalf("marshal body: %v", err)
 	}
 	var got map[string]any
 	if err := json.Unmarshal(wire, &got); err != nil {
 		t.Fatalf("unmarshal wire body: %v", err)
 	}
 	if got["clearAuth"] != true {
-		t.Errorf("clearAuth = %v, want true (auth-null update must explicitly clear, not just omit, so the API drops the existing credential)", got["clearAuth"])
+		t.Errorf("clearAuth = %v, want true", got["clearAuth"])
 	}
 	if _, present := got["auth"]; present {
 		t.Errorf("auth key present in wire body alongside clearAuth=true (must be one or the other): %v", got["auth"])
 	}
 }
 
-// TestBuildUpdateRequest_AuthSetMergesIntoWireBody verifies that
-// plan.Auth supplied as raw JSON ends up in the marshaled request body
-// (verbatim, not via the typed MonitorAuthConfig field which lossily
-// flattens to {type: ...}).
-func TestBuildUpdateRequest_AuthSetMergesIntoWireBody(t *testing.T) {
+// TestBuildUpdateRequest_AuthSetPopulatesTypedUnion verifies that
+// plan.Auth supplied as a typed `auth { bearer = {...} }` block ends up
+// in the request body via the typed MonitorAuthConfig union — no raw
+// merge required.
+func TestBuildUpdateRequest_AuthSetPopulatesTypedUnion(t *testing.T) {
 	ctx := context.Background()
 	r := &MonitorResource{}
 
@@ -211,7 +218,7 @@ func TestBuildUpdateRequest_AuthSetMergesIntoWireBody(t *testing.T) {
 		Name:           types.StringValue("withauth"),
 		Type:           types.StringValue("HTTP"),
 		Config:         types.StringValue(`{"url":"https://example.com"}`),
-		Auth:           types.StringValue(`{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`),
+		Auth:           mustAuthObject(t, "bearer", "", "00000000-0000-0000-0000-000000000123"),
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
@@ -219,19 +226,22 @@ func TestBuildUpdateRequest_AuthSetMergesIntoWireBody(t *testing.T) {
 	if err != nil {
 		t.Fatalf("buildUpdateRequest: %v", err)
 	}
-	if body.Auth != nil {
-		t.Errorf("body.Auth = %v, want nil (typed field is bypassed in favor of raw merge)", body.Auth)
+	if body.Auth == nil {
+		t.Fatal("body.Auth = nil, want populated MonitorAuthConfig union")
 	}
 	if body.ClearAuth != nil && *body.ClearAuth {
 		t.Errorf("ClearAuth = true alongside an auth-set plan; wire body would be ambiguous")
 	}
 
-	wire, err := marshalWithRawAuth(body, plan.Auth)
+	wire, err := body.Auth.MarshalJSON()
 	if err != nil {
-		t.Fatalf("marshalWithRawAuth: %v", err)
+		t.Fatalf("marshal auth union: %v", err)
+	}
+	if !strings.Contains(string(wire), `"type":"bearer"`) {
+		t.Errorf("wire body missing bearer discriminator: %s", wire)
 	}
 	if !strings.Contains(string(wire), `"vaultSecretId":"00000000-0000-0000-0000-000000000123"`) {
-		t.Errorf("wire body does not preserve raw auth credentials: %s", wire)
+		t.Errorf("wire body does not preserve vaultSecretId: %s", wire)
 	}
 }
 
@@ -243,7 +253,7 @@ func TestBuildUpdateRequest_EnvironmentIDNullSetsClearEnvironmentId(t *testing.T
 		Name:           types.StringValue("noenv"),
 		Type:           types.StringValue("HTTP"),
 		Config:         types.StringValue(`{"url":"https://example.com"}`),
-		Auth:           types.StringValue(`{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`),
+		Auth:           mustAuthObject(t, "bearer", "", "00000000-0000-0000-0000-000000000123"),
 		EnvironmentID:  types.StringNull(),
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
@@ -272,6 +282,7 @@ func TestBuildUpdateRequest_RegionsAndChannelsExplicitEmptyClears(t *testing.T) 
 		Name:            types.StringValue("clearcollections"),
 		Type:            types.StringValue("HTTP"),
 		Config:          types.StringValue(`{"url":"https://example.com"}`),
+		Auth:            types.ObjectNull(monitorAuthObjectType().AttrTypes),
 		Regions:         types.ListValueMust(types.StringType, []attr.Value{}),
 		AlertChannelIds: types.ListValueMust(types.StringType, []attr.Value{}),
 		Assertions:      types.ListNull(assertionObjectType()),
@@ -307,6 +318,7 @@ func TestBuildUpdateRequest_RegionsAndChannelsNullPreserves(t *testing.T) {
 		Name:            types.StringValue("preserve"),
 		Type:            types.StringValue("HTTP"),
 		Config:          types.StringValue(`{"url":"https://example.com"}`),
+		Auth:            types.ObjectNull(monitorAuthObjectType().AttrTypes),
 		Regions:         types.ListNull(types.StringType),
 		AlertChannelIds: types.ListNull(types.StringType),
 		Assertions:      types.ListNull(assertionObjectType()),
@@ -406,7 +418,7 @@ func TestMonitor_MapToState_PopulatesEveryFieldFromDto(t *testing.T) {
 	// marshaling errors. The fully-populated DTO is the happy path —
 	// asserting no diagnostics here locks in the contract that the
 	// "obvious" mapping never silently drops a framework error.
-	if diags := r.mapToState(ctx, model, dto, `{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123"}`); diags.HasError() {
+	if diags := r.mapToState(ctx, model, dto); diags.HasError() {
 		t.Fatalf("mapToState returned errors: %v", diags)
 	}
 
@@ -443,8 +455,20 @@ func TestMonitor_MapToState_PopulatesEveryFieldFromDto(t *testing.T) {
 	if !strings.Contains(model.Config.ValueString(), `"url":"https://example.com"`) {
 		t.Errorf("Config = %s", model.Config.ValueString())
 	}
-	if !strings.Contains(model.Auth.ValueString(), `"type":"bearer"`) {
-		t.Errorf("Auth = %s", model.Auth.ValueString())
+	if model.Auth.IsNull() {
+		t.Errorf("Auth = null, want populated bearer variant")
+	} else {
+		// Decode and verify the bearer variant is populated.
+		var am authModel
+		if d := model.Auth.As(ctx, &am, basetypes.ObjectAsOptions{
+			UnhandledNullAsEmpty:    true,
+			UnhandledUnknownAsEmpty: true,
+		}); d.HasError() {
+			t.Errorf("decode model.Auth: %v", d)
+		}
+		if am.Bearer.IsNull() {
+			t.Errorf("Auth.bearer = null, want populated (DTO had bearer variant)")
+		}
 	}
 	if got := len(model.Assertions.Elements()); got != 1 {
 		t.Errorf("Assertions len = %d", got)
@@ -463,9 +487,9 @@ func TestMonitor_MapToState_Idempotent(t *testing.T) {
 	dto := fullyPopulatedMonitorDto(t)
 
 	first := &MonitorResourceModel{}
-	r.mapToState(ctx, first, dto, "")
+	r.mapToState(ctx, first, dto)
 	second := *first
-	r.mapToState(ctx, &second, dto, "")
+	r.mapToState(ctx, &second, dto)
 
 	mustJSON := func(m MonitorResourceModel) string {
 		// Compare via a stable serialization. Direct struct comparison
@@ -478,7 +502,7 @@ func TestMonitor_MapToState_Idempotent(t *testing.T) {
 			Enabled                                      bool
 		}{
 			m.ID.ValueString(), m.Name.ValueString(), m.Type.ValueString(),
-			m.Config.ValueString(), m.Auth.ValueString(), m.PingUrl.ValueString(),
+			m.Config.ValueString(), m.Auth.String(), m.PingUrl.ValueString(),
 			m.EnvironmentID.ValueString(),
 			m.FrequencySeconds.ValueInt64(),
 			len(m.Regions.Elements()), len(m.AlertChannelIds.Elements()),
@@ -506,16 +530,20 @@ func TestMonitor_MapToState_NoEnvironmentClearsField(t *testing.T) {
 	dto.Environment = nil // unset
 
 	model := &MonitorResourceModel{}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 	if !model.EnvironmentID.IsNull() {
 		t.Errorf("EnvironmentID = %v, want null when DTO env is zero", model.EnvironmentID)
 	}
 }
 
-// TestMonitor_MapToState_NormalizesAuthAndConfigJSON: server-echoed nulls
-// in optional fields must be stripped so they do not appear as drift in
-// the next plan against a HCL config that omits them.
-func TestMonitor_MapToState_NormalizesAuthAndConfigJSON(t *testing.T) {
+// TestMonitor_MapToState_NormalizesConfigJSON: server-echoed nulls in
+// optional `config` fields must be stripped so they do not appear as
+// drift in the next plan against a HCL config that omits them.
+//
+// (Auth used to live in this test as raw JSON; with the typed nested
+// schema, null-stripping is handled by the typed conversion in
+// mapMonitorAuthToTF.)
+func TestMonitor_MapToState_NormalizesConfigJSON(t *testing.T) {
 	ctx := context.Background()
 	r := &MonitorResource{}
 	dto := fullyPopulatedMonitorDto(t)
@@ -524,16 +552,11 @@ func TestMonitor_MapToState_NormalizesAuthAndConfigJSON(t *testing.T) {
 	_ = cfg.UnmarshalJSON([]byte(`{"url":"https://example.com","method":"GET","customHeaders":null}`))
 	dto.Config = cfg
 
-	rawAuth := `{"type":"bearer","vaultSecretId":"00000000-0000-0000-0000-000000000123","headerName":null}`
-
 	model := &MonitorResourceModel{}
-	r.mapToState(ctx, model, dto, rawAuth)
+	r.mapToState(ctx, model, dto)
 
 	if strings.Contains(model.Config.ValueString(), "null") {
 		t.Errorf("Config still contains null: %s", model.Config.ValueString())
-	}
-	if strings.Contains(model.Auth.ValueString(), "null") {
-		t.Errorf("Auth still contains null: %s", model.Auth.ValueString())
 	}
 }
 
@@ -574,7 +597,7 @@ func TestMonitor_AssertionMatching_PreservesUserSeverityCasing(t *testing.T) {
 	priorList, _ := types.ListValue(assertionObjectType(), []attr.Value{priorElem})
 
 	model := &MonitorResourceModel{Assertions: priorList}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 
 	var assertions []assertionModel
 	_ = model.Assertions.ElementsAs(ctx, &assertions, false)
@@ -616,7 +639,7 @@ func TestMonitor_AssertionMatching_KeepsNullSeverityWhenUserOmitted(t *testing.T
 	priorList, _ := types.ListValue(assertionObjectType(), []attr.Value{priorElem})
 
 	model := &MonitorResourceModel{Assertions: priorList}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 
 	var assertions []assertionModel
 	_ = model.Assertions.ElementsAs(ctx, &assertions, false)
@@ -651,7 +674,7 @@ func TestMonitor_AssertionMatching_ImportPathPopulatesSeverity(t *testing.T) {
 	// Empty list mimics ImportState's pre-initialization.
 	emptyList, _ := types.ListValue(assertionObjectType(), []attr.Value{})
 	model := &MonitorResourceModel{Assertions: emptyList}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 
 	var assertions []assertionModel
 	_ = model.Assertions.ElementsAs(ctx, &assertions, false)
@@ -700,7 +723,7 @@ func TestMonitor_AssertionMatching_FIFOForDuplicates(t *testing.T) {
 	})
 
 	model := &MonitorResourceModel{Assertions: priorList}
-	r.mapToState(ctx, model, dto, "")
+	r.mapToState(ctx, model, dto)
 
 	var assertions []assertionModel
 	_ = model.Assertions.ElementsAs(ctx, &assertions, false)
@@ -802,5 +825,104 @@ func TestReconcileTags_RejectsInvalidExistingTagID(t *testing.T) {
 	state := stringList(t, ctx, "also-not-a-uuid")
 	if err := r.reconcileTags(ctx, "00000000-0000-0000-0000-0000000000aa", plan, state); err == nil {
 		t.Fatalf("expected error for invalid existing tag id, got nil")
+	}
+}
+
+// ── ValidateConfig — per-type config JSON validation (Class C) ─────────
+//
+// These tests exercise validateMonitorConfigJSON directly so we can assert
+// the three failure classes (parse error, unknown field, missing required)
+// produce attribute-scoped diagnostics on `config`. The valid cases lock in
+// that conforming payloads pass cleanly for every monitor type.
+
+func TestValidateMonitorConfigJSON_ValidPayloadsPassForEveryType(t *testing.T) {
+	cases := map[generated.CreateMonitorRequestType]string{
+		generated.CreateMonitorRequestTypeHTTP:      `{"url":"https://example.com","method":"GET"}`,
+		generated.CreateMonitorRequestTypeDNS:       `{"hostname":"example.com"}`,
+		generated.CreateMonitorRequestTypeTCP:       `{"host":"db.example.com","port":5432}`,
+		generated.CreateMonitorRequestTypeICMP:      `{"host":"router.example.com"}`,
+		generated.CreateMonitorRequestTypeHEARTBEAT: `{"expectedInterval":86400,"gracePeriod":3600}`,
+		generated.CreateMonitorRequestTypeMCPSERVER: `{"command":"node"}`,
+	}
+	for monitorType, raw := range cases {
+		monitorType, raw := monitorType, raw
+		t.Run(string(monitorType), func(t *testing.T) {
+			var diags diag.Diagnostics
+			validateMonitorConfigJSON(&diags, raw, monitorType)
+			if diags.HasError() {
+				t.Fatalf("expected no diagnostics for valid %s config, got %v", monitorType, diags.Errors())
+			}
+		})
+	}
+}
+
+func TestValidateMonitorConfigJSON_InvalidJSONIsAttributeError(t *testing.T) {
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, `{"url": "broken`, generated.CreateMonitorRequestTypeHTTP)
+	if !diags.HasError() {
+		t.Fatalf("expected error diagnostic for malformed JSON, got %v", diags)
+	}
+	if got := diags.Errors()[0].Summary(); !strings.Contains(got, "Invalid JSON") {
+		t.Fatalf("expected summary about invalid JSON, got %q", got)
+	}
+}
+
+func TestValidateMonitorConfigJSON_UnknownFieldRejectedAtPlanTime(t *testing.T) {
+	// `verifyTLS` is a typo — the canonical field is `verifyTls`. Today the
+	// API would 400; this test locks in that the typo surfaces during
+	// `terraform plan` instead.
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, `{"url":"https://example.com","method":"GET","verifyTLS":true}`,
+		generated.CreateMonitorRequestTypeHTTP)
+	if !diags.HasError() {
+		t.Fatalf("expected error for unknown field, got %v", diags)
+	}
+	body := diags.Errors()[0].Detail()
+	if !strings.Contains(body, "verifyTLS") {
+		t.Fatalf("expected detail to mention the offending field name, got %q", body)
+	}
+}
+
+func TestValidateMonitorConfigJSON_MissingRequiredFieldRejectedAtPlanTime(t *testing.T) {
+	// HTTP requires `url` and `method`. Omit them both and confirm we
+	// surface a missing-required-fields diagnostic instead of a 400.
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, `{}`, generated.CreateMonitorRequestTypeHTTP)
+	if !diags.HasError() {
+		t.Fatalf("expected error for missing required fields, got %v", diags)
+	}
+	if !strings.Contains(diags.Errors()[0].Summary(), "Missing or invalid fields") {
+		t.Fatalf("expected missing-fields summary, got %q", diags.Errors()[0].Summary())
+	}
+}
+
+func TestValidateMonitorConfigJSON_WrongFieldForTypeRejected(t *testing.T) {
+	// `hostname` is for DNS monitors; passing it under HTTP must fail at
+	// plan time so users see exactly what they used and which schema applies.
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, `{"hostname":"example.com"}`, generated.CreateMonitorRequestTypeHTTP)
+	if !diags.HasError() {
+		t.Fatalf("expected error for cross-type field, got %v", diags)
+	}
+	if !strings.Contains(diags.Errors()[0].Detail(), "hostname") {
+		t.Fatalf("expected detail to identify the offending field, got %q", diags.Errors()[0].Detail())
+	}
+}
+
+func TestValidateMonitorConfigJSON_EmptyStringIsNoOp(t *testing.T) {
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, "", generated.CreateMonitorRequestTypeHTTP)
+	if diags.HasError() {
+		t.Fatalf("empty config string should not produce diagnostics, got %v", diags)
+	}
+}
+
+func TestValidateMonitorConfigJSON_UnknownTypeIsNoOp(t *testing.T) {
+	// Unknown monitor type is reported by `type`'s OneOf validator; the
+	// config validator must not double-emit a confusing second error.
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, `{"foo":"bar"}`, generated.CreateMonitorRequestType("BOGUS"))
+	if diags.HasError() {
+		t.Fatalf("unknown monitor type should not produce config diagnostics, got %v", diags)
 	}
 }
