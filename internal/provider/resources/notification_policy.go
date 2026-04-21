@@ -189,7 +189,7 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 			return nil, err
 		}
 		apiRules = append(apiRules, generated.MatchRule{
-			Type:       mr.Type.ValueString(),
+			Type:       generated.MatchRuleType(mr.Type.ValueString()),
 			Value:      stringPtrOrNil(mr.Value),
 			Values:     stringSliceToPtr(mr.Values),
 			MonitorIds: monitorIDs,
@@ -255,7 +255,7 @@ func (r *NotificationPolicyResource) buildUpdateRequest(ctx context.Context, pla
 			return nil, err
 		}
 		apiRules = append(apiRules, generated.MatchRule{
-			Type:       mr.Type.ValueString(),
+			Type:       generated.MatchRuleType(mr.Type.ValueString()),
 			Value:      stringPtrOrNil(mr.Value),
 			Values:     stringSliceToPtr(mr.Values),
 			MonitorIds: monitorIDs,
@@ -416,7 +416,7 @@ func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *Noti
 				}
 			}
 			rm := matchRuleModel{
-				Type:  types.StringValue(mr.Type),
+				Type:  types.StringValue(string(mr.Type)),
 				Value: val,
 			}
 			rm.Values = ptrStringSliceToList(ctx, mr.Values)

@@ -9,6 +9,7 @@ import (
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -802,5 +803,104 @@ func TestReconcileTags_RejectsInvalidExistingTagID(t *testing.T) {
 	state := stringList(t, ctx, "also-not-a-uuid")
 	if err := r.reconcileTags(ctx, "00000000-0000-0000-0000-0000000000aa", plan, state); err == nil {
 		t.Fatalf("expected error for invalid existing tag id, got nil")
+	}
+}
+
+// ── ValidateConfig — per-type config JSON validation (Class C) ─────────
+//
+// These tests exercise validateMonitorConfigJSON directly so we can assert
+// the three failure classes (parse error, unknown field, missing required)
+// produce attribute-scoped diagnostics on `config`. The valid cases lock in
+// that conforming payloads pass cleanly for every monitor type.
+
+func TestValidateMonitorConfigJSON_ValidPayloadsPassForEveryType(t *testing.T) {
+	cases := map[generated.CreateMonitorRequestType]string{
+		generated.CreateMonitorRequestTypeHTTP:      `{"url":"https://example.com","method":"GET"}`,
+		generated.CreateMonitorRequestTypeDNS:       `{"hostname":"example.com"}`,
+		generated.CreateMonitorRequestTypeTCP:       `{"host":"db.example.com","port":5432}`,
+		generated.CreateMonitorRequestTypeICMP:      `{"host":"router.example.com"}`,
+		generated.CreateMonitorRequestTypeHEARTBEAT: `{"expectedInterval":86400,"gracePeriod":3600}`,
+		generated.CreateMonitorRequestTypeMCPSERVER: `{"command":"node"}`,
+	}
+	for monitorType, raw := range cases {
+		monitorType, raw := monitorType, raw
+		t.Run(string(monitorType), func(t *testing.T) {
+			var diags diag.Diagnostics
+			validateMonitorConfigJSON(&diags, raw, monitorType)
+			if diags.HasError() {
+				t.Fatalf("expected no diagnostics for valid %s config, got %v", monitorType, diags.Errors())
+			}
+		})
+	}
+}
+
+func TestValidateMonitorConfigJSON_InvalidJSONIsAttributeError(t *testing.T) {
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, `{"url": "broken`, generated.CreateMonitorRequestTypeHTTP)
+	if !diags.HasError() {
+		t.Fatalf("expected error diagnostic for malformed JSON, got %v", diags)
+	}
+	if got := diags.Errors()[0].Summary(); !strings.Contains(got, "Invalid JSON") {
+		t.Fatalf("expected summary about invalid JSON, got %q", got)
+	}
+}
+
+func TestValidateMonitorConfigJSON_UnknownFieldRejectedAtPlanTime(t *testing.T) {
+	// `verifyTLS` is a typo — the canonical field is `verifyTls`. Today the
+	// API would 400; this test locks in that the typo surfaces during
+	// `terraform plan` instead.
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, `{"url":"https://example.com","method":"GET","verifyTLS":true}`,
+		generated.CreateMonitorRequestTypeHTTP)
+	if !diags.HasError() {
+		t.Fatalf("expected error for unknown field, got %v", diags)
+	}
+	body := diags.Errors()[0].Detail()
+	if !strings.Contains(body, "verifyTLS") {
+		t.Fatalf("expected detail to mention the offending field name, got %q", body)
+	}
+}
+
+func TestValidateMonitorConfigJSON_MissingRequiredFieldRejectedAtPlanTime(t *testing.T) {
+	// HTTP requires `url` and `method`. Omit them both and confirm we
+	// surface a missing-required-fields diagnostic instead of a 400.
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, `{}`, generated.CreateMonitorRequestTypeHTTP)
+	if !diags.HasError() {
+		t.Fatalf("expected error for missing required fields, got %v", diags)
+	}
+	if !strings.Contains(diags.Errors()[0].Summary(), "Missing or invalid fields") {
+		t.Fatalf("expected missing-fields summary, got %q", diags.Errors()[0].Summary())
+	}
+}
+
+func TestValidateMonitorConfigJSON_WrongFieldForTypeRejected(t *testing.T) {
+	// `hostname` is for DNS monitors; passing it under HTTP must fail at
+	// plan time so users see exactly what they used and which schema applies.
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, `{"hostname":"example.com"}`, generated.CreateMonitorRequestTypeHTTP)
+	if !diags.HasError() {
+		t.Fatalf("expected error for cross-type field, got %v", diags)
+	}
+	if !strings.Contains(diags.Errors()[0].Detail(), "hostname") {
+		t.Fatalf("expected detail to identify the offending field, got %q", diags.Errors()[0].Detail())
+	}
+}
+
+func TestValidateMonitorConfigJSON_EmptyStringIsNoOp(t *testing.T) {
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, "", generated.CreateMonitorRequestTypeHTTP)
+	if diags.HasError() {
+		t.Fatalf("empty config string should not produce diagnostics, got %v", diags)
+	}
+}
+
+func TestValidateMonitorConfigJSON_UnknownTypeIsNoOp(t *testing.T) {
+	// Unknown monitor type is reported by `type`'s OneOf validator; the
+	// config validator must not double-emit a confusing second error.
+	var diags diag.Diagnostics
+	validateMonitorConfigJSON(&diags, `{"foo":"bar"}`, generated.CreateMonitorRequestType("BOGUS"))
+	if diags.HasError() {
+		t.Fatalf("unknown monitor type should not produce config diagnostics, got %v", diags)
 	}
 }

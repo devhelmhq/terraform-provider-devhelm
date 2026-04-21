@@ -93,7 +93,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 
 	body := generated.CreateWebhookEndpointRequest{
 		Url:              plan.URL.ValueString(),
-		SubscribedEvents: stringSetToSlice(plan.SubscribedEvents),
+		SubscribedEvents: subscribedEventsCreateFromSet(plan.SubscribedEvents),
 		Description:      stringPtrOrNil(plan.Description),
 	}
 
@@ -176,7 +176,7 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 		Url:              &urlStr,
 		Description:      stringPtrOrNil(plan.Description),
 		Enabled:          boolPtrOrNil(plan.Enabled),
-		SubscribedEvents: stringSliceToPtrFromSet(plan.SubscribedEvents),
+		SubscribedEvents: subscribedEventsUpdateFromSet(plan.SubscribedEvents),
 	}
 
 	wh, err := api.Update[generated.WebhookEndpointDto](ctx, r.client, api.WebhookPath(state.ID.ValueString()), body)
@@ -226,3 +226,44 @@ func (r *WebhookResource) ImportState(ctx context.Context, req resource.ImportSt
 
 	resp.Diagnostics.AddError("Webhook not found", fmt.Sprintf("No webhook found with URL or ID %q", req.ID))
 }
+
+// subscribedEventsCreateFromSet converts the TF Set of strings into the
+// strongly-typed `[]CreateWebhookEndpointRequestSubscribedEvents` slice the
+// generated request body expects. Each enum constant is a string typedef,
+// so a direct conversion is safe (stringValidator on the schema attribute
+// already rejects unknown values at plan time).
+func subscribedEventsCreateFromSet(set types.Set) []generated.CreateWebhookEndpointRequestSubscribedEvents {
+	if set.IsNull() || set.IsUnknown() {
+		return nil
+	}
+	out := make([]generated.CreateWebhookEndpointRequestSubscribedEvents, 0, len(set.Elements()))
+	for _, v := range set.Elements() {
+		if sv, ok := v.(types.String); ok {
+			out = append(out, generated.CreateWebhookEndpointRequestSubscribedEvents(sv.ValueString()))
+		}
+	}
+	return out
+}
+
+// subscribedEventsUpdateFromSet mirrors the above for the update payload's
+// nullable `*[]UpdateWebhookEndpointRequestSubscribedEvents`. Returns nil
+// (preserves the current value) when the user omits the attribute.
+func subscribedEventsUpdateFromSet(set types.Set) *[]generated.UpdateWebhookEndpointRequestSubscribedEvents {
+	if set.IsNull() || set.IsUnknown() {
+		return nil
+	}
+	out := make([]generated.UpdateWebhookEndpointRequestSubscribedEvents, 0, len(set.Elements()))
+	for _, v := range set.Elements() {
+		if sv, ok := v.(types.String); ok {
+			out = append(out, generated.UpdateWebhookEndpointRequestSubscribedEvents(sv.ValueString()))
+		}
+	}
+	return &out
+}
+
+// Note on read-path symmetry: WebhookEndpointDto.SubscribedEvents is still
+// `[]string` in the spec (only the request types got the enum upgrade in
+// the latest spec push). The existing stringSliceToSet helper handles it
+// directly. If the response type ever picks up the same enum typedef,
+// add a `subscribedEventsToStringSlice[T ~string]` helper here mirroring
+// the create/update converters above.

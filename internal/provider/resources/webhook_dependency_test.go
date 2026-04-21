@@ -34,7 +34,7 @@ func TestWebhook_BuildCreateRequest_PopulatesUrlEventsAndDescription(t *testing.
 	}
 	body := generated.CreateWebhookEndpointRequest{
 		Url:              plan.URL.ValueString(),
-		SubscribedEvents: stringSetToSlice(plan.SubscribedEvents),
+		SubscribedEvents: subscribedEventsCreateFromSet(plan.SubscribedEvents),
 		Description:      stringPtrOrNil(plan.Description),
 	}
 	if body.Url != "https://hooks.example/x" {
@@ -60,7 +60,7 @@ func TestWebhook_BuildUpdateRequest_PreservesSemanticsForOmittedFields(t *testin
 		Url:              &urlStr,
 		Description:      stringPtrOrNil(plan.Description),
 		Enabled:          boolPtrOrNil(plan.Enabled),
-		SubscribedEvents: stringSliceToPtrFromSet(plan.SubscribedEvents),
+		SubscribedEvents: subscribedEventsUpdateFromSet(plan.SubscribedEvents),
 	}
 	if body.Url == nil || *body.Url != "https://hooks.example/x" {
 		t.Errorf("Url = %v", body.Url)

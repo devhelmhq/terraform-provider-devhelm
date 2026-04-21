@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
@@ -297,17 +298,19 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 		return
 	}
 
-	// Config JSON validation: verify it's parseable as JSON.
+	// Config validation: parse as JSON, then validate the payload against
+	// the generated monitor-config struct that matches the declared `type`.
+	// We use json.Decoder with DisallowUnknownFields so unknown keys are
+	// caught at plan time instead of being silently dropped (or surfacing
+	// as a confusing 400 from the API). Required fields are caught by the
+	// generated struct's required-field tags via ValidateDTO. Wire field
+	// names are camelCase (HttpMonitorConfig.url, dnsMonitorConfig.hostname,
+	// etc.) — the JSON key names map directly to the struct's `json:"…"`
+	// tags, which is what users put inside `jsonencode({…})`.
 	if !model.Config.IsNull() && !model.Config.IsUnknown() {
 		configJSON := model.Config.ValueString()
-		var parsed map[string]json.RawMessage
-		if err := json.Unmarshal([]byte(configJSON), &parsed); err != nil {
-			resp.Diagnostics.AddAttributeError(
-				path.Root("config"),
-				"Invalid JSON in config",
-				fmt.Sprintf("The config attribute must be valid JSON: %s", err),
-			)
-		}
+		monitorType := generated.CreateMonitorRequestType(model.Type.ValueString())
+		validateMonitorConfigJSON(&resp.Diagnostics, configJSON, monitorType)
 	}
 
 	// Auth JSON validation: verify it's parseable as JSON with a valid type.
@@ -389,6 +392,198 @@ func (r *MonitorResource) Configure(_ context.Context, req resource.ConfigureReq
 		return
 	}
 	r.client = client
+}
+
+// validateMonitorConfigJSON parses the JSON-string `config` payload and
+// validates it against the generated Go struct that matches the declared
+// monitor `type`. Three classes of bugs surface at plan time instead of
+// apply time:
+//
+//  1. Invalid JSON (parse failure).
+//  2. Unknown keys (typos like `mehtod` or `verifyTLS` instead of `verifyTls`).
+//     Caught by `json.Decoder.DisallowUnknownFields()`.
+//  3. Missing required fields (e.g. HTTP without `url`, DNS without
+//     `hostname`). Caught by walking the parsed struct with `api.ValidateDTO`,
+//     which uses oapi-codegen's "non-pointer = required" convention to flag
+//     zero-valued required fields.
+//
+// All diagnostics are emitted on the `config` attribute path so the editor
+// underlines the offending block instead of the resource root.
+//
+// Why we still keep `config` as a JSON-string overall (not a per-variant
+// nested block):
+//   - The OpenAPI spec for `auth` is incomplete (collapsed `oneOf` + omits
+//     fields the API actually accepts), which would require either breaking
+//     existing users or hardcoding undocumented fields.
+//   - A full `config` nested-block migration touches 70+ surface fixtures,
+//     ~60 examples/docs entries, and 5 acc tests — properly a dedicated
+//     epic with a state-migration design doc, not a phase-2 bolt-on.
+//   - Plan-time JSON validation here closes ~95% of the actual bug class
+//     (typos, wrong field for type, missing required) without any of the
+//     migration risk.
+func validateMonitorConfigJSON(diags *diag.Diagnostics, raw string, monitorType generated.CreateMonitorRequestType) {
+	if raw == "" {
+		return
+	}
+	if !json.Valid([]byte(raw)) {
+		diags.AddAttributeError(
+			path.Root("config"),
+			"Invalid JSON in config",
+			fmt.Sprintf("The config attribute must be valid JSON; got %q", truncate(raw, 80)),
+		)
+		return
+	}
+
+	var validateAgainst func(decoder *json.Decoder) (any, error)
+	switch monitorType {
+	case generated.CreateMonitorRequestTypeHTTP:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.HttpMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeDNS:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.DnsMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeTCP:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.TcpMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeICMP:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.IcmpMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeHEARTBEAT:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.HeartbeatMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeMCPSERVER:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.McpServerMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	default:
+		// Unknown type — `type`'s OneOf validator will already have flagged it.
+		return
+	}
+
+	dec := json.NewDecoder(strings.NewReader(raw))
+	dec.DisallowUnknownFields()
+	parsed, err := validateAgainst(dec)
+	if err != nil {
+		diags.AddAttributeError(
+			path.Root("config"),
+			fmt.Sprintf("Invalid config for monitor type %q", string(monitorType)),
+			fmt.Sprintf("%s. Allowed fields depend on monitor type; refer to the %sMonitorConfig schema in the OpenAPI spec.",
+				err, configSchemaName(monitorType)),
+		)
+		return
+	}
+
+	// Go's encoding/json matches struct field tags case-insensitively, so
+	// `verifyTLS` happily decodes into `verifyTls` even with
+	// DisallowUnknownFields. Walk the raw JSON top-level keys and compare
+	// against the typed struct's json tags case-sensitively to catch this
+	// class of typo at plan time.
+	if extra := caseSensitiveUnknownKeys(raw, parsed); len(extra) > 0 {
+		diags.AddAttributeError(
+			path.Root("config"),
+			fmt.Sprintf("Unknown field(s) in %q config", string(monitorType)),
+			fmt.Sprintf("Field name(s) %v are not in the %sMonitorConfig schema. "+
+				"JSON keys are case-sensitive — check that the field name matches the spec exactly.",
+				extra, configSchemaName(monitorType)),
+		)
+		return
+	}
+
+	if validationErr := api.ValidateDTO(parsed, fmt.Sprintf("%s monitor config", monitorType)); validationErr != nil {
+		diags.AddAttributeError(
+			path.Root("config"),
+			fmt.Sprintf("Missing or invalid fields in %q config", string(monitorType)),
+			validationErr.Error(),
+		)
+	}
+}
+
+// caseSensitiveUnknownKeys returns top-level JSON keys in `raw` that have
+// no exact-case match against a json tag on `target`'s fields. It exists
+// because `encoding/json` accepts case-insensitive matches even with
+// DisallowUnknownFields, which silently masks typos like `verifyTLS` →
+// `verifyTls`. Always-camelCase wire format is the API contract; flagging
+// case mismatches here keeps Terraform plans honest.
+func caseSensitiveUnknownKeys(raw string, target any) []string {
+	var top map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(raw), &top); err != nil {
+		return nil
+	}
+
+	v := reflect.ValueOf(target)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	if v.Kind() != reflect.Struct {
+		return nil
+	}
+
+	allowed := make(map[string]struct{}, v.NumField())
+	rt := v.Type()
+	for i := 0; i < rt.NumField(); i++ {
+		tag := rt.Field(i).Tag.Get("json")
+		if tag == "" || tag == "-" {
+			continue
+		}
+		name, _, _ := strings.Cut(tag, ",")
+		if name == "" {
+			continue
+		}
+		allowed[name] = struct{}{}
+	}
+
+	var bad []string
+	for k := range top {
+		if _, ok := allowed[k]; !ok {
+			bad = append(bad, k)
+		}
+	}
+	return bad
+}
+
+// configSchemaName returns the OpenAPI schema name that the user can grep
+// for to look up the full set of fields allowed for a given monitor type.
+func configSchemaName(t generated.CreateMonitorRequestType) string {
+	switch t {
+	case generated.CreateMonitorRequestTypeHTTP:
+		return "Http"
+	case generated.CreateMonitorRequestTypeDNS:
+		return "Dns"
+	case generated.CreateMonitorRequestTypeTCP:
+		return "Tcp"
+	case generated.CreateMonitorRequestTypeICMP:
+		return "Icmp"
+	case generated.CreateMonitorRequestTypeHEARTBEAT:
+		return "Heartbeat"
+	case generated.CreateMonitorRequestTypeMCPSERVER:
+		return "McpServer"
+	default:
+		return "Monitor"
+	}
+}
+
+func truncate(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	return s[:n] + "…"
 }
 
 // ── TF → API mapping ───────────────────────────────────────────────────
