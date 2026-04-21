@@ -116,10 +116,47 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 			ctx, r.client, api.WebhookPath(wh.Id.String()), updateBody,
 		)
 		if updateErr != nil {
+			// Orphan cleanup: the webhook was created server-side but
+			// could not be flipped to the user's requested disabled
+			// state. Best-effort DELETE removes the half-created
+			// resource so a re-apply doesn't accumulate a fresh
+			// webhook (with a new id) on every retry.
+			//
+			// If the DELETE itself fails we cannot clean up — at that
+			// point we save partial state containing the orphan id so
+			// `terraform destroy` (or a future Update with
+			// `enabled = true`) can take over, and we surface BOTH
+			// errors so the operator can investigate.
+			delErr := api.Delete(ctx, r.client, api.WebhookPath(wh.Id.String()))
+			if delErr != nil && !api.IsNotFound(delErr) {
+				// Save the orphan into state so the next plan owns it
+				// and `terraform destroy` cleans it up. Mirror the
+				// post-POST DTO (enabled=true, since the disable
+				// failed) so the next plan accurately shows the
+				// pending `enabled: true -> false` diff.
+				plan.ID = types.StringValue(wh.Id.String())
+				plan.URL = types.StringValue(wh.Url)
+				plan.Description = stringValue(wh.Description)
+				plan.Enabled = types.BoolValue(wh.Enabled)
+				plan.SubscribedEvents = stringSliceToSet(ctx, wh.SubscribedEvents)
+				resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+
+				resp.Diagnostics.AddError(
+					"Error disabling webhook after create (orphan cleanup also failed)",
+					fmt.Sprintf("Webhook was created (id=%s) but the follow-up "+
+						"disable request failed: %s. The follow-up DELETE intended "+
+						"to remove the orphan also failed: %s. Terraform state has "+
+						"been populated with the orphaned id so `terraform destroy` "+
+						"or a re-apply with `enabled = true` can take over.", wh.Id, updateErr, delErr),
+				)
+				return
+			}
 			resp.Diagnostics.AddError(
 				"Error disabling webhook after create",
-				fmt.Sprintf("Webhook was created (id=%s) but the follow-up disable request failed: %s. "+
-					"Re-run `terraform apply` to retry, or set `enabled = true` in your config.", wh.Id, updateErr),
+				fmt.Sprintf("Webhook was created (id=%s) and then deleted because "+
+					"the follow-up disable request failed: %s. Re-run "+
+					"`terraform apply` to retry the create+disable sequence, or "+
+					"set `enabled = true` in your config.", wh.Id, updateErr),
 			)
 			return
 		}

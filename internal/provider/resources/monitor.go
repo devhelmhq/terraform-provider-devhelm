@@ -1291,23 +1291,40 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	// The PUT /monitors/{id} response does not echo back the tag set, so we
-	// cannot trust monitor.Tags here as the "current" set when computing the
-	// add/remove delta. The last-persisted tag list in `state.TagIds` is the
-	// authoritative "before" view from Terraform's perspective.
-	if err := r.reconcileTags(ctx, state.ID.ValueString(), plan.TagIds, state.TagIds); err != nil {
-		resp.Diagnostics.AddError("Error reconciling monitor tags", err.Error())
-		return
-	}
+	// Reconcile tags out-of-band. The PUT above has already mutated the
+	// monitor body server-side; from this point on we MUST refresh state
+	// from the server before returning, even if the tag reconcile fails.
+	// Otherwise the user would see a "before-PUT" snapshot in state while
+	// the API holds the post-PUT body — a half-applied invisible drift
+	// that confuses the next plan and never self-heals.
+	//
+	// `state.TagIds` is used as the authoritative "before" set because
+	// the PUT response DTO omits the tag list entirely; computing the
+	// add/remove delta from it would always look like "remove all".
+	tagErr := r.reconcileTags(ctx, state.ID.ValueString(), plan.TagIds, state.TagIds)
 
-	// reconcileTags issues out-of-band POST/DELETE calls to the tags
-	// sub-resource; those mutations are NOT reflected in the DTO returned by
-	// the previous PUT. We must re-GET to capture the post-reconciliation
-	// tag set before calling mapToState, otherwise the persisted state would
-	// describe the monitor as it existed *before* the tag delta was applied.
-	monitor, err := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
-	if err != nil {
-		resp.Diagnostics.AddError("Error re-reading monitor after tag sync", err.Error())
+	// Re-GET unconditionally so persisted state always reflects what the
+	// server actually has, including any tag mutations that DID land
+	// before the failing call. This is the partial-state guarantee:
+	// if reconcileTags managed to add tag-A before failing on tag-B,
+	// state will show [tag-A, ...prior] and the next `terraform apply`
+	// will retry only the still-missing operations.
+	monitor, getErr := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
+	if getErr != nil {
+		// Worst case: server mutated, can't refresh. Tell the user to
+		// `terraform refresh` once the API is healthy; we cannot save
+		// honest state from here.
+		if tagErr != nil {
+			resp.Diagnostics.AddError(
+				"Error reconciling monitor tags AND re-reading monitor",
+				fmt.Sprintf("Tag reconcile failed (%s); the follow-up re-read also "+
+					"failed (%s). The monitor body update was accepted server-side "+
+					"but Terraform could not refresh state. Run `terraform refresh` "+
+					"once the API is healthy and re-apply.", tagErr, getErr),
+			)
+			return
+		}
+		resp.Diagnostics.AddError("Error re-reading monitor after tag sync", getErr.Error())
 		return
 	}
 
@@ -1315,7 +1332,22 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	// Persist state BEFORE surfacing the tag error: the framework keeps
+	// state changes even when diagnostics carry an error, so this gives
+	// the user an honest, up-to-date snapshot of the half-applied result.
+	// The subsequent AddError below makes the partial outcome loud and
+	// the diff on the next plan will show only the still-missing tags.
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+
+	if tagErr != nil {
+		resp.Diagnostics.AddError(
+			"Error reconciling monitor tags",
+			fmt.Sprintf("The monitor's body was updated successfully, but the "+
+				"follow-up tag reconciliation failed: %s. Terraform state has "+
+				"been refreshed from the server to reflect the current tag set; "+
+				"re-run `terraform apply` to retry the missing tag delta.", tagErr),
+		)
+	}
 }
 
 // reconcileTags brings the monitor's tag set in line with the plan:
