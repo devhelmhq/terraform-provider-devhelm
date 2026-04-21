@@ -98,12 +98,20 @@ func AddAPIError(diagnostics *diag.Diagnostics, op string, err error, identityAt
 		return
 	}
 
-	var apiErr *APIError
+	var apiErr *DevhelmAPIError
 	if errors.As(err, &apiErr) {
 		summary := fmt.Sprintf("Error during %s (HTTP %d)", op, apiErr.StatusCode)
+		if apiErr.Code != "" {
+			summary = fmt.Sprintf("Error during %s (HTTP %d %s)", op, apiErr.StatusCode, apiErr.Code)
+		}
 		detail := apiErr.Message
 		if detail == "" {
 			detail = apiErr.Body
+		}
+		// Always surface the request id when present so the practitioner
+		// (or our support team) can correlate against server logs.
+		if apiErr.RequestID != "" {
+			detail = fmt.Sprintf("%s\n\n(request_id=%s)", strings.TrimRight(detail, "\n"), apiErr.RequestID)
 		}
 
 		// 409-style conflict on a known identity attribute → highlight it.
@@ -129,8 +137,21 @@ func AddAPIError(diagnostics *diag.Diagnostics, op string, err error, identityAt
 		return
 	}
 
-	// Non-API error (transport, marshaling, …). Surface with the operation
-	// context so the practitioner can tell which call failed.
+	// Transport-level failures (DNS, dial, TLS, read) carry the original
+	// cause via Unwrap; surface them with a clear operation prefix so the
+	// practitioner sees "Network failure during create monitor" rather than
+	// only the raw `dial tcp: lookup ...: no such host`.
+	var transportErr *DevhelmTransportError
+	if errors.As(err, &transportErr) {
+		diagnostics.AddError(
+			fmt.Sprintf("Network failure during %s", op),
+			transportErr.Error(),
+		)
+		return
+	}
+
+	// Marshaling, JSON decoding, validation, etc. — no useful structured
+	// context, so just attach the operation label.
 	diagnostics.AddError(fmt.Sprintf("Error during %s", op), err.Error())
 }
 

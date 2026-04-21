@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math/rand"
@@ -17,6 +18,12 @@ import (
 // connections to the API. It is intentionally generous: we support imports and
 // plan dry-runs that may fan out many list calls.
 const defaultHTTPTimeout = 60 * time.Second
+
+// requestIDHeader is the response header the API sets on every reply (success
+// or error). We thread it through the client so that every DevhelmAPIError
+// carries the id, which is the single most useful piece of context for a
+// support ticket. See `mono/api/.../RequestCorrelationFilter.java`.
+const requestIDHeader = "X-Request-Id"
 
 // Retry tuning for transient 5xx and connection-level failures on idempotent
 // verbs (GET, PUT, DELETE — POST is excluded, see isIdempotent below).
@@ -103,7 +110,19 @@ func retryDelay(attempt int) time.Duration {
 // `map[string]any` case at compile time.
 type RequestBody = any
 
-func (c *Client) doRequest(ctx context.Context, method, path string, body RequestBody) ([]byte, int, error) {
+// httpResponse captures everything `doRequest`'s callers need from a single
+// successful round trip: the body bytes, the HTTP status, and the per-request
+// id from the API's `X-Request-Id` response header. Carrying the request id
+// on the value (rather than only on errors) lets us include it in any future
+// debug/info diagnostic a resource may want to surface alongside a successful
+// reply.
+type httpResponse struct {
+	Body      []byte
+	Status    int
+	RequestID string
+}
+
+func (c *Client) doRequest(ctx context.Context, method, path string, body RequestBody) (httpResponse, error) {
 	u := c.BaseURL + path
 
 	var bodyBytes []byte
@@ -111,31 +130,30 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body Reques
 		var err error
 		bodyBytes, err = json.Marshal(body)
 		if err != nil {
-			return nil, 0, fmt.Errorf("marshaling request body: %w", err)
+			return httpResponse{}, fmt.Errorf("marshaling request body: %w", err)
 		}
 	}
 
 	var (
-		respBody []byte
-		status   int
-		lastErr  error
+		resp    httpResponse
+		lastErr error
 	)
 
 	for attempt := 0; attempt < retryMaxAttempts; attempt++ {
 		// Honor caller cancellation between attempts so a Ctrl-C during the
 		// retry sleep aborts immediately instead of finishing the back-off.
 		if err := ctx.Err(); err != nil {
-			return nil, 0, err
+			return httpResponse{}, err
 		}
 
-		respBody, status, lastErr = c.doRequestOnce(ctx, method, u, bodyBytes, body != nil)
+		resp, lastErr = c.doRequestOnce(ctx, method, u, bodyBytes, body != nil)
 
 		// Network/transport errors are retryable on idempotent verbs (we
 		// cannot distinguish "request never reached the server" from "we
 		// missed the response", but POST is already excluded above).
 		if lastErr != nil {
 			if !isIdempotent(method) || attempt == retryMaxAttempts-1 {
-				return nil, 0, lastErr
+				return httpResponse{}, lastErr
 			}
 			waitFor(ctx, retryDelay(attempt))
 			continue
@@ -144,25 +162,31 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body Reques
 		// 5xx / 429 retries: only attempt for idempotent verbs and only on
 		// the small allow-list above. We rely on the next iteration's
 		// checkResponse to surface the final error to the caller.
-		if shouldRetryStatus(status) && isIdempotent(method) && attempt < retryMaxAttempts-1 {
+		if shouldRetryStatus(resp.Status) && isIdempotent(method) && attempt < retryMaxAttempts-1 {
 			waitFor(ctx, retryDelay(attempt))
 			continue
 		}
 
-		return respBody, status, nil
+		return resp, nil
 	}
 
 	if lastErr != nil {
-		return nil, 0, lastErr
+		return httpResponse{}, lastErr
 	}
-	return respBody, status, nil
+	return resp, nil
 }
 
 // doRequestOnce performs a single HTTP round trip without retry logic. Split
 // from doRequest so the retry loop can call it cleanly; tests can also reach
 // it directly to exercise no-retry behavior in the future without faking the
 // transport.
-func (c *Client) doRequestOnce(ctx context.Context, method, u string, bodyBytes []byte, hasBody bool) ([]byte, int, error) {
+//
+// Network/transport-level failures (request construction, dial, read) are
+// wrapped in a *DevhelmTransportError so callers can `errors.As` to tell
+// "the API said no" apart from "we never reached the API". Non-2xx responses
+// are not errors at this layer — they flow up as a populated httpResponse and
+// are converted to *DevhelmAPIError by checkResponse.
+func (c *Client) doRequestOnce(ctx context.Context, method, u string, bodyBytes []byte, hasBody bool) (httpResponse, error) {
 	var bodyReader io.Reader
 	if bodyBytes != nil {
 		bodyReader = bytes.NewBuffer(bodyBytes)
@@ -170,7 +194,7 @@ func (c *Client) doRequestOnce(ctx context.Context, method, u string, bodyBytes 
 
 	req, err := http.NewRequestWithContext(ctx, method, u, bodyReader)
 	if err != nil {
-		return nil, 0, fmt.Errorf("creating request: %w", err)
+		return httpResponse{}, &DevhelmTransportError{Op: "build request", URL: u, Err: err}
 	}
 
 	req.Header.Set("Authorization", "Bearer "+c.Token)
@@ -183,16 +207,20 @@ func (c *Client) doRequestOnce(ctx context.Context, method, u string, bodyBytes 
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
-		return nil, 0, fmt.Errorf("executing request: %w", err)
+		return httpResponse{}, &DevhelmTransportError{Op: "send request", URL: u, Err: err}
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, resp.StatusCode, fmt.Errorf("reading response body: %w", err)
+		return httpResponse{}, &DevhelmTransportError{Op: "read response", URL: u, Err: err}
 	}
 
-	return respBody, resp.StatusCode, nil
+	return httpResponse{
+		Body:      respBody,
+		Status:    resp.StatusCode,
+		RequestID: resp.Header.Get(requestIDHeader),
+	}, nil
 }
 
 // waitFor sleeps for d, returning early when the context is cancelled. We
@@ -207,46 +235,137 @@ func waitFor(ctx context.Context, d time.Duration) {
 	}
 }
 
-type APIError struct {
+// DevhelmAPIError represents a non-2xx response from the DevHelm API. It is
+// the error class every TF resource wraps via `api.AddAPIError` (or branches
+// on via `api.IsNotFound`).
+//
+//   - StatusCode is the HTTP status line (always non-zero for this error type).
+//   - Code mirrors `ErrorResponse.code` from the API — a stable, machine-
+//     readable category like "NOT_FOUND" or "RATE_LIMITED". May be empty for
+//     legacy error bodies that do not include the field.
+//   - Message is the human-readable text from `ErrorResponse.message`, or the
+//     `error` field, or — when neither is present — the raw response body.
+//   - RequestID is the `X-Request-Id` response header. Always include it in
+//     support tickets; when blank, the response did not carry the header
+//     (should not happen against the production API).
+//   - Body is the raw response body, retained for debugging non-conforming
+//     replies.
+type DevhelmAPIError struct {
 	StatusCode int
+	Code       string
 	Message    string
+	RequestID  string
 	Body       string
 }
 
-func (e *APIError) Error() string {
-	if e.Message != "" {
-		return fmt.Sprintf("API error %d: %s", e.StatusCode, e.Message)
+func (e *DevhelmAPIError) Error() string {
+	parts := []string{fmt.Sprintf("API error %d", e.StatusCode)}
+	if e.Code != "" {
+		parts = append(parts, e.Code)
 	}
-	return fmt.Sprintf("API error %d: %s", e.StatusCode, e.Body)
+	body := e.Message
+	if body == "" {
+		body = e.Body
+	}
+	if body != "" {
+		parts = append(parts, body)
+	}
+	out := strings.Join(parts, ": ")
+	if e.RequestID != "" {
+		out = fmt.Sprintf("%s (request_id=%s)", out, e.RequestID)
+	}
+	return out
 }
 
+// DevhelmTransportError represents a failure to complete an HTTP exchange:
+// the request never reached the server, the server never returned a complete
+// response, or a TLS/DNS/connection layer surfaced an error. Wraps the
+// underlying error so callers can `errors.As` for the original cause.
+type DevhelmTransportError struct {
+	// Op describes the failing transport step ("build request", "send
+	// request", "read response"). Stable enough to switch on in tests.
+	Op string
+	// URL is the resolved target URL, useful when diagnosing DNS or TLS
+	// issues against a specific endpoint.
+	URL string
+	// Err is the underlying transport-level error.
+	Err error
+}
+
+func (e *DevhelmTransportError) Error() string {
+	return fmt.Sprintf("transport error during %s to %s: %v", e.Op, e.URL, e.Err)
+}
+
+func (e *DevhelmTransportError) Unwrap() error { return e.Err }
+
+// IsNotFound reports whether err is a *DevhelmAPIError with HTTP 404. Used by
+// resources during Read to translate "deleted out-of-band" into the
+// disappear-from-state path Terraform expects.
 func IsNotFound(err error) bool {
-	if apiErr, ok := err.(*APIError); ok {
-		return apiErr.StatusCode == 404
+	var apiErr *DevhelmAPIError
+	if errors.As(err, &apiErr) {
+		return apiErr.StatusCode == http.StatusNotFound
 	}
 	return false
 }
 
-func checkResponse(body []byte, statusCode int) error {
-	if statusCode >= 200 && statusCode < 300 {
+// errorResponseBody is the canonical envelope returned by the DevHelm API on
+// every non-2xx response. We intentionally do NOT use DisallowUnknownFields
+// here: error bodies are user-facing, and we'd rather surface a slightly
+// underspecified message than mask a real API failure with a parse failure.
+type errorResponseBody struct {
+	Status    int    `json:"status"`
+	Code      string `json:"code"`
+	Message   string `json:"message"`
+	Error     string `json:"error"`
+	RequestID string `json:"requestId"`
+}
+
+func checkResponse(resp httpResponse) error {
+	if resp.Status >= 200 && resp.Status < 300 {
 		return nil
 	}
 
-	apiErr := &APIError{StatusCode: statusCode, Body: string(body)}
-
-	var errResp struct {
-		Message string `json:"message"`
-		Error   string `json:"error"`
+	apiErr := &DevhelmAPIError{
+		StatusCode: resp.Status,
+		Body:       string(resp.Body),
+		RequestID:  resp.RequestID,
 	}
-	if json.Unmarshal(body, &errResp) == nil {
-		if errResp.Message != "" {
-			apiErr.Message = errResp.Message
-		} else if errResp.Error != "" {
-			apiErr.Message = errResp.Error
+
+	var parsed errorResponseBody
+	if json.Unmarshal(resp.Body, &parsed) == nil {
+		if parsed.Code != "" {
+			apiErr.Code = parsed.Code
+		}
+		switch {
+		case parsed.Message != "":
+			apiErr.Message = parsed.Message
+		case parsed.Error != "":
+			apiErr.Message = parsed.Error
+		}
+		// Header always wins (it is set by the server unconditionally),
+		// but fall back to the body field for resilience against
+		// proxies that strip headers.
+		if apiErr.RequestID == "" && parsed.RequestID != "" {
+			apiErr.RequestID = parsed.RequestID
 		}
 	}
 
 	return apiErr
+}
+
+// decodeStrict unmarshals body into out using a strict decoder that rejects
+// unknown top-level or nested fields (P1 — "unknown response fields raise
+// loudly"). A drift in the API spec produces a typed decode error instead of
+// silently discarding the field, which would mask spec evolution from the
+// next plan/apply cycle. Error bodies stay lenient (see checkResponse).
+func decodeStrict(body []byte, out any, context string) error {
+	dec := json.NewDecoder(bytes.NewReader(body))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(out); err != nil {
+		return fmt.Errorf("decoding response (%s): %w", context, err)
+	}
+	return nil
 }
 
 // SingleValueResponse is the single-value envelope used by most endpoints.
@@ -272,22 +391,22 @@ type TableResponse[T any] struct {
 }
 
 func Get[T any](ctx context.Context, c *Client, path string) (*T, error) {
-	body, status, err := c.doRequest(ctx, http.MethodGet, path, nil)
+	resp, err := c.doRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return nil, err
 	}
-	if err := checkResponse(body, status); err != nil {
+	if err := checkResponse(resp); err != nil {
 		return nil, err
 	}
 
-	var resp SingleValueResponse[T]
-	if err := json.Unmarshal(body, &resp); err != nil {
-		return nil, fmt.Errorf("decoding response: %w", err)
-	}
-	if err := ValidateDTO(&resp.Data, "GET "+path); err != nil {
+	var envelope SingleValueResponse[T]
+	if err := decodeStrict(resp.Body, &envelope, "GET "+path); err != nil {
 		return nil, err
 	}
-	return &resp.Data, nil
+	if err := ValidateDTO(&envelope.Data, "GET "+path); err != nil {
+		return nil, err
+	}
+	return &envelope.Data, nil
 }
 
 // GetRaw is the escape-hatch variant of Get that also returns the raw
@@ -298,22 +417,22 @@ func Get[T any](ctx context.Context, c *Client, path string) (*T, error) {
 // Use the typed result for everything else; only reach into the raw body for
 // the specific field whose round-trip you need to preserve.
 func GetRaw[T any](ctx context.Context, c *Client, path string) (*T, []byte, error) {
-	body, status, err := c.doRequest(ctx, http.MethodGet, path, nil)
+	resp, err := c.doRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return nil, nil, err
 	}
-	if err := checkResponse(body, status); err != nil {
+	if err := checkResponse(resp); err != nil {
 		return nil, nil, err
 	}
 
-	var resp SingleValueResponse[T]
-	if err := json.Unmarshal(body, &resp); err != nil {
-		return nil, nil, fmt.Errorf("decoding response: %w", err)
-	}
-	if err := ValidateDTO(&resp.Data, "GET "+path); err != nil {
+	var envelope SingleValueResponse[T]
+	if err := decodeStrict(resp.Body, &envelope, "GET "+path); err != nil {
 		return nil, nil, err
 	}
-	return &resp.Data, body, nil
+	if err := ValidateDTO(&envelope.Data, "GET "+path); err != nil {
+		return nil, nil, err
+	}
+	return &envelope.Data, resp.Body, nil
 }
 
 func List[T any](ctx context.Context, c *Client, basePath string) ([]T, error) {
@@ -327,27 +446,27 @@ func List[T any](ctx context.Context, c *Client, basePath string) ([]T, error) {
 		}
 		path := fmt.Sprintf("%s%spage=%d&size=100", basePath, sep, page)
 
-		body, status, err := c.doRequest(ctx, http.MethodGet, path, nil)
+		resp, err := c.doRequest(ctx, http.MethodGet, path, nil)
 		if err != nil {
 			return nil, err
 		}
-		if err := checkResponse(body, status); err != nil {
+		if err := checkResponse(resp); err != nil {
 			return nil, err
 		}
 
-		var resp TableResponse[T]
-		if err := json.Unmarshal(body, &resp); err != nil {
-			return nil, fmt.Errorf("decoding response: %w", err)
+		var envelope TableResponse[T]
+		if err := decodeStrict(resp.Body, &envelope, "LIST "+basePath); err != nil {
+			return nil, err
 		}
 
-		for i := range resp.Data {
-			if err := ValidateDTO(&resp.Data[i], fmt.Sprintf("LIST %s[%d]", basePath, len(all)+i)); err != nil {
+		for i := range envelope.Data {
+			if err := ValidateDTO(&envelope.Data[i], fmt.Sprintf("LIST %s[%d]", basePath, len(all)+i)); err != nil {
 				return nil, err
 			}
 		}
 
-		all = append(all, resp.Data...)
-		if !resp.HasNext {
+		all = append(all, envelope.Data...)
+		if !envelope.HasNext {
 			break
 		}
 		page++
@@ -357,22 +476,22 @@ func List[T any](ctx context.Context, c *Client, basePath string) ([]T, error) {
 }
 
 func Create[T any](ctx context.Context, c *Client, path string, body any) (*T, error) {
-	respBody, status, err := c.doRequest(ctx, http.MethodPost, path, body)
+	resp, err := c.doRequest(ctx, http.MethodPost, path, body)
 	if err != nil {
 		return nil, err
 	}
-	if err := checkResponse(respBody, status); err != nil {
+	if err := checkResponse(resp); err != nil {
 		return nil, err
 	}
 
-	var resp SingleValueResponse[T]
-	if err := json.Unmarshal(respBody, &resp); err != nil {
-		return nil, fmt.Errorf("decoding response: %w", err)
-	}
-	if err := ValidateDTO(&resp.Data, "POST "+path); err != nil {
+	var envelope SingleValueResponse[T]
+	if err := decodeStrict(resp.Body, &envelope, "POST "+path); err != nil {
 		return nil, err
 	}
-	return &resp.Data, nil
+	if err := ValidateDTO(&envelope.Data, "POST "+path); err != nil {
+		return nil, err
+	}
+	return &envelope.Data, nil
 }
 
 // CreateList POSTs to an endpoint that returns a TableResponse[T] (e.g. the
@@ -380,120 +499,120 @@ func Create[T any](ctx context.Context, c *Client, path string, body any) (*T, e
 // after the mutation rather than a single entity). Use Create when the
 // endpoint returns SingleValueResponse[T].
 func CreateList[T any](ctx context.Context, c *Client, path string, body any) ([]T, error) {
-	respBody, status, err := c.doRequest(ctx, http.MethodPost, path, body)
+	resp, err := c.doRequest(ctx, http.MethodPost, path, body)
 	if err != nil {
 		return nil, err
 	}
-	if err := checkResponse(respBody, status); err != nil {
+	if err := checkResponse(resp); err != nil {
 		return nil, err
 	}
 
-	var resp TableResponse[T]
-	if err := json.Unmarshal(respBody, &resp); err != nil {
-		return nil, fmt.Errorf("decoding response: %w", err)
+	var envelope TableResponse[T]
+	if err := decodeStrict(resp.Body, &envelope, "POST "+path); err != nil {
+		return nil, err
 	}
-	for i := range resp.Data {
-		if err := ValidateDTO(&resp.Data[i], fmt.Sprintf("POST %s[%d]", path, i)); err != nil {
+	for i := range envelope.Data {
+		if err := ValidateDTO(&envelope.Data[i], fmt.Sprintf("POST %s[%d]", path, i)); err != nil {
 			return nil, err
 		}
 	}
-	return resp.Data, nil
+	return envelope.Data, nil
 }
 
 // CreateRaw mirrors Create but also returns the raw response body. See GetRaw.
 func CreateRaw[T any](ctx context.Context, c *Client, path string, body any) (*T, []byte, error) {
-	respBody, status, err := c.doRequest(ctx, http.MethodPost, path, body)
+	resp, err := c.doRequest(ctx, http.MethodPost, path, body)
 	if err != nil {
 		return nil, nil, err
 	}
-	if err := checkResponse(respBody, status); err != nil {
+	if err := checkResponse(resp); err != nil {
 		return nil, nil, err
 	}
 
-	var resp SingleValueResponse[T]
-	if err := json.Unmarshal(respBody, &resp); err != nil {
-		return nil, nil, fmt.Errorf("decoding response: %w", err)
-	}
-	if err := ValidateDTO(&resp.Data, "POST "+path); err != nil {
+	var envelope SingleValueResponse[T]
+	if err := decodeStrict(resp.Body, &envelope, "POST "+path); err != nil {
 		return nil, nil, err
 	}
-	return &resp.Data, respBody, nil
+	if err := ValidateDTO(&envelope.Data, "POST "+path); err != nil {
+		return nil, nil, err
+	}
+	return &envelope.Data, resp.Body, nil
 }
 
 func Update[T any](ctx context.Context, c *Client, path string, body any) (*T, error) {
-	respBody, status, err := c.doRequest(ctx, http.MethodPut, path, body)
+	resp, err := c.doRequest(ctx, http.MethodPut, path, body)
 	if err != nil {
 		return nil, err
 	}
-	if err := checkResponse(respBody, status); err != nil {
+	if err := checkResponse(resp); err != nil {
 		return nil, err
 	}
 
-	var resp SingleValueResponse[T]
-	if err := json.Unmarshal(respBody, &resp); err != nil {
-		return nil, fmt.Errorf("decoding response: %w", err)
-	}
-	if err := ValidateDTO(&resp.Data, "PUT "+path); err != nil {
+	var envelope SingleValueResponse[T]
+	if err := decodeStrict(resp.Body, &envelope, "PUT "+path); err != nil {
 		return nil, err
 	}
-	return &resp.Data, nil
+	if err := ValidateDTO(&envelope.Data, "PUT "+path); err != nil {
+		return nil, err
+	}
+	return &envelope.Data, nil
 }
 
 // UpdateRaw mirrors Update but also returns the raw response body. See GetRaw.
 func UpdateRaw[T any](ctx context.Context, c *Client, path string, body any) (*T, []byte, error) {
-	respBody, status, err := c.doRequest(ctx, http.MethodPut, path, body)
+	resp, err := c.doRequest(ctx, http.MethodPut, path, body)
 	if err != nil {
 		return nil, nil, err
 	}
-	if err := checkResponse(respBody, status); err != nil {
+	if err := checkResponse(resp); err != nil {
 		return nil, nil, err
 	}
 
-	var resp SingleValueResponse[T]
-	if err := json.Unmarshal(respBody, &resp); err != nil {
-		return nil, nil, fmt.Errorf("decoding response: %w", err)
-	}
-	if err := ValidateDTO(&resp.Data, "PUT "+path); err != nil {
+	var envelope SingleValueResponse[T]
+	if err := decodeStrict(resp.Body, &envelope, "PUT "+path); err != nil {
 		return nil, nil, err
 	}
-	return &resp.Data, respBody, nil
+	if err := ValidateDTO(&envelope.Data, "PUT "+path); err != nil {
+		return nil, nil, err
+	}
+	return &envelope.Data, resp.Body, nil
 }
 
 func Patch[T any](ctx context.Context, c *Client, path string, body any) (*T, error) {
-	respBody, status, err := c.doRequest(ctx, http.MethodPatch, path, body)
+	resp, err := c.doRequest(ctx, http.MethodPatch, path, body)
 	if err != nil {
 		return nil, err
 	}
-	if err := checkResponse(respBody, status); err != nil {
+	if err := checkResponse(resp); err != nil {
 		return nil, err
 	}
 
-	var resp SingleValueResponse[T]
-	if err := json.Unmarshal(respBody, &resp); err != nil {
-		return nil, fmt.Errorf("decoding response: %w", err)
-	}
-	if err := ValidateDTO(&resp.Data, "PATCH "+path); err != nil {
+	var envelope SingleValueResponse[T]
+	if err := decodeStrict(resp.Body, &envelope, "PATCH "+path); err != nil {
 		return nil, err
 	}
-	return &resp.Data, nil
+	if err := ValidateDTO(&envelope.Data, "PATCH "+path); err != nil {
+		return nil, err
+	}
+	return &envelope.Data, nil
 }
 
 func Delete(ctx context.Context, c *Client, path string) error {
-	body, status, err := c.doRequest(ctx, http.MethodDelete, path, nil)
+	resp, err := c.doRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
 		return err
 	}
-	return checkResponse(body, status)
+	return checkResponse(resp)
 }
 
 // DeleteWithBody issues a DELETE with a JSON request body. Used for endpoints
 // that accept a body (e.g. DELETE /monitors/{id}/tags with a list of tag IDs).
 func DeleteWithBody(ctx context.Context, c *Client, path string, body any) error {
-	respBody, status, err := c.doRequest(ctx, http.MethodDelete, path, body)
+	resp, err := c.doRequest(ctx, http.MethodDelete, path, body)
 	if err != nil {
 		return err
 	}
-	return checkResponse(respBody, status)
+	return checkResponse(resp)
 }
 
 func PathEscape(s string) string {
