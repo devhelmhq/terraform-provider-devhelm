@@ -1719,6 +1719,7 @@ const (
 	ComponentNameIn   MatchRuleType = "component_name_in"
 	IncidentStatus    MatchRuleType = "incident_status"
 	MonitorIdIn       MatchRuleType = "monitor_id_in"
+	MonitorTagIn      MatchRuleType = "monitor_tag_in"
 	MonitorTypeIn     MatchRuleType = "monitor_type_in"
 	RegionIn          MatchRuleType = "region_in"
 	ResourceGroupIdIn MatchRuleType = "resource_group_id_in"
@@ -1734,6 +1735,8 @@ func (e MatchRuleType) Valid() bool {
 	case IncidentStatus:
 		return true
 	case MonitorIdIn:
+		return true
+	case MonitorTagIn:
 		return true
 	case MonitorTypeIn:
 		return true
@@ -4212,6 +4215,18 @@ type ComponentUptimeSummaryDto struct {
 	Week *float64 `json:"week,omitempty"`
 }
 
+// ComponentsSummaryDto defines model for ComponentsSummaryDto.
+type ComponentsSummaryDto struct {
+	// GroupComponentCounts Per-group active leaf count, keyed by group component id (UUID stringified). Empty when the service has no groups; lets the UI render "show all N" affordances without a second round trip
+	GroupComponentCounts map[string]int32 `json:"groupComponentCounts"`
+
+	// IncludedCount Number of components actually returned in the inline ``components`` list
+	IncludedCount int32 `json:"includedCount"`
+
+	// TotalCount Total active components for this service across all groups
+	TotalCount int32 `json:"totalCount"`
+}
+
 // ConfirmationPolicy Multi-region confirmation settings
 type ConfirmationPolicy struct {
 	// MaxWaitSeconds Maximum seconds to wait for enough regions to fail after first trigger
@@ -4267,8 +4282,8 @@ type CreateAssertionRequestSeverity string
 
 // CreateEnvironmentRequest defines model for CreateEnvironmentRequest.
 type CreateEnvironmentRequest struct {
-	// IsDefault Whether this is the default environment for new monitors
-	IsDefault bool `json:"isDefault"`
+	// IsDefault Whether this is the default environment for new monitors (default: false)
+	IsDefault *bool `json:"isDefault,omitempty"`
 
 	// Name Human-readable environment name
 	Name string `json:"name"`
@@ -4597,14 +4612,14 @@ type CreateWebhookEndpointRequest struct {
 	// Description Optional human-readable description
 	Description *string `json:"description,omitempty"`
 
-	// SubscribedEvents Event types to deliver, e.g. monitor.created, incident.resolved
+	// SubscribedEvents Event types to deliver
 	SubscribedEvents []CreateWebhookEndpointRequestSubscribedEvents `json:"subscribedEvents"`
 
 	// Url HTTPS endpoint that receives webhook event payloads
 	Url string `json:"url"`
 }
 
-// CreateWebhookEndpointRequestSubscribedEvents Event types to deliver, e.g. monitor.created, incident.resolved
+// CreateWebhookEndpointRequestSubscribedEvents defines model for CreateWebhookEndpointRequest.SubscribedEvents.
 type CreateWebhookEndpointRequestSubscribedEvents string
 
 // CreateWorkspaceRequest Create a new workspace within the organization
@@ -5016,8 +5031,14 @@ type EnvironmentDto struct {
 
 // ErrorResponse Uniform error envelope returned for every non-2xx response
 type ErrorResponse struct {
+	// Code Coarse machine-readable error category (e.g. NOT_FOUND, RATE_LIMITED); stable per status
+	Code string `json:"code"`
+
 	// Message Human-readable error message; safe to surface to end users
 	Message string `json:"message"`
+
+	// RequestId Opaque per-request id; same value as the X-Request-Id response header. Use in support tickets.
+	RequestId *string `json:"requestId,omitempty"`
 
 	// Status HTTP status code (mirrors the response status line)
 	Status int32 `json:"status"`
@@ -5719,7 +5740,7 @@ type MatchRule struct {
 	// Regions Region codes to match for region_in rules
 	Regions *[]string `json:"regions,omitempty"`
 
-	// Type Rule type, e.g. severity_gte, monitor_id_in, region_in
+	// Type Rule type used to evaluate incidents and status events
 	Type MatchRuleType `json:"type"`
 
 	// Value Comparison value for single-value rules like severity_gte
@@ -5729,7 +5750,7 @@ type MatchRule struct {
 	Values *[]string `json:"values,omitempty"`
 }
 
-// MatchRuleType Rule type, e.g. severity_gte, monitor_id_in, region_in
+// MatchRuleType Rule type used to evaluate incidents and status events
 type MatchRuleType string
 
 // McpConnectsAssertion defines model for McpConnectsAssertion.
@@ -6818,6 +6839,7 @@ type ServiceDetailDto struct {
 	AdapterType            string                     `json:"adapterType"`
 	Category               *string                    `json:"category,omitempty"`
 	Components             []ServiceComponentDto      `json:"components"`
+	ComponentsSummary      *ComponentsSummaryDto      `json:"componentsSummary,omitempty"`
 	CreatedAt              time.Time                  `json:"createdAt"`
 	CurrentStatus          *ServiceStatusDto          `json:"currentStatus,omitempty"`
 	DataCompleteness       string                     `json:"dataCompleteness"`
@@ -8468,7 +8490,7 @@ type UpdateWebhookEndpointRequest struct {
 	Url *string `json:"url,omitempty"`
 }
 
-// UpdateWebhookEndpointRequestSubscribedEvents Replace subscribed events; null preserves current
+// UpdateWebhookEndpointRequestSubscribedEvents defines model for UpdateWebhookEndpointRequest.SubscribedEvents.
 type UpdateWebhookEndpointRequestSubscribedEvents string
 
 // UpdateWorkspaceRequest Update workspace details
@@ -8789,6 +8811,18 @@ type ListCrossServiceIncidentsParams struct {
 
 // ListCrossServiceIncidentsParamsStatus defines parameters for ListCrossServiceIncidents.
 type ListCrossServiceIncidentsParamsStatus string
+
+// GetServiceParams defines parameters for GetService.
+type GetServiceParams struct {
+	// Summary Return a curated subset of components (groups + showcase + impacted + ungrouped) and a componentsSummary block; default false
+	Summary *bool `form:"summary,omitempty" json:"summary,omitempty"`
+}
+
+// GetComponentsParams defines parameters for GetComponents.
+type GetComponentsParams struct {
+	// GroupId Restrict result to direct children of this group component id
+	GroupId *openapi_types.UUID `form:"groupId,omitempty" json:"groupId,omitempty"`
+}
 
 // GetBatchComponentUptimeParams defines parameters for GetBatchComponentUptime.
 type GetBatchComponentUptimeParams struct {

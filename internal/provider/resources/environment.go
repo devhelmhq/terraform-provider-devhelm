@@ -97,11 +97,14 @@ func (r *EnvironmentResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
+	// `isDefault` is now `*bool` on the wire (server defaults to false when omitted).
+	// Use the pointer-returning accessor so we forward the user's intent — including
+	// "not set" — instead of always sending `false`.
 	body := generated.CreateEnvironmentRequest{
 		Name:      plan.Name.ValueString(),
 		Slug:      plan.Slug.ValueString(),
 		Variables: stringMapToPtr(plan.Variables),
-		IsDefault: plan.IsDefault.ValueBool(),
+		IsDefault: plan.IsDefault.ValueBoolPointer(),
 	}
 
 	env, err := api.Create[generated.EnvironmentDto](ctx, r.client, api.PathEnvironments, body)
