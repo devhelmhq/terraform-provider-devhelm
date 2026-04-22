@@ -119,6 +119,12 @@ func StatusPageDomainVerifyPath(pageID, domainID string) string {
 	return StatusPageDomainPath(pageID, domainID) + "/verify"
 }
 
+// StatusPageDomainPrimaryPath returns
+// /api/v1/status-pages/{pageId}/domains/{domainId}/primary.
+func StatusPageDomainPrimaryPath(pageID, domainID string) string {
+	return StatusPageDomainPath(pageID, domainID) + "/primary"
+}
+
 // TagPath returns /api/v1/tags/{id}.
 func TagPath(id string) string { return PathTags + "/" + id }
 

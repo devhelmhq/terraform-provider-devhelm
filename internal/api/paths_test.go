@@ -58,6 +58,7 @@ func TestPaths_Item(t *testing.T) {
 		{"StatusPageDomainsPath", StatusPageDomainsPath("sp-1"), "/api/v1/status-pages/sp-1/domains"},
 		{"StatusPageDomainPath", StatusPageDomainPath("sp-1", "d-2"), "/api/v1/status-pages/sp-1/domains/d-2"},
 		{"StatusPageDomainVerifyPath", StatusPageDomainVerifyPath("sp-1", "d-2"), "/api/v1/status-pages/sp-1/domains/d-2/verify"},
+		{"StatusPageDomainPrimaryPath", StatusPageDomainPrimaryPath("sp-1", "d-2"), "/api/v1/status-pages/sp-1/domains/d-2/primary"},
 		{"TagPath", TagPath("t-1"), "/api/v1/tags/t-1"},
 		{"WebhookPath", WebhookPath("wh-1"), "/api/v1/webhooks/wh-1"},
 	}
