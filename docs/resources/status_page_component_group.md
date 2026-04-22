@@ -75,7 +75,7 @@ resource "devhelm_status_page_component_group" "apps" {
   status_page_id = devhelm_status_page.public.id
   name           = "Applications"
   display_order  = 1
-  collapsed      = false
+  default_open   = true
 }
 ```
 
@@ -89,7 +89,7 @@ resource "devhelm_status_page_component_group" "apps" {
 
 ### Optional
 
-- `collapsed` (Boolean) Whether the group is collapsed by default (default: true)
+- `default_open` (Boolean) Initial expand/collapse state on first page load (default: true). The renderer may auto-expand a collapsed group when an active incident affects it.
 - `description` (String) Optional description shown below the group title. Omit the attribute to clear an existing description; empty string is rejected (use omission instead, since the API normalizes "" → null on write).
 - `display_order` (Number) Position in the group list (lower = earlier). Server-assigned if omitted.
 

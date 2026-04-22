@@ -4463,8 +4463,8 @@ type CreateSecretRequest struct {
 
 // CreateStatusPageComponentGroupRequest defines model for CreateStatusPageComponentGroupRequest.
 type CreateStatusPageComponentGroupRequest struct {
-	// Collapsed Whether the group is collapsed by default (default: true)
-	Collapsed *bool `json:"collapsed,omitempty"`
+	// DefaultOpen Initial expand/collapse state when a visitor first loads the page; renderer may auto-expand on active incidents (default: true)
+	DefaultOpen *bool `json:"defaultOpen,omitempty"`
 
 	// Description Optional group description
 	Description *string `json:"description,omitempty"`
@@ -4502,7 +4502,7 @@ type CreateStatusPageComponentRequest struct {
 	// ShowUptime Whether to show the uptime bar (default: true)
 	ShowUptime *bool `json:"showUptime,omitempty"`
 
-	// StartDate Date from which to start showing uptime data
+	// StartDate Date from which to start showing uptime; defaults to component creation. Set earlier to backdate (e.g. launch day); clamped at the monitor's createdAt for MONITOR-type components
 	StartDate *openapi_types.Date `json:"startDate,omitempty"`
 
 	// Type Component type: MONITOR, GROUP, or STATIC
@@ -7460,9 +7460,9 @@ type StatusPageComponentDtoType string
 
 // StatusPageComponentGroupDto defines model for StatusPageComponentGroupDto.
 type StatusPageComponentGroupDto struct {
-	Collapsed    bool                      `json:"collapsed"`
 	Components   *[]StatusPageComponentDto `json:"components,omitempty"`
 	CreatedAt    time.Time                 `json:"createdAt"`
+	DefaultOpen  bool                      `json:"defaultOpen"`
 	Description  *string                   `json:"description,omitempty"`
 	DisplayOrder int32                     `json:"displayOrder"`
 	Id           openapi_types.UUID        `json:"id"`
@@ -8373,8 +8373,8 @@ type UpdateSecretRequest struct {
 
 // UpdateStatusPageComponentGroupRequest defines model for UpdateStatusPageComponentGroupRequest.
 type UpdateStatusPageComponentGroupRequest struct {
-	// Collapsed Whether the group is collapsed by default; null preserves current
-	Collapsed *bool `json:"collapsed,omitempty"`
+	// DefaultOpen Initial expand/collapse state on first page load; null preserves current. Renderer may auto-expand on active incidents
+	DefaultOpen *bool `json:"defaultOpen,omitempty"`
 
 	// Description New description; null preserves current, empty string clears
 	Description *string `json:"description,omitempty"`
@@ -8409,7 +8409,7 @@ type UpdateStatusPageComponentRequest struct {
 	// ShowUptime Whether to show the uptime bar; null preserves current
 	ShowUptime *bool `json:"showUptime,omitempty"`
 
-	// StartDate Date from which to start showing uptime data; null preserves current
+	// StartDate Date from which to start showing uptime; null preserves current. Bars never extend earlier than the underlying monitor's createdAt regardless of value
 	StartDate *openapi_types.Date `json:"startDate,omitempty"`
 }
 

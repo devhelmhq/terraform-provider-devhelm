@@ -44,7 +44,7 @@ type StatusPageComponentGroupResourceModel struct {
 	StatusPageID types.String `tfsdk:"status_page_id"`
 	Name         types.String `tfsdk:"name"`
 	Description  types.String `tfsdk:"description"`
-	Collapsed    types.Bool   `tfsdk:"collapsed"`
+	DefaultOpen  types.Bool   `tfsdk:"default_open"`
 	DisplayOrder types.Int64  `tfsdk:"display_order"`
 }
 
@@ -116,9 +116,10 @@ func (r *StatusPageComponentGroupResource) Schema(_ context.Context, _ resource.
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
-			"collapsed": schema.BoolAttribute{
+			"default_open": schema.BoolAttribute{
 				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
-				Description: "Whether the group is collapsed by default (default: true)",
+				Description: "Initial expand/collapse state on first page load (default: true). " +
+					"The renderer may auto-expand a collapsed group when an active incident affects it.",
 			},
 			"display_order": schema.Int64Attribute{
 				Optional: true, Computed: true,
@@ -150,7 +151,7 @@ func (r *StatusPageComponentGroupResource) Create(ctx context.Context, req resou
 	body := generated.CreateStatusPageComponentGroupRequest{
 		Name:         plan.Name.ValueString(),
 		Description:  stringPtrOrNil(plan.Description),
-		Collapsed:    boolPtrOrNil(plan.Collapsed),
+		DefaultOpen:  boolPtrOrNil(plan.DefaultOpen),
 		DisplayOrder: int32PtrOrNil(plan.DisplayOrder),
 	}
 
@@ -220,7 +221,7 @@ func (r *StatusPageComponentGroupResource) Update(ctx context.Context, req resou
 	body := generated.UpdateStatusPageComponentGroupRequest{
 		Name:         &name,
 		Description:  descriptionPtrForClear(plan.Description),
-		Collapsed:    boolPtrOrNil(plan.Collapsed),
+		DefaultOpen:  boolPtrOrNil(plan.DefaultOpen),
 		DisplayOrder: int32PtrOrNil(plan.DisplayOrder),
 	}
 
@@ -286,7 +287,7 @@ func (r *StatusPageComponentGroupResource) ImportState(ctx context.Context, req 
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("status_page_id"), model.StatusPageID)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), model.Name)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("description"), model.Description)...)
-			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("collapsed"), model.Collapsed)...)
+			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("default_open"), model.DefaultOpen)...)
 			resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_order"), model.DisplayOrder)...)
 			return
 		}
@@ -302,6 +303,6 @@ func (r *StatusPageComponentGroupResource) mapToState(model *StatusPageComponent
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
 	model.Description = stringValueClearable(dto.Description)
-	model.Collapsed = types.BoolValue(dto.Collapsed)
+	model.DefaultOpen = types.BoolValue(dto.DefaultOpen)
 	model.DisplayOrder = types.Int64Value(int64(dto.DisplayOrder))
 }

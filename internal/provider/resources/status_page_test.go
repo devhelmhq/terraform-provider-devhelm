@@ -246,7 +246,7 @@ func TestStatusPageComponentGroup_MapToState_PopulatesEveryField(t *testing.T) {
 		Id:           id,
 		Name:         "Infrastructure",
 		Description:  &desc,
-		Collapsed:    true,
+		DefaultOpen:  true,
 		DisplayOrder: 5,
 	}
 	model := &StatusPageComponentGroupResourceModel{}
@@ -260,8 +260,8 @@ func TestStatusPageComponentGroup_MapToState_PopulatesEveryField(t *testing.T) {
 	if model.Description.ValueString() != "infra group" {
 		t.Errorf("Description = %q", model.Description.ValueString())
 	}
-	if !model.Collapsed.ValueBool() {
-		t.Errorf("Collapsed = false")
+	if !model.DefaultOpen.ValueBool() {
+		t.Errorf("DefaultOpen = false")
 	}
 	if model.DisplayOrder.ValueInt64() != 5 {
 		t.Errorf("DisplayOrder = %d", model.DisplayOrder.ValueInt64())
