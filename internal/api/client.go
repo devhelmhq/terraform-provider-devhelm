@@ -384,10 +384,15 @@ type SingleValueResponse[T any] struct {
 	Data T `json:"data"`
 }
 
-// Table response wrapper used by list endpoints.
+// Table response wrapper used by list endpoints. Mirrors the API's full
+// pagination envelope; fields beyond Data/HasNext are unused by the provider
+// today but must be declared so that the strict decoder doesn't reject them.
 type TableResponse[T any] struct {
-	Data    []T  `json:"data"`
-	HasNext bool `json:"hasNext"`
+	Data          []T    `json:"data"`
+	HasNext       bool   `json:"hasNext"`
+	HasPrev       bool   `json:"hasPrev,omitempty"`
+	TotalElements *int64 `json:"totalElements,omitempty"`
+	TotalPages    *int32 `json:"totalPages,omitempty"`
 }
 
 func Get[T any](ctx context.Context, c *Client, path string) (*T, error) {
