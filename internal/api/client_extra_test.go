@@ -144,7 +144,7 @@ func TestDeleteWithBody_SendsBody(t *testing.T) {
 }
 
 // TestDeleteWithBody_PropagatesAPIError confirms non-2xx responses are
-// surfaced as *APIError so callers can branch on IsNotFound and friends
+// surfaced as *DevhelmAPIError so callers can branch on IsNotFound and friends
 // even on the body-bearing DELETE path.
 func TestDeleteWithBody_PropagatesAPIError(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -158,9 +158,9 @@ func TestDeleteWithBody_PropagatesAPIError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
-	apiErr, ok := err.(*APIError)
+	apiErr, ok := err.(*DevhelmAPIError)
 	if !ok {
-		t.Fatalf("err type = %T, want *APIError", err)
+		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
 	if apiErr.StatusCode != http.StatusConflict {
 		t.Errorf("StatusCode = %d, want 409", apiErr.StatusCode)
@@ -184,7 +184,7 @@ func TestRequest_SendsAuthAndContextHeaders(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClient(srv.URL, "tok-xyz", "org-7", "ws-9", "1.2.3")
-	if _, _, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil); err != nil {
+	if _, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil); err != nil {
 		t.Fatalf("doRequest: %v", err)
 	}
 
@@ -214,7 +214,7 @@ func TestRequest_OmitsContentTypeWhenBodyless(t *testing.T) {
 	defer srv.Close()
 
 	c := newTestClient(t, srv)
-	if _, _, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil); err != nil {
+	if _, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil); err != nil {
 		t.Fatalf("doRequest: %v", err)
 	}
 	if ct != "" {
@@ -277,7 +277,7 @@ func TestList_EmptyFirstPageIsHandled(t *testing.T) {
 }
 
 // TestCreate_PropagatesStructuredError confirms that 4xx responses with a
-// JSON `message` field surface as *APIError carrying the human-readable
+// JSON `message` field surface as *DevhelmAPIError carrying the human-readable
 // message, which the resource layer relies on for diagnostics.
 func TestCreate_PropagatesStructuredError(t *testing.T) {
 	type resp struct{}
@@ -292,9 +292,9 @@ func TestCreate_PropagatesStructuredError(t *testing.T) {
 	if err == nil {
 		t.Fatal("Create returned nil error on 422")
 	}
-	apiErr, ok := err.(*APIError)
+	apiErr, ok := err.(*DevhelmAPIError)
 	if !ok {
-		t.Fatalf("err type = %T, want *APIError", err)
+		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
 	if apiErr.StatusCode != http.StatusUnprocessableEntity {
 		t.Errorf("StatusCode = %d, want 422", apiErr.StatusCode)
@@ -371,12 +371,12 @@ func TestRetry_SkippedOnPATCH(t *testing.T) {
 	defer srv.Close()
 
 	c := newTestClient(t, srv)
-	_, status, err := c.doRequest(context.Background(), http.MethodPatch, "/things", map[string]any{})
+	resp, err := c.doRequest(context.Background(), http.MethodPatch, "/things", map[string]any{})
 	if err != nil {
 		t.Fatalf("doRequest: %v", err)
 	}
-	if status != http.StatusServiceUnavailable {
-		t.Errorf("status = %d, want 503", status)
+	if resp.Status != http.StatusServiceUnavailable {
+		t.Errorf("status = %d, want 503", resp.Status)
 	}
 	if got := atomic.LoadInt32(&calls); got != 1 {
 		t.Errorf("calls = %d, want 1 (PATCH must not retry)", got)

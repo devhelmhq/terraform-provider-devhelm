@@ -88,6 +88,7 @@ var MatchRuleTypes = []string{
 	string(generated.ComponentNameIn),
 	string(generated.IncidentStatus),
 	string(generated.MonitorIdIn),
+	string(generated.MonitorTagIn),
 	string(generated.MonitorTypeIn),
 	string(generated.RegionIn),
 	string(generated.ResourceGroupIdIn),

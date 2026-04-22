@@ -88,15 +88,15 @@ func TestDoRequest_RetriesOn503ForGet(t *testing.T) {
 	defer srv.Close()
 
 	c := newTestClient(t, srv)
-	body, status, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil)
+	resp, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil)
 	if err != nil {
 		t.Fatalf("doRequest: %v", err)
 	}
-	if status != 200 {
-		t.Errorf("status = %d, want 200", status)
+	if resp.Status != 200 {
+		t.Errorf("status = %d, want 200", resp.Status)
 	}
-	if !strings.Contains(string(body), `"ok":true`) {
-		t.Errorf("body = %s, want success payload", body)
+	if !strings.Contains(string(resp.Body), `"ok":true`) {
+		t.Errorf("body = %s, want success payload", resp.Body)
 	}
 	if got := atomic.LoadInt32(&calls); got != 3 {
 		t.Errorf("calls = %d, want 3", got)
@@ -114,12 +114,12 @@ func TestDoRequest_DoesNotRetryPOST(t *testing.T) {
 	defer srv.Close()
 
 	c := newTestClient(t, srv)
-	_, status, err := c.doRequest(context.Background(), http.MethodPost, "/things", map[string]string{"x": "y"})
+	resp, err := c.doRequest(context.Background(), http.MethodPost, "/things", map[string]string{"x": "y"})
 	if err != nil {
 		t.Fatalf("doRequest returned err for non-network failure: %v", err)
 	}
-	if status != http.StatusServiceUnavailable {
-		t.Errorf("status = %d, want 503 (no retry)", status)
+	if resp.Status != http.StatusServiceUnavailable {
+		t.Errorf("status = %d, want 503 (no retry)", resp.Status)
 	}
 	if got := atomic.LoadInt32(&calls); got != 1 {
 		t.Errorf("calls = %d, want 1 (POST must never retry)", got)
@@ -137,12 +137,12 @@ func TestDoRequest_DoesNotRetryNonRetryableStatus(t *testing.T) {
 	defer srv.Close()
 
 	c := newTestClient(t, srv)
-	_, status, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil)
+	resp, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil)
 	if err != nil {
 		t.Fatalf("doRequest: %v", err)
 	}
-	if status != 500 {
-		t.Errorf("status = %d, want 500", status)
+	if resp.Status != 500 {
+		t.Errorf("status = %d, want 500", resp.Status)
 	}
 	if got := atomic.LoadInt32(&calls); got != 1 {
 		t.Errorf("calls = %d, want 1 (500 is not retryable)", got)
@@ -160,12 +160,12 @@ func TestDoRequest_MaxAttemptsReached(t *testing.T) {
 	defer srv.Close()
 
 	c := newTestClient(t, srv)
-	_, status, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil)
+	resp, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil)
 	if err != nil {
 		t.Fatalf("doRequest: %v", err)
 	}
-	if status != http.StatusServiceUnavailable {
-		t.Errorf("status = %d, want 503", status)
+	if resp.Status != http.StatusServiceUnavailable {
+		t.Errorf("status = %d, want 503", resp.Status)
 	}
 	if got, want := atomic.LoadInt32(&calls), int32(retryMaxAttempts); got != want {
 		t.Errorf("calls = %d, want %d (retryMaxAttempts)", got, want)
@@ -190,7 +190,7 @@ func TestDoRequest_HonorsContextCancel(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	_, _, err := c.doRequest(ctx, http.MethodGet, "/anything", nil)
+	_, err := c.doRequest(ctx, http.MethodGet, "/anything", nil)
 	if err == nil {
 		// The retry loop may also surface a final non-2xx without error if
 		// it raced; in that case ensure we did not spend full back-off.
@@ -220,7 +220,7 @@ func TestDoRequest_RetriesNetworkErrorsOnIdempotent(t *testing.T) {
 	c.HTTPClient.Timeout = 1 * time.Second
 
 	start := time.Now()
-	_, _, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil)
+	_, err := c.doRequest(context.Background(), http.MethodGet, "/anything", nil)
 	elapsed := time.Since(start)
 
 	if err == nil {
@@ -239,22 +239,22 @@ func TestIsNotFound(t *testing.T) {
 	if IsNotFound(errors.New("boom")) {
 		t.Error("IsNotFound(plain error) should be false")
 	}
-	notFound := &APIError{StatusCode: 404}
+	notFound := &DevhelmAPIError{StatusCode: 404}
 	if !IsNotFound(notFound) {
-		t.Error("IsNotFound(*APIError{404}) should be true")
+		t.Error("IsNotFound(*DevhelmAPIError{404}) should be true")
 	}
-	other := &APIError{StatusCode: 500}
+	other := &DevhelmAPIError{StatusCode: 500}
 	if IsNotFound(other) {
-		t.Error("IsNotFound(*APIError{500}) should be false")
+		t.Error("IsNotFound(*DevhelmAPIError{500}) should be false")
 	}
 }
 
 func TestCheckResponse_ParsesStructuredError(t *testing.T) {
 	// `message` field wins over `error`.
-	err := checkResponse([]byte(`{"message":"bad slug","error":"validation"}`), 400)
-	apiErr, ok := err.(*APIError)
+	err := checkResponse(httpResponse{Body: []byte(`{"message":"bad slug","error":"validation"}`), Status: 400})
+	apiErr, ok := err.(*DevhelmAPIError)
 	if !ok {
-		t.Fatalf("err type = %T, want *APIError", err)
+		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
 	if apiErr.Message != "bad slug" {
 		t.Errorf("Message = %q, want 'bad slug'", apiErr.Message)
@@ -265,10 +265,10 @@ func TestCheckResponse_ParsesStructuredError(t *testing.T) {
 }
 
 func TestCheckResponse_FallsBackToBody(t *testing.T) {
-	err := checkResponse([]byte(`<html>oops</html>`), 502)
-	apiErr, ok := err.(*APIError)
+	err := checkResponse(httpResponse{Body: []byte(`<html>oops</html>`), Status: 502})
+	apiErr, ok := err.(*DevhelmAPIError)
 	if !ok {
-		t.Fatalf("err type = %T, want *APIError", err)
+		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
 	if !strings.Contains(apiErr.Error(), "oops") {
 		t.Errorf("Error() = %q, want to contain raw body", apiErr.Error())
