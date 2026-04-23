@@ -172,8 +172,12 @@ func (r *StatusPageCustomDomainResource) Schema(_ context.Context, _ resource.Sc
 				Description: "RFC3339 timestamp when the domain was successfully verified, or null if not yet verified.",
 			},
 			"primary": schema.BoolAttribute{
-				Computed:    true,
-				Description: "Whether this is the primary domain for the status page",
+				Optional: true,
+				Computed: true,
+				Description: "Whether this is the primary host for the status page (canonical URL). " +
+					"Setting this to true after the domain is verified promotes it via the API; the previously " +
+					"primary domain is demoted in the same call. Only one primary per page; setting another " +
+					"domain primary out-of-band will cause drift on the next plan.",
 			},
 			"verification_record": schema.SingleNestedAttribute{
 				Computed: true,
@@ -251,6 +255,23 @@ func (r *StatusPageCustomDomainResource) Create(ctx context.Context, req resourc
 		return
 	}
 
+	// Honor `primary = true` if requested. The API rejects this until the
+	// domain is verified, so we only attempt it when the freshly-created
+	// row reports VERIFIED or ACTIVE — otherwise the user must split the
+	// promotion into a separate apply (after the verification resource
+	// observes verification completing).
+	if plan.Primary.ValueBool() &&
+		(string(domain.Status) == "VERIFIED" || string(domain.Status) == "ACTIVE") {
+		promoted, err := api.Create[generated.StatusPageCustomDomainDto](
+			ctx, r.client, api.StatusPageDomainPrimaryPath(pageID, domain.Id.String()), map[string]any{},
+		)
+		if err != nil {
+			resp.Diagnostics.AddError("Error setting domain as primary", err.Error())
+			return
+		}
+		domain = promoted
+	}
+
 	r.mapToState(&plan, domain)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
@@ -287,11 +308,52 @@ func (r *StatusPageCustomDomainResource) Read(ctx context.Context, req resource.
 	resp.State.RemoveResource(ctx)
 }
 
-func (r *StatusPageCustomDomainResource) Update(_ context.Context, _ resource.UpdateRequest, resp *resource.UpdateResponse) {
-	resp.Diagnostics.AddError(
-		"Update not supported",
-		"Custom domains cannot be updated — delete and recreate to change the hostname.",
-	)
+// Update handles the only mutable attribute on this resource — `primary`.
+// hostname / status_page_id force replace at the schema level so they never
+// reach this method. A `primary = true` plan promotes the domain via POST
+// /primary; a `primary = false` plan is a no-op (you demote a primary by
+// promoting another domain, not by clearing the flag).
+func (r *StatusPageCustomDomainResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan StatusPageCustomDomainResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	var state StatusPageCustomDomainResourceModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	pageID := plan.StatusPageID.ValueString()
+	domainID := state.ID.ValueString()
+
+	if plan.Primary.ValueBool() && !state.Primary.ValueBool() {
+		domain, err := api.Create[generated.StatusPageCustomDomainDto](
+			ctx, r.client, api.StatusPageDomainPrimaryPath(pageID, domainID), map[string]any{},
+		)
+		if err != nil {
+			resp.Diagnostics.AddError("Error setting domain as primary", err.Error())
+			return
+		}
+		r.mapToState(&plan, domain)
+	} else {
+		// Refresh from server so computed fields stay in sync.
+		domains, err := api.List[generated.StatusPageCustomDomainDto](
+			ctx, r.client, api.StatusPageDomainsPath(pageID),
+		)
+		if err != nil {
+			resp.Diagnostics.AddError("Error refreshing custom domain", err.Error())
+			return
+		}
+		for i := range domains {
+			if domains[i].Id.String() == domainID {
+				r.mapToState(&plan, &domains[i])
+				break
+			}
+		}
+	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
 func (r *StatusPageCustomDomainResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
