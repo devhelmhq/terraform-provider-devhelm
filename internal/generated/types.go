@@ -4178,14 +4178,14 @@ type ComponentStatusDto struct {
 
 // ComponentUptimeDayDto Daily uptime data for a component
 type ComponentUptimeDayDto struct {
-	// Date Date of the daily bucket (ISO 8601)
+	// Date Start-of-day timestamp for this bucket (UTC midnight, ISO 8601)
 	Date time.Time `json:"date"`
 
 	// DegradedSeconds Seconds the component spent in degraded performance on this day
 	DegradedSeconds int32 `json:"degradedSeconds"`
 
-	// EventsJson Incident event references for this day as raw JSON
-	EventsJson *string `json:"eventsJson,omitempty"`
+	// Incidents Incidents that overlapped this day, in display order
+	Incidents *[]IncidentRef `json:"incidents,omitempty"`
 
 	// MajorOutageSeconds Seconds of major outage observed on this day
 	MajorOutageSeconds int32 `json:"majorOutageSeconds"`
@@ -4193,10 +4193,7 @@ type ComponentUptimeDayDto struct {
 	// PartialOutageSeconds Seconds of partial outage observed on this day
 	PartialOutageSeconds int32 `json:"partialOutageSeconds"`
 
-	// Source Data source: vendor_reported or incident_derived
-	Source string `json:"source"`
-
-	// UptimePercentage Computed uptime percentage for the day
+	// UptimePercentage Computed uptime percentage using the weighted formula (degraded does not lower it)
 	UptimePercentage float64 `json:"uptimePercentage"`
 }
 
@@ -5520,15 +5517,15 @@ type IncidentPolicyDto struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-// IncidentRef Lightweight reference to an incident overlapping this day
+// IncidentRef Lightweight reference to an incident overlapping a given uptime day
 type IncidentRef struct {
-	// Id Status page incident ID
+	// Id Internal incident ID — UUID for status-page incidents, service incident UUID for catalog
 	Id openapi_types.UUID `json:"id"`
 
-	// Impact Incident impact level
+	// Impact Incident impact level (e.g. minor, major, critical for catalog; NONE/MINOR/MAJOR/CRITICAL for status pages)
 	Impact string `json:"impact"`
 
-	// Title Incident title
+	// Title Incident title at the time of the overlap
 	Title string `json:"title"`
 }
 
@@ -7472,30 +7469,15 @@ type StatusPageComponentGroupDto struct {
 	UpdatedAt    time.Time                 `json:"updatedAt"`
 }
 
-// StatusPageComponentUptimeDayDto Daily uptime data for a status page component
-type StatusPageComponentUptimeDayDto struct {
-	// Date Start-of-day timestamp for this bucket (UTC midnight)
-	Date time.Time `json:"date"`
-
-	// Incidents Incidents that overlapped this day
-	Incidents *[]IncidentRef `json:"incidents,omitempty"`
-
-	// MajorOutageSeconds Seconds of major outage on this day
-	MajorOutageSeconds int32 `json:"majorOutageSeconds"`
-
-	// PartialOutageSeconds Seconds of partial outage on this day
-	PartialOutageSeconds int32 `json:"partialOutageSeconds"`
-
-	// UptimePercentage Computed uptime percentage using weighted formula
-	UptimePercentage float64 `json:"uptimePercentage"`
-}
-
 // StatusPageCustomDomainDto defines model for StatusPageCustomDomainDto.
 type StatusPageCustomDomainDto struct {
+	CfCustomHostnameId      *string                                     `json:"cfCustomHostnameId,omitempty"`
+	CfSslStatus             *string                                     `json:"cfSslStatus,omitempty"`
 	CreatedAt               time.Time                                   `json:"createdAt"`
 	Hostname                string                                      `json:"hostname"`
 	Id                      openapi_types.UUID                          `json:"id"`
 	Primary                 bool                                        `json:"primary"`
+	SslActiveAt             *time.Time                                  `json:"sslActiveAt,omitempty"`
 	Status                  StatusPageCustomDomainDtoStatus             `json:"status"`
 	UpdatedAt               time.Time                                   `json:"updatedAt"`
 	VerificationCnameTarget string                                      `json:"verificationCnameTarget"`
@@ -7844,15 +7826,6 @@ type TableValueResultStatusPageComponentGroupDto struct {
 	HasPrev       bool                          `json:"hasPrev"`
 	TotalElements *int64                        `json:"totalElements,omitempty"`
 	TotalPages    *int32                        `json:"totalPages,omitempty"`
-}
-
-// TableValueResultStatusPageComponentUptimeDayDto defines model for TableValueResultStatusPageComponentUptimeDayDto.
-type TableValueResultStatusPageComponentUptimeDayDto struct {
-	Data          []StatusPageComponentUptimeDayDto `json:"data"`
-	HasNext       bool                              `json:"hasNext"`
-	HasPrev       bool                              `json:"hasPrev"`
-	TotalElements *int64                            `json:"totalElements,omitempty"`
-	TotalPages    *int32                            `json:"totalPages,omitempty"`
 }
 
 // TableValueResultStatusPageCustomDomainDto defines model for TableValueResultStatusPageCustomDomainDto.
