@@ -5210,11 +5210,9 @@ type HeartbeatReceivedAssertionType string
 // Http HTTP check-type-specific details
 type Http struct {
 	// BodyTruncated Whether the response body was truncated before storage
-	BodyTruncated *bool         `json:"bodyTruncated,omitempty"`
-	CheckType     HttpCheckType `json:"check_type"`
-
-	// Timing Request phase timing breakdown
-	Timing *map[string]*map[string]interface{} `json:"timing,omitempty"`
+	BodyTruncated *bool            `json:"bodyTruncated,omitempty"`
+	CheckType     HttpCheckType    `json:"check_type"`
+	Timing        *TimingPhasesDto `json:"timing,omitempty"`
 }
 
 // HttpCheckType defines model for Http.CheckType.
@@ -8049,6 +8047,27 @@ type TestNotificationPolicyRequest struct {
 type TestWebhookEndpointRequest struct {
 	// EventType Event type to simulate (e.g. monitor.created); null uses a default
 	EventType *string `json:"eventType,omitempty"`
+}
+
+// TimingPhasesDto Per-phase HTTP request timing breakdown (milliseconds)
+type TimingPhasesDto struct {
+	// DnsMs DNS resolution time in milliseconds
+	DnsMs *int32 `json:"dns_ms,omitempty"`
+
+	// DownloadMs Response body download time in milliseconds
+	DownloadMs *int32 `json:"download_ms,omitempty"`
+
+	// TcpMs TCP connect time in milliseconds
+	TcpMs *int32 `json:"tcp_ms,omitempty"`
+
+	// TlsMs TLS handshake time in milliseconds (null for plain HTTP)
+	TlsMs *int32 `json:"tls_ms,omitempty"`
+
+	// TotalMs Total wall-clock request time in milliseconds
+	TotalMs *int32 `json:"total_ms,omitempty"`
+
+	// TtfbMs Time to first response byte in milliseconds
+	TtfbMs *int32 `json:"ttfb_ms,omitempty"`
 }
 
 // TlsInfoDto TLS/SSL certificate details for HTTPS targets
