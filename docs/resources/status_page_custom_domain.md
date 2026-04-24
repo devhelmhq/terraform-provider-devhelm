@@ -181,10 +181,13 @@ resource "devhelm_status_page_custom_domain_verification" "acme" {
 - `hostname` (String) Custom hostname to attach to the status page (e.g. status.acme.com). Changing this forces a new resource.
 - `status_page_id` (String) ID of the status page this domain belongs to. Changing this forces a new resource.
 
+### Optional
+
+- `primary` (Boolean) Whether this is the primary host for the status page (canonical URL). Setting this to true after the domain is verified promotes it via the API; the previously primary domain is demoted in the same call. Only one primary per page; setting another domain primary out-of-band will cause drift on the next plan.
+
 ### Read-Only
 
 - `id` (String) Unique identifier for this custom domain
-- `primary` (Boolean) Whether this is the primary domain for the status page
 - `status` (String) Current domain lifecycle status. One of: PENDING_VERIFICATION, VERIFICATION_FAILED, VERIFIED, SSL_PENDING, ACTIVE, FAILED, REMOVED.
 - `traffic_record` (Attributes) DNS record required to route user traffic to the status page. Always a CNAME at hostname → verification_cname_target. In CNAME-method this is identical to verification_record; in TXT-method it is a separate record. (see [below for nested schema](#nestedatt--traffic_record))
 - `verification_cname_target` (String) Hostname the CNAME record must point to (typically <page-slug>.devhelm.io). Used both for CNAME-method verification and for routing user traffic to the status page.
