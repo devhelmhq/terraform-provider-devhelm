@@ -10,6 +10,8 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -49,16 +51,50 @@ type Client struct {
 	WorkspaceID string
 	HTTPClient  *http.Client
 	UserAgent   string
+	// SurfaceHeaders is the X-DevHelm-Surface* set sent on every request so
+	// the API can attribute usage to the Terraform provider for adoption /
+	// version-distribution telemetry. Computed once in NewClient — empty
+	// when DEVHELM_TELEMETRY=0 so the user opt-out lives in one env var
+	// rather than being threaded through every resource. Wire contract:
+	// https://devhelm.io/telemetry.
+	SurfaceHeaders map[string]string
 }
 
 func NewClient(baseURL, token, orgID, workspaceID, version string) *Client {
 	return &Client{
-		BaseURL:     strings.TrimRight(baseURL, "/"),
-		Token:       token,
-		OrgID:       orgID,
-		WorkspaceID: workspaceID,
-		HTTPClient:  &http.Client{Timeout: defaultHTTPTimeout},
-		UserAgent:   fmt.Sprintf("terraform-provider-devhelm/%s", version),
+		BaseURL:        strings.TrimRight(baseURL, "/"),
+		Token:          token,
+		OrgID:          orgID,
+		WorkspaceID:    workspaceID,
+		HTTPClient:     &http.Client{Timeout: defaultHTTPTimeout},
+		UserAgent:      fmt.Sprintf("terraform-provider-devhelm/%s", version),
+		SurfaceHeaders: buildSurfaceHeaders(version),
+	}
+}
+
+// buildSurfaceHeaders returns the X-DevHelm-Surface* headers for one
+// Terraform run. Mirrors the contract documented at
+// https://devhelm.io/telemetry; the matching API-side handler lives in
+// devhelmhq/mono.
+//
+// Returns nil when DEVHELM_TELEMETRY=0 so the API receives no surface
+// signal at all. The opt-out is intentionally a single env var rather than
+// a provider attribute — users opt out once for their workstation / CI,
+// not per resource.
+//
+// Strict equality on "0" so DEVHELM_TELEMETRY=on / true / yes don't
+// accidentally read as opt-out.
+func buildSurfaceHeaders(version string) map[string]string {
+	if strings.TrimSpace(os.Getenv("DEVHELM_TELEMETRY")) == "0" {
+		return nil
+	}
+	return map[string]string{
+		"X-DevHelm-Surface":         "tf",
+		"X-DevHelm-Surface-Version": version,
+		// The provider's go runtime + os/arch fingerprint helps the
+		// platform team prioritise binary builds. Cheap to ship — the
+		// runtime values are already constants once the binary is built.
+		"X-DevHelm-Tf-Os": fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH),
 	}
 }
 
@@ -203,6 +239,12 @@ func (c *Client) doRequestOnce(ctx context.Context, method, u string, bodyBytes 
 	req.Header.Set("User-Agent", c.UserAgent)
 	if hasBody {
 		req.Header.Set("Content-Type", "application/json")
+	}
+	// Devtool surface telemetry — see buildSurfaceHeaders. Empty map (and
+	// therefore no headers set) when the user has opted out via
+	// DEVHELM_TELEMETRY=0.
+	for k, v := range c.SurfaceHeaders {
+		req.Header.Set(k, v)
 	}
 
 	resp, err := c.HTTPClient.Do(req)
