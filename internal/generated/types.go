@@ -1939,6 +1939,63 @@ func (e MemberDtoStatus) Valid() bool {
 	}
 }
 
+// Defines values for MemberRoleChangedMetadataKind.
+const (
+	MemberRoleChanged MemberRoleChangedMetadataKind = "member_role_changed"
+)
+
+// Valid indicates whether the value is a known member of the MemberRoleChangedMetadataKind enum.
+func (e MemberRoleChangedMetadataKind) Valid() bool {
+	switch e {
+	case MemberRoleChanged:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MemberRoleChangedMetadataNewRole.
+const (
+	MemberRoleChangedMetadataNewRoleADMIN  MemberRoleChangedMetadataNewRole = "ADMIN"
+	MemberRoleChangedMetadataNewRoleMEMBER MemberRoleChangedMetadataNewRole = "MEMBER"
+	MemberRoleChangedMetadataNewRoleOWNER  MemberRoleChangedMetadataNewRole = "OWNER"
+)
+
+// Valid indicates whether the value is a known member of the MemberRoleChangedMetadataNewRole enum.
+func (e MemberRoleChangedMetadataNewRole) Valid() bool {
+	switch e {
+	case MemberRoleChangedMetadataNewRoleADMIN:
+		return true
+	case MemberRoleChangedMetadataNewRoleMEMBER:
+		return true
+	case MemberRoleChangedMetadataNewRoleOWNER:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MemberRoleChangedMetadataOldRole.
+const (
+	MemberRoleChangedMetadataOldRoleADMIN  MemberRoleChangedMetadataOldRole = "ADMIN"
+	MemberRoleChangedMetadataOldRoleMEMBER MemberRoleChangedMetadataOldRole = "MEMBER"
+	MemberRoleChangedMetadataOldRoleOWNER  MemberRoleChangedMetadataOldRole = "OWNER"
+)
+
+// Valid indicates whether the value is a known member of the MemberRoleChangedMetadataOldRole enum.
+func (e MemberRoleChangedMetadataOldRole) Valid() bool {
+	switch e {
+	case MemberRoleChangedMetadataOldRoleADMIN:
+		return true
+	case MemberRoleChangedMetadataOldRoleMEMBER:
+		return true
+	case MemberRoleChangedMetadataOldRoleOWNER:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for MonitorAssertionDtoAssertionType.
 const (
 	MonitorAssertionDtoAssertionTypeBodyContains             MonitorAssertionDtoAssertionType = "body_contains"
@@ -2659,6 +2716,24 @@ const (
 func (e SslExpiryAssertionType) Valid() bool {
 	switch e {
 	case SslExpiry:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StateTransitionDetailsSource.
+const (
+	Pipeline  StateTransitionDetailsSource = "pipeline"
+	PublicApi StateTransitionDetailsSource = "public-api"
+)
+
+// Valid indicates whether the value is a known member of the StateTransitionDetailsSource enum.
+func (e StateTransitionDetailsSource) Valid() bool {
+	switch e {
+	case Pipeline:
+		return true
+	case PublicApi:
 		return true
 	default:
 		return false
@@ -3932,10 +4007,8 @@ type AuditEventDto struct {
 	CreatedAt time.Time `json:"createdAt"`
 
 	// Id Unique audit event identifier
-	Id int64 `json:"id"`
-
-	// Metadata Additional context about the action
-	Metadata *map[string]*map[string]interface{} `json:"metadata,omitempty"`
+	Id       int64          `json:"id"`
+	Metadata *AuditMetadata `json:"metadata,omitempty"`
 
 	// ResourceId ID of the affected resource
 	ResourceId *string `json:"resourceId,omitempty"`
@@ -3945,6 +4018,11 @@ type AuditEventDto struct {
 
 	// ResourceType Type of resource affected (e.g. monitor, api_key)
 	ResourceType *string `json:"resourceType,omitempty"`
+}
+
+// AuditMetadata Typed metadata payload attached to an audit event; null for actions that carry no extra context.
+type AuditMetadata struct {
+	union json.RawMessage
 }
 
 // AuthMeResponse Identity, organization, plan, and rate-limit info for the authenticated API key
@@ -4124,6 +4202,19 @@ type CheckResultDto struct {
 
 	// Timestamp Timestamp when the check was executed (ISO 8601)
 	Timestamp time.Time `json:"timestamp"`
+}
+
+// CheckTraceDto defines model for CheckTraceDto.
+type CheckTraceDto struct {
+	// CheckId The check execution ID this trace is keyed by
+	CheckId openapi_types.UUID `json:"checkId"`
+
+	// Evaluations All rule evaluations that ran for this check
+	Evaluations    []RuleEvaluationDto `json:"evaluations"`
+	PolicySnapshot *PolicySnapshotDto  `json:"policySnapshot,omitempty"`
+
+	// Transitions State-machine transitions this check caused (may be empty if nothing fired)
+	Transitions []IncidentStateTransitionDto `json:"transitions"`
 }
 
 // CheckTypeDetailsDto Check-type-specific details — polymorphic by check_type discriminator
@@ -5352,6 +5443,9 @@ type IncidentDto struct {
 	// CreatedByUserId User who created the incident (manual incidents only)
 	CreatedByUserId *int32 `json:"createdByUserId,omitempty"`
 
+	// EngineVersion Detection engine semver that evaluated the rule. Omitted from JSON when null, treat missing as null.
+	EngineVersion *string `json:"engineVersion,omitempty"`
+
 	// ExternalRef External reference ID (e.g. PagerDuty incident ID)
 	ExternalRef *string `json:"externalRef,omitempty"`
 
@@ -5420,6 +5514,15 @@ type IncidentDto struct {
 
 	// TriggeredByRule Human-readable description of the trigger rule that fired
 	TriggeredByRule *string `json:"triggeredByRule,omitempty"`
+
+	// TriggeredByRuleIndex Index of the fired rule inside the policy's trigger_rules array. Omitted from JSON when null, treat missing as null.
+	TriggeredByRuleIndex *int32 `json:"triggeredByRuleIndex,omitempty"`
+
+	// TriggeredByRuleSnapshotHashHex Hex SHA-256 of the canonical policy snapshot that fired; combined with triggeredByRuleIndex points to the exact TriggerRule. Omitted from JSON when null, treat missing as null.
+	TriggeredByRuleSnapshotHashHex *string `json:"triggeredByRuleSnapshotHashHex,omitempty"`
+
+	// TriggeringCheckId Scheduler-minted check execution ID whose result confirmed this incident; joins to check_results, rule_evaluations, and incident_state_transitions. Omitted from JSON (undefined to SDKs) when null, treat missing as null.
+	TriggeringCheckId *openapi_types.UUID `json:"triggeringCheckId,omitempty"`
 
 	// UpdatedAt Timestamp when the incident was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -5525,6 +5628,59 @@ type IncidentRef struct {
 
 	// Title Incident title at the time of the overlap
 	Title string `json:"title"`
+}
+
+// IncidentStateTransitionDto State-machine transitions this check caused (may be empty if nothing fired)
+type IncidentStateTransitionDto struct {
+	// AffectedRegions Regions whose evaluations contributed to this transition
+	AffectedRegions []string `json:"affectedRegions"`
+
+	// CheckId Scheduler-minted check execution ID (V92) of the triggering result
+	CheckId openapi_types.UUID `json:"checkId"`
+
+	// Details Typed metadata about this transition (currently: actor source)
+	Details StateTransitionDetails `json:"details"`
+
+	// EngineVersion Detection engine version that emitted this transition
+	EngineVersion string `json:"engineVersion"`
+
+	// FromStatus Previous status (WATCHING | TRIGGERED | CONFIRMED | RESOLVED)
+	FromStatus string `json:"fromStatus"`
+
+	// Id Forensic row UUID
+	Id openapi_types.UUID `json:"id"`
+
+	// IncidentId Incident this transition belongs to; null for pre-incident (auto-cleared) transitions
+	IncidentId *openapi_types.UUID `json:"incidentId,omitempty"`
+
+	// MonitorId Monitor this transition pertains to
+	MonitorId openapi_types.UUID `json:"monitorId"`
+
+	// OccurredAt When the state transition occurred
+	OccurredAt time.Time `json:"occurredAt"`
+
+	// PolicySnapshotHashHex Hex-encoded hash of the policy snapshot that governed this transition
+	PolicySnapshotHashHex string `json:"policySnapshotHashHex"`
+
+	// Reason Why the transition fired (trigger | confirm | resolve | auto_clear | reopen)
+	Reason string `json:"reason"`
+
+	// ToStatus New status (WATCHING | TRIGGERED | CONFIRMED | RESOLVED)
+	ToStatus string `json:"toStatus"`
+
+	// TriggeringEvaluationIds rule_evaluation ids that caused this transition (may be empty for timeout-driven edges)
+	TriggeringEvaluationIds []openapi_types.UUID `json:"triggeringEvaluationIds"`
+}
+
+// IncidentTimelineDto defines model for IncidentTimelineDto.
+type IncidentTimelineDto struct {
+	PolicySnapshot *PolicySnapshotDto `json:"policySnapshot,omitempty"`
+
+	// Transitions State-machine transitions in chronological order
+	Transitions []IncidentStateTransitionDto `json:"transitions"`
+
+	// TriggeringEvaluations Rule evaluations that caused any of the transitions above. Correlate via evaluation.triggeringTransitionId == transition.id
+	TriggeringEvaluations []RuleEvaluationDto `json:"triggeringEvaluations"`
 }
 
 // IncidentUpdateDto defines model for IncidentUpdateDto.
@@ -5892,6 +6048,26 @@ type MemberDtoOrgRole string
 
 // MemberDtoStatus Membership status (ACTIVE, PENDING, SUSPENDED)
 type MemberDtoStatus string
+
+// MemberRoleChangedMetadata Role transition recorded when an organization member's role changes.
+type MemberRoleChangedMetadata struct {
+	Kind MemberRoleChangedMetadataKind `json:"kind"`
+
+	// NewRole Role the member holds after the change
+	NewRole MemberRoleChangedMetadataNewRole `json:"newRole"`
+
+	// OldRole Role the member held before the change
+	OldRole MemberRoleChangedMetadataOldRole `json:"oldRole"`
+}
+
+// MemberRoleChangedMetadataKind defines model for MemberRoleChangedMetadata.Kind.
+type MemberRoleChangedMetadataKind string
+
+// MemberRoleChangedMetadataNewRole Role the member holds after the change
+type MemberRoleChangedMetadataNewRole string
+
+// MemberRoleChangedMetadataOldRole Role the member held before the change
+type MemberRoleChangedMetadataOldRole string
 
 // MonitorAssertionDto defines model for MonitorAssertionDto.
 type MonitorAssertionDto struct {
@@ -6305,6 +6481,24 @@ type PlanInfo struct {
 // PlanInfoTier Resolved plan tier
 type PlanInfoTier string
 
+// PolicySnapshotDto Policy snapshot used during this check (all evaluations of a single check are against one policy)
+type PolicySnapshotDto struct {
+	// EngineVersion Detection engine version that observed this policy
+	EngineVersion string `json:"engineVersion"`
+
+	// FirstSeenAt First time the detection engine evaluated against this policy bytes
+	FirstSeenAt time.Time `json:"firstSeenAt"`
+
+	// HashHex Hex-encoded SHA-256 of the canonical policy JSON
+	HashHex string `json:"hashHex"`
+
+	// LastSeenAt Most recent time the engine evaluated against this policy bytes
+	LastSeenAt time.Time `json:"lastSeenAt"`
+
+	// Policy Canonical policy document (snake_case, sorted keys)
+	Policy map[string]map[string]interface{} `json:"policy"`
+}
+
 // PollChartBucketDto Aggregated poll metrics for a time bucket
 type PollChartBucketDto struct {
 	// AvgResponseTimeMs Average response time in milliseconds for this bucket
@@ -6665,6 +6859,51 @@ type RetryStrategy struct {
 
 	// Type Retry strategy kind, e.g. fixed interval between attempts
 	Type string `json:"type"`
+}
+
+// RuleEvaluationDto All rule evaluations that ran for this check
+type RuleEvaluationDto struct {
+	// CheckId Scheduler-minted check execution ID (V92) — the causal chain identifier
+	CheckId openapi_types.UUID `json:"checkId"`
+
+	// EngineVersion Detection engine version that ran this evaluation
+	EngineVersion string `json:"engineVersion"`
+
+	// EvaluationDetails Structured details (e.g. failure counts, response-time aggregates)
+	EvaluationDetails map[string]map[string]interface{} `json:"evaluationDetails"`
+
+	// Id Forensic row UUID
+	Id openapi_types.UUID `json:"id"`
+
+	// InputResultIds check_results IDs that were inputs to this evaluation (newest first)
+	InputResultIds []openapi_types.UUID `json:"inputResultIds"`
+
+	// MonitorId Monitor that produced the input check result
+	MonitorId openapi_types.UUID `json:"monitorId"`
+
+	// OccurredAt When the evaluation ran
+	OccurredAt time.Time `json:"occurredAt"`
+
+	// OutputMatched Whether the rule fired on this evaluation
+	OutputMatched bool `json:"outputMatched"`
+
+	// PolicySnapshotHashHex Hex-encoded hash of the policy snapshot this rule came from
+	PolicySnapshotHashHex string `json:"policySnapshotHashHex"`
+
+	// Region Probe region of the input check result
+	Region string `json:"region"`
+
+	// RuleIndex Index into the policy's triggerRules array (0-based)
+	RuleIndex int32 `json:"ruleIndex"`
+
+	// RuleScope Rule scope (per_region | multi_region)
+	RuleScope string `json:"ruleScope"`
+
+	// RuleType Rule type (e.g. consecutive_failures, failures_in_window)
+	RuleType string `json:"ruleType"`
+
+	// TriggeringTransitionId If this evaluation caused a state transition, points to that transition's id
+	TriggeringTransitionId *openapi_types.UUID `json:"triggeringTransitionId,omitempty"`
 }
 
 // ScheduledMaintenanceDto A scheduled maintenance window from a vendor status page
@@ -7088,6 +7327,11 @@ type SingleValueResponseBulkMonitorActionResult struct {
 	Data BulkMonitorActionResult `json:"data"`
 }
 
+// SingleValueResponseCheckTraceDto defines model for SingleValueResponseCheckTraceDto.
+type SingleValueResponseCheckTraceDto struct {
+	Data CheckTraceDto `json:"data"`
+}
+
 // SingleValueResponseDashboardOverviewDto defines model for SingleValueResponseDashboardOverviewDto.
 type SingleValueResponseDashboardOverviewDto struct {
 	// Data Combined dashboard overview for monitors and incidents
@@ -7127,6 +7371,11 @@ type SingleValueResponseIncidentDetailDto struct {
 type SingleValueResponseIncidentPolicyDto struct {
 	// Data Incident detection, confirmation, and recovery policy for a monitor
 	Data IncidentPolicyDto `json:"data"`
+}
+
+// SingleValueResponseIncidentTimelineDto defines model for SingleValueResponseIncidentTimelineDto.
+type SingleValueResponseIncidentTimelineDto struct {
+	Data IncidentTimelineDto `json:"data"`
 }
 
 // SingleValueResponseInviteDto defines model for SingleValueResponseInviteDto.
@@ -7194,6 +7443,12 @@ type SingleValueResponseNotificationPolicyDto struct {
 type SingleValueResponseOrganizationDto struct {
 	// Data Organization account details
 	Data OrganizationDto `json:"data"`
+}
+
+// SingleValueResponsePolicySnapshotDto defines model for SingleValueResponsePolicySnapshotDto.
+type SingleValueResponsePolicySnapshotDto struct {
+	// Data Policy snapshot used during this check (all evaluations of a single check are against one policy)
+	Data *PolicySnapshotDto `json:"data"`
 }
 
 // SingleValueResponseResourceGroupDto defines model for SingleValueResponseResourceGroupDto.
@@ -7368,6 +7623,15 @@ type SslExpiryAssertion struct {
 
 // SslExpiryAssertionType defines model for SslExpiryAssertion.Type.
 type SslExpiryAssertionType string
+
+// StateTransitionDetails Typed metadata about this transition (currently: actor source)
+type StateTransitionDetails struct {
+	// Source Actor that produced this transition (pipeline | public-api)
+	Source StateTransitionDetailsSource `json:"source"`
+}
+
+// StateTransitionDetailsSource Actor that produced this transition (pipeline | public-api)
+type StateTransitionDetailsSource string
 
 // StatusCodeAssertion defines model for StatusCodeAssertion.
 type StatusCodeAssertion struct {
@@ -7673,6 +7937,15 @@ type TableValueResultIncidentDto struct {
 	TotalPages    *int32        `json:"totalPages,omitempty"`
 }
 
+// TableValueResultIncidentStateTransitionDto defines model for TableValueResultIncidentStateTransitionDto.
+type TableValueResultIncidentStateTransitionDto struct {
+	Data          []IncidentStateTransitionDto `json:"data"`
+	HasNext       bool                         `json:"hasNext"`
+	HasPrev       bool                         `json:"hasPrev"`
+	TotalElements *int64                       `json:"totalElements,omitempty"`
+	TotalPages    *int32                       `json:"totalPages,omitempty"`
+}
+
 // TableValueResultIntegrationDto defines model for TableValueResultIntegrationDto.
 type TableValueResultIntegrationDto struct {
 	Data          []IntegrationDto `json:"data"`
@@ -7761,6 +8034,15 @@ type TableValueResultResourceGroupDto struct {
 	HasPrev       bool               `json:"hasPrev"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
+}
+
+// TableValueResultRuleEvaluationDto defines model for TableValueResultRuleEvaluationDto.
+type TableValueResultRuleEvaluationDto struct {
+	Data          []RuleEvaluationDto `json:"data"`
+	HasNext       bool                `json:"hasNext"`
+	HasPrev       bool                `json:"hasPrev"`
+	TotalElements *int64              `json:"totalElements,omitempty"`
+	TotalPages    *int32              `json:"totalPages,omitempty"`
 }
 
 // TableValueResultScheduledMaintenanceDto defines model for TableValueResultScheduledMaintenanceDto.
@@ -8655,6 +8937,23 @@ type List19Params struct {
 	Size         *int32     `form:"size,omitempty" json:"size,omitempty"`
 }
 
+// ListMonitorRuleEvaluationsParams defines parameters for ListMonitorRuleEvaluations.
+type ListMonitorRuleEvaluationsParams struct {
+	RuleType    *string    `form:"ruleType,omitempty" json:"ruleType,omitempty"`
+	Region      *string    `form:"region,omitempty" json:"region,omitempty"`
+	OnlyMatched *bool      `form:"onlyMatched,omitempty" json:"onlyMatched,omitempty"`
+	From        *time.Time `form:"from,omitempty" json:"from,omitempty"`
+	To          *time.Time `form:"to,omitempty" json:"to,omitempty"`
+	Pageable    Pageable   `form:"pageable" json:"pageable"`
+}
+
+// ListMonitorTransitionsParams defines parameters for ListMonitorTransitions.
+type ListMonitorTransitionsParams struct {
+	From     *time.Time `form:"from,omitempty" json:"from,omitempty"`
+	To       *time.Time `form:"to,omitempty" json:"to,omitempty"`
+	Pageable Pageable   `form:"pageable" json:"pageable"`
+}
+
 // PingPostJSONBody defines parameters for PingPost.
 type PingPostJSONBody = string
 
@@ -9122,6 +9421,65 @@ type Create2JSONRequestBody = CreateWorkspaceRequest
 
 // UpdateJSONRequestBody defines body for Update for application/json ContentType.
 type UpdateJSONRequestBody = UpdateWorkspaceRequest
+
+// AsMemberRoleChangedMetadata returns the union data inside the AuditMetadata as a MemberRoleChangedMetadata
+func (t AuditMetadata) AsMemberRoleChangedMetadata() (MemberRoleChangedMetadata, error) {
+	var body MemberRoleChangedMetadata
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMemberRoleChangedMetadata overwrites any union data inside the AuditMetadata as the provided MemberRoleChangedMetadata
+func (t *AuditMetadata) FromMemberRoleChangedMetadata(v MemberRoleChangedMetadata) error {
+	v.Kind = "member_role_changed"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMemberRoleChangedMetadata performs a merge with any union data inside the AuditMetadata, using the provided MemberRoleChangedMetadata
+func (t *AuditMetadata) MergeMemberRoleChangedMetadata(v MemberRoleChangedMetadata) error {
+	v.Kind = "member_role_changed"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AuditMetadata) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t AuditMetadata) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "member_role_changed":
+		return t.AsMemberRoleChangedMetadata()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t AuditMetadata) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AuditMetadata) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsHttp returns the union data inside the CheckTypeDetailsDto as a Http
 func (t CheckTypeDetailsDto) AsHttp() (Http, error) {
