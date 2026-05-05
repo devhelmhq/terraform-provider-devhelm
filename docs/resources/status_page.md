@@ -118,7 +118,7 @@ resource "devhelm_status_page_component" "api" {
 ### Read-Only
 
 - `id` (String) Unique identifier for this status page
-- `page_url` (String) Public URL of the status page (https://<slug>.devhelm.page)
+- `page_url` (String) Public URL of the status page (https://<slug>.devhelmstatus.com)
 
 <a id="nestedatt--branding"></a>
 ### Nested Schema for `branding`

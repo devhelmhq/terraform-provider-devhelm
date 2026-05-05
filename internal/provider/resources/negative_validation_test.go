@@ -423,7 +423,7 @@ func TestStatusPage_MapToState_SyntheticPageURL(t *testing.T) {
 	}
 	model := &StatusPageResourceModel{}
 	r.mapToState(ctx, model, dto)
-	want := "https://acme.devhelm.page"
+	want := "https://acme.devhelmstatus.com"
 	if model.PageURL.ValueString() != want {
 		t.Errorf("PageURL = %q, want %q", model.PageURL.ValueString(), want)
 	}

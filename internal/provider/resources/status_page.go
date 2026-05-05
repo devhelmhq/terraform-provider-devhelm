@@ -159,7 +159,7 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				},
 			},
 			"page_url": schema.StringAttribute{
-				Computed: true, Description: "Public URL of the status page (https://<slug>.devhelm.page)",
+				Computed: true, Description: "Public URL of the status page (https://<slug>.devhelmstatus.com)",
 			},
 			"branding": schema.SingleNestedAttribute{
 				Optional: true, Computed: true,
@@ -416,9 +416,9 @@ func (r *StatusPageResource) mapToState(ctx context.Context, model *StatusPageRe
 	model.Branding, d = brandingObjectFromDto(ctx, dto.Branding)
 	diags.Append(d...)
 	// page_url is derived client-side from the slug. The API doesn't return
-	// it because the host is dictated by the deployment (devhelm.page) and
-	// would otherwise drift across environments.
-	model.PageURL = types.StringValue(fmt.Sprintf("https://%s.devhelm.page", dto.Slug))
+	// it because the host is dictated by the deployment (devhelmstatus.com)
+	// and would otherwise drift across environments.
+	model.PageURL = types.StringValue(fmt.Sprintf("https://%s.devhelmstatus.com", dto.Slug))
 	return diags
 }
 

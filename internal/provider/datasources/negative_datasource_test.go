@@ -248,7 +248,7 @@ func TestMapStatusPageToState_SyntheticPageURLWithSlug(t *testing.T) {
 	}
 	var model StatusPageDataSourceModel
 	mapStatusPageToState(&model, dto)
-	want := "https://my-company.devhelm.page"
+	want := "https://my-company.devhelmstatus.com"
 	if model.PageURL.ValueString() != want {
 		t.Errorf("PageURL = %q, want %q", model.PageURL.ValueString(), want)
 	}

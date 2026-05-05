@@ -301,7 +301,7 @@ func TestMapStatusPageToState_PopulatesAllFieldsAndSyntheticPageURL(t *testing.T
 	// data source constructs it from slug. If we ever change the
 	// hosted-page domain, this assertion is the canary that forces us
 	// to update both the resource and the data source in lockstep.
-	wantURL := "https://acme.devhelm.page"
+	wantURL := "https://acme.devhelmstatus.com"
 	if model.PageURL.ValueString() != wantURL {
 		t.Errorf("PageURL: got %q, want %q", model.PageURL.ValueString(), wantURL)
 	}
