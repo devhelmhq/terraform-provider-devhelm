@@ -12,8 +12,13 @@ resource "devhelm_monitor" "api" {
   })
 
   assertions {
-    type   = "status_code"
-    config = jsonencode({ expected = 200, operator = "equals" })
+    type = "status_code"
+    # `expected` is a STRING in the API contract — it can hold "200", "2xx",
+    # or "200-299". Always quote the value, even for plain numeric codes;
+    # `jsonencode({ expected = 200, ... })` (number) plans cleanly but
+    # apply fails with "Provider produced inconsistent result" because the
+    # API normalizes the value to "200" (string) on the round-trip.
+    config = jsonencode({ expected = "200", operator = "equals" })
   }
 
   assertions {

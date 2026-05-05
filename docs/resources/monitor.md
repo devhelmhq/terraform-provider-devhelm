@@ -27,8 +27,13 @@ resource "devhelm_monitor" "api" {
   })
 
   assertions {
-    type   = "status_code"
-    config = jsonencode({ expected = 200, operator = "equals" })
+    type = "status_code"
+    # `expected` is a STRING in the API contract — it can hold "200", "2xx",
+    # or "200-299". Always quote the value, even for plain numeric codes;
+    # `jsonencode({ expected = 200, ... })` (number) plans cleanly but
+    # apply fails with "Provider produced inconsistent result" because the
+    # API normalizes the value to "200" (string) on the round-trip.
+    config = jsonencode({ expected = "200", operator = "equals" })
   }
 
   assertions {
@@ -147,7 +152,7 @@ resource "devhelm_monitor" "basic_auth" {
 
 Required:
 
-- `config` (String) Assertion configuration as JSON; the inner `type` field is omitted (set via the sibling `type` attribute) and the rest of the shape depends on the assertion kind. Field names inside the JSON are camelCase (the API wire format), e.g. `jsonencode({expected = 200, operator = "equals"})` for `status_code` or `jsonencode({thresholdMs = 500})` for `response_time`.
+- `config` (String) Assertion configuration as JSON; the inner `type` field is omitted (set via the sibling `type` attribute) and the rest of the shape depends on the assertion kind. Field names inside the JSON are camelCase (the API wire format) and JSON value types must match the API contract exactly — e.g. `status_code.expected` is a STRING (`jsonencode({expected = "200", operator = "equals"})`, not `expected = 200`), while `response_time.thresholdMs` is a NUMBER (`jsonencode({thresholdMs = 500})`). Type-mismatched values plan cleanly but fail apply with "Provider produced inconsistent result" because the API normalizes them on the round-trip.
 - `type` (String) Assertion type discriminator in snake_case wire format (e.g. `status_code`, `response_time`, `body_contains`, `header_value`, `dns_resolves`, `ssl_expiry`, `tcp_connects`). Must match an AssertionType enum value as serialized by the API.
 
 Optional:
