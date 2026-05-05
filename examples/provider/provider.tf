@@ -2,8 +2,13 @@ terraform {
   required_version = ">= 1.5.0"
   required_providers {
     devhelm = {
-      source  = "devhelmhq/devhelm"
-      version = "~> 0.1"
+      source = "devhelmhq/devhelm"
+      # Pre-release: the provider currently ships only as pre-release
+      # versions and Terraform's `~>` operator never selects pre-releases.
+      # Pin the exact version below — bump it explicitly when the next
+      # version ships, or wait for the GA `1.0.0` cut to switch to a
+      # range like `~> 1.0`.
+      version = "0.2.0-beta.1"
     }
   }
 }
