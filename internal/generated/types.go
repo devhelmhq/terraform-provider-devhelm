@@ -537,17 +537,23 @@ func (e CreateManualIncidentRequestSeverity) Valid() bool {
 
 // Defines values for CreateMonitorRequestManagedBy.
 const (
+	CreateMonitorRequestManagedByAPI       CreateMonitorRequestManagedBy = "API"
 	CreateMonitorRequestManagedByCLI       CreateMonitorRequestManagedBy = "CLI"
 	CreateMonitorRequestManagedByDASHBOARD CreateMonitorRequestManagedBy = "DASHBOARD"
+	CreateMonitorRequestManagedByMCP       CreateMonitorRequestManagedBy = "MCP"
 	CreateMonitorRequestManagedByTERRAFORM CreateMonitorRequestManagedBy = "TERRAFORM"
 )
 
 // Valid indicates whether the value is a known member of the CreateMonitorRequestManagedBy enum.
 func (e CreateMonitorRequestManagedBy) Valid() bool {
 	switch e {
+	case CreateMonitorRequestManagedByAPI:
+		return true
 	case CreateMonitorRequestManagedByCLI:
 		return true
 	case CreateMonitorRequestManagedByDASHBOARD:
+		return true
+	case CreateMonitorRequestManagedByMCP:
 		return true
 	case CreateMonitorRequestManagedByTERRAFORM:
 		return true
@@ -2178,17 +2184,23 @@ func (e MonitorAuthDtoAuthType) Valid() bool {
 
 // Defines values for MonitorDtoManagedBy.
 const (
+	MonitorDtoManagedByAPI       MonitorDtoManagedBy = "API"
 	MonitorDtoManagedByCLI       MonitorDtoManagedBy = "CLI"
 	MonitorDtoManagedByDASHBOARD MonitorDtoManagedBy = "DASHBOARD"
+	MonitorDtoManagedByMCP       MonitorDtoManagedBy = "MCP"
 	MonitorDtoManagedByTERRAFORM MonitorDtoManagedBy = "TERRAFORM"
 )
 
 // Valid indicates whether the value is a known member of the MonitorDtoManagedBy enum.
 func (e MonitorDtoManagedBy) Valid() bool {
 	switch e {
+	case MonitorDtoManagedByAPI:
+		return true
 	case MonitorDtoManagedByCLI:
 		return true
 	case MonitorDtoManagedByDASHBOARD:
+		return true
+	case MonitorDtoManagedByMCP:
 		return true
 	case MonitorDtoManagedByTERRAFORM:
 		return true
@@ -3246,17 +3258,23 @@ func (e UpdateAssertionRequestSeverity) Valid() bool {
 
 // Defines values for UpdateMonitorRequestManagedBy.
 const (
+	UpdateMonitorRequestManagedByAPI       UpdateMonitorRequestManagedBy = "API"
 	UpdateMonitorRequestManagedByCLI       UpdateMonitorRequestManagedBy = "CLI"
 	UpdateMonitorRequestManagedByDASHBOARD UpdateMonitorRequestManagedBy = "DASHBOARD"
+	UpdateMonitorRequestManagedByMCP       UpdateMonitorRequestManagedBy = "MCP"
 	UpdateMonitorRequestManagedByTERRAFORM UpdateMonitorRequestManagedBy = "TERRAFORM"
 )
 
 // Valid indicates whether the value is a known member of the UpdateMonitorRequestManagedBy enum.
 func (e UpdateMonitorRequestManagedBy) Valid() bool {
 	switch e {
+	case UpdateMonitorRequestManagedByAPI:
+		return true
 	case UpdateMonitorRequestManagedByCLI:
 		return true
 	case UpdateMonitorRequestManagedByDASHBOARD:
+		return true
+	case UpdateMonitorRequestManagedByMCP:
 		return true
 	case UpdateMonitorRequestManagedByTERRAFORM:
 		return true
@@ -3465,17 +3483,23 @@ func (e List8ParamsType) Valid() bool {
 
 // Defines values for List8ParamsManagedBy.
 const (
+	API       List8ParamsManagedBy = "API"
 	CLI       List8ParamsManagedBy = "CLI"
 	DASHBOARD List8ParamsManagedBy = "DASHBOARD"
+	MCP       List8ParamsManagedBy = "MCP"
 	TERRAFORM List8ParamsManagedBy = "TERRAFORM"
 )
 
 // Valid indicates whether the value is a known member of the List8ParamsManagedBy enum.
 func (e List8ParamsManagedBy) Valid() bool {
 	switch e {
+	case API:
+		return true
 	case CLI:
 		return true
 	case DASHBOARD:
+		return true
+	case MCP:
 		return true
 	case TERRAFORM:
 		return true
@@ -4454,7 +4478,7 @@ type CreateMonitorRequest struct {
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
-	// ManagedBy Who manages this monitor: DASHBOARD or CLI
+	// ManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Use the value matching your surface so audit logs, drift detection, and analytics attribute correctly.
 	ManagedBy CreateMonitorRequestManagedBy `json:"managedBy"`
 
 	// Name Human-readable name for this monitor
@@ -4473,7 +4497,7 @@ type CreateMonitorRequest_Config struct {
 	union json.RawMessage
 }
 
-// CreateMonitorRequestManagedBy Who manages this monitor: DASHBOARD or CLI
+// CreateMonitorRequestManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Use the value matching your surface so audit logs, drift detection, and analytics attribute correctly.
 type CreateMonitorRequestManagedBy string
 
 // CreateMonitorRequestType Monitor protocol type
@@ -6134,7 +6158,7 @@ type MonitorDto struct {
 	Id             openapi_types.UUID `json:"id"`
 	IncidentPolicy *IncidentPolicyDto `json:"incidentPolicy,omitempty"`
 
-	// ManagedBy Management source: DASHBOARD or CLI
+	// ManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API
 	ManagedBy MonitorDtoManagedBy `json:"managedBy"`
 
 	// Name Human-readable name for this monitor
@@ -6162,7 +6186,7 @@ type MonitorDto_Config struct {
 	union json.RawMessage
 }
 
-// MonitorDtoManagedBy Management source: DASHBOARD or CLI
+// MonitorDtoManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API
 type MonitorDtoManagedBy string
 
 // MonitorDtoType defines model for MonitorDto.Type.
@@ -8543,7 +8567,7 @@ type UpdateMonitorRequest struct {
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
-	// ManagedBy New management source; null preserves current
+	// ManagedBy New ownership source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value
 	ManagedBy *UpdateMonitorRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name New monitor name; null preserves current
@@ -8559,7 +8583,7 @@ type UpdateMonitorRequest_Config struct {
 	union json.RawMessage
 }
 
-// UpdateMonitorRequestManagedBy New management source; null preserves current
+// UpdateMonitorRequestManagedBy New ownership source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value
 type UpdateMonitorRequestManagedBy string
 
 // UpdateNotificationPolicyRequest Request body for updating a notification policy (null fields are preserved)
