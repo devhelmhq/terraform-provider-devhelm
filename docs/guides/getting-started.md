@@ -37,11 +37,18 @@ terraform {
   required_providers {
     devhelm = {
       source  = "devhelmhq/devhelm"
-      version = "~> 0.1"
+      version = "0.2.0-beta.1"
     }
   }
 }
 ```
+
+~> **Pre-release.** The DevHelm provider currently ships only as
+pre-release versions. Terraform's `~>` operator never selects
+pre-releases, so `~> 0.2` matches *zero* published versions today.
+Pin the exact version above and bump it explicitly when the next
+release ships. Once the GA `1.0.0` cut lands, you can switch to
+`version = "~> 1.0"`.
 
 The provider reads its credentials from the environment by default — keep
 the `provider "devhelm" {}` block empty so the same config works on your
@@ -55,7 +62,7 @@ provider "devhelm" {}
 Export your token:
 
 ```bash
-export DEVHELM_API_TOKEN="dev_…"
+export DEVHELM_API_TOKEN="dh_live_…"
 ```
 
 | Variable               | Purpose                                                                 |

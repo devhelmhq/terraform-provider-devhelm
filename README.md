@@ -13,11 +13,15 @@ via the built-in `moved {}` block), composes naturally with `for_each` and
 modules, and integrates cleanly with DNS providers, secret stores, and other
 parts of your platform stack.
 
-> **Status:** the schema is stable and the resource set is feature-complete
-> against the DevHelm v1 API. We're tagging the first non-alpha release as
-> `0.1.0` and following [semver](https://semver.org/) thereafter — schema
-> changes that would break existing state will go through a deprecation
-> cycle.
+> **Versioning.** The schema is stable and the resource set is
+> feature-complete against the DevHelm v1 API. The provider currently
+> ships as **`0.2.0-beta.1`** — pin the exact version (the comment in
+> the snippet above shows where) until the GA `1.0.0` cut. Terraform's
+> `~>` operator never selects pre-release versions, so a constraint
+> like `~> 0.2` matches **zero** published versions today. After
+> `1.0.0`, switch to `~> 1.0` and rely on
+> [semver](https://semver.org/) — schema changes that would break
+> existing state will go through a deprecation cycle.
 
 ## Quick start
 
@@ -27,7 +31,7 @@ terraform {
   required_providers {
     devhelm = {
       source  = "devhelmhq/devhelm"
-      version = "~> 0.1"
+      version = "0.2.0-beta.1" # pre-release: see "Versioning" below
     }
   }
 }
