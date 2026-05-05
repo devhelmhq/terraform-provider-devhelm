@@ -26,6 +26,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -360,7 +361,7 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						},
 						"config": schema.StringAttribute{
 							Required:    true,
-							Description: "Assertion configuration as JSON; the inner `type` field is omitted (set via the sibling `type` attribute) and the rest of the shape depends on the assertion kind. Field names inside the JSON are camelCase (the API wire format), e.g. `jsonencode({expected = 200, operator = \"equals\"})` for `status_code` or `jsonencode({thresholdMs = 500})` for `response_time`.",
+							Description: "Assertion configuration as JSON; the inner `type` field is omitted (set via the sibling `type` attribute) and the rest of the shape depends on the assertion kind. Field names inside the JSON are camelCase (the API wire format) and JSON value types must match the API contract exactly — e.g. `status_code.expected` is a STRING (`jsonencode({expected = \"200\", operator = \"equals\"})`, not `expected = 200`), while `response_time.thresholdMs` is a NUMBER (`jsonencode({thresholdMs = 500})`). Type-mismatched values plan cleanly but fail apply with \"Provider produced inconsistent result\" because the API normalizes them on the round-trip.",
 						},
 						"severity": schema.StringAttribute{
 							Optional:    true,
@@ -1231,11 +1232,42 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
+	// Orphan-cleanup safety net: from this point on, the monitor exists
+	// server-side. If anything below fails (state mapping or state-set), the
+	// resource will not enter Terraform state — and Terraform has no hook for
+	// "delete what you just created" in that case. We DELETE the orphan
+	// ourselves so future plans don't show silent server-side drift.
+	//
+	// NOTE: this does NOT catch the framework's post-Create consistency check
+	// ("Provider produced inconsistent result after apply") — that runs after
+	// this function returns and is what produced the original orphan reports
+	// in DevEx round 2. The fix for that path is to keep state in sync with
+	// the plan inside `mapToState`, plus the doc/example fix that prevents
+	// the value-type drift in the first place.
+	cleanupOrphan := func(reason string) {
+		if monitor == nil {
+			return
+		}
+		id := monitor.Id.String()
+		if err := api.Delete(ctx, r.client, api.MonitorPath(id)); err != nil {
+			tflog.Warn(ctx, "orphan monitor cleanup failed; resource may be leaked",
+				map[string]any{"id": id, "reason": reason, "delete_error": err.Error()})
+			return
+		}
+		tflog.Debug(ctx, "deleted orphan monitor after create-time error",
+			map[string]any{"id": id, "reason": reason})
+	}
+
 	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor)...)
 	if resp.Diagnostics.HasError() {
+		cleanupOrphan("mapToState returned errors")
 		return
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		cleanupOrphan("State.Set returned errors")
+		return
+	}
 }
 
 func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
