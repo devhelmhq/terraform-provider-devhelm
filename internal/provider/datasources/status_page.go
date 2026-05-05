@@ -104,5 +104,5 @@ func mapStatusPageToState(model *StatusPageDataSourceModel, p *generated.StatusP
 	model.Visibility = types.StringValue(string(p.Visibility))
 	model.Enabled = types.BoolValue(p.Enabled)
 	model.IncidentMode = types.StringValue(string(p.IncidentMode))
-	model.PageURL = types.StringValue(fmt.Sprintf("https://%s.devhelm.page", p.Slug))
+	model.PageURL = types.StringValue(fmt.Sprintf("https://%s.devhelmstatus.com", p.Slug))
 }

@@ -209,7 +209,7 @@ in a browser — your monitor, channel, and policy are now live.
 
 ```bash
 terraform output status_page_url
-# https://acme.devhelm.page
+# https://acme.devhelmstatus.com
 ```
 
 ## Where to go next

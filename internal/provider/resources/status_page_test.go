@@ -178,7 +178,7 @@ func TestStatusPage_MapToState_PopulatesEveryField(t *testing.T) {
 	if model.IncidentMode.ValueString() != "AUTOMATIC" {
 		t.Errorf("IncidentMode = %q", model.IncidentMode.ValueString())
 	}
-	if model.PageURL.ValueString() != "https://acme.devhelm.page" {
+	if model.PageURL.ValueString() != "https://acme.devhelmstatus.com" {
 		t.Errorf("PageURL = %q", model.PageURL.ValueString())
 	}
 	if model.Branding.IsNull() {
