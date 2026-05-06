@@ -1,6 +1,7 @@
 # Terraform Provider for DevHelm
 
 [![Terraform Registry](https://img.shields.io/badge/terraform-registry-purple.svg)](https://registry.terraform.io/providers/devhelmhq/devhelm/latest)
+[![Status: Beta](https://img.shields.io/badge/status-beta-yellow.svg)](#status-beta)
 [![Go Reference](https://pkg.go.dev/badge/github.com/devhelmhq/terraform-provider-devhelm.svg)](https://pkg.go.dev/github.com/devhelmhq/terraform-provider-devhelm)
 [![License](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 
@@ -13,15 +14,35 @@ via the built-in `moved {}` block), composes naturally with `for_each` and
 modules, and integrates cleanly with DNS providers, secret stores, and other
 parts of your platform stack.
 
-> **Versioning.** The schema is stable and the resource set is
-> feature-complete against the DevHelm v1 API. The provider currently
-> ships as **`0.2.0-beta.1`** — pin the exact version (the comment in
-> the snippet above shows where) until the GA `1.0.0` cut. Terraform's
-> `~>` operator never selects pre-release versions, so a constraint
-> like `~> 0.2` matches **zero** published versions today. After
-> `1.0.0`, switch to `~> 1.0` and rely on
-> [semver](https://semver.org/) — schema changes that would break
-> existing state will go through a deprecation cycle.
+## Status: Beta
+
+The DevHelm Terraform provider is currently in **Beta**. The schema is
+stable, the resource set is feature-complete against the DevHelm v1 API,
+and the provider has been validated end-to-end against production. We're
+running it through a short soak window to harden one defense-in-depth
+edge case (post-`POST` failure rollback in the API client) before
+promoting to GA.
+
+**What this means in practice:**
+
+- ✅ **Safe for production use** — the schema and on-disk state format
+  will not change in backward-incompatible ways before the `1.0.0` cut.
+  All breaking changes (if any) will go through a deprecation cycle and
+  ship in a clearly-versioned beta first.
+- ✅ **Fully supported** — file issues at
+  [devhelmhq/terraform-provider-devhelm](https://github.com/devhelmhq/terraform-provider-devhelm/issues);
+  beta does not mean unsupported.
+- ⚠️ **Pin the exact pre-release version.** Terraform's `~>` operator
+  does **not** select pre-release versions, so a constraint like
+  `~> 0.2` matches zero published versions today. Use the exact pin
+  shown in the snippet below.
+- ⚠️ **Track the [CHANGELOG](CHANGELOG.md)** for each beta bump until
+  GA. We don't expect breaking changes between betas, but we do
+  reserve the right to ship them with a clearly-flagged release note
+  if a real production failure forces our hand.
+
+After `1.0.0`, switch your pin to `~> 1.0` and rely on
+[semver](https://semver.org/).
 
 ## Quick start
 
@@ -31,7 +52,7 @@ terraform {
   required_providers {
     devhelm = {
       source  = "devhelmhq/devhelm"
-      version = "0.2.0-beta.1" # pre-release: see "Versioning" below
+      version = "0.2.0-beta.4" # Beta — pin the exact version, see "Status: Beta" above
     }
   }
 }
