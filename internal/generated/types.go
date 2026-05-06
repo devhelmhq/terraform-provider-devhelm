@@ -4819,7 +4819,7 @@ type CreateMonitorRequest struct {
 	// EnvironmentId Environment to associate with this monitor
 	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
 
-	// FrequencySeconds Check frequency in seconds (30–86400); null defaults to plan minimum (60s on most paid plans)
+	// FrequencySeconds Check frequency in seconds (10–86400); null defaults to plan minimum (60s on most paid plans)
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
@@ -4829,7 +4829,7 @@ type CreateMonitorRequest struct {
 	// Name Human-readable name for this monitor
 	Name string `json:"name"`
 
-	// Regions Probe regions to run checks from, e.g. us-east, eu-west
+	// Regions Probe regions to run checks from. Allowed values are deployment-dependent; production: us-east, us-west, eu-west, ap-south.
 	Regions *[]string              `json:"regions,omitempty"`
 	Tags    *AddMonitorTagsRequest `json:"tags,omitempty"`
 
@@ -8944,7 +8944,7 @@ type UpdateMonitorRequest struct {
 	// EnvironmentId New environment ID; null preserves current (use clearEnvironmentId to unset)
 	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
 
-	// FrequencySeconds New check frequency in seconds (30–86400); null preserves current
+	// FrequencySeconds New check frequency in seconds (10–86400); null preserves current
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
@@ -8954,7 +8954,7 @@ type UpdateMonitorRequest struct {
 	// Name New monitor name; null preserves current
 	Name *string `json:"name,omitempty"`
 
-	// Regions New probe regions; null preserves current
+	// Regions New probe regions; null preserves current. Allowed values are deployment-dependent.
 	Regions *[]string              `json:"regions,omitempty"`
 	Tags    *AddMonitorTagsRequest `json:"tags,omitempty"`
 }
