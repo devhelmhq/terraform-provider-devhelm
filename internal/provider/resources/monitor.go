@@ -288,8 +288,8 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									Description: "Incident severity: down or degraded",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
-											string(generated.Down),
-											string(generated.Degraded),
+											string(generated.TriggerRuleSeverityDown),
+											string(generated.TriggerRuleSeverityDegraded),
 										),
 									},
 								},
@@ -828,11 +828,12 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		return nil, err
 	}
 
+	managedByTF := generated.CreateMonitorRequestManagedByTERRAFORM
 	req := &generated.CreateMonitorRequest{
 		Name:             plan.Name.ValueString(),
 		Type:             monitorType,
 		Config:           configUnion,
-		ManagedBy:        generated.CreateMonitorRequestManagedByTERRAFORM,
+		ManagedBy:        &managedByTF,
 		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
 		Enabled:          boolPtrOrNil(plan.Enabled),
 		Regions:          stringSliceToPtr(plan.Regions),

@@ -148,7 +148,8 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 				"channel_type": "type",
 			},
 			allowed: map[string]string{
-				"config": "Discriminated union spread across per-channel-type schema blocks (slack, discord, email, …); the union is built by the provider's buildConfig().",
+				"config":     "Discriminated union spread across per-channel-type schema blocks (slack, discord, email, …); the union is built by the provider's buildConfig().",
+				"managed_by": "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
 			},
 		},
 		{
@@ -156,7 +157,8 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 			resource: &AlertChannelResource{},
 			dto:      generated.UpdateAlertChannelRequest{},
 			allowed: map[string]string{
-				"config": "See alert_channel_create note: discriminated union exploded into per-type blocks.",
+				"config":     "See alert_channel_create note: discriminated union exploded into per-type blocks.",
+				"managed_by": "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
 			},
 		},
 		{
@@ -213,13 +215,17 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 			name:     "resource_group_create",
 			resource: &ResourceGroupResource{},
 			dto:      generated.CreateResourceGroupRequest{},
-			allowed:  map[string]string{},
+			allowed: map[string]string{
+				"managed_by": "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+			},
 		},
 		{
 			name:     "resource_group_update",
 			resource: &ResourceGroupResource{},
 			dto:      generated.UpdateResourceGroupRequest{},
-			allowed:  map[string]string{},
+			allowed: map[string]string{
+				"managed_by": "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+			},
 		},
 		{
 			name:     "resource_group_membership_create",
@@ -257,13 +263,17 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 			name:     "status_page_create",
 			resource: &StatusPageResource{},
 			dto:      generated.CreateStatusPageRequest{},
-			allowed:  map[string]string{},
+			allowed: map[string]string{
+				"managed_by": "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+			},
 		},
 		{
 			name:     "status_page_update",
 			resource: &StatusPageResource{},
 			dto:      generated.UpdateStatusPageRequest{},
-			allowed:  map[string]string{},
+			allowed: map[string]string{
+				"managed_by": "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+			},
 		},
 		{
 			name:     "status_page_component_create",

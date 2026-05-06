@@ -77,8 +77,8 @@ func TestBuildCreateRequest_PopulatesEveryRequiredField(t *testing.T) {
 	if body.Type != "HTTP" {
 		t.Errorf("Type = %q", body.Type)
 	}
-	if body.ManagedBy != "TERRAFORM" {
-		t.Errorf("ManagedBy = %q, want TERRAFORM (provider must self-identify so a future round-trip survives a manual dashboard edit detection)", body.ManagedBy)
+	if body.ManagedBy == nil || *body.ManagedBy != "TERRAFORM" {
+		t.Errorf("ManagedBy = %v, want TERRAFORM (provider must self-identify so a future round-trip survives a manual dashboard edit detection)", body.ManagedBy)
 	}
 	if body.FrequencySeconds == nil || *body.FrequencySeconds != 60 {
 		t.Errorf("FrequencySeconds = %v, want 60", body.FrequencySeconds)
