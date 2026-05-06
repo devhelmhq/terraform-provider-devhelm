@@ -11,9 +11,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // defaultHTTPTimeout bounds each individual request, protecting against hung
@@ -396,18 +399,94 @@ func checkResponse(resp httpResponse) error {
 	return apiErr
 }
 
-// decodeStrict unmarshals body into out using a strict decoder that rejects
-// unknown top-level or nested fields (P1 — "unknown response fields raise
-// loudly"). A drift in the API spec produces a typed decode error instead of
-// silently discarding the field, which would mask spec evolution from the
-// next plan/apply cycle. Error bodies stay lenient (see checkResponse).
-func decodeStrict(body []byte, out any, context string) error {
-	dec := json.NewDecoder(bytes.NewReader(body))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(out); err != nil {
-		return fmt.Errorf("decoding response (%s): %w", context, err)
+// decodeResponse unmarshals body into out using a lenient decoder that
+// silently ignores unknown fields, then logs the names of any unknown
+// top-level keys at WARN so spec drift is visible in `TF_LOG=warn` output
+// without breaking apply.
+//
+// Why lenient: the provider is one client of an evolving REST API. Strict
+// decoding (`DisallowUnknownFields`) means every additive API change
+// (e.g. a new response field) bricks every released provider version until
+// a new release ships. That is the wrong default for a public REST client —
+// see the round-3 DevEx report on `currentStatus` for a real-world failure
+// mode (a single new response field broke every `terraform apply` against
+// prod).
+//
+// Drift visibility is preserved by walking the body's top-level keys after
+// decode and emitting a `tflog.Warn` for any key that is not present on the
+// target struct. Operators running with `TF_LOG=warn` will see the same
+// signal that strict decoding used to surface as a hard error, but apply
+// continues unblocked.
+//
+// Error bodies stay lenient (see checkResponse).
+func decodeResponse(ctx context.Context, body []byte, out any, contextLabel string) error {
+	if err := json.Unmarshal(body, out); err != nil {
+		return fmt.Errorf("decoding response (%s): %w", contextLabel, err)
 	}
+	logUnknownTopLevelKeys(ctx, body, out, contextLabel)
 	return nil
+}
+
+// logUnknownTopLevelKeys emits a tflog.Warn for any top-level JSON key in
+// `body` that is not declared (case-insensitively) on the target struct's
+// json tags. Used by decodeResponse to surface API spec drift without
+// failing the request.
+func logUnknownTopLevelKeys(ctx context.Context, body []byte, target any, contextLabel string) {
+	var top map[string]json.RawMessage
+	if err := json.Unmarshal(body, &top); err != nil {
+		return
+	}
+	known := jsonFieldNames(target)
+	if len(known) == 0 {
+		return
+	}
+	var unknown []string
+	for k := range top {
+		if _, ok := known[strings.ToLower(k)]; !ok {
+			unknown = append(unknown, k)
+		}
+	}
+	if len(unknown) > 0 {
+		tflog.Warn(ctx, "API response contains unknown field(s); ignored by client", map[string]any{
+			"context": contextLabel,
+			"fields":  unknown,
+			"hint":    "this provider version may be older than the API; consider upgrading",
+		})
+	}
+}
+
+// jsonFieldNames returns the lower-cased set of json tag names on `target`'s
+// struct fields. Walks one level deep into envelope structs (e.g.
+// SingleValueResponse[T] → T) so the keys returned describe the body the
+// caller actually cares about.
+func jsonFieldNames(target any) map[string]struct{} {
+	v := reflect.ValueOf(target)
+	for v.Kind() == reflect.Pointer {
+		v = v.Elem()
+	}
+	if v.Kind() != reflect.Struct {
+		return nil
+	}
+	t := v.Type()
+	// Envelope unwrap: a single-field struct named SingleValueResponse[…]
+	// or TableResponse[…] is just the wire wrapper; descend into the inner
+	// type so warnings are emitted against the user-facing DTO fields.
+	if t.NumField() == 1 && (strings.HasPrefix(t.Name(), "SingleValueResponse") || strings.HasPrefix(t.Name(), "TableResponse")) {
+		return jsonFieldNames(v.Field(0).Addr().Interface())
+	}
+	out := make(map[string]struct{}, t.NumField())
+	for i := 0; i < t.NumField(); i++ {
+		tag := t.Field(i).Tag.Get("json")
+		if tag == "" || tag == "-" {
+			continue
+		}
+		name, _, _ := strings.Cut(tag, ",")
+		if name == "" {
+			continue
+		}
+		out[strings.ToLower(name)] = struct{}{}
+	}
+	return out
 }
 
 // SingleValueResponse is the single-value envelope used by most endpoints.
@@ -427,8 +506,10 @@ type SingleValueResponse[T any] struct {
 }
 
 // Table response wrapper used by list endpoints. Mirrors the API's full
-// pagination envelope; fields beyond Data/HasNext are unused by the provider
-// today but must be declared so that the strict decoder doesn't reject them.
+// pagination envelope. Fields beyond Data/HasNext are unused by the provider
+// today; with the lenient decoder they would be ignored regardless, but
+// declaring them keeps the drift-warn signal honest (otherwise every list
+// response would warn about hasPrev/totalElements/totalPages).
 type TableResponse[T any] struct {
 	Data          []T    `json:"data"`
 	HasNext       bool   `json:"hasNext"`
@@ -447,7 +528,7 @@ func Get[T any](ctx context.Context, c *Client, path string) (*T, error) {
 	}
 
 	var envelope SingleValueResponse[T]
-	if err := decodeStrict(resp.Body, &envelope, "GET "+path); err != nil {
+	if err := decodeResponse(ctx, resp.Body, &envelope, "GET "+path); err != nil {
 		return nil, err
 	}
 	if err := ValidateDTO(&envelope.Data, "GET "+path); err != nil {
@@ -473,7 +554,7 @@ func GetRaw[T any](ctx context.Context, c *Client, path string) (*T, []byte, err
 	}
 
 	var envelope SingleValueResponse[T]
-	if err := decodeStrict(resp.Body, &envelope, "GET "+path); err != nil {
+	if err := decodeResponse(ctx, resp.Body, &envelope, "GET "+path); err != nil {
 		return nil, nil, err
 	}
 	if err := ValidateDTO(&envelope.Data, "GET "+path); err != nil {
@@ -502,7 +583,7 @@ func List[T any](ctx context.Context, c *Client, basePath string) ([]T, error) {
 		}
 
 		var envelope TableResponse[T]
-		if err := decodeStrict(resp.Body, &envelope, "LIST "+basePath); err != nil {
+		if err := decodeResponse(ctx, resp.Body, &envelope, "LIST "+basePath); err != nil {
 			return nil, err
 		}
 
@@ -532,7 +613,7 @@ func Create[T any](ctx context.Context, c *Client, path string, body any) (*T, e
 	}
 
 	var envelope SingleValueResponse[T]
-	if err := decodeStrict(resp.Body, &envelope, "POST "+path); err != nil {
+	if err := decodeResponse(ctx, resp.Body, &envelope, "POST "+path); err != nil {
 		return nil, err
 	}
 	if err := ValidateDTO(&envelope.Data, "POST "+path); err != nil {
@@ -555,7 +636,7 @@ func CreateList[T any](ctx context.Context, c *Client, path string, body any) ([
 	}
 
 	var envelope TableResponse[T]
-	if err := decodeStrict(resp.Body, &envelope, "POST "+path); err != nil {
+	if err := decodeResponse(ctx, resp.Body, &envelope, "POST "+path); err != nil {
 		return nil, err
 	}
 	for i := range envelope.Data {
@@ -577,7 +658,7 @@ func CreateRaw[T any](ctx context.Context, c *Client, path string, body any) (*T
 	}
 
 	var envelope SingleValueResponse[T]
-	if err := decodeStrict(resp.Body, &envelope, "POST "+path); err != nil {
+	if err := decodeResponse(ctx, resp.Body, &envelope, "POST "+path); err != nil {
 		return nil, nil, err
 	}
 	if err := ValidateDTO(&envelope.Data, "POST "+path); err != nil {
@@ -596,7 +677,7 @@ func Update[T any](ctx context.Context, c *Client, path string, body any) (*T, e
 	}
 
 	var envelope SingleValueResponse[T]
-	if err := decodeStrict(resp.Body, &envelope, "PUT "+path); err != nil {
+	if err := decodeResponse(ctx, resp.Body, &envelope, "PUT "+path); err != nil {
 		return nil, err
 	}
 	if err := ValidateDTO(&envelope.Data, "PUT "+path); err != nil {
@@ -616,7 +697,7 @@ func UpdateRaw[T any](ctx context.Context, c *Client, path string, body any) (*T
 	}
 
 	var envelope SingleValueResponse[T]
-	if err := decodeStrict(resp.Body, &envelope, "PUT "+path); err != nil {
+	if err := decodeResponse(ctx, resp.Body, &envelope, "PUT "+path); err != nil {
 		return nil, nil, err
 	}
 	if err := ValidateDTO(&envelope.Data, "PUT "+path); err != nil {
@@ -635,7 +716,7 @@ func Patch[T any](ctx context.Context, c *Client, path string, body any) (*T, er
 	}
 
 	var envelope SingleValueResponse[T]
-	if err := decodeStrict(resp.Body, &envelope, "PATCH "+path); err != nil {
+	if err := decodeResponse(ctx, resp.Body, &envelope, "PATCH "+path); err != nil {
 		return nil, err
 	}
 	if err := ValidateDTO(&envelope.Data, "PATCH "+path); err != nil {
