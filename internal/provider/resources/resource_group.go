@@ -181,6 +181,7 @@ func (r *ResourceGroupResource) buildRequest(ctx context.Context, plan *Resource
 	if diags.HasError() {
 		return generated.CreateResourceGroupRequest{}, diags
 	}
+	managedByTF := generated.CreateResourceGroupRequestManagedByTERRAFORM
 	return generated.CreateResourceGroupRequest{
 		Name:                     plan.Name.ValueString(),
 		Description:              stringPtrOrNil(plan.Description),
@@ -195,6 +196,7 @@ func (r *ResourceGroupResource) buildRequest(ctx context.Context, plan *Resource
 		SuppressMemberAlerts:     boolPtrOrNil(plan.SuppressMemberAlerts),
 		ConfirmationDelaySeconds: int32PtrOrNil(plan.ConfirmationDelaySeconds),
 		RecoveryCooldownMinutes:  int32PtrOrNil(plan.RecoveryCooldownMinutes),
+		ManagedBy:                &managedByTF,
 	}, diags
 }
 
@@ -219,6 +221,7 @@ func (r *ResourceGroupResource) buildUpdateRequest(ctx context.Context, plan *Re
 	if diags.HasError() {
 		return generated.UpdateResourceGroupRequest{}, diags
 	}
+	managedByTF := generated.UpdateResourceGroupRequestManagedByTERRAFORM
 	return generated.UpdateResourceGroupRequest{
 		Name:                 plan.Name.ValueString(),
 		Description:          stringPtrOrNil(plan.Description),
@@ -236,6 +239,7 @@ func (r *ResourceGroupResource) buildUpdateRequest(ctx context.Context, plan *Re
 		SuppressMemberAlerts:     boolPtrOrNil(plan.SuppressMemberAlerts),
 		ConfirmationDelaySeconds: int32PtrOrNil(plan.ConfirmationDelaySeconds),
 		RecoveryCooldownMinutes:  int32PtrOrNil(plan.RecoveryCooldownMinutes),
+		ManagedBy:                &managedByTF,
 	}, diags
 }
 

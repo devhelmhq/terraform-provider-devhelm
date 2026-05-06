@@ -100,6 +100,33 @@ func (e AlertChannelDtoChannelType) Valid() bool {
 	}
 }
 
+// Defines values for AlertChannelDtoManagedBy.
+const (
+	AlertChannelDtoManagedByAPI       AlertChannelDtoManagedBy = "API"
+	AlertChannelDtoManagedByCLI       AlertChannelDtoManagedBy = "CLI"
+	AlertChannelDtoManagedByDASHBOARD AlertChannelDtoManagedBy = "DASHBOARD"
+	AlertChannelDtoManagedByMCP       AlertChannelDtoManagedBy = "MCP"
+	AlertChannelDtoManagedByTERRAFORM AlertChannelDtoManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the AlertChannelDtoManagedBy enum.
+func (e AlertChannelDtoManagedBy) Valid() bool {
+	switch e {
+	case AlertChannelDtoManagedByAPI:
+		return true
+	case AlertChannelDtoManagedByCLI:
+		return true
+	case AlertChannelDtoManagedByDASHBOARD:
+		return true
+	case AlertChannelDtoManagedByMCP:
+		return true
+	case AlertChannelDtoManagedByTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AlertDeliveryDtoEventType.
 const (
 	INCIDENTCREATED  AlertDeliveryDtoEventType = "INCIDENT_CREATED"
@@ -475,6 +502,33 @@ func (e ConfirmationPolicyType) Valid() bool {
 	}
 }
 
+// Defines values for CreateAlertChannelRequestManagedBy.
+const (
+	CreateAlertChannelRequestManagedByAPI       CreateAlertChannelRequestManagedBy = "API"
+	CreateAlertChannelRequestManagedByCLI       CreateAlertChannelRequestManagedBy = "CLI"
+	CreateAlertChannelRequestManagedByDASHBOARD CreateAlertChannelRequestManagedBy = "DASHBOARD"
+	CreateAlertChannelRequestManagedByMCP       CreateAlertChannelRequestManagedBy = "MCP"
+	CreateAlertChannelRequestManagedByTERRAFORM CreateAlertChannelRequestManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the CreateAlertChannelRequestManagedBy enum.
+func (e CreateAlertChannelRequestManagedBy) Valid() bool {
+	switch e {
+	case CreateAlertChannelRequestManagedByAPI:
+		return true
+	case CreateAlertChannelRequestManagedByCLI:
+		return true
+	case CreateAlertChannelRequestManagedByDASHBOARD:
+		return true
+	case CreateAlertChannelRequestManagedByMCP:
+		return true
+	case CreateAlertChannelRequestManagedByTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CreateAssertionRequestSeverity.
 const (
 	CreateAssertionRequestSeverityFail CreateAssertionRequestSeverity = "fail"
@@ -537,17 +591,23 @@ func (e CreateManualIncidentRequestSeverity) Valid() bool {
 
 // Defines values for CreateMonitorRequestManagedBy.
 const (
+	CreateMonitorRequestManagedByAPI       CreateMonitorRequestManagedBy = "API"
 	CreateMonitorRequestManagedByCLI       CreateMonitorRequestManagedBy = "CLI"
 	CreateMonitorRequestManagedByDASHBOARD CreateMonitorRequestManagedBy = "DASHBOARD"
+	CreateMonitorRequestManagedByMCP       CreateMonitorRequestManagedBy = "MCP"
 	CreateMonitorRequestManagedByTERRAFORM CreateMonitorRequestManagedBy = "TERRAFORM"
 )
 
 // Valid indicates whether the value is a known member of the CreateMonitorRequestManagedBy enum.
 func (e CreateMonitorRequestManagedBy) Valid() bool {
 	switch e {
+	case CreateMonitorRequestManagedByAPI:
+		return true
 	case CreateMonitorRequestManagedByCLI:
 		return true
 	case CreateMonitorRequestManagedByDASHBOARD:
+		return true
+	case CreateMonitorRequestManagedByMCP:
 		return true
 	case CreateMonitorRequestManagedByTERRAFORM:
 		return true
@@ -598,6 +658,33 @@ func (e CreateResourceGroupRequestHealthThresholdType) Valid() bool {
 	case CreateResourceGroupRequestHealthThresholdTypeCOUNT:
 		return true
 	case CreateResourceGroupRequestHealthThresholdTypePERCENTAGE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateResourceGroupRequestManagedBy.
+const (
+	CreateResourceGroupRequestManagedByAPI       CreateResourceGroupRequestManagedBy = "API"
+	CreateResourceGroupRequestManagedByCLI       CreateResourceGroupRequestManagedBy = "CLI"
+	CreateResourceGroupRequestManagedByDASHBOARD CreateResourceGroupRequestManagedBy = "DASHBOARD"
+	CreateResourceGroupRequestManagedByMCP       CreateResourceGroupRequestManagedBy = "MCP"
+	CreateResourceGroupRequestManagedByTERRAFORM CreateResourceGroupRequestManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the CreateResourceGroupRequestManagedBy enum.
+func (e CreateResourceGroupRequestManagedBy) Valid() bool {
+	switch e {
+	case CreateResourceGroupRequestManagedByAPI:
+		return true
+	case CreateResourceGroupRequestManagedByCLI:
+		return true
+	case CreateResourceGroupRequestManagedByDASHBOARD:
+		return true
+	case CreateResourceGroupRequestManagedByMCP:
+		return true
+	case CreateResourceGroupRequestManagedByTERRAFORM:
 		return true
 	default:
 		return false
@@ -712,6 +799,33 @@ func (e CreateStatusPageRequestIncidentMode) Valid() bool {
 	case CreateStatusPageRequestIncidentModeMANUAL:
 		return true
 	case CreateStatusPageRequestIncidentModeREVIEW:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateStatusPageRequestManagedBy.
+const (
+	CreateStatusPageRequestManagedByAPI       CreateStatusPageRequestManagedBy = "API"
+	CreateStatusPageRequestManagedByCLI       CreateStatusPageRequestManagedBy = "CLI"
+	CreateStatusPageRequestManagedByDASHBOARD CreateStatusPageRequestManagedBy = "DASHBOARD"
+	CreateStatusPageRequestManagedByMCP       CreateStatusPageRequestManagedBy = "MCP"
+	CreateStatusPageRequestManagedByTERRAFORM CreateStatusPageRequestManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the CreateStatusPageRequestManagedBy enum.
+func (e CreateStatusPageRequestManagedBy) Valid() bool {
+	switch e {
+	case CreateStatusPageRequestManagedByAPI:
+		return true
+	case CreateStatusPageRequestManagedByCLI:
+		return true
+	case CreateStatusPageRequestManagedByDASHBOARD:
+		return true
+	case CreateStatusPageRequestManagedByMCP:
+		return true
+	case CreateStatusPageRequestManagedByTERRAFORM:
 		return true
 	default:
 		return false
@@ -1086,13 +1200,13 @@ func (e DnsTxtContainsAssertionType) Valid() bool {
 
 // Defines values for EmailChannelConfigChannelType.
 const (
-	Email EmailChannelConfigChannelType = "email"
+	EmailChannelConfigChannelTypeEmail EmailChannelConfigChannelType = "email"
 )
 
 // Valid indicates whether the value is a known member of the EmailChannelConfigChannelType enum.
 func (e EmailChannelConfigChannelType) Valid() bool {
 	switch e {
-	case Email:
+	case EmailChannelConfigChannelTypeEmail:
 		return true
 	default:
 		return false
@@ -2176,19 +2290,52 @@ func (e MonitorAuthDtoAuthType) Valid() bool {
 	}
 }
 
+// Defines values for MonitorDtoCurrentStatus.
+const (
+	MonitorDtoCurrentStatusDegraded MonitorDtoCurrentStatus = "degraded"
+	MonitorDtoCurrentStatusDown     MonitorDtoCurrentStatus = "down"
+	MonitorDtoCurrentStatusPaused   MonitorDtoCurrentStatus = "paused"
+	MonitorDtoCurrentStatusUnknown  MonitorDtoCurrentStatus = "unknown"
+	MonitorDtoCurrentStatusUp       MonitorDtoCurrentStatus = "up"
+)
+
+// Valid indicates whether the value is a known member of the MonitorDtoCurrentStatus enum.
+func (e MonitorDtoCurrentStatus) Valid() bool {
+	switch e {
+	case MonitorDtoCurrentStatusDegraded:
+		return true
+	case MonitorDtoCurrentStatusDown:
+		return true
+	case MonitorDtoCurrentStatusPaused:
+		return true
+	case MonitorDtoCurrentStatusUnknown:
+		return true
+	case MonitorDtoCurrentStatusUp:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for MonitorDtoManagedBy.
 const (
+	MonitorDtoManagedByAPI       MonitorDtoManagedBy = "API"
 	MonitorDtoManagedByCLI       MonitorDtoManagedBy = "CLI"
 	MonitorDtoManagedByDASHBOARD MonitorDtoManagedBy = "DASHBOARD"
+	MonitorDtoManagedByMCP       MonitorDtoManagedBy = "MCP"
 	MonitorDtoManagedByTERRAFORM MonitorDtoManagedBy = "TERRAFORM"
 )
 
 // Valid indicates whether the value is a known member of the MonitorDtoManagedBy enum.
 func (e MonitorDtoManagedBy) Valid() bool {
 	switch e {
+	case MonitorDtoManagedByAPI:
+		return true
 	case MonitorDtoManagedByCLI:
 		return true
 	case MonitorDtoManagedByDASHBOARD:
+		return true
+	case MonitorDtoManagedByMCP:
 		return true
 	case MonitorDtoManagedByTERRAFORM:
 		return true
@@ -2533,6 +2680,33 @@ func (e ResourceGroupDtoHealthThresholdType) Valid() bool {
 	}
 }
 
+// Defines values for ResourceGroupDtoManagedBy.
+const (
+	ResourceGroupDtoManagedByAPI       ResourceGroupDtoManagedBy = "API"
+	ResourceGroupDtoManagedByCLI       ResourceGroupDtoManagedBy = "CLI"
+	ResourceGroupDtoManagedByDASHBOARD ResourceGroupDtoManagedBy = "DASHBOARD"
+	ResourceGroupDtoManagedByMCP       ResourceGroupDtoManagedBy = "MCP"
+	ResourceGroupDtoManagedByTERRAFORM ResourceGroupDtoManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the ResourceGroupDtoManagedBy enum.
+func (e ResourceGroupDtoManagedBy) Valid() bool {
+	switch e {
+	case ResourceGroupDtoManagedByAPI:
+		return true
+	case ResourceGroupDtoManagedByCLI:
+		return true
+	case ResourceGroupDtoManagedByDASHBOARD:
+		return true
+	case ResourceGroupDtoManagedByMCP:
+		return true
+	case ResourceGroupDtoManagedByTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ResourceGroupHealthDtoStatus.
 const (
 	ResourceGroupHealthDtoStatusDegraded    ResourceGroupHealthDtoStatus = "degraded"
@@ -2651,6 +2825,7 @@ func (e ResponseTimeWarnAssertionType) Valid() bool {
 const (
 	ResultSummaryDtoCurrentStatusDegraded ResultSummaryDtoCurrentStatus = "degraded"
 	ResultSummaryDtoCurrentStatusDown     ResultSummaryDtoCurrentStatus = "down"
+	ResultSummaryDtoCurrentStatusPaused   ResultSummaryDtoCurrentStatus = "paused"
 	ResultSummaryDtoCurrentStatusUnknown  ResultSummaryDtoCurrentStatus = "unknown"
 	ResultSummaryDtoCurrentStatusUp       ResultSummaryDtoCurrentStatus = "up"
 )
@@ -2661,6 +2836,8 @@ func (e ResultSummaryDtoCurrentStatus) Valid() bool {
 	case ResultSummaryDtoCurrentStatusDegraded:
 		return true
 	case ResultSummaryDtoCurrentStatusDown:
+		return true
+	case ResultSummaryDtoCurrentStatusPaused:
 		return true
 	case ResultSummaryDtoCurrentStatusUnknown:
 		return true
@@ -2899,6 +3076,33 @@ func (e StatusPageDtoIncidentMode) Valid() bool {
 	case StatusPageDtoIncidentModeMANUAL:
 		return true
 	case StatusPageDtoIncidentModeREVIEW:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StatusPageDtoManagedBy.
+const (
+	StatusPageDtoManagedByAPI       StatusPageDtoManagedBy = "API"
+	StatusPageDtoManagedByCLI       StatusPageDtoManagedBy = "CLI"
+	StatusPageDtoManagedByDASHBOARD StatusPageDtoManagedBy = "DASHBOARD"
+	StatusPageDtoManagedByMCP       StatusPageDtoManagedBy = "MCP"
+	StatusPageDtoManagedByTERRAFORM StatusPageDtoManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the StatusPageDtoManagedBy enum.
+func (e StatusPageDtoManagedBy) Valid() bool {
+	switch e {
+	case StatusPageDtoManagedByAPI:
+		return true
+	case StatusPageDtoManagedByCLI:
+		return true
+	case StatusPageDtoManagedByDASHBOARD:
+		return true
+	case StatusPageDtoManagedByMCP:
+		return true
+	case StatusPageDtoManagedByTERRAFORM:
 		return true
 	default:
 		return false
@@ -3189,16 +3393,16 @@ func (e TriggerRuleScope) Valid() bool {
 
 // Defines values for TriggerRuleSeverity.
 const (
-	Degraded TriggerRuleSeverity = "degraded"
-	Down     TriggerRuleSeverity = "down"
+	TriggerRuleSeverityDegraded TriggerRuleSeverity = "degraded"
+	TriggerRuleSeverityDown     TriggerRuleSeverity = "down"
 )
 
 // Valid indicates whether the value is a known member of the TriggerRuleSeverity enum.
 func (e TriggerRuleSeverity) Valid() bool {
 	switch e {
-	case Degraded:
+	case TriggerRuleSeverityDegraded:
 		return true
-	case Down:
+	case TriggerRuleSeverityDown:
 		return true
 	default:
 		return false
@@ -3226,6 +3430,33 @@ func (e TriggerRuleType) Valid() bool {
 	}
 }
 
+// Defines values for UpdateAlertChannelRequestManagedBy.
+const (
+	UpdateAlertChannelRequestManagedByAPI       UpdateAlertChannelRequestManagedBy = "API"
+	UpdateAlertChannelRequestManagedByCLI       UpdateAlertChannelRequestManagedBy = "CLI"
+	UpdateAlertChannelRequestManagedByDASHBOARD UpdateAlertChannelRequestManagedBy = "DASHBOARD"
+	UpdateAlertChannelRequestManagedByMCP       UpdateAlertChannelRequestManagedBy = "MCP"
+	UpdateAlertChannelRequestManagedByTERRAFORM UpdateAlertChannelRequestManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the UpdateAlertChannelRequestManagedBy enum.
+func (e UpdateAlertChannelRequestManagedBy) Valid() bool {
+	switch e {
+	case UpdateAlertChannelRequestManagedByAPI:
+		return true
+	case UpdateAlertChannelRequestManagedByCLI:
+		return true
+	case UpdateAlertChannelRequestManagedByDASHBOARD:
+		return true
+	case UpdateAlertChannelRequestManagedByMCP:
+		return true
+	case UpdateAlertChannelRequestManagedByTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UpdateAssertionRequestSeverity.
 const (
 	Fail UpdateAssertionRequestSeverity = "fail"
@@ -3246,17 +3477,23 @@ func (e UpdateAssertionRequestSeverity) Valid() bool {
 
 // Defines values for UpdateMonitorRequestManagedBy.
 const (
+	UpdateMonitorRequestManagedByAPI       UpdateMonitorRequestManagedBy = "API"
 	UpdateMonitorRequestManagedByCLI       UpdateMonitorRequestManagedBy = "CLI"
 	UpdateMonitorRequestManagedByDASHBOARD UpdateMonitorRequestManagedBy = "DASHBOARD"
+	UpdateMonitorRequestManagedByMCP       UpdateMonitorRequestManagedBy = "MCP"
 	UpdateMonitorRequestManagedByTERRAFORM UpdateMonitorRequestManagedBy = "TERRAFORM"
 )
 
 // Valid indicates whether the value is a known member of the UpdateMonitorRequestManagedBy enum.
 func (e UpdateMonitorRequestManagedBy) Valid() bool {
 	switch e {
+	case UpdateMonitorRequestManagedByAPI:
+		return true
 	case UpdateMonitorRequestManagedByCLI:
 		return true
 	case UpdateMonitorRequestManagedByDASHBOARD:
+		return true
+	case UpdateMonitorRequestManagedByMCP:
 		return true
 	case UpdateMonitorRequestManagedByTERRAFORM:
 		return true
@@ -3277,6 +3514,33 @@ func (e UpdateResourceGroupRequestHealthThresholdType) Valid() bool {
 	case COUNT:
 		return true
 	case PERCENTAGE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateResourceGroupRequestManagedBy.
+const (
+	UpdateResourceGroupRequestManagedByAPI       UpdateResourceGroupRequestManagedBy = "API"
+	UpdateResourceGroupRequestManagedByCLI       UpdateResourceGroupRequestManagedBy = "CLI"
+	UpdateResourceGroupRequestManagedByDASHBOARD UpdateResourceGroupRequestManagedBy = "DASHBOARD"
+	UpdateResourceGroupRequestManagedByMCP       UpdateResourceGroupRequestManagedBy = "MCP"
+	UpdateResourceGroupRequestManagedByTERRAFORM UpdateResourceGroupRequestManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the UpdateResourceGroupRequestManagedBy enum.
+func (e UpdateResourceGroupRequestManagedBy) Valid() bool {
+	switch e {
+	case UpdateResourceGroupRequestManagedByAPI:
+		return true
+	case UpdateResourceGroupRequestManagedByCLI:
+		return true
+	case UpdateResourceGroupRequestManagedByDASHBOARD:
+		return true
+	case UpdateResourceGroupRequestManagedByMCP:
+		return true
+	case UpdateResourceGroupRequestManagedByTERRAFORM:
 		return true
 	default:
 		return false
@@ -3346,6 +3610,33 @@ func (e UpdateStatusPageRequestIncidentMode) Valid() bool {
 	case UpdateStatusPageRequestIncidentModeMANUAL:
 		return true
 	case UpdateStatusPageRequestIncidentModeREVIEW:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateStatusPageRequestManagedBy.
+const (
+	UpdateStatusPageRequestManagedByAPI       UpdateStatusPageRequestManagedBy = "API"
+	UpdateStatusPageRequestManagedByCLI       UpdateStatusPageRequestManagedBy = "CLI"
+	UpdateStatusPageRequestManagedByDASHBOARD UpdateStatusPageRequestManagedBy = "DASHBOARD"
+	UpdateStatusPageRequestManagedByMCP       UpdateStatusPageRequestManagedBy = "MCP"
+	UpdateStatusPageRequestManagedByTERRAFORM UpdateStatusPageRequestManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the UpdateStatusPageRequestManagedBy enum.
+func (e UpdateStatusPageRequestManagedBy) Valid() bool {
+	switch e {
+	case UpdateStatusPageRequestManagedByAPI:
+		return true
+	case UpdateStatusPageRequestManagedByCLI:
+		return true
+	case UpdateStatusPageRequestManagedByDASHBOARD:
+		return true
+	case UpdateStatusPageRequestManagedByMCP:
+		return true
+	case UpdateStatusPageRequestManagedByTERRAFORM:
 		return true
 	default:
 		return false
@@ -3433,6 +3724,66 @@ func (e WebhookChannelConfigChannelType) Valid() bool {
 	}
 }
 
+// Defines values for List14ParamsType.
+const (
+	List14ParamsTypeDiscord   List14ParamsType = "discord"
+	List14ParamsTypeEmail     List14ParamsType = "email"
+	List14ParamsTypeOpsgenie  List14ParamsType = "opsgenie"
+	List14ParamsTypePagerduty List14ParamsType = "pagerduty"
+	List14ParamsTypeSlack     List14ParamsType = "slack"
+	List14ParamsTypeTeams     List14ParamsType = "teams"
+	List14ParamsTypeWebhook   List14ParamsType = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the List14ParamsType enum.
+func (e List14ParamsType) Valid() bool {
+	switch e {
+	case List14ParamsTypeDiscord:
+		return true
+	case List14ParamsTypeEmail:
+		return true
+	case List14ParamsTypeOpsgenie:
+		return true
+	case List14ParamsTypePagerduty:
+		return true
+	case List14ParamsTypeSlack:
+		return true
+	case List14ParamsTypeTeams:
+		return true
+	case List14ParamsTypeWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for List14ParamsManagedBy.
+const (
+	List14ParamsManagedByAPI       List14ParamsManagedBy = "API"
+	List14ParamsManagedByCLI       List14ParamsManagedBy = "CLI"
+	List14ParamsManagedByDASHBOARD List14ParamsManagedBy = "DASHBOARD"
+	List14ParamsManagedByMCP       List14ParamsManagedBy = "MCP"
+	List14ParamsManagedByTERRAFORM List14ParamsManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the List14ParamsManagedBy enum.
+func (e List14ParamsManagedBy) Valid() bool {
+	switch e {
+	case List14ParamsManagedByAPI:
+		return true
+	case List14ParamsManagedByCLI:
+		return true
+	case List14ParamsManagedByDASHBOARD:
+		return true
+	case List14ParamsManagedByMCP:
+		return true
+	case List14ParamsManagedByTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for List8ParamsType.
 const (
 	List8ParamsTypeDNS       List8ParamsType = "DNS"
@@ -3465,17 +3816,23 @@ func (e List8ParamsType) Valid() bool {
 
 // Defines values for List8ParamsManagedBy.
 const (
+	API       List8ParamsManagedBy = "API"
 	CLI       List8ParamsManagedBy = "CLI"
 	DASHBOARD List8ParamsManagedBy = "DASHBOARD"
+	MCP       List8ParamsManagedBy = "MCP"
 	TERRAFORM List8ParamsManagedBy = "TERRAFORM"
 )
 
 // Valid indicates whether the value is a known member of the List8ParamsManagedBy enum.
 func (e List8ParamsManagedBy) Valid() bool {
 	switch e {
+	case API:
+		return true
 	case CLI:
 		return true
 	case DASHBOARD:
+		return true
+	case MCP:
 		return true
 	case TERRAFORM:
 		return true
@@ -3820,6 +4177,9 @@ type AlertChannelDto struct {
 	// LastDeliveryStatus Outcome of the most recent delivery (SUCCESS, FAILED, etc.)
 	LastDeliveryStatus *string `json:"lastDeliveryStatus,omitempty"`
 
+	// ManagedBy Source that created/owns this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on channels created before this attribution column existed.
+	ManagedBy *AlertChannelDtoManagedBy `json:"managedBy,omitempty"`
+
 	// Name Human-readable channel name
 	Name string `json:"name"`
 
@@ -3829,6 +4189,9 @@ type AlertChannelDto struct {
 
 // AlertChannelDtoChannelType Channel integration type (e.g. SLACK, PAGERDUTY, EMAIL)
 type AlertChannelDtoChannelType string
+
+// AlertChannelDtoManagedBy Source that created/owns this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on channels created before this attribution column existed.
+type AlertChannelDtoManagedBy string
 
 // AlertDeliveryDto Delivery record for a single channel within a notification dispatch
 type AlertDeliveryDto struct {
@@ -4334,6 +4697,9 @@ type ConfirmationPolicyType string
 type CreateAlertChannelRequest struct {
 	Config CreateAlertChannelRequest_Config `json:"config"`
 
+	// ManagedBy Source creating this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+	ManagedBy *CreateAlertChannelRequestManagedBy `json:"managedBy,omitempty"`
+
 	// Name Human-readable name for this alert channel
 	Name string `json:"name"`
 }
@@ -4342,6 +4708,9 @@ type CreateAlertChannelRequest struct {
 type CreateAlertChannelRequest_Config struct {
 	union json.RawMessage
 }
+
+// CreateAlertChannelRequestManagedBy Source creating this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+type CreateAlertChannelRequestManagedBy string
 
 // CreateApiKeyRequest defines model for CreateApiKeyRequest.
 type CreateApiKeyRequest struct {
@@ -4403,10 +4772,10 @@ type CreateMaintenanceWindowRequest struct {
 	// MonitorId Monitor to attach this maintenance window to; null for org-wide
 	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
 
-	// Reason Human-readable reason for the maintenance
+	// Reason Human-readable reason for the maintenance (max 500 chars)
 	Reason *string `json:"reason,omitempty"`
 
-	// RepeatRule iCal RRULE for recurring windows (max 100 chars); null for one-time
+	// RepeatRule Reserved: iCal RRULE for recurring windows (stored but not yet honored)
 	RepeatRule *string `json:"repeatRule,omitempty"`
 
 	// StartsAt Scheduled start of the maintenance window (ISO 8601)
@@ -4454,8 +4823,8 @@ type CreateMonitorRequest struct {
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
-	// ManagedBy Who manages this monitor: DASHBOARD or CLI
-	ManagedBy CreateMonitorRequestManagedBy `json:"managedBy"`
+	// ManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted; set to your surface so audit logs, drift detection, and analytics attribute correctly.
+	ManagedBy *CreateMonitorRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this monitor
 	Name string `json:"name"`
@@ -4473,7 +4842,7 @@ type CreateMonitorRequest_Config struct {
 	union json.RawMessage
 }
 
-// CreateMonitorRequestManagedBy Who manages this monitor: DASHBOARD or CLI
+// CreateMonitorRequestManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted; set to your surface so audit logs, drift detection, and analytics attribute correctly.
 type CreateMonitorRequestManagedBy string
 
 // CreateMonitorRequestType Monitor protocol type
@@ -4527,6 +4896,9 @@ type CreateResourceGroupRequest struct {
 	// HealthThresholdValue Health threshold value: count (0+) or percentage (0–100)
 	HealthThresholdValue *float32 `json:"healthThresholdValue,omitempty"`
 
+	// ManagedBy Source creating this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+	ManagedBy *CreateResourceGroupRequestManagedBy `json:"managedBy,omitempty"`
+
 	// Name Human-readable name for this group
 	Name string `json:"name"`
 
@@ -4539,6 +4911,9 @@ type CreateResourceGroupRequest struct {
 
 // CreateResourceGroupRequestHealthThresholdType Health threshold type: COUNT or PERCENTAGE
 type CreateResourceGroupRequestHealthThresholdType string
+
+// CreateResourceGroupRequestManagedBy Source creating this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+type CreateResourceGroupRequestManagedBy string
 
 // CreateSecretRequest defines model for CreateSecretRequest.
 type CreateSecretRequest struct {
@@ -4670,6 +5045,9 @@ type CreateStatusPageRequest struct {
 	// IncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC (default: AUTOMATIC)
 	IncidentMode *CreateStatusPageRequestIncidentMode `json:"incidentMode,omitempty"`
 
+	// ManagedBy Source creating this page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+	ManagedBy *CreateStatusPageRequestManagedBy `json:"managedBy,omitempty"`
+
 	// Name Human-readable name for this status page
 	Name string `json:"name"`
 
@@ -4682,6 +5060,9 @@ type CreateStatusPageRequest struct {
 
 // CreateStatusPageRequestIncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC (default: AUTOMATIC)
 type CreateStatusPageRequestIncidentMode string
+
+// CreateStatusPageRequestManagedBy Source creating this page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+type CreateStatusPageRequestManagedBy string
 
 // CreateStatusPageRequestVisibility Page visibility: PUBLIC, PASSWORD, or IP_RESTRICTED (default: PUBLIC)
 type CreateStatusPageRequestVisibility string
@@ -5873,7 +6254,7 @@ type MaintenanceWindowDto struct {
 	// Reason Human-readable reason for the maintenance
 	Reason *string `json:"reason,omitempty"`
 
-	// RepeatRule iCal RRULE for recurring windows; null for one-time
+	// RepeatRule Reserved: iCal RRULE for recurring windows (stored but not yet honored)
 	RepeatRule *string `json:"repeatRule,omitempty"`
 
 	// StartsAt Scheduled start of the maintenance window
@@ -6123,6 +6504,9 @@ type MonitorDto struct {
 	// CreatedAt Timestamp when the monitor was created
 	CreatedAt time.Time `json:"createdAt"`
 
+	// CurrentStatus Current operational state — UP, DOWN, DEGRADED, PAUSED, or UNKNOWN if no probe data yet
+	CurrentStatus *MonitorDtoCurrentStatus `json:"currentStatus,omitempty"`
+
 	// Enabled Whether the monitor is active
 	Enabled     bool     `json:"enabled"`
 	Environment *Summary `json:"environment,omitempty"`
@@ -6134,7 +6518,7 @@ type MonitorDto struct {
 	Id             openapi_types.UUID `json:"id"`
 	IncidentPolicy *IncidentPolicyDto `json:"incidentPolicy,omitempty"`
 
-	// ManagedBy Management source: DASHBOARD or CLI
+	// ManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API
 	ManagedBy MonitorDtoManagedBy `json:"managedBy"`
 
 	// Name Human-readable name for this monitor
@@ -6162,7 +6546,10 @@ type MonitorDto_Config struct {
 	union json.RawMessage
 }
 
-// MonitorDtoManagedBy Management source: DASHBOARD or CLI
+// MonitorDtoCurrentStatus Current operational state — UP, DOWN, DEGRADED, PAUSED, or UNKNOWN if no probe data yet
+type MonitorDtoCurrentStatus string
+
+// MonitorDtoManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API
 type MonitorDtoManagedBy string
 
 // MonitorDtoType defines model for MonitorDto.Type.
@@ -6685,6 +7072,9 @@ type ResourceGroupDto struct {
 	// Id Unique resource group identifier
 	Id openapi_types.UUID `json:"id"`
 
+	// ManagedBy Source that created/owns this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on groups created before this attribution column existed.
+	ManagedBy *ResourceGroupDtoManagedBy `json:"managedBy,omitempty"`
+
 	// Members Member list with individual statuses; populated on detail GET only
 	Members *[]ResourceGroupMemberDto `json:"members,omitempty"`
 
@@ -6709,6 +7099,9 @@ type ResourceGroupDto struct {
 
 // ResourceGroupDtoHealthThresholdType Health threshold type: COUNT or PERCENTAGE
 type ResourceGroupDtoHealthThresholdType string
+
+// ResourceGroupDtoManagedBy Source that created/owns this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on groups created before this attribution column existed.
+type ResourceGroupDtoManagedBy string
 
 // ResourceGroupHealthDto Aggregated health summary for a resource group
 type ResourceGroupHealthDto struct {
@@ -7758,13 +8151,16 @@ type StatusPageCustomDomainDtoVerificationMethod string
 // StatusPageDto defines model for StatusPageDto.
 type StatusPageDto struct {
 	// Branding Updated branding configuration; null preserves current
-	Branding        StatusPageBranding          `json:"branding"`
-	ComponentCount  *int32                      `json:"componentCount,omitempty"`
-	CreatedAt       time.Time                   `json:"createdAt"`
-	Description     *string                     `json:"description,omitempty"`
-	Enabled         bool                        `json:"enabled"`
-	Id              openapi_types.UUID          `json:"id"`
-	IncidentMode    StatusPageDtoIncidentMode   `json:"incidentMode"`
+	Branding       StatusPageBranding        `json:"branding"`
+	ComponentCount *int32                    `json:"componentCount,omitempty"`
+	CreatedAt      time.Time                 `json:"createdAt"`
+	Description    *string                   `json:"description,omitempty"`
+	Enabled        bool                      `json:"enabled"`
+	Id             openapi_types.UUID        `json:"id"`
+	IncidentMode   StatusPageDtoIncidentMode `json:"incidentMode"`
+
+	// ManagedBy Source that created/owns this status page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on pages created before this attribution column existed.
+	ManagedBy       *StatusPageDtoManagedBy     `json:"managedBy,omitempty"`
 	Name            string                      `json:"name"`
 	OrganizationId  int32                       `json:"organizationId"`
 	OverallStatus   *StatusPageDtoOverallStatus `json:"overallStatus,omitempty"`
@@ -7777,6 +8173,9 @@ type StatusPageDto struct {
 
 // StatusPageDtoIncidentMode defines model for StatusPageDto.IncidentMode.
 type StatusPageDtoIncidentMode string
+
+// StatusPageDtoManagedBy Source that created/owns this status page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on pages created before this attribution column existed.
+type StatusPageDtoManagedBy string
 
 // StatusPageDtoOverallStatus defines model for StatusPageDto.OverallStatus.
 type StatusPageDtoOverallStatus string
@@ -8425,6 +8824,9 @@ type TriggerRuleType string
 type UpdateAlertChannelRequest struct {
 	Config UpdateAlertChannelRequest_Config `json:"config"`
 
+	// ManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+	ManagedBy *UpdateAlertChannelRequestManagedBy `json:"managedBy,omitempty"`
+
 	// Name New channel name (full replacement, not partial update)
 	Name string `json:"name"`
 }
@@ -8433,6 +8835,9 @@ type UpdateAlertChannelRequest struct {
 type UpdateAlertChannelRequest_Config struct {
 	union json.RawMessage
 }
+
+// UpdateAlertChannelRequestManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+type UpdateAlertChannelRequestManagedBy string
 
 // UpdateAlertSensitivityRequest Request body for updating alert sensitivity on a service subscription
 type UpdateAlertSensitivityRequest struct {
@@ -8491,19 +8896,19 @@ type UpdateMaintenanceWindowRequest struct {
 	// EndsAt Updated end time (ISO 8601)
 	EndsAt time.Time `json:"endsAt"`
 
-	// MonitorId Monitor to attach this maintenance window to; null preserves current
+	// MonitorId Monitor this window applies to; null switches the window to org-wide
 	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
 
-	// Reason Updated reason; null clears the existing reason
+	// Reason Updated reason (max 500 chars); null clears the existing reason
 	Reason *string `json:"reason,omitempty"`
 
-	// RepeatRule Updated iCal RRULE; null clears the repeat rule
+	// RepeatRule Reserved: iCal RRULE for recurring windows (stored but not yet honored); null clears it
 	RepeatRule *string `json:"repeatRule,omitempty"`
 
 	// StartsAt Updated start time (ISO 8601)
 	StartsAt time.Time `json:"startsAt"`
 
-	// SuppressAlerts Whether to suppress alerts; null preserves current
+	// SuppressAlerts Whether to suppress alerts during this window; null defaults to true
 	SuppressAlerts *bool `json:"suppressAlerts,omitempty"`
 }
 
@@ -8543,7 +8948,7 @@ type UpdateMonitorRequest struct {
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
-	// ManagedBy New management source; null preserves current
+	// ManagedBy New ownership source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value
 	ManagedBy *UpdateMonitorRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name New monitor name; null preserves current
@@ -8559,7 +8964,7 @@ type UpdateMonitorRequest_Config struct {
 	union json.RawMessage
 }
 
-// UpdateMonitorRequestManagedBy New management source; null preserves current
+// UpdateMonitorRequestManagedBy New ownership source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value
 type UpdateMonitorRequestManagedBy string
 
 // UpdateNotificationPolicyRequest Request body for updating a notification policy (null fields are preserved)
@@ -8626,6 +9031,9 @@ type UpdateResourceGroupRequest struct {
 	// HealthThresholdValue Health threshold value; null disables threshold
 	HealthThresholdValue *float32 `json:"healthThresholdValue,omitempty"`
 
+	// ManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+	ManagedBy *UpdateResourceGroupRequestManagedBy `json:"managedBy,omitempty"`
+
 	// Name Human-readable name for this group
 	Name string `json:"name"`
 
@@ -8638,6 +9046,9 @@ type UpdateResourceGroupRequest struct {
 
 // UpdateResourceGroupRequestHealthThresholdType Health threshold type: COUNT or PERCENTAGE; null disables threshold
 type UpdateResourceGroupRequestHealthThresholdType string
+
+// UpdateResourceGroupRequestManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+type UpdateResourceGroupRequestManagedBy string
 
 // UpdateSecretRequest defines model for UpdateSecretRequest.
 type UpdateSecretRequest struct {
@@ -8727,6 +9138,9 @@ type UpdateStatusPageRequest struct {
 	// IncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC; null preserves current
 	IncidentMode *UpdateStatusPageRequestIncidentMode `json:"incidentMode,omitempty"`
 
+	// ManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+	ManagedBy *UpdateStatusPageRequestManagedBy `json:"managedBy,omitempty"`
+
 	// Name New name; null preserves current
 	Name *string `json:"name,omitempty"`
 
@@ -8736,6 +9150,9 @@ type UpdateStatusPageRequest struct {
 
 // UpdateStatusPageRequestIncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC; null preserves current
 type UpdateStatusPageRequestIncidentMode string
+
+// UpdateStatusPageRequestManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+type UpdateStatusPageRequestManagedBy string
 
 // UpdateStatusPageRequestVisibility Page visibility; null preserves current
 type UpdateStatusPageRequestVisibility string
@@ -8923,8 +9340,22 @@ type WorkspaceDto struct {
 
 // List14Params defines parameters for List14.
 type List14Params struct {
+	// Type Filter by channel integration type (e.g. SLACK, WEBHOOK, EMAIL)
+	Type *List14ParamsType `form:"type,omitempty" json:"type,omitempty"`
+
+	// ManagedBy Filter by managed-by source (DASHBOARD, CLI, TERRAFORM, MCP, API)
+	ManagedBy *List14ParamsManagedBy `form:"managedBy,omitempty" json:"managedBy,omitempty"`
+
+	// Search Case-insensitive contains-match on the channel name
+	Search   *string  `form:"search,omitempty" json:"search,omitempty"`
 	Pageable Pageable `form:"pageable" json:"pageable"`
 }
+
+// List14ParamsType defines parameters for List14.
+type List14ParamsType string
+
+// List14ParamsManagedBy defines parameters for List14.
+type List14ParamsManagedBy string
 
 // List19Params defines parameters for List19.
 type List19Params struct {
@@ -8981,8 +9412,11 @@ type List17Params struct {
 
 // List8Params defines parameters for List8.
 type List8Params struct {
-	// Enabled Filter by enabled state
+	// Enabled Filter by enabled state (true/false)
 	Enabled *bool `form:"enabled,omitempty" json:"enabled,omitempty"`
+
+	// Status Lifecycle status alias: 'active' (enabled=true) or 'paused' (enabled=false). Ignored when ?enabled is also supplied.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
 
 	// Type Filter by monitor type
 	Type *List8ParamsType `form:"type,omitempty" json:"type,omitempty"`
@@ -8990,8 +9424,11 @@ type List8Params struct {
 	// ManagedBy Filter by managed-by source
 	ManagedBy *List8ParamsManagedBy `form:"managedBy,omitempty" json:"managedBy,omitempty"`
 
-	// Tags Filter by tag names, comma-separated (e.g. prod,critical)
+	// Tags Filter by tag names, comma-separated (e.g. prod,critical); OR semantics
 	Tags *string `form:"tags,omitempty" json:"tags,omitempty"`
+
+	// Tag Filter by a single tag name (alias for ?tags=); merged with ?tags using OR semantics
+	Tag *string `form:"tag,omitempty" json:"tag,omitempty"`
 
 	// Search Case-insensitive name search
 	Search *string `form:"search,omitempty" json:"search,omitempty"`

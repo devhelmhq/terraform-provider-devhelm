@@ -175,7 +175,7 @@ func (r *AlertChannelResource) buildConfig(model *AlertChannelResourceModel) (js
 		}
 	case generated.AlertChannelDtoChannelTypeEmail:
 		cfg = generated.EmailChannelConfig{
-			ChannelType: generated.Email,
+			ChannelType: generated.EmailChannelConfigChannelTypeEmail,
 			Recipients:  emailsFromStringList(model.Recipients),
 		}
 	case generated.AlertChannelDtoChannelTypePagerduty:
@@ -228,9 +228,11 @@ func (r *AlertChannelResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
+	managedByTF := generated.CreateAlertChannelRequestManagedByTERRAFORM
 	body := generated.CreateAlertChannelRequest{
-		Name:   plan.Name.ValueString(),
-		Config: configUnion,
+		Name:      plan.Name.ValueString(),
+		Config:    configUnion,
+		ManagedBy: &managedByTF,
 	}
 
 	ch, err := api.Create[generated.AlertChannelDto](ctx, r.client, api.PathAlertChannels, body)
@@ -306,9 +308,11 @@ func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
+	managedByTF := generated.UpdateAlertChannelRequestManagedByTERRAFORM
 	body := generated.UpdateAlertChannelRequest{
-		Name:   plan.Name.ValueString(),
-		Config: configUnion,
+		Name:      plan.Name.ValueString(),
+		Config:    configUnion,
+		ManagedBy: &managedByTF,
 	}
 
 	ch, err := api.Update[generated.AlertChannelDto](ctx, r.client, api.AlertChannelPath(state.ID.ValueString()), body)

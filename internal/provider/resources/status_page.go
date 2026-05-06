@@ -233,6 +233,7 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
+	managedByTF := generated.CreateStatusPageRequestManagedByTERRAFORM
 	body := generated.CreateStatusPageRequest{
 		Name:         plan.Name.ValueString(),
 		Slug:         plan.Slug.ValueString(),
@@ -241,6 +242,7 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		Enabled:      boolPtrOrNil(plan.Enabled),
 		IncidentMode: incidentModeCreatePtr(plan.IncidentMode),
 		Branding:     branding,
+		ManagedBy:    &managedByTF,
 	}
 
 	page, err := api.Create[generated.StatusPageDto](ctx, r.client, api.PathStatusPages, body)
@@ -300,6 +302,7 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	name := plan.Name.ValueString()
+	managedByTF := generated.UpdateStatusPageRequestManagedByTERRAFORM
 	body := generated.UpdateStatusPageRequest{
 		Name: &name,
 		// Description follows the API's "null preserves, empty string clears"
@@ -310,6 +313,7 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 		Visibility:   visibilityUpdatePtr(plan.Visibility),
 		Enabled:      boolPtrOrNil(plan.Enabled),
 		IncidentMode: incidentModeUpdatePtr(plan.IncidentMode),
+		ManagedBy:    &managedByTF,
 		// Branding is non-pointer in the Update DTO so it must always be sent.
 		// brandingForUpdate handles three cases:
 		//   - plan.Branding fully populated (UseStateForUnknown filled blanks
