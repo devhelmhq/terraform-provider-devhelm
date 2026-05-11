@@ -102,7 +102,7 @@ func TestMapAlertChannelToState_PopulatesAllSurfacedFields(t *testing.T) {
 	dto := &generated.AlertChannelDto{
 		Id:          id,
 		Name:        "ops-slack",
-		ChannelType: generated.AlertChannelDtoChannelTypeSlack,
+		ChannelType: "slack",
 	}
 	var model AlertChannelDataSourceModel
 	mapAlertChannelToState(&model, dto)
@@ -112,7 +112,7 @@ func TestMapAlertChannelToState_PopulatesAllSurfacedFields(t *testing.T) {
 	if model.Name.ValueString() != "ops-slack" {
 		t.Errorf("Name: got %q", model.Name.ValueString())
 	}
-	if model.ChannelType.ValueString() != string(generated.AlertChannelDtoChannelTypeSlack) {
+	if model.ChannelType.ValueString() != string("slack") {
 		t.Errorf("ChannelType: got %q", model.ChannelType.ValueString())
 	}
 }
@@ -129,7 +129,7 @@ func TestMapMonitorToState_FullDtoRoundTripsToState(t *testing.T) {
 	dto := &generated.MonitorDto{
 		Id:               id,
 		Name:             "homepage",
-		Type:             generated.MonitorDtoType("HTTP"),
+		Type:             "HTTP",
 		FrequencySeconds: 60,
 		Enabled:          true,
 		Config:           cfg,
@@ -181,7 +181,7 @@ func TestMapMonitorToState_NilPingUrlBecomesNullNotEmpty(t *testing.T) {
 	dto := &generated.MonitorDto{
 		Id:               id,
 		Name:             "tcp-check",
-		Type:             generated.MonitorDtoType("TCP"),
+		Type:             "TCP",
 		FrequencySeconds: 30,
 		Enabled:          false,
 		Config:           cfg,
@@ -205,7 +205,7 @@ func TestMapMonitorToState_EmptyConfigBecomesNull(t *testing.T) {
 	dto := &generated.MonitorDto{
 		Id:               id,
 		Name:             "x",
-		Type:             generated.MonitorDtoType("HEARTBEAT"),
+		Type:             "HEARTBEAT",
 		FrequencySeconds: 300,
 		Enabled:          true,
 		Config:           cfg,
@@ -269,9 +269,9 @@ func TestMapStatusPageToState_PopulatesAllFieldsAndSyntheticPageURL(t *testing.T
 		Name:         "Acme Status",
 		Slug:         "acme",
 		Description:  &desc,
-		Visibility:   generated.StatusPageDtoVisibilityPUBLIC,
+		Visibility:   "PUBLIC",
 		Enabled:      true,
-		IncidentMode: generated.StatusPageDtoIncidentModeMANUAL,
+		IncidentMode: "MANUAL",
 	}
 	var model StatusPageDataSourceModel
 	mapStatusPageToState(&model, dto)
@@ -288,13 +288,13 @@ func TestMapStatusPageToState_PopulatesAllFieldsAndSyntheticPageURL(t *testing.T
 	if model.Description.ValueString() != desc {
 		t.Errorf("Description: %q", model.Description.ValueString())
 	}
-	if model.Visibility.ValueString() != string(generated.StatusPageDtoVisibilityPUBLIC) {
+	if model.Visibility.ValueString() != string("PUBLIC") {
 		t.Error("Visibility")
 	}
 	if !model.Enabled.ValueBool() {
 		t.Error("Enabled")
 	}
-	if model.IncidentMode.ValueString() != string(generated.StatusPageDtoIncidentModeMANUAL) {
+	if model.IncidentMode.ValueString() != string("MANUAL") {
 		t.Error("IncidentMode")
 	}
 	// PageURL is a *synthetic* field — the API doesn't return it, the
@@ -314,9 +314,9 @@ func TestMapStatusPageToState_NilDescriptionBecomesNull(t *testing.T) {
 		Name:         "x",
 		Slug:         "x",
 		Description:  nil,
-		Visibility:   generated.StatusPageDtoVisibilityPASSWORD,
+		Visibility:   "PASSWORD",
 		Enabled:      false,
-		IncidentMode: generated.StatusPageDtoIncidentModeAUTOMATIC,
+		IncidentMode: "AUTOMATIC",
 	}
 	var model StatusPageDataSourceModel
 	mapStatusPageToState(&model, dto)

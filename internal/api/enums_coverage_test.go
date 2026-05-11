@@ -47,9 +47,19 @@ import (
 type enumSliceCase struct {
 	// generatedTypeName is the name of the enum type as declared in
 	// `internal/generated/types.go` (e.g. `MonitorAssertionDtoAssertionType`).
+	// When `typeNameSuffix` is non-empty, this field is ignored and the
+	// assertion is sourced from the union of all enum types whose name
+	// ends in that suffix.
 	generatedTypeName string
+	// typeNameSuffix, when non-empty, makes the test gather literals
+	// from every enum type ending in this suffix (e.g. `AssertionType`
+	// covers `BodyContainsAssertionType`, `DnsExpectedCnameAssertionType`,
+	// …). Used for slices that aggregate discriminator-subtype tags
+	// after the parent response-DTO enum was dropped by the spec-level
+	// Postel's-Law relaxation (`mini/runbooks/api-contract.md` § 3).
+	typeNameSuffix string
 	// slice is the in-package slice we expect to be exhaustive for
-	// `generatedTypeName`.
+	// the case's source type(s).
 	slice []string
 	// description is surfaced in test failure output so a maintainer
 	// can immediately see which slice / which surface is affected.
@@ -66,14 +76,21 @@ type enumSliceCase struct {
 //     relevant resource Schema().
 var enumSliceCoverage = []enumSliceCase{
 	{
-		generatedTypeName: "MonitorAssertionDtoAssertionType",
-		slice:             AssertionTypes,
-		description:       "monitor assertions[*].type validator",
+		// The parent `MonitorAssertionDto.assertionType` typed alias
+		// was dropped by spec-level Postel's-Law relaxation. The
+		// canonical source is now the union of every assertion
+		// subtype's discriminator constant.
+		typeNameSuffix: "AssertionType",
+		slice:          AssertionTypes,
+		description:    "monitor assertions[*].type validator",
 	},
 	{
-		generatedTypeName: "AlertChannelDtoChannelType",
-		slice:             AlertChannelTypes,
-		description:       "alert_channel.channel_type validator",
+		// Same rationale as `AssertionType` above — sourced from each
+		// alert-channel subtype's `*ChannelConfigChannelType`
+		// discriminator constant.
+		typeNameSuffix: "ChannelConfigChannelType",
+		slice:          AlertChannelTypes,
+		description:    "alert_channel.channel_type validator",
 	},
 	{
 		generatedTypeName: "MatchRuleType",
@@ -90,16 +107,42 @@ func TestEnumSliceCoverage(t *testing.T) {
 
 	for _, c := range enumSliceCoverage {
 		c := c
-		t.Run(c.generatedTypeName, func(t *testing.T) {
-			expected, ok := literals[c.generatedTypeName]
-			if !ok {
-				t.Fatalf(
-					"generated package has no `const ... %s = \"...\"` block. "+
-						"Either the spec stopped declaring this enum (drop the entry "+
-						"from `enumSliceCoverage`), or oapi-codegen output shape "+
-						"changed (update `parseGeneratedEnumLiterals`).",
-					c.generatedTypeName,
-				)
+		caseName := c.generatedTypeName
+		if caseName == "" {
+			caseName = "*" + c.typeNameSuffix
+		}
+		t.Run(caseName, func(t *testing.T) {
+			var expected []string
+			if c.typeNameSuffix != "" {
+				// Aggregate every type whose name ends in the given
+				// suffix — used for discriminator-subtype unions.
+				for typeName, vals := range literals {
+					if !endsWith(typeName, c.typeNameSuffix) {
+						continue
+					}
+					expected = append(expected, vals...)
+				}
+				if len(expected) == 0 {
+					t.Fatalf(
+						"generated package has no enum types ending in %q. "+
+							"Either the spec dropped the discriminated union "+
+							"(drop this case from `enumSliceCoverage`) or "+
+							"the suffix needs updating.",
+						c.typeNameSuffix,
+					)
+				}
+			} else {
+				vals, ok := literals[c.generatedTypeName]
+				if !ok {
+					t.Fatalf(
+						"generated package has no `const ... %s = \"...\"` block. "+
+							"Either the spec stopped declaring this enum (drop the entry "+
+							"from `enumSliceCoverage`), or oapi-codegen output shape "+
+							"changed (update `parseGeneratedEnumLiterals`).",
+						c.generatedTypeName,
+					)
+				}
+				expected = vals
 			}
 			actual := append([]string(nil), c.slice...)
 			sort.Strings(actual)
@@ -194,6 +237,12 @@ func parseGeneratedEnumLiterals() (map[string][]string, error) {
 		}
 	}
 	return out, nil
+}
+
+// endsWith is a tiny helper that mirrors `strings.HasSuffix` without
+// pulling another import into this test file.
+func endsWith(s, suffix string) bool {
+	return len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
 }
 
 // diffStrings returns the elements present in `a` but not in `b`. Both

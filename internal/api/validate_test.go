@@ -13,8 +13,8 @@ func TestValidateDTO_ValidMonitorDto(t *testing.T) {
 	dto := generated.MonitorDto{
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "test-monitor",
-		Type:             generated.MonitorDtoTypeHTTP,
-		ManagedBy:        generated.MonitorDtoManagedByDASHBOARD,
+		Type:             "HTTP",
+		ManagedBy:        "DASHBOARD",
 		FrequencySeconds: 60,
 		OrganizationId:   1,
 		Regions:          []string{"us-east"},
@@ -29,8 +29,8 @@ func TestValidateDTO_ValidMonitorDto(t *testing.T) {
 func TestValidateDTO_ZeroID(t *testing.T) {
 	dto := generated.MonitorDto{
 		Name:      "test",
-		Type:      generated.MonitorDtoTypeHTTP,
-		ManagedBy: generated.MonitorDtoManagedByDASHBOARD,
+		Type:      "HTTP",
+		ManagedBy: "DASHBOARD",
 		Regions:   []string{"us-east"},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -47,8 +47,8 @@ func TestValidateDTO_ZeroID(t *testing.T) {
 func TestValidateDTO_MissingName(t *testing.T) {
 	dto := generated.MonitorDto{
 		Id:        openapi_types.UUID(uuid.New()),
-		Type:      generated.MonitorDtoTypeHTTP,
-		ManagedBy: generated.MonitorDtoManagedByDASHBOARD,
+		Type:      "HTTP",
+		ManagedBy: "DASHBOARD",
 		Regions:   []string{"us-east"},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -62,41 +62,42 @@ func TestValidateDTO_MissingName(t *testing.T) {
 	}
 }
 
-func TestValidateDTO_InvalidEnumType(t *testing.T) {
+// TestValidateDTO_TolerantEnum_MonitorType pins Postel's-Law behavior:
+// response-DTO multi-value enums are decoded as plain strings (the
+// typed alias is dropped by the spec-level relaxation in
+// `mini/runbooks/api-contract.md` § 3) so unknown wire values must
+// flow through without an error. Forward-compat: when the API adds a
+// new MonitorType the provider keeps reading existing resources
+// instead of crashing on unknown values.
+func TestValidateDTO_TolerantEnum_MonitorType(t *testing.T) {
 	dto := generated.MonitorDto{
 		Id:        openapi_types.UUID(uuid.New()),
 		Name:      "test",
-		Type:      generated.MonitorDtoType("INVALID_PROTOCOL"),
-		ManagedBy: generated.MonitorDtoManagedByDASHBOARD,
+		Type:      "FUTURE_PROTOCOL_NOT_YET_KNOWN",
+		ManagedBy: "DASHBOARD",
 		Regions:   []string{"us-east"},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	err := ValidateDTO(&dto, "monitor.Read")
-	if err == nil {
-		t.Fatal("expected error for invalid enum")
-	}
-	if got := err.Error(); !contains(got, "type: unknown enum value") {
-		t.Errorf("expected type enum error, got: %s", got)
+	if err := ValidateDTO(&dto, "monitor.Read"); err != nil {
+		t.Fatalf("unknown response-DTO enum value must be tolerated, got: %v", err)
 	}
 }
 
-func TestValidateDTO_InvalidEnumManagedBy(t *testing.T) {
+// TestValidateDTO_TolerantEnum_ManagedBy is the ManagedBy counterpart
+// of `TolerantEnum_MonitorType` — same invariant, different field.
+func TestValidateDTO_TolerantEnum_ManagedBy(t *testing.T) {
 	dto := generated.MonitorDto{
 		Id:        openapi_types.UUID(uuid.New()),
 		Name:      "test",
-		Type:      generated.MonitorDtoTypeHTTP,
-		ManagedBy: generated.MonitorDtoManagedBy("UNKNOWN_SOURCE"),
+		Type:      "HTTP",
+		ManagedBy: "FUTURE_SOURCE_NOT_YET_KNOWN",
 		Regions:   []string{"us-east"},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	err := ValidateDTO(&dto, "monitor.Read")
-	if err == nil {
-		t.Fatal("expected error for invalid managedBy enum")
-	}
-	if got := err.Error(); !contains(got, "managedBy: unknown enum value") {
-		t.Errorf("expected managedBy enum error, got: %s", got)
+	if err := ValidateDTO(&dto, "monitor.Read"); err != nil {
+		t.Fatalf("unknown response-DTO enum value must be tolerated, got: %v", err)
 	}
 }
 
@@ -104,8 +105,8 @@ func TestValidateDTO_MissingRequiredRegions(t *testing.T) {
 	dto := generated.MonitorDto{
 		Id:        openapi_types.UUID(uuid.New()),
 		Name:      "test",
-		Type:      generated.MonitorDtoTypeHTTP,
-		ManagedBy: generated.MonitorDtoManagedByDASHBOARD,
+		Type:      "HTTP",
+		ManagedBy: "DASHBOARD",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -139,8 +140,8 @@ func TestValidateDTO_OptionalFieldsSkipped(t *testing.T) {
 	dto := generated.MonitorDto{
 		Id:               openapi_types.UUID(uuid.New()),
 		Name:             "test",
-		Type:             generated.MonitorDtoTypeHTTP,
-		ManagedBy:        generated.MonitorDtoManagedByDASHBOARD,
+		Type:             "HTTP",
+		ManagedBy:        "DASHBOARD",
 		FrequencySeconds: 60,
 		OrganizationId:   1,
 		Regions:          []string{"us-east"},
@@ -152,20 +153,20 @@ func TestValidateDTO_OptionalFieldsSkipped(t *testing.T) {
 	}
 }
 
-func TestValidateDTO_AlertChannelDto(t *testing.T) {
+// TestValidateDTO_TolerantEnum_AlertChannelDto pins the same Postel's-Law
+// invariant for alert-channel discovery: unknown wire values on
+// `AlertChannelDto.channelType` flow through without an error so newly
+// added channel kinds (e.g. a future `pagerduty_v2`) don't break Read.
+func TestValidateDTO_TolerantEnum_AlertChannelDto(t *testing.T) {
 	dto := generated.AlertChannelDto{
 		Id:          openapi_types.UUID(uuid.New()),
-		Name:        "slack-alerts",
-		ChannelType: generated.AlertChannelDtoChannelType("NONEXISTENT"),
+		Name:        "future-channel",
+		ChannelType: "future_channel_type_not_yet_known",
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
-	err := ValidateDTO(&dto, "alert-channel.Read")
-	if err == nil {
-		t.Fatal("expected error for invalid channel type")
-	}
-	if got := err.Error(); !contains(got, "channelType: unknown enum value") {
-		t.Errorf("expected channelType enum error, got: %s", got)
+	if err := ValidateDTO(&dto, "alert-channel.Read"); err != nil {
+		t.Fatalf("unknown response-DTO channelType must be tolerated, got: %v", err)
 	}
 }
 
@@ -173,8 +174,8 @@ func TestValidateDTO_StatusPageComponentDto(t *testing.T) {
 	dto := generated.StatusPageComponentDto{
 		Id:            openapi_types.UUID(uuid.New()),
 		Name:          "api-component",
-		Type:          generated.StatusPageComponentDtoTypeMONITOR,
-		CurrentStatus: generated.StatusPageComponentDtoCurrentStatusOPERATIONAL,
+		Type:          "MONITOR",
+		CurrentStatus: "OPERATIONAL",
 		StatusPageId:  openapi_types.UUID(uuid.New()),
 		DisplayOrder:  1,
 		PageOrder:     1,
@@ -254,7 +255,7 @@ func TestValidateDTO_ZeroNumericIsValid(t *testing.T) {
 				ActiveIncidents:  0,
 				OperationalCount: 0,
 				TotalMembers:     0,
-				Status:           generated.ResourceGroupHealthDtoStatusOperational,
+				Status:           "operational",
 			},
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
@@ -292,8 +293,8 @@ func TestValidateDTO_ZeroNumericIsValid(t *testing.T) {
 func TestValidateDTO_RequiredStringStillRejected(t *testing.T) {
 	dto := generated.MonitorDto{
 		Id:        openapi_types.UUID(uuid.New()),
-		Type:      generated.MonitorDtoTypeHTTP,
-		ManagedBy: generated.MonitorDtoManagedByDASHBOARD,
+		Type:      "HTTP",
+		ManagedBy: "DASHBOARD",
 		Regions:   []string{"us-east"},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

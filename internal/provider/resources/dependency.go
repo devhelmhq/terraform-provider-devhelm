@@ -61,11 +61,7 @@ func (r *DependencyResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				Optional: true, Computed: true,
 				Description: "Alert sensitivity: ALL, INCIDENTS_ONLY, or MAJOR_ONLY (default: ALL, computed by the API)",
 				Validators: []validator.String{
-					stringvalidator.OneOf(
-						string(generated.ALL),
-						string(generated.INCIDENTSONLY),
-						string(generated.MAJORONLY),
-					),
+					stringvalidator.OneOf(api.AlertSensitivities...),
 				},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},

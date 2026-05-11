@@ -274,7 +274,7 @@ func fullyPopulatedResourceGroupDto(t *testing.T) *generated.ResourceGroupDto {
 	envID := openapi_types.UUID(uuid.New())
 	desc := "backend services"
 	freq := int32(120)
-	thresholdType := generated.ResourceGroupDtoHealthThresholdType("COUNT")
+	thresholdType := "COUNT"
 	thresholdVal := float32(2.0)
 	confirm := int32(30)
 	cooldown := int32(10)

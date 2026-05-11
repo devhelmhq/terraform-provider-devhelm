@@ -317,6 +317,75 @@ export function inlineNullableDeductionRefs(spec) {
   return Array.from(rewritten);
 }
 
+/**
+ * Drop `enum` constraints from response-shape DTO properties so the
+ * generated Go types decode unknown future enum values as plain
+ * strings (Postel's Law contract — see
+ * `mini/runbooks/api-contract.md` § 2.2 + § 3).
+ *
+ * For oapi-codegen this means response-DTO enum fields stop generating
+ * a typed alias (`type FooType string` + iota constants) and stay as
+ * plain `string`. Read flow tolerance is preserved end-to-end while
+ * Plan-validating fields on Create/Update DTOs (used in Terraform
+ * resource schemas) keep their `stringvalidator.OneOf` because their
+ * Request schemas are NOT relaxed (see `runbooks/api-contract.md` § 3.3).
+ *
+ * Selection rules — match `relaxResponseEnums` post-processor:
+ *   - Walk `components.schemas`. A schema is "response-shape" if its
+ *     name matches `*Dto` / `*Response` / `SingleValueResponse*` /
+ *     `TableValueResult*` / `CursorPage*`.
+ *   - Request-shape (`*Request` / `*Params` / lowercase) — left alone.
+ *   - Multi-value enum (length ≥ 2) on a response-shape property —
+ *     dropped. Single-value enums (discriminator tags) — preserved.
+ *   - Array-typed properties get the same treatment on `items.enum`.
+ *
+ * Idempotent. Returns the list of relaxed `Schema.field` paths.
+ */
+export function relaxResponseEnumsInSpec(spec) {
+  const schemas = getSchemas(spec);
+  const relaxed = [];
+
+  function isResponseShape(name) {
+    if (/^[a-z]/.test(name)) return false;
+    if (/(Request|Params)$/.test(name)) return false;
+    return (
+      /(Dto|Response)$/.test(name) ||
+      /^(SingleValueResponse|TableValueResult|CursorPage)/.test(name)
+    );
+  }
+
+  function relaxProps(schemaName, properties) {
+    if (!properties) return;
+    for (const [propName, raw] of Object.entries(properties)) {
+      if (!isSchemaObj(raw)) continue;
+      if (Array.isArray(raw.enum) && raw.enum.length >= 2) {
+        delete raw.enum;
+        relaxed.push(`${schemaName}.${propName}`);
+      }
+      if (raw.items && isSchemaObj(raw.items)) {
+        if (Array.isArray(raw.items.enum) && raw.items.enum.length >= 2) {
+          delete raw.items.enum;
+          relaxed.push(`${schemaName}.${propName}[]`);
+        }
+      }
+    }
+  }
+
+  for (const [schemaName, schema] of Object.entries(schemas)) {
+    if (!isResponseShape(schemaName)) continue;
+    relaxProps(schemaName, schema.properties);
+    if (Array.isArray(schema.allOf)) {
+      for (const member of schema.allOf) {
+        if (isSchemaObj(member)) {
+          relaxProps(schemaName, member.properties);
+        }
+      }
+    }
+  }
+
+  return relaxed;
+}
+
 export function preprocessSpec(spec) {
   setRequiredFields(spec);
   setRequiredOnAllOfMembers(spec);
@@ -329,7 +398,15 @@ export function preprocessSpec(spec) {
   // discriminator-based parents as abstract/empty ones.
   const inlinedNullableDeductions = inlineNullableDeductionRefs(spec);
   const flattened = flattenCircularOneOf(spec);
-  return { flattened, inlinedDiscriminators, inlinedNullableDeductions };
+  // Postel's Law: drop multi-value enums on response-shape DTOs so all
+  // codegens (Zod, Pydantic, Go) emit tolerant readers.
+  const relaxedEnums = relaxResponseEnumsInSpec(spec);
+  return {
+    flattened,
+    inlinedDiscriminators,
+    inlinedNullableDeductions,
+    relaxedEnums,
+  };
 }
 
 /**
@@ -400,6 +477,11 @@ if (isMain) {
   if (result.inlinedNullableDeductions.length > 0) {
     console.log(
       `Inlined nullable deduction refs for: ${result.inlinedNullableDeductions.join(', ')}`,
+    );
+  }
+  if (result.relaxedEnums && result.relaxedEnums.length > 0) {
+    console.log(
+      `Relaxed response-DTO enums (Postel's Law): ${result.relaxedEnums.length} fields`,
     );
   }
 }

@@ -120,7 +120,7 @@ func buildMonitorAuthConfig(ctx context.Context, auth types.Object) (*generated.
 			return nil, fmt.Errorf("auth.bearer.vault_secret_id: %w", err)
 		}
 		if err := out.FromBearerAuthConfig(generated.BearerAuthConfig{
-			Type:          generated.Bearer,
+			Type:          generated.BearerAuthConfigTypeBearer,
 			VaultSecretId: secret,
 		}); err != nil {
 			return nil, fmt.Errorf("auth.bearer: %w", err)
@@ -135,7 +135,7 @@ func buildMonitorAuthConfig(ctx context.Context, auth types.Object) (*generated.
 			return nil, fmt.Errorf("auth.basic.vault_secret_id: %w", err)
 		}
 		if err := out.FromBasicAuthConfig(generated.BasicAuthConfig{
-			Type:          generated.Basic,
+			Type:          generated.BasicAuthConfigTypeBasic,
 			VaultSecretId: secret,
 		}); err != nil {
 			return nil, fmt.Errorf("auth.basic: %w", err)
@@ -153,7 +153,7 @@ func buildMonitorAuthConfig(ctx context.Context, auth types.Object) (*generated.
 			return nil, fmt.Errorf("auth.header.vault_secret_id: %w", err)
 		}
 		if err := out.FromHeaderAuthConfig(generated.HeaderAuthConfig{
-			Type:          generated.Header,
+			Type:          generated.HeaderAuthConfigTypeHeader,
 			HeaderName:    v.HeaderName.ValueString(),
 			VaultSecretId: secret,
 		}); err != nil {

@@ -66,10 +66,10 @@ $PREPROCESS_CMD "$INPUT" "$PREPROCESSED"
 echo "=> Generating Go types from preprocessed spec..."
 
 # Resolve oapi-codegen via the `tool` directive in go.mod so the version
-# is always in lockstep with the version recorded there.
+# is always in lockstep with the version recorded there. The config file
+# pins enum-prefixing (see scripts/oapi-codegen.yaml).
 (cd "$ROOT_DIR" && go tool oapi-codegen \
-  -generate types \
-  -package generated \
+  -config "$SCRIPT_DIR/oapi-codegen.yaml" \
   -o "$OUTPUT" \
   "$PREPROCESSED")
 

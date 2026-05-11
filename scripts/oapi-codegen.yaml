@@ -1,0 +1,28 @@
+# oapi-codegen configuration for the DevHelm Terraform provider.
+#
+# Pins generation behavior so that the committed `internal/generated/types.go`
+# is reproducible from the spec independent of enum-set churn. In particular:
+#
+# * `always-prefix-enum-values: true` forces every enum constant to be
+#   prefixed with its parent type name (`TriggerRuleSeverityDown` rather
+#   than the bare `Down`). Without this, oapi-codegen falls back to bare
+#   names whenever there's no collision at package level — meaning the
+#   constant identifier flips on any unrelated enum change. This breaks
+#   the forward-compat contract documented in
+#   `mini/runbooks/api-contract.md` § 3, since hand-written code that
+#   references `generated.Foo` would suddenly fail to compile when an
+#   unrelated DTO grows a `Foo` value of its own.
+#
+# * `resolve-type-name-collisions: true` lets the codegen rename
+#   colliding types by appending a section suffix instead of failing the
+#   run, which keeps `make typegen` resilient to spec evolution.
+package: generated
+generate:
+  models: true
+  client: false
+  embedded-spec: false
+  echo-server: false
+compatibility:
+  always-prefix-enum-values: true
+output-options:
+  resolve-type-name-collisions: true
