@@ -155,49 +155,56 @@ func (r *AlertChannelResource) buildConfig(model *AlertChannelResourceModel) (js
 	channelType := model.ChannelType.ValueString()
 
 	// Each subtype carries its own per-discriminator enum (e.g.
-	// SlackChannelConfigChannelType with one value `Slack`). The discriminator
-	// inlining in the upstream OpenAPI preprocessor produces tagged unions —
-	// codegens emit one type per subtype rather than a shared enum, so
-	// each struct literal needs its own typed constant.
+	// SlackChannelConfigChannelType with one value `Slack`). The
+	// discriminator inlining in the upstream OpenAPI preprocessor
+	// produces tagged unions — codegens emit one type per subtype rather
+	// than a shared enum, so each struct literal needs its own typed
+	// constant. The switch dispatches on the raw `channelType` string
+	// because the parent `AlertChannelDto.channelType` typed alias was
+	// dropped by the spec-level Postel's-Law relaxation
+	// (`mini/runbooks/api-contract.md` § 3); response DTOs decode the
+	// channel type as plain `string`. We compare against the canonical
+	// subtype constants (cast to string) so a wire-format rename here
+	// will trip the Go compiler at the right line.
 	var cfg any
-	switch generated.AlertChannelDtoChannelType(channelType) {
-	case generated.AlertChannelDtoChannelTypeSlack:
+	switch channelType {
+	case string(generated.SlackChannelConfigChannelTypeSlack):
 		cfg = generated.SlackChannelConfig{
-			ChannelType: generated.Slack,
+			ChannelType: generated.SlackChannelConfigChannelTypeSlack,
 			WebhookUrl:  model.WebhookURL.ValueString(),
 			MentionText: stringPtrOrNil(model.MentionText),
 		}
-	case generated.AlertChannelDtoChannelTypeDiscord:
+	case string(generated.DiscordChannelConfigChannelTypeDiscord):
 		cfg = generated.DiscordChannelConfig{
 			ChannelType:   generated.DiscordChannelConfigChannelTypeDiscord,
 			WebhookUrl:    model.WebhookURL.ValueString(),
 			MentionRoleId: stringPtrOrNil(model.MentionRoleID),
 		}
-	case generated.AlertChannelDtoChannelTypeEmail:
+	case string(generated.EmailChannelConfigChannelTypeEmail):
 		cfg = generated.EmailChannelConfig{
 			ChannelType: generated.EmailChannelConfigChannelTypeEmail,
 			Recipients:  emailsFromStringList(model.Recipients),
 		}
-	case generated.AlertChannelDtoChannelTypePagerduty:
+	case string(generated.PagerDutyChannelConfigChannelTypePagerduty):
 		cfg = generated.PagerDutyChannelConfig{
-			ChannelType:      generated.Pagerduty,
+			ChannelType:      generated.PagerDutyChannelConfigChannelTypePagerduty,
 			RoutingKey:       model.RoutingKey.ValueString(),
 			SeverityOverride: stringPtrOrNil(model.SeverityOverride),
 		}
-	case generated.AlertChannelDtoChannelTypeOpsgenie:
+	case string(generated.OpsGenieChannelConfigChannelTypeOpsgenie):
 		cfg = generated.OpsGenieChannelConfig{
-			ChannelType: generated.Opsgenie,
+			ChannelType: generated.OpsGenieChannelConfigChannelTypeOpsgenie,
 			ApiKey:      model.APIKey.ValueString(),
 			Region:      stringPtrOrNil(model.Region),
 		}
-	case generated.AlertChannelDtoChannelTypeTeams:
+	case string(generated.TeamsChannelConfigChannelTypeTeams):
 		cfg = generated.TeamsChannelConfig{
-			ChannelType: generated.Teams,
+			ChannelType: generated.TeamsChannelConfigChannelTypeTeams,
 			WebhookUrl:  model.WebhookURL.ValueString(),
 		}
-	case generated.AlertChannelDtoChannelTypeWebhook:
+	case string(generated.WebhookChannelConfigChannelTypeWebhook):
 		cfg = generated.WebhookChannelConfig{
-			ChannelType:   generated.Webhook,
+			ChannelType:   generated.WebhookChannelConfigChannelTypeWebhook,
 			Url:           model.URL.ValueString(),
 			CustomHeaders: stringMapToPtr(model.CustomHeaders),
 			SigningSecret: stringPtrOrNil(model.SigningSecret),

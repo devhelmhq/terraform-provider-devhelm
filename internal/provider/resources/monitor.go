@@ -298,8 +298,8 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									Description: "Rule scope: per_region or any_region",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
-											string(generated.PerRegion),
-											string(generated.AnyRegion),
+											string(generated.TriggerRuleScopePerRegion),
+											string(generated.TriggerRuleScopeAnyRegion),
 										),
 									},
 									PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
@@ -333,10 +333,10 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 									Description: "Aggregation type: all_exceed, average, p95, max",
 									Validators: []validator.String{
 										stringvalidator.OneOf(
-											string(generated.AllExceed),
-											string(generated.Average),
-											string(generated.P95),
-											string(generated.Max),
+											string(generated.TriggerRuleAggregationTypeAllExceed),
+											string(generated.TriggerRuleAggregationTypeAverage),
+											string(generated.TriggerRuleAggregationTypeP95),
+											string(generated.TriggerRuleAggregationTypeMax),
 										),
 									},
 									PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},

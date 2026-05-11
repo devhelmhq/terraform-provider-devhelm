@@ -359,14 +359,14 @@ func fullyPopulatedMonitorDto(t *testing.T) *generated.MonitorDto {
 	_ = asnCfg.UnmarshalJSON([]byte(`{"type":"status_code","expected":"200","operator":"equals"}`))
 
 	auth := generated.MonitorAuthConfig{}
-	if err := auth.FromBearerAuthConfig(generated.BearerAuthConfig{Type: generated.Bearer}); err != nil {
+	if err := auth.FromBearerAuthConfig(generated.BearerAuthConfig{Type: generated.BearerAuthConfigTypeBearer}); err != nil {
 		t.Fatalf("auth: %v", err)
 	}
 
 	return &generated.MonitorDto{
 		Id:               id,
 		Name:             "acme-api",
-		Type:             generated.MonitorDtoType("HTTP"),
+		Type:             "HTTP",
 		FrequencySeconds: 60,
 		Enabled:          true,
 		Regions:          []string{"us-east", "eu-west"},
@@ -380,8 +380,8 @@ func fullyPopulatedMonitorDto(t *testing.T) *generated.MonitorDto {
 			{
 				Id:            openapi_types.UUID(uuid.New()),
 				MonitorId:     id,
-				AssertionType: generated.MonitorAssertionDtoAssertionType("status_code"),
-				Severity:      generated.MonitorAssertionDtoSeverity("fail"),
+				AssertionType: "status_code",
+				Severity:      "fail",
 				Config:        asnCfg,
 			},
 		},

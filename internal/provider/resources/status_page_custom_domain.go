@@ -473,16 +473,21 @@ func (r *StatusPageCustomDomainResource) mapToState(model *StatusPageCustomDomai
 	trafficValue := dto.VerificationCnameTarget
 	model.TrafficRecord = dnsRecordObject(trafficName, "CNAME", trafficValue)
 
-	// Verification placement depends on the method the API picked.
+	// Verification placement depends on the method the API picked. The
+	// `verificationMethod` field on `StatusPageCustomDomainDto` is
+	// response-shaped, so the spec-level Postel's-Law relaxation
+	// (`mini/runbooks/api-contract.md` § 3) drops the typed alias and
+	// the codegen exposes it as plain `string`. Unknown future methods
+	// fall through the `default` arm (CNAME placement) — which is the
+	// safer fallback because the traffic record already covers it.
 	switch dto.VerificationMethod {
-	case generated.StatusPageCustomDomainDtoVerificationMethodTXT:
+	case "TXT":
 		model.VerificationRecord = dnsRecordObject(
 			"_devhelm-verification."+dto.Hostname,
 			"TXT",
 			dto.VerificationToken,
 		)
 	default:
-		// CNAME (default) — verification record IS the traffic record.
 		model.VerificationRecord = dnsRecordObject(trafficName, "CNAME", trafficValue)
 	}
 }

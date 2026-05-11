@@ -242,7 +242,7 @@ func (r *StatusPageCustomDomainVerificationResource) Delete(_ context.Context, _
 }
 
 func (r *StatusPageCustomDomainVerificationResource) applyDomainToState(model *StatusPageCustomDomainVerificationResourceModel, dto *generated.StatusPageCustomDomainDto) {
-	model.Status = types.StringValue(string(dto.Status))
+	model.Status = types.StringValue(dto.Status)
 	if dto.VerifiedAt != nil {
 		model.VerifiedAt = types.StringValue(dto.VerifiedAt.UTC().Format(time.RFC3339))
 	} else {
@@ -250,13 +250,25 @@ func (r *StatusPageCustomDomainVerificationResource) applyDomainToState(model *S
 	}
 }
 
+// Wire-format status values for `StatusPageCustomDomainDto.Status`.
+// Sourced from the API response shape; the spec-level Postel's-Law
+// relaxation (`mini/runbooks/api-contract.md` § 3) drops the typed
+// alias on response-DTO enum fields, so the codegen exposes `Status`
+// as `string` and unknown future statuses fall through the default
+// arm of `isVerifiedStatus` (continue polling) rather than crashing.
+const (
+	customDomainStatusVerified   = "VERIFIED"
+	customDomainStatusSSLPending = "SSL_PENDING"
+	customDomainStatusActive     = "ACTIVE"
+)
+
 // isVerifiedStatus returns true for any domain status that means "the API
 // has confirmed ownership and we can stop polling." VERIFIED is the
 // immediate post-DNS state; SSL_PENDING and ACTIVE are subsequent stages
 // that imply verification already succeeded.
-func isVerifiedStatus(s generated.StatusPageCustomDomainDtoStatus) bool {
+func isVerifiedStatus(s string) bool {
 	switch s {
-	case generated.VERIFIED, generated.SSLPENDING, generated.ACTIVE:
+	case customDomainStatusVerified, customDomainStatusSSLPending, customDomainStatusActive:
 		return true
 	}
 	return false

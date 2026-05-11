@@ -29,9 +29,18 @@ var (
 // The validator walks the struct and enforces two invariants:
 //  1. Non-pointer fields must not be zero-valued (catches missing required fields
 //     that json.Unmarshal silently accepts).
-//  2. Fields whose type implements Valid() bool must return true (catches enum
-//     values the provider doesn't recognize, e.g. after an API update adds a
-//     new variant).
+//  2. Fields whose type implements Valid() bool must return true (catches
+//     known-bad values for the enums that survive spec-level relaxation —
+//     primarily single-value discriminator tags).
+//
+// Note on Postel's-Law tolerance (see `mini/runbooks/api-contract.md` § 3):
+// multi-value enums on response-shaped DTOs are dropped from the spec
+// before codegen, so those fields are emitted as plain `string` and
+// trivially skip the `Valid()` check. That is the desired behaviour —
+// adding a new wire-format value to e.g. `MonitorDto.type` must NOT
+// break existing provider versions reading existing resources. The
+// `Valid()` branch only fires for enums that intentionally remain
+// strict (request DTOs and discriminator subtype tags).
 //
 // This is the Go equivalent of Zod safeParse (SDK-JS) and Pydantic model_validate
 // (SDK-Python) — runtime response validation driven by the spec, with zero

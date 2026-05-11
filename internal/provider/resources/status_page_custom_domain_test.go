@@ -21,8 +21,8 @@ func TestStatusPageCustomDomain_MapToState_CNAMEMethodCollapsesRecords(t *testin
 	dto := &generated.StatusPageCustomDomainDto{
 		Id:                      openapi_types.UUID(uuid.MustParse("00000000-0000-0000-0000-000000000abc")),
 		Hostname:                "status.acme.com",
-		Status:                  generated.VERIFIED,
-		VerificationMethod:      generated.StatusPageCustomDomainDtoVerificationMethodCNAME,
+		Status:                  "VERIFIED",
+		VerificationMethod:      "CNAME",
 		VerificationToken:       "tok-cname-unused",
 		VerificationCnameTarget: "acme.devhelm.io",
 		VerifiedAt:              &verifiedAt,
@@ -63,8 +63,8 @@ func TestStatusPageCustomDomain_MapToState_TXTMethodSplitsRecords(t *testing.T) 
 	dto := &generated.StatusPageCustomDomainDto{
 		Id:                      openapi_types.UUID(uuid.MustParse("00000000-0000-0000-0000-000000000abc")),
 		Hostname:                "status.acme.com",
-		Status:                  generated.PENDINGVERIFICATION,
-		VerificationMethod:      generated.StatusPageCustomDomainDtoVerificationMethodTXT,
+		Status:                  "PENDING_VERIFICATION",
+		VerificationMethod:      "TXT",
 		VerificationToken:       "txt-token-xyz",
 		VerificationCnameTarget: "acme.devhelm.io",
 		VerifiedAt:              nil,
@@ -101,16 +101,16 @@ func TestStatusPageCustomDomain_MapToState_TXTMethodSplitsRecords(t *testing.T) 
 
 func TestStatusPageCustomDomainVerification_IsVerifiedStatus(t *testing.T) {
 	cases := []struct {
-		status generated.StatusPageCustomDomainDtoStatus
+		status string
 		want   bool
 	}{
-		{generated.VERIFIED, true},
-		{generated.SSLPENDING, true},
-		{generated.ACTIVE, true},
-		{generated.PENDINGVERIFICATION, false},
-		{generated.VERIFICATIONFAILED, false},
-		{generated.FAILED, false},
-		{generated.REMOVED, false},
+		{"VERIFIED", true},
+		{"SSL_PENDING", true},
+		{"ACTIVE", true},
+		{"PENDING_VERIFICATION", false},
+		{"VERIFICATION_FAILED", false},
+		{"FAILED", false},
+		{"REMOVED", false},
 	}
 	for _, tc := range cases {
 		if got := isVerifiedStatus(tc.status); got != tc.want {

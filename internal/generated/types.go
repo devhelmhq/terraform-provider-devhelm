@@ -67,114 +67,6 @@ func (e AffectedComponentStatus) Valid() bool {
 	}
 }
 
-// Defines values for AlertChannelDtoChannelType.
-const (
-	AlertChannelDtoChannelTypeDiscord   AlertChannelDtoChannelType = "discord"
-	AlertChannelDtoChannelTypeEmail     AlertChannelDtoChannelType = "email"
-	AlertChannelDtoChannelTypeOpsgenie  AlertChannelDtoChannelType = "opsgenie"
-	AlertChannelDtoChannelTypePagerduty AlertChannelDtoChannelType = "pagerduty"
-	AlertChannelDtoChannelTypeSlack     AlertChannelDtoChannelType = "slack"
-	AlertChannelDtoChannelTypeTeams     AlertChannelDtoChannelType = "teams"
-	AlertChannelDtoChannelTypeWebhook   AlertChannelDtoChannelType = "webhook"
-)
-
-// Valid indicates whether the value is a known member of the AlertChannelDtoChannelType enum.
-func (e AlertChannelDtoChannelType) Valid() bool {
-	switch e {
-	case AlertChannelDtoChannelTypeDiscord:
-		return true
-	case AlertChannelDtoChannelTypeEmail:
-		return true
-	case AlertChannelDtoChannelTypeOpsgenie:
-		return true
-	case AlertChannelDtoChannelTypePagerduty:
-		return true
-	case AlertChannelDtoChannelTypeSlack:
-		return true
-	case AlertChannelDtoChannelTypeTeams:
-		return true
-	case AlertChannelDtoChannelTypeWebhook:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for AlertChannelDtoManagedBy.
-const (
-	AlertChannelDtoManagedByAPI       AlertChannelDtoManagedBy = "API"
-	AlertChannelDtoManagedByCLI       AlertChannelDtoManagedBy = "CLI"
-	AlertChannelDtoManagedByDASHBOARD AlertChannelDtoManagedBy = "DASHBOARD"
-	AlertChannelDtoManagedByMCP       AlertChannelDtoManagedBy = "MCP"
-	AlertChannelDtoManagedByTERRAFORM AlertChannelDtoManagedBy = "TERRAFORM"
-)
-
-// Valid indicates whether the value is a known member of the AlertChannelDtoManagedBy enum.
-func (e AlertChannelDtoManagedBy) Valid() bool {
-	switch e {
-	case AlertChannelDtoManagedByAPI:
-		return true
-	case AlertChannelDtoManagedByCLI:
-		return true
-	case AlertChannelDtoManagedByDASHBOARD:
-		return true
-	case AlertChannelDtoManagedByMCP:
-		return true
-	case AlertChannelDtoManagedByTERRAFORM:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for AlertDeliveryDtoEventType.
-const (
-	INCIDENTCREATED  AlertDeliveryDtoEventType = "INCIDENT_CREATED"
-	INCIDENTREOPENED AlertDeliveryDtoEventType = "INCIDENT_REOPENED"
-	INCIDENTRESOLVED AlertDeliveryDtoEventType = "INCIDENT_RESOLVED"
-)
-
-// Valid indicates whether the value is a known member of the AlertDeliveryDtoEventType enum.
-func (e AlertDeliveryDtoEventType) Valid() bool {
-	switch e {
-	case INCIDENTCREATED:
-		return true
-	case INCIDENTREOPENED:
-		return true
-	case INCIDENTRESOLVED:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for AlertDeliveryDtoStatus.
-const (
-	AlertDeliveryDtoStatusCANCELLED    AlertDeliveryDtoStatus = "CANCELLED"
-	AlertDeliveryDtoStatusDELIVERED    AlertDeliveryDtoStatus = "DELIVERED"
-	AlertDeliveryDtoStatusFAILED       AlertDeliveryDtoStatus = "FAILED"
-	AlertDeliveryDtoStatusPENDING      AlertDeliveryDtoStatus = "PENDING"
-	AlertDeliveryDtoStatusRETRYPENDING AlertDeliveryDtoStatus = "RETRY_PENDING"
-)
-
-// Valid indicates whether the value is a known member of the AlertDeliveryDtoStatus enum.
-func (e AlertDeliveryDtoStatus) Valid() bool {
-	switch e {
-	case AlertDeliveryDtoStatusCANCELLED:
-		return true
-	case AlertDeliveryDtoStatusDELIVERED:
-		return true
-	case AlertDeliveryDtoStatusFAILED:
-		return true
-	case AlertDeliveryDtoStatusPENDING:
-		return true
-	case AlertDeliveryDtoStatusRETRYPENDING:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for ApiKeyAuthConfigType.
 const (
 	ApiKeyAuthConfigTypeApiKey ApiKeyAuthConfigType = "api_key"
@@ -190,189 +82,15 @@ func (e ApiKeyAuthConfigType) Valid() bool {
 	}
 }
 
-// Defines values for AssertionResultDtoSeverity.
-const (
-	AssertionResultDtoSeverityFail AssertionResultDtoSeverity = "fail"
-	AssertionResultDtoSeverityWarn AssertionResultDtoSeverity = "warn"
-)
-
-// Valid indicates whether the value is a known member of the AssertionResultDtoSeverity enum.
-func (e AssertionResultDtoSeverity) Valid() bool {
-	switch e {
-	case AssertionResultDtoSeverityFail:
-		return true
-	case AssertionResultDtoSeverityWarn:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for AssertionTestResultDtoAssertionType.
-const (
-	AssertionTestResultDtoAssertionTypeBodyContains             AssertionTestResultDtoAssertionType = "body_contains"
-	AssertionTestResultDtoAssertionTypeDnsExpectedCname         AssertionTestResultDtoAssertionType = "dns_expected_cname"
-	AssertionTestResultDtoAssertionTypeDnsExpectedIps           AssertionTestResultDtoAssertionType = "dns_expected_ips"
-	AssertionTestResultDtoAssertionTypeDnsMaxAnswers            AssertionTestResultDtoAssertionType = "dns_max_answers"
-	AssertionTestResultDtoAssertionTypeDnsMinAnswers            AssertionTestResultDtoAssertionType = "dns_min_answers"
-	AssertionTestResultDtoAssertionTypeDnsRecordContains        AssertionTestResultDtoAssertionType = "dns_record_contains"
-	AssertionTestResultDtoAssertionTypeDnsRecordEquals          AssertionTestResultDtoAssertionType = "dns_record_equals"
-	AssertionTestResultDtoAssertionTypeDnsResolves              AssertionTestResultDtoAssertionType = "dns_resolves"
-	AssertionTestResultDtoAssertionTypeDnsResponseTime          AssertionTestResultDtoAssertionType = "dns_response_time"
-	AssertionTestResultDtoAssertionTypeDnsResponseTimeWarn      AssertionTestResultDtoAssertionType = "dns_response_time_warn"
-	AssertionTestResultDtoAssertionTypeDnsTtlHigh               AssertionTestResultDtoAssertionType = "dns_ttl_high"
-	AssertionTestResultDtoAssertionTypeDnsTtlLow                AssertionTestResultDtoAssertionType = "dns_ttl_low"
-	AssertionTestResultDtoAssertionTypeDnsTxtContains           AssertionTestResultDtoAssertionType = "dns_txt_contains"
-	AssertionTestResultDtoAssertionTypeHeaderValue              AssertionTestResultDtoAssertionType = "header_value"
-	AssertionTestResultDtoAssertionTypeHeartbeatIntervalDrift   AssertionTestResultDtoAssertionType = "heartbeat_interval_drift"
-	AssertionTestResultDtoAssertionTypeHeartbeatMaxInterval     AssertionTestResultDtoAssertionType = "heartbeat_max_interval"
-	AssertionTestResultDtoAssertionTypeHeartbeatPayloadContains AssertionTestResultDtoAssertionType = "heartbeat_payload_contains"
-	AssertionTestResultDtoAssertionTypeHeartbeatReceived        AssertionTestResultDtoAssertionType = "heartbeat_received"
-	AssertionTestResultDtoAssertionTypeIcmpPacketLoss           AssertionTestResultDtoAssertionType = "icmp_packet_loss"
-	AssertionTestResultDtoAssertionTypeIcmpReachable            AssertionTestResultDtoAssertionType = "icmp_reachable"
-	AssertionTestResultDtoAssertionTypeIcmpResponseTime         AssertionTestResultDtoAssertionType = "icmp_response_time"
-	AssertionTestResultDtoAssertionTypeIcmpResponseTimeWarn     AssertionTestResultDtoAssertionType = "icmp_response_time_warn"
-	AssertionTestResultDtoAssertionTypeJsonPath                 AssertionTestResultDtoAssertionType = "json_path"
-	AssertionTestResultDtoAssertionTypeMcpConnects              AssertionTestResultDtoAssertionType = "mcp_connects"
-	AssertionTestResultDtoAssertionTypeMcpHasCapability         AssertionTestResultDtoAssertionType = "mcp_has_capability"
-	AssertionTestResultDtoAssertionTypeMcpMinTools              AssertionTestResultDtoAssertionType = "mcp_min_tools"
-	AssertionTestResultDtoAssertionTypeMcpProtocolVersion       AssertionTestResultDtoAssertionType = "mcp_protocol_version"
-	AssertionTestResultDtoAssertionTypeMcpResponseTime          AssertionTestResultDtoAssertionType = "mcp_response_time"
-	AssertionTestResultDtoAssertionTypeMcpResponseTimeWarn      AssertionTestResultDtoAssertionType = "mcp_response_time_warn"
-	AssertionTestResultDtoAssertionTypeMcpToolAvailable         AssertionTestResultDtoAssertionType = "mcp_tool_available"
-	AssertionTestResultDtoAssertionTypeMcpToolCountChanged      AssertionTestResultDtoAssertionType = "mcp_tool_count_changed"
-	AssertionTestResultDtoAssertionTypeRedirectCount            AssertionTestResultDtoAssertionType = "redirect_count"
-	AssertionTestResultDtoAssertionTypeRedirectTarget           AssertionTestResultDtoAssertionType = "redirect_target"
-	AssertionTestResultDtoAssertionTypeRegexBody                AssertionTestResultDtoAssertionType = "regex_body"
-	AssertionTestResultDtoAssertionTypeResponseSize             AssertionTestResultDtoAssertionType = "response_size"
-	AssertionTestResultDtoAssertionTypeResponseTime             AssertionTestResultDtoAssertionType = "response_time"
-	AssertionTestResultDtoAssertionTypeResponseTimeWarn         AssertionTestResultDtoAssertionType = "response_time_warn"
-	AssertionTestResultDtoAssertionTypeSslExpiry                AssertionTestResultDtoAssertionType = "ssl_expiry"
-	AssertionTestResultDtoAssertionTypeStatusCode               AssertionTestResultDtoAssertionType = "status_code"
-	AssertionTestResultDtoAssertionTypeTcpConnects              AssertionTestResultDtoAssertionType = "tcp_connects"
-	AssertionTestResultDtoAssertionTypeTcpResponseTime          AssertionTestResultDtoAssertionType = "tcp_response_time"
-	AssertionTestResultDtoAssertionTypeTcpResponseTimeWarn      AssertionTestResultDtoAssertionType = "tcp_response_time_warn"
-)
-
-// Valid indicates whether the value is a known member of the AssertionTestResultDtoAssertionType enum.
-func (e AssertionTestResultDtoAssertionType) Valid() bool {
-	switch e {
-	case AssertionTestResultDtoAssertionTypeBodyContains:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsExpectedCname:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsExpectedIps:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsMaxAnswers:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsMinAnswers:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsRecordContains:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsRecordEquals:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsResolves:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsResponseTime:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsResponseTimeWarn:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsTtlHigh:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsTtlLow:
-		return true
-	case AssertionTestResultDtoAssertionTypeDnsTxtContains:
-		return true
-	case AssertionTestResultDtoAssertionTypeHeaderValue:
-		return true
-	case AssertionTestResultDtoAssertionTypeHeartbeatIntervalDrift:
-		return true
-	case AssertionTestResultDtoAssertionTypeHeartbeatMaxInterval:
-		return true
-	case AssertionTestResultDtoAssertionTypeHeartbeatPayloadContains:
-		return true
-	case AssertionTestResultDtoAssertionTypeHeartbeatReceived:
-		return true
-	case AssertionTestResultDtoAssertionTypeIcmpPacketLoss:
-		return true
-	case AssertionTestResultDtoAssertionTypeIcmpReachable:
-		return true
-	case AssertionTestResultDtoAssertionTypeIcmpResponseTime:
-		return true
-	case AssertionTestResultDtoAssertionTypeIcmpResponseTimeWarn:
-		return true
-	case AssertionTestResultDtoAssertionTypeJsonPath:
-		return true
-	case AssertionTestResultDtoAssertionTypeMcpConnects:
-		return true
-	case AssertionTestResultDtoAssertionTypeMcpHasCapability:
-		return true
-	case AssertionTestResultDtoAssertionTypeMcpMinTools:
-		return true
-	case AssertionTestResultDtoAssertionTypeMcpProtocolVersion:
-		return true
-	case AssertionTestResultDtoAssertionTypeMcpResponseTime:
-		return true
-	case AssertionTestResultDtoAssertionTypeMcpResponseTimeWarn:
-		return true
-	case AssertionTestResultDtoAssertionTypeMcpToolAvailable:
-		return true
-	case AssertionTestResultDtoAssertionTypeMcpToolCountChanged:
-		return true
-	case AssertionTestResultDtoAssertionTypeRedirectCount:
-		return true
-	case AssertionTestResultDtoAssertionTypeRedirectTarget:
-		return true
-	case AssertionTestResultDtoAssertionTypeRegexBody:
-		return true
-	case AssertionTestResultDtoAssertionTypeResponseSize:
-		return true
-	case AssertionTestResultDtoAssertionTypeResponseTime:
-		return true
-	case AssertionTestResultDtoAssertionTypeResponseTimeWarn:
-		return true
-	case AssertionTestResultDtoAssertionTypeSslExpiry:
-		return true
-	case AssertionTestResultDtoAssertionTypeStatusCode:
-		return true
-	case AssertionTestResultDtoAssertionTypeTcpConnects:
-		return true
-	case AssertionTestResultDtoAssertionTypeTcpResponseTime:
-		return true
-	case AssertionTestResultDtoAssertionTypeTcpResponseTimeWarn:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for AssertionTestResultDtoSeverity.
-const (
-	AssertionTestResultDtoSeverityFail AssertionTestResultDtoSeverity = "fail"
-	AssertionTestResultDtoSeverityWarn AssertionTestResultDtoSeverity = "warn"
-)
-
-// Valid indicates whether the value is a known member of the AssertionTestResultDtoSeverity enum.
-func (e AssertionTestResultDtoSeverity) Valid() bool {
-	switch e {
-	case AssertionTestResultDtoSeverityFail:
-		return true
-	case AssertionTestResultDtoSeverityWarn:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for BasicAuthConfigType.
 const (
-	Basic BasicAuthConfigType = "basic"
+	BasicAuthConfigTypeBasic BasicAuthConfigType = "basic"
 )
 
 // Valid indicates whether the value is a known member of the BasicAuthConfigType enum.
 func (e BasicAuthConfigType) Valid() bool {
 	switch e {
-	case Basic:
+	case BasicAuthConfigTypeBasic:
 		return true
 	default:
 		return false
@@ -381,13 +99,13 @@ func (e BasicAuthConfigType) Valid() bool {
 
 // Defines values for BearerAuthConfigType.
 const (
-	Bearer BearerAuthConfigType = "bearer"
+	BearerAuthConfigTypeBearer BearerAuthConfigType = "bearer"
 )
 
 // Valid indicates whether the value is a known member of the BearerAuthConfigType enum.
 func (e BearerAuthConfigType) Valid() bool {
 	switch e {
-	case Bearer:
+	case BearerAuthConfigTypeBearer:
 		return true
 	default:
 		return false
@@ -489,13 +207,13 @@ func (e ChangeStatusRequestStatus) Valid() bool {
 
 // Defines values for ConfirmationPolicyType.
 const (
-	MultiRegion ConfirmationPolicyType = "multi_region"
+	ConfirmationPolicyTypeMultiRegion ConfirmationPolicyType = "multi_region"
 )
 
 // Valid indicates whether the value is a known member of the ConfirmationPolicyType enum.
 func (e ConfirmationPolicyType) Valid() bool {
 	switch e {
-	case MultiRegion:
+	case ConfirmationPolicyTypeMultiRegion:
 		return true
 	default:
 		return false
@@ -993,13 +711,13 @@ func (e DnsExpectedCnameAssertionType) Valid() bool {
 
 // Defines values for DnsExpectedIpsAssertionType.
 const (
-	DnsExpectedIps DnsExpectedIpsAssertionType = "dns_expected_ips"
+	DnsExpectedIpsAssertionTypeDnsExpectedIps DnsExpectedIpsAssertionType = "dns_expected_ips"
 )
 
 // Valid indicates whether the value is a known member of the DnsExpectedIpsAssertionType enum.
 func (e DnsExpectedIpsAssertionType) Valid() bool {
 	switch e {
-	case DnsExpectedIps:
+	case DnsExpectedIpsAssertionTypeDnsExpectedIps:
 		return true
 	default:
 		return false
@@ -1008,13 +726,13 @@ func (e DnsExpectedIpsAssertionType) Valid() bool {
 
 // Defines values for DnsMaxAnswersAssertionType.
 const (
-	DnsMaxAnswers DnsMaxAnswersAssertionType = "dns_max_answers"
+	DnsMaxAnswersAssertionTypeDnsMaxAnswers DnsMaxAnswersAssertionType = "dns_max_answers"
 )
 
 // Valid indicates whether the value is a known member of the DnsMaxAnswersAssertionType enum.
 func (e DnsMaxAnswersAssertionType) Valid() bool {
 	switch e {
-	case DnsMaxAnswers:
+	case DnsMaxAnswersAssertionTypeDnsMaxAnswers:
 		return true
 	default:
 		return false
@@ -1023,13 +741,13 @@ func (e DnsMaxAnswersAssertionType) Valid() bool {
 
 // Defines values for DnsMinAnswersAssertionType.
 const (
-	DnsMinAnswers DnsMinAnswersAssertionType = "dns_min_answers"
+	DnsMinAnswersAssertionTypeDnsMinAnswers DnsMinAnswersAssertionType = "dns_min_answers"
 )
 
 // Valid indicates whether the value is a known member of the DnsMinAnswersAssertionType enum.
 func (e DnsMinAnswersAssertionType) Valid() bool {
 	switch e {
-	case DnsMinAnswers:
+	case DnsMinAnswersAssertionTypeDnsMinAnswers:
 		return true
 	default:
 		return false
@@ -1080,13 +798,13 @@ func (e DnsMonitorConfigRecordTypes) Valid() bool {
 
 // Defines values for DnsRecordContainsAssertionType.
 const (
-	DnsRecordContains DnsRecordContainsAssertionType = "dns_record_contains"
+	DnsRecordContainsAssertionTypeDnsRecordContains DnsRecordContainsAssertionType = "dns_record_contains"
 )
 
 // Valid indicates whether the value is a known member of the DnsRecordContainsAssertionType enum.
 func (e DnsRecordContainsAssertionType) Valid() bool {
 	switch e {
-	case DnsRecordContains:
+	case DnsRecordContainsAssertionTypeDnsRecordContains:
 		return true
 	default:
 		return false
@@ -1095,13 +813,13 @@ func (e DnsRecordContainsAssertionType) Valid() bool {
 
 // Defines values for DnsRecordEqualsAssertionType.
 const (
-	DnsRecordEquals DnsRecordEqualsAssertionType = "dns_record_equals"
+	DnsRecordEqualsAssertionTypeDnsRecordEquals DnsRecordEqualsAssertionType = "dns_record_equals"
 )
 
 // Valid indicates whether the value is a known member of the DnsRecordEqualsAssertionType enum.
 func (e DnsRecordEqualsAssertionType) Valid() bool {
 	switch e {
-	case DnsRecordEquals:
+	case DnsRecordEqualsAssertionTypeDnsRecordEquals:
 		return true
 	default:
 		return false
@@ -1110,13 +828,13 @@ func (e DnsRecordEqualsAssertionType) Valid() bool {
 
 // Defines values for DnsResolvesAssertionType.
 const (
-	DnsResolves DnsResolvesAssertionType = "dns_resolves"
+	DnsResolvesAssertionTypeDnsResolves DnsResolvesAssertionType = "dns_resolves"
 )
 
 // Valid indicates whether the value is a known member of the DnsResolvesAssertionType enum.
 func (e DnsResolvesAssertionType) Valid() bool {
 	switch e {
-	case DnsResolves:
+	case DnsResolvesAssertionTypeDnsResolves:
 		return true
 	default:
 		return false
@@ -1125,13 +843,13 @@ func (e DnsResolvesAssertionType) Valid() bool {
 
 // Defines values for DnsResponseTimeAssertionType.
 const (
-	DnsResponseTime DnsResponseTimeAssertionType = "dns_response_time"
+	DnsResponseTimeAssertionTypeDnsResponseTime DnsResponseTimeAssertionType = "dns_response_time"
 )
 
 // Valid indicates whether the value is a known member of the DnsResponseTimeAssertionType enum.
 func (e DnsResponseTimeAssertionType) Valid() bool {
 	switch e {
-	case DnsResponseTime:
+	case DnsResponseTimeAssertionTypeDnsResponseTime:
 		return true
 	default:
 		return false
@@ -1140,13 +858,13 @@ func (e DnsResponseTimeAssertionType) Valid() bool {
 
 // Defines values for DnsResponseTimeWarnAssertionType.
 const (
-	DnsResponseTimeWarn DnsResponseTimeWarnAssertionType = "dns_response_time_warn"
+	DnsResponseTimeWarnAssertionTypeDnsResponseTimeWarn DnsResponseTimeWarnAssertionType = "dns_response_time_warn"
 )
 
 // Valid indicates whether the value is a known member of the DnsResponseTimeWarnAssertionType enum.
 func (e DnsResponseTimeWarnAssertionType) Valid() bool {
 	switch e {
-	case DnsResponseTimeWarn:
+	case DnsResponseTimeWarnAssertionTypeDnsResponseTimeWarn:
 		return true
 	default:
 		return false
@@ -1155,13 +873,13 @@ func (e DnsResponseTimeWarnAssertionType) Valid() bool {
 
 // Defines values for DnsTtlHighAssertionType.
 const (
-	DnsTtlHigh DnsTtlHighAssertionType = "dns_ttl_high"
+	DnsTtlHighAssertionTypeDnsTtlHigh DnsTtlHighAssertionType = "dns_ttl_high"
 )
 
 // Valid indicates whether the value is a known member of the DnsTtlHighAssertionType enum.
 func (e DnsTtlHighAssertionType) Valid() bool {
 	switch e {
-	case DnsTtlHigh:
+	case DnsTtlHighAssertionTypeDnsTtlHigh:
 		return true
 	default:
 		return false
@@ -1170,13 +888,13 @@ func (e DnsTtlHighAssertionType) Valid() bool {
 
 // Defines values for DnsTtlLowAssertionType.
 const (
-	DnsTtlLow DnsTtlLowAssertionType = "dns_ttl_low"
+	DnsTtlLowAssertionTypeDnsTtlLow DnsTtlLowAssertionType = "dns_ttl_low"
 )
 
 // Valid indicates whether the value is a known member of the DnsTtlLowAssertionType enum.
 func (e DnsTtlLowAssertionType) Valid() bool {
 	switch e {
-	case DnsTtlLow:
+	case DnsTtlLowAssertionTypeDnsTtlLow:
 		return true
 	default:
 		return false
@@ -1185,13 +903,13 @@ func (e DnsTtlLowAssertionType) Valid() bool {
 
 // Defines values for DnsTxtContainsAssertionType.
 const (
-	DnsTxtContains DnsTxtContainsAssertionType = "dns_txt_contains"
+	DnsTxtContainsAssertionTypeDnsTxtContains DnsTxtContainsAssertionType = "dns_txt_contains"
 )
 
 // Valid indicates whether the value is a known member of the DnsTxtContainsAssertionType enum.
 func (e DnsTxtContainsAssertionType) Valid() bool {
 	switch e {
-	case DnsTxtContains:
+	case DnsTxtContainsAssertionTypeDnsTxtContains:
 		return true
 	default:
 		return false
@@ -1215,13 +933,13 @@ func (e EmailChannelConfigChannelType) Valid() bool {
 
 // Defines values for HeaderAuthConfigType.
 const (
-	Header HeaderAuthConfigType = "header"
+	HeaderAuthConfigTypeHeader HeaderAuthConfigType = "header"
 )
 
 // Valid indicates whether the value is a known member of the HeaderAuthConfigType enum.
 func (e HeaderAuthConfigType) Valid() bool {
 	switch e {
-	case Header:
+	case HeaderAuthConfigTypeHeader:
 		return true
 	default:
 		return false
@@ -1260,13 +978,13 @@ func (e HeaderValueAssertionOperator) Valid() bool {
 
 // Defines values for HeaderValueAssertionType.
 const (
-	HeaderValue HeaderValueAssertionType = "header_value"
+	HeaderValueAssertionTypeHeaderValue HeaderValueAssertionType = "header_value"
 )
 
 // Valid indicates whether the value is a known member of the HeaderValueAssertionType enum.
 func (e HeaderValueAssertionType) Valid() bool {
 	switch e {
-	case HeaderValue:
+	case HeaderValueAssertionTypeHeaderValue:
 		return true
 	default:
 		return false
@@ -1275,13 +993,13 @@ func (e HeaderValueAssertionType) Valid() bool {
 
 // Defines values for HeartbeatIntervalDriftAssertionType.
 const (
-	HeartbeatIntervalDrift HeartbeatIntervalDriftAssertionType = "heartbeat_interval_drift"
+	HeartbeatIntervalDriftAssertionTypeHeartbeatIntervalDrift HeartbeatIntervalDriftAssertionType = "heartbeat_interval_drift"
 )
 
 // Valid indicates whether the value is a known member of the HeartbeatIntervalDriftAssertionType enum.
 func (e HeartbeatIntervalDriftAssertionType) Valid() bool {
 	switch e {
-	case HeartbeatIntervalDrift:
+	case HeartbeatIntervalDriftAssertionTypeHeartbeatIntervalDrift:
 		return true
 	default:
 		return false
@@ -1290,13 +1008,13 @@ func (e HeartbeatIntervalDriftAssertionType) Valid() bool {
 
 // Defines values for HeartbeatMaxIntervalAssertionType.
 const (
-	HeartbeatMaxInterval HeartbeatMaxIntervalAssertionType = "heartbeat_max_interval"
+	HeartbeatMaxIntervalAssertionTypeHeartbeatMaxInterval HeartbeatMaxIntervalAssertionType = "heartbeat_max_interval"
 )
 
 // Valid indicates whether the value is a known member of the HeartbeatMaxIntervalAssertionType enum.
 func (e HeartbeatMaxIntervalAssertionType) Valid() bool {
 	switch e {
-	case HeartbeatMaxInterval:
+	case HeartbeatMaxIntervalAssertionTypeHeartbeatMaxInterval:
 		return true
 	default:
 		return false
@@ -1305,13 +1023,13 @@ func (e HeartbeatMaxIntervalAssertionType) Valid() bool {
 
 // Defines values for HeartbeatPayloadContainsAssertionType.
 const (
-	HeartbeatPayloadContains HeartbeatPayloadContainsAssertionType = "heartbeat_payload_contains"
+	HeartbeatPayloadContainsAssertionTypeHeartbeatPayloadContains HeartbeatPayloadContainsAssertionType = "heartbeat_payload_contains"
 )
 
 // Valid indicates whether the value is a known member of the HeartbeatPayloadContainsAssertionType enum.
 func (e HeartbeatPayloadContainsAssertionType) Valid() bool {
 	switch e {
-	case HeartbeatPayloadContains:
+	case HeartbeatPayloadContainsAssertionTypeHeartbeatPayloadContains:
 		return true
 	default:
 		return false
@@ -1320,13 +1038,13 @@ func (e HeartbeatPayloadContainsAssertionType) Valid() bool {
 
 // Defines values for HeartbeatReceivedAssertionType.
 const (
-	HeartbeatReceived HeartbeatReceivedAssertionType = "heartbeat_received"
+	HeartbeatReceivedAssertionTypeHeartbeatReceived HeartbeatReceivedAssertionType = "heartbeat_received"
 )
 
 // Valid indicates whether the value is a known member of the HeartbeatReceivedAssertionType enum.
 func (e HeartbeatReceivedAssertionType) Valid() bool {
 	switch e {
-	case HeartbeatReceived:
+	case HeartbeatReceivedAssertionTypeHeartbeatReceived:
 		return true
 	default:
 		return false
@@ -1395,13 +1113,13 @@ func (e IcmpCheckType) Valid() bool {
 
 // Defines values for IcmpPacketLossAssertionType.
 const (
-	IcmpPacketLoss IcmpPacketLossAssertionType = "icmp_packet_loss"
+	IcmpPacketLossAssertionTypeIcmpPacketLoss IcmpPacketLossAssertionType = "icmp_packet_loss"
 )
 
 // Valid indicates whether the value is a known member of the IcmpPacketLossAssertionType enum.
 func (e IcmpPacketLossAssertionType) Valid() bool {
 	switch e {
-	case IcmpPacketLoss:
+	case IcmpPacketLossAssertionTypeIcmpPacketLoss:
 		return true
 	default:
 		return false
@@ -1410,13 +1128,13 @@ func (e IcmpPacketLossAssertionType) Valid() bool {
 
 // Defines values for IcmpReachableAssertionType.
 const (
-	IcmpReachable IcmpReachableAssertionType = "icmp_reachable"
+	IcmpReachableAssertionTypeIcmpReachable IcmpReachableAssertionType = "icmp_reachable"
 )
 
 // Valid indicates whether the value is a known member of the IcmpReachableAssertionType enum.
 func (e IcmpReachableAssertionType) Valid() bool {
 	switch e {
-	case IcmpReachable:
+	case IcmpReachableAssertionTypeIcmpReachable:
 		return true
 	default:
 		return false
@@ -1425,13 +1143,13 @@ func (e IcmpReachableAssertionType) Valid() bool {
 
 // Defines values for IcmpResponseTimeAssertionType.
 const (
-	IcmpResponseTime IcmpResponseTimeAssertionType = "icmp_response_time"
+	IcmpResponseTimeAssertionTypeIcmpResponseTime IcmpResponseTimeAssertionType = "icmp_response_time"
 )
 
 // Valid indicates whether the value is a known member of the IcmpResponseTimeAssertionType enum.
 func (e IcmpResponseTimeAssertionType) Valid() bool {
 	switch e {
-	case IcmpResponseTime:
+	case IcmpResponseTimeAssertionTypeIcmpResponseTime:
 		return true
 	default:
 		return false
@@ -1440,106 +1158,13 @@ func (e IcmpResponseTimeAssertionType) Valid() bool {
 
 // Defines values for IcmpResponseTimeWarnAssertionType.
 const (
-	IcmpResponseTimeWarn IcmpResponseTimeWarnAssertionType = "icmp_response_time_warn"
+	IcmpResponseTimeWarnAssertionTypeIcmpResponseTimeWarn IcmpResponseTimeWarnAssertionType = "icmp_response_time_warn"
 )
 
 // Valid indicates whether the value is a known member of the IcmpResponseTimeWarnAssertionType enum.
 func (e IcmpResponseTimeWarnAssertionType) Valid() bool {
 	switch e {
-	case IcmpResponseTimeWarn:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentDtoResolutionReason.
-const (
-	IncidentDtoResolutionReasonAUTORECOVERED IncidentDtoResolutionReason = "AUTO_RECOVERED"
-	IncidentDtoResolutionReasonAUTORESOLVED  IncidentDtoResolutionReason = "AUTO_RESOLVED"
-	IncidentDtoResolutionReasonMANUAL        IncidentDtoResolutionReason = "MANUAL"
-)
-
-// Valid indicates whether the value is a known member of the IncidentDtoResolutionReason enum.
-func (e IncidentDtoResolutionReason) Valid() bool {
-	switch e {
-	case IncidentDtoResolutionReasonAUTORECOVERED:
-		return true
-	case IncidentDtoResolutionReasonAUTORESOLVED:
-		return true
-	case IncidentDtoResolutionReasonMANUAL:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentDtoSeverity.
-const (
-	IncidentDtoSeverityDEGRADED    IncidentDtoSeverity = "DEGRADED"
-	IncidentDtoSeverityDOWN        IncidentDtoSeverity = "DOWN"
-	IncidentDtoSeverityMAINTENANCE IncidentDtoSeverity = "MAINTENANCE"
-)
-
-// Valid indicates whether the value is a known member of the IncidentDtoSeverity enum.
-func (e IncidentDtoSeverity) Valid() bool {
-	switch e {
-	case IncidentDtoSeverityDEGRADED:
-		return true
-	case IncidentDtoSeverityDOWN:
-		return true
-	case IncidentDtoSeverityMAINTENANCE:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentDtoSource.
-const (
-	IncidentDtoSourceAUTOMATIC     IncidentDtoSource = "AUTOMATIC"
-	IncidentDtoSourceMANUAL        IncidentDtoSource = "MANUAL"
-	IncidentDtoSourceMONITORS      IncidentDtoSource = "MONITORS"
-	IncidentDtoSourceRESOURCEGROUP IncidentDtoSource = "RESOURCE_GROUP"
-	IncidentDtoSourceSTATUSDATA    IncidentDtoSource = "STATUS_DATA"
-)
-
-// Valid indicates whether the value is a known member of the IncidentDtoSource enum.
-func (e IncidentDtoSource) Valid() bool {
-	switch e {
-	case IncidentDtoSourceAUTOMATIC:
-		return true
-	case IncidentDtoSourceMANUAL:
-		return true
-	case IncidentDtoSourceMONITORS:
-		return true
-	case IncidentDtoSourceRESOURCEGROUP:
-		return true
-	case IncidentDtoSourceSTATUSDATA:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentDtoStatus.
-const (
-	IncidentDtoStatusCONFIRMED IncidentDtoStatus = "CONFIRMED"
-	IncidentDtoStatusRESOLVED  IncidentDtoStatus = "RESOLVED"
-	IncidentDtoStatusTRIGGERED IncidentDtoStatus = "TRIGGERED"
-	IncidentDtoStatusWATCHING  IncidentDtoStatus = "WATCHING"
-)
-
-// Valid indicates whether the value is a known member of the IncidentDtoStatus enum.
-func (e IncidentDtoStatus) Valid() bool {
-	switch e {
-	case IncidentDtoStatusCONFIRMED:
-		return true
-	case IncidentDtoStatusRESOLVED:
-		return true
-	case IncidentDtoStatusTRIGGERED:
-		return true
-	case IncidentDtoStatusWATCHING:
+	case IcmpResponseTimeWarnAssertionTypeIcmpResponseTimeWarn:
 		return true
 	default:
 		return false
@@ -1548,19 +1173,19 @@ func (e IncidentDtoStatus) Valid() bool {
 
 // Defines values for IncidentFilterParamsSeverity.
 const (
-	DEGRADED    IncidentFilterParamsSeverity = "DEGRADED"
-	DOWN        IncidentFilterParamsSeverity = "DOWN"
-	MAINTENANCE IncidentFilterParamsSeverity = "MAINTENANCE"
+	IncidentFilterParamsSeverityDEGRADED    IncidentFilterParamsSeverity = "DEGRADED"
+	IncidentFilterParamsSeverityDOWN        IncidentFilterParamsSeverity = "DOWN"
+	IncidentFilterParamsSeverityMAINTENANCE IncidentFilterParamsSeverity = "MAINTENANCE"
 )
 
 // Valid indicates whether the value is a known member of the IncidentFilterParamsSeverity enum.
 func (e IncidentFilterParamsSeverity) Valid() bool {
 	switch e {
-	case DEGRADED:
+	case IncidentFilterParamsSeverityDEGRADED:
 		return true
-	case DOWN:
+	case IncidentFilterParamsSeverityDOWN:
 		return true
-	case MAINTENANCE:
+	case IncidentFilterParamsSeverityMAINTENANCE:
 		return true
 	default:
 		return false
@@ -1618,123 +1243,6 @@ func (e IncidentFilterParamsStatus) Valid() bool {
 	}
 }
 
-// Defines values for IncidentUpdateDtoCreatedBy.
-const (
-	IncidentUpdateDtoCreatedBySYSTEM IncidentUpdateDtoCreatedBy = "SYSTEM"
-	IncidentUpdateDtoCreatedByUSER   IncidentUpdateDtoCreatedBy = "USER"
-)
-
-// Valid indicates whether the value is a known member of the IncidentUpdateDtoCreatedBy enum.
-func (e IncidentUpdateDtoCreatedBy) Valid() bool {
-	switch e {
-	case IncidentUpdateDtoCreatedBySYSTEM:
-		return true
-	case IncidentUpdateDtoCreatedByUSER:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentUpdateDtoNewStatus.
-const (
-	IncidentUpdateDtoNewStatusCONFIRMED IncidentUpdateDtoNewStatus = "CONFIRMED"
-	IncidentUpdateDtoNewStatusRESOLVED  IncidentUpdateDtoNewStatus = "RESOLVED"
-	IncidentUpdateDtoNewStatusTRIGGERED IncidentUpdateDtoNewStatus = "TRIGGERED"
-	IncidentUpdateDtoNewStatusWATCHING  IncidentUpdateDtoNewStatus = "WATCHING"
-)
-
-// Valid indicates whether the value is a known member of the IncidentUpdateDtoNewStatus enum.
-func (e IncidentUpdateDtoNewStatus) Valid() bool {
-	switch e {
-	case IncidentUpdateDtoNewStatusCONFIRMED:
-		return true
-	case IncidentUpdateDtoNewStatusRESOLVED:
-		return true
-	case IncidentUpdateDtoNewStatusTRIGGERED:
-		return true
-	case IncidentUpdateDtoNewStatusWATCHING:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentUpdateDtoOldStatus.
-const (
-	IncidentUpdateDtoOldStatusCONFIRMED IncidentUpdateDtoOldStatus = "CONFIRMED"
-	IncidentUpdateDtoOldStatusRESOLVED  IncidentUpdateDtoOldStatus = "RESOLVED"
-	IncidentUpdateDtoOldStatusTRIGGERED IncidentUpdateDtoOldStatus = "TRIGGERED"
-	IncidentUpdateDtoOldStatusWATCHING  IncidentUpdateDtoOldStatus = "WATCHING"
-)
-
-// Valid indicates whether the value is a known member of the IncidentUpdateDtoOldStatus enum.
-func (e IncidentUpdateDtoOldStatus) Valid() bool {
-	switch e {
-	case IncidentUpdateDtoOldStatusCONFIRMED:
-		return true
-	case IncidentUpdateDtoOldStatusRESOLVED:
-		return true
-	case IncidentUpdateDtoOldStatusTRIGGERED:
-		return true
-	case IncidentUpdateDtoOldStatusWATCHING:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IntegrationDtoTierAvailability.
-const (
-	IntegrationDtoTierAvailabilityBUSINESS   IntegrationDtoTierAvailability = "BUSINESS"
-	IntegrationDtoTierAvailabilityENTERPRISE IntegrationDtoTierAvailability = "ENTERPRISE"
-	IntegrationDtoTierAvailabilityFREE       IntegrationDtoTierAvailability = "FREE"
-	IntegrationDtoTierAvailabilityPRO        IntegrationDtoTierAvailability = "PRO"
-	IntegrationDtoTierAvailabilitySTARTER    IntegrationDtoTierAvailability = "STARTER"
-	IntegrationDtoTierAvailabilityTEAM       IntegrationDtoTierAvailability = "TEAM"
-)
-
-// Valid indicates whether the value is a known member of the IntegrationDtoTierAvailability enum.
-func (e IntegrationDtoTierAvailability) Valid() bool {
-	switch e {
-	case IntegrationDtoTierAvailabilityBUSINESS:
-		return true
-	case IntegrationDtoTierAvailabilityENTERPRISE:
-		return true
-	case IntegrationDtoTierAvailabilityFREE:
-		return true
-	case IntegrationDtoTierAvailabilityPRO:
-		return true
-	case IntegrationDtoTierAvailabilitySTARTER:
-		return true
-	case IntegrationDtoTierAvailabilityTEAM:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for InviteDtoRoleOffered.
-const (
-	InviteDtoRoleOfferedADMIN  InviteDtoRoleOffered = "ADMIN"
-	InviteDtoRoleOfferedMEMBER InviteDtoRoleOffered = "MEMBER"
-	InviteDtoRoleOfferedOWNER  InviteDtoRoleOffered = "OWNER"
-)
-
-// Valid indicates whether the value is a known member of the InviteDtoRoleOffered enum.
-func (e InviteDtoRoleOffered) Valid() bool {
-	switch e {
-	case InviteDtoRoleOfferedADMIN:
-		return true
-	case InviteDtoRoleOfferedMEMBER:
-		return true
-	case InviteDtoRoleOfferedOWNER:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for JsonPathAssertionOperator.
 const (
 	JsonPathAssertionOperatorContains    JsonPathAssertionOperator = "contains"
@@ -1767,61 +1275,13 @@ func (e JsonPathAssertionOperator) Valid() bool {
 
 // Defines values for JsonPathAssertionType.
 const (
-	JsonPath JsonPathAssertionType = "json_path"
+	JsonPathAssertionTypeJsonPath JsonPathAssertionType = "json_path"
 )
 
 // Valid indicates whether the value is a known member of the JsonPathAssertionType enum.
 func (e JsonPathAssertionType) Valid() bool {
 	switch e {
-	case JsonPath:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for LinkedStatusPageIncidentDtoImpact.
-const (
-	LinkedStatusPageIncidentDtoImpactCRITICAL LinkedStatusPageIncidentDtoImpact = "CRITICAL"
-	LinkedStatusPageIncidentDtoImpactMAJOR    LinkedStatusPageIncidentDtoImpact = "MAJOR"
-	LinkedStatusPageIncidentDtoImpactMINOR    LinkedStatusPageIncidentDtoImpact = "MINOR"
-	LinkedStatusPageIncidentDtoImpactNONE     LinkedStatusPageIncidentDtoImpact = "NONE"
-)
-
-// Valid indicates whether the value is a known member of the LinkedStatusPageIncidentDtoImpact enum.
-func (e LinkedStatusPageIncidentDtoImpact) Valid() bool {
-	switch e {
-	case LinkedStatusPageIncidentDtoImpactCRITICAL:
-		return true
-	case LinkedStatusPageIncidentDtoImpactMAJOR:
-		return true
-	case LinkedStatusPageIncidentDtoImpactMINOR:
-		return true
-	case LinkedStatusPageIncidentDtoImpactNONE:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for LinkedStatusPageIncidentDtoStatus.
-const (
-	LinkedStatusPageIncidentDtoStatusIDENTIFIED    LinkedStatusPageIncidentDtoStatus = "IDENTIFIED"
-	LinkedStatusPageIncidentDtoStatusINVESTIGATING LinkedStatusPageIncidentDtoStatus = "INVESTIGATING"
-	LinkedStatusPageIncidentDtoStatusMONITORING    LinkedStatusPageIncidentDtoStatus = "MONITORING"
-	LinkedStatusPageIncidentDtoStatusRESOLVED      LinkedStatusPageIncidentDtoStatus = "RESOLVED"
-)
-
-// Valid indicates whether the value is a known member of the LinkedStatusPageIncidentDtoStatus enum.
-func (e LinkedStatusPageIncidentDtoStatus) Valid() bool {
-	switch e {
-	case LinkedStatusPageIncidentDtoStatusIDENTIFIED:
-		return true
-	case LinkedStatusPageIncidentDtoStatusINVESTIGATING:
-		return true
-	case LinkedStatusPageIncidentDtoStatusMONITORING:
-		return true
-	case LinkedStatusPageIncidentDtoStatusRESOLVED:
+	case JsonPathAssertionTypeJsonPath:
 		return true
 	default:
 		return false
@@ -1830,37 +1290,37 @@ func (e LinkedStatusPageIncidentDtoStatus) Valid() bool {
 
 // Defines values for MatchRuleType.
 const (
-	ComponentNameIn   MatchRuleType = "component_name_in"
-	IncidentStatus    MatchRuleType = "incident_status"
-	MonitorIdIn       MatchRuleType = "monitor_id_in"
-	MonitorTagIn      MatchRuleType = "monitor_tag_in"
-	MonitorTypeIn     MatchRuleType = "monitor_type_in"
-	RegionIn          MatchRuleType = "region_in"
-	ResourceGroupIdIn MatchRuleType = "resource_group_id_in"
-	ServiceIdIn       MatchRuleType = "service_id_in"
-	SeverityGte       MatchRuleType = "severity_gte"
+	MatchRuleTypeComponentNameIn   MatchRuleType = "component_name_in"
+	MatchRuleTypeIncidentStatus    MatchRuleType = "incident_status"
+	MatchRuleTypeMonitorIdIn       MatchRuleType = "monitor_id_in"
+	MatchRuleTypeMonitorTagIn      MatchRuleType = "monitor_tag_in"
+	MatchRuleTypeMonitorTypeIn     MatchRuleType = "monitor_type_in"
+	MatchRuleTypeRegionIn          MatchRuleType = "region_in"
+	MatchRuleTypeResourceGroupIdIn MatchRuleType = "resource_group_id_in"
+	MatchRuleTypeServiceIdIn       MatchRuleType = "service_id_in"
+	MatchRuleTypeSeverityGte       MatchRuleType = "severity_gte"
 )
 
 // Valid indicates whether the value is a known member of the MatchRuleType enum.
 func (e MatchRuleType) Valid() bool {
 	switch e {
-	case ComponentNameIn:
+	case MatchRuleTypeComponentNameIn:
 		return true
-	case IncidentStatus:
+	case MatchRuleTypeIncidentStatus:
 		return true
-	case MonitorIdIn:
+	case MatchRuleTypeMonitorIdIn:
 		return true
-	case MonitorTagIn:
+	case MatchRuleTypeMonitorTagIn:
 		return true
-	case MonitorTypeIn:
+	case MatchRuleTypeMonitorTypeIn:
 		return true
-	case RegionIn:
+	case MatchRuleTypeRegionIn:
 		return true
-	case ResourceGroupIdIn:
+	case MatchRuleTypeResourceGroupIdIn:
 		return true
-	case ServiceIdIn:
+	case MatchRuleTypeServiceIdIn:
 		return true
-	case SeverityGte:
+	case MatchRuleTypeSeverityGte:
 		return true
 	default:
 		return false
@@ -1869,13 +1329,13 @@ func (e MatchRuleType) Valid() bool {
 
 // Defines values for McpConnectsAssertionType.
 const (
-	McpConnects McpConnectsAssertionType = "mcp_connects"
+	McpConnectsAssertionTypeMcpConnects McpConnectsAssertionType = "mcp_connects"
 )
 
 // Valid indicates whether the value is a known member of the McpConnectsAssertionType enum.
 func (e McpConnectsAssertionType) Valid() bool {
 	switch e {
-	case McpConnects:
+	case McpConnectsAssertionTypeMcpConnects:
 		return true
 	default:
 		return false
@@ -1884,13 +1344,13 @@ func (e McpConnectsAssertionType) Valid() bool {
 
 // Defines values for McpHasCapabilityAssertionType.
 const (
-	McpHasCapability McpHasCapabilityAssertionType = "mcp_has_capability"
+	McpHasCapabilityAssertionTypeMcpHasCapability McpHasCapabilityAssertionType = "mcp_has_capability"
 )
 
 // Valid indicates whether the value is a known member of the McpHasCapabilityAssertionType enum.
 func (e McpHasCapabilityAssertionType) Valid() bool {
 	switch e {
-	case McpHasCapability:
+	case McpHasCapabilityAssertionTypeMcpHasCapability:
 		return true
 	default:
 		return false
@@ -1899,13 +1359,13 @@ func (e McpHasCapabilityAssertionType) Valid() bool {
 
 // Defines values for McpMinToolsAssertionType.
 const (
-	McpMinTools McpMinToolsAssertionType = "mcp_min_tools"
+	McpMinToolsAssertionTypeMcpMinTools McpMinToolsAssertionType = "mcp_min_tools"
 )
 
 // Valid indicates whether the value is a known member of the McpMinToolsAssertionType enum.
 func (e McpMinToolsAssertionType) Valid() bool {
 	switch e {
-	case McpMinTools:
+	case McpMinToolsAssertionTypeMcpMinTools:
 		return true
 	default:
 		return false
@@ -1914,13 +1374,13 @@ func (e McpMinToolsAssertionType) Valid() bool {
 
 // Defines values for McpProtocolVersionAssertionType.
 const (
-	McpProtocolVersion McpProtocolVersionAssertionType = "mcp_protocol_version"
+	McpProtocolVersionAssertionTypeMcpProtocolVersion McpProtocolVersionAssertionType = "mcp_protocol_version"
 )
 
 // Valid indicates whether the value is a known member of the McpProtocolVersionAssertionType enum.
 func (e McpProtocolVersionAssertionType) Valid() bool {
 	switch e {
-	case McpProtocolVersion:
+	case McpProtocolVersionAssertionTypeMcpProtocolVersion:
 		return true
 	default:
 		return false
@@ -1929,13 +1389,13 @@ func (e McpProtocolVersionAssertionType) Valid() bool {
 
 // Defines values for McpResponseTimeAssertionType.
 const (
-	McpResponseTime McpResponseTimeAssertionType = "mcp_response_time"
+	McpResponseTimeAssertionTypeMcpResponseTime McpResponseTimeAssertionType = "mcp_response_time"
 )
 
 // Valid indicates whether the value is a known member of the McpResponseTimeAssertionType enum.
 func (e McpResponseTimeAssertionType) Valid() bool {
 	switch e {
-	case McpResponseTime:
+	case McpResponseTimeAssertionTypeMcpResponseTime:
 		return true
 	default:
 		return false
@@ -1944,13 +1404,13 @@ func (e McpResponseTimeAssertionType) Valid() bool {
 
 // Defines values for McpResponseTimeWarnAssertionType.
 const (
-	McpResponseTimeWarn McpResponseTimeWarnAssertionType = "mcp_response_time_warn"
+	McpResponseTimeWarnAssertionTypeMcpResponseTimeWarn McpResponseTimeWarnAssertionType = "mcp_response_time_warn"
 )
 
 // Valid indicates whether the value is a known member of the McpResponseTimeWarnAssertionType enum.
 func (e McpResponseTimeWarnAssertionType) Valid() bool {
 	switch e {
-	case McpResponseTimeWarn:
+	case McpResponseTimeWarnAssertionTypeMcpResponseTimeWarn:
 		return true
 	default:
 		return false
@@ -1974,13 +1434,13 @@ func (e McpServerCheckType) Valid() bool {
 
 // Defines values for McpToolAvailableAssertionType.
 const (
-	McpToolAvailable McpToolAvailableAssertionType = "mcp_tool_available"
+	McpToolAvailableAssertionTypeMcpToolAvailable McpToolAvailableAssertionType = "mcp_tool_available"
 )
 
 // Valid indicates whether the value is a known member of the McpToolAvailableAssertionType enum.
 func (e McpToolAvailableAssertionType) Valid() bool {
 	switch e {
-	case McpToolAvailable:
+	case McpToolAvailableAssertionTypeMcpToolAvailable:
 		return true
 	default:
 		return false
@@ -1989,64 +1449,13 @@ func (e McpToolAvailableAssertionType) Valid() bool {
 
 // Defines values for McpToolCountChangedAssertionType.
 const (
-	McpToolCountChanged McpToolCountChangedAssertionType = "mcp_tool_count_changed"
+	McpToolCountChangedAssertionTypeMcpToolCountChanged McpToolCountChangedAssertionType = "mcp_tool_count_changed"
 )
 
 // Valid indicates whether the value is a known member of the McpToolCountChangedAssertionType enum.
 func (e McpToolCountChangedAssertionType) Valid() bool {
 	switch e {
-	case McpToolCountChanged:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for MemberDtoOrgRole.
-const (
-	MemberDtoOrgRoleADMIN  MemberDtoOrgRole = "ADMIN"
-	MemberDtoOrgRoleMEMBER MemberDtoOrgRole = "MEMBER"
-	MemberDtoOrgRoleOWNER  MemberDtoOrgRole = "OWNER"
-)
-
-// Valid indicates whether the value is a known member of the MemberDtoOrgRole enum.
-func (e MemberDtoOrgRole) Valid() bool {
-	switch e {
-	case MemberDtoOrgRoleADMIN:
-		return true
-	case MemberDtoOrgRoleMEMBER:
-		return true
-	case MemberDtoOrgRoleOWNER:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for MemberDtoStatus.
-const (
-	MemberDtoStatusACTIVE    MemberDtoStatus = "ACTIVE"
-	MemberDtoStatusDECLINED  MemberDtoStatus = "DECLINED"
-	MemberDtoStatusINVITED   MemberDtoStatus = "INVITED"
-	MemberDtoStatusLEFT      MemberDtoStatus = "LEFT"
-	MemberDtoStatusREMOVED   MemberDtoStatus = "REMOVED"
-	MemberDtoStatusSUSPENDED MemberDtoStatus = "SUSPENDED"
-)
-
-// Valid indicates whether the value is a known member of the MemberDtoStatus enum.
-func (e MemberDtoStatus) Valid() bool {
-	switch e {
-	case MemberDtoStatusACTIVE:
-		return true
-	case MemberDtoStatusDECLINED:
-		return true
-	case MemberDtoStatusINVITED:
-		return true
-	case MemberDtoStatusLEFT:
-		return true
-	case MemberDtoStatusREMOVED:
-		return true
-	case MemberDtoStatusSUSPENDED:
+	case McpToolCountChangedAssertionTypeMcpToolCountChanged:
 		return true
 	default:
 		return false
@@ -2055,13 +1464,13 @@ func (e MemberDtoStatus) Valid() bool {
 
 // Defines values for MemberRoleChangedMetadataKind.
 const (
-	MemberRoleChanged MemberRoleChangedMetadataKind = "member_role_changed"
+	MemberRoleChangedMetadataKindMemberRoleChanged MemberRoleChangedMetadataKind = "member_role_changed"
 )
 
 // Valid indicates whether the value is a known member of the MemberRoleChangedMetadataKind enum.
 func (e MemberRoleChangedMetadataKind) Valid() bool {
 	switch e {
-	case MemberRoleChanged:
+	case MemberRoleChangedMetadataKindMemberRoleChanged:
 		return true
 	default:
 		return false
@@ -2110,270 +1519,6 @@ func (e MemberRoleChangedMetadataOldRole) Valid() bool {
 	}
 }
 
-// Defines values for MonitorAssertionDtoAssertionType.
-const (
-	MonitorAssertionDtoAssertionTypeBodyContains             MonitorAssertionDtoAssertionType = "body_contains"
-	MonitorAssertionDtoAssertionTypeDnsExpectedCname         MonitorAssertionDtoAssertionType = "dns_expected_cname"
-	MonitorAssertionDtoAssertionTypeDnsExpectedIps           MonitorAssertionDtoAssertionType = "dns_expected_ips"
-	MonitorAssertionDtoAssertionTypeDnsMaxAnswers            MonitorAssertionDtoAssertionType = "dns_max_answers"
-	MonitorAssertionDtoAssertionTypeDnsMinAnswers            MonitorAssertionDtoAssertionType = "dns_min_answers"
-	MonitorAssertionDtoAssertionTypeDnsRecordContains        MonitorAssertionDtoAssertionType = "dns_record_contains"
-	MonitorAssertionDtoAssertionTypeDnsRecordEquals          MonitorAssertionDtoAssertionType = "dns_record_equals"
-	MonitorAssertionDtoAssertionTypeDnsResolves              MonitorAssertionDtoAssertionType = "dns_resolves"
-	MonitorAssertionDtoAssertionTypeDnsResponseTime          MonitorAssertionDtoAssertionType = "dns_response_time"
-	MonitorAssertionDtoAssertionTypeDnsResponseTimeWarn      MonitorAssertionDtoAssertionType = "dns_response_time_warn"
-	MonitorAssertionDtoAssertionTypeDnsTtlHigh               MonitorAssertionDtoAssertionType = "dns_ttl_high"
-	MonitorAssertionDtoAssertionTypeDnsTtlLow                MonitorAssertionDtoAssertionType = "dns_ttl_low"
-	MonitorAssertionDtoAssertionTypeDnsTxtContains           MonitorAssertionDtoAssertionType = "dns_txt_contains"
-	MonitorAssertionDtoAssertionTypeHeaderValue              MonitorAssertionDtoAssertionType = "header_value"
-	MonitorAssertionDtoAssertionTypeHeartbeatIntervalDrift   MonitorAssertionDtoAssertionType = "heartbeat_interval_drift"
-	MonitorAssertionDtoAssertionTypeHeartbeatMaxInterval     MonitorAssertionDtoAssertionType = "heartbeat_max_interval"
-	MonitorAssertionDtoAssertionTypeHeartbeatPayloadContains MonitorAssertionDtoAssertionType = "heartbeat_payload_contains"
-	MonitorAssertionDtoAssertionTypeHeartbeatReceived        MonitorAssertionDtoAssertionType = "heartbeat_received"
-	MonitorAssertionDtoAssertionTypeIcmpPacketLoss           MonitorAssertionDtoAssertionType = "icmp_packet_loss"
-	MonitorAssertionDtoAssertionTypeIcmpReachable            MonitorAssertionDtoAssertionType = "icmp_reachable"
-	MonitorAssertionDtoAssertionTypeIcmpResponseTime         MonitorAssertionDtoAssertionType = "icmp_response_time"
-	MonitorAssertionDtoAssertionTypeIcmpResponseTimeWarn     MonitorAssertionDtoAssertionType = "icmp_response_time_warn"
-	MonitorAssertionDtoAssertionTypeJsonPath                 MonitorAssertionDtoAssertionType = "json_path"
-	MonitorAssertionDtoAssertionTypeMcpConnects              MonitorAssertionDtoAssertionType = "mcp_connects"
-	MonitorAssertionDtoAssertionTypeMcpHasCapability         MonitorAssertionDtoAssertionType = "mcp_has_capability"
-	MonitorAssertionDtoAssertionTypeMcpMinTools              MonitorAssertionDtoAssertionType = "mcp_min_tools"
-	MonitorAssertionDtoAssertionTypeMcpProtocolVersion       MonitorAssertionDtoAssertionType = "mcp_protocol_version"
-	MonitorAssertionDtoAssertionTypeMcpResponseTime          MonitorAssertionDtoAssertionType = "mcp_response_time"
-	MonitorAssertionDtoAssertionTypeMcpResponseTimeWarn      MonitorAssertionDtoAssertionType = "mcp_response_time_warn"
-	MonitorAssertionDtoAssertionTypeMcpToolAvailable         MonitorAssertionDtoAssertionType = "mcp_tool_available"
-	MonitorAssertionDtoAssertionTypeMcpToolCountChanged      MonitorAssertionDtoAssertionType = "mcp_tool_count_changed"
-	MonitorAssertionDtoAssertionTypeRedirectCount            MonitorAssertionDtoAssertionType = "redirect_count"
-	MonitorAssertionDtoAssertionTypeRedirectTarget           MonitorAssertionDtoAssertionType = "redirect_target"
-	MonitorAssertionDtoAssertionTypeRegexBody                MonitorAssertionDtoAssertionType = "regex_body"
-	MonitorAssertionDtoAssertionTypeResponseSize             MonitorAssertionDtoAssertionType = "response_size"
-	MonitorAssertionDtoAssertionTypeResponseTime             MonitorAssertionDtoAssertionType = "response_time"
-	MonitorAssertionDtoAssertionTypeResponseTimeWarn         MonitorAssertionDtoAssertionType = "response_time_warn"
-	MonitorAssertionDtoAssertionTypeSslExpiry                MonitorAssertionDtoAssertionType = "ssl_expiry"
-	MonitorAssertionDtoAssertionTypeStatusCode               MonitorAssertionDtoAssertionType = "status_code"
-	MonitorAssertionDtoAssertionTypeTcpConnects              MonitorAssertionDtoAssertionType = "tcp_connects"
-	MonitorAssertionDtoAssertionTypeTcpResponseTime          MonitorAssertionDtoAssertionType = "tcp_response_time"
-	MonitorAssertionDtoAssertionTypeTcpResponseTimeWarn      MonitorAssertionDtoAssertionType = "tcp_response_time_warn"
-)
-
-// Valid indicates whether the value is a known member of the MonitorAssertionDtoAssertionType enum.
-func (e MonitorAssertionDtoAssertionType) Valid() bool {
-	switch e {
-	case MonitorAssertionDtoAssertionTypeBodyContains:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsExpectedCname:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsExpectedIps:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsMaxAnswers:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsMinAnswers:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsRecordContains:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsRecordEquals:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsResolves:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsResponseTime:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsResponseTimeWarn:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsTtlHigh:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsTtlLow:
-		return true
-	case MonitorAssertionDtoAssertionTypeDnsTxtContains:
-		return true
-	case MonitorAssertionDtoAssertionTypeHeaderValue:
-		return true
-	case MonitorAssertionDtoAssertionTypeHeartbeatIntervalDrift:
-		return true
-	case MonitorAssertionDtoAssertionTypeHeartbeatMaxInterval:
-		return true
-	case MonitorAssertionDtoAssertionTypeHeartbeatPayloadContains:
-		return true
-	case MonitorAssertionDtoAssertionTypeHeartbeatReceived:
-		return true
-	case MonitorAssertionDtoAssertionTypeIcmpPacketLoss:
-		return true
-	case MonitorAssertionDtoAssertionTypeIcmpReachable:
-		return true
-	case MonitorAssertionDtoAssertionTypeIcmpResponseTime:
-		return true
-	case MonitorAssertionDtoAssertionTypeIcmpResponseTimeWarn:
-		return true
-	case MonitorAssertionDtoAssertionTypeJsonPath:
-		return true
-	case MonitorAssertionDtoAssertionTypeMcpConnects:
-		return true
-	case MonitorAssertionDtoAssertionTypeMcpHasCapability:
-		return true
-	case MonitorAssertionDtoAssertionTypeMcpMinTools:
-		return true
-	case MonitorAssertionDtoAssertionTypeMcpProtocolVersion:
-		return true
-	case MonitorAssertionDtoAssertionTypeMcpResponseTime:
-		return true
-	case MonitorAssertionDtoAssertionTypeMcpResponseTimeWarn:
-		return true
-	case MonitorAssertionDtoAssertionTypeMcpToolAvailable:
-		return true
-	case MonitorAssertionDtoAssertionTypeMcpToolCountChanged:
-		return true
-	case MonitorAssertionDtoAssertionTypeRedirectCount:
-		return true
-	case MonitorAssertionDtoAssertionTypeRedirectTarget:
-		return true
-	case MonitorAssertionDtoAssertionTypeRegexBody:
-		return true
-	case MonitorAssertionDtoAssertionTypeResponseSize:
-		return true
-	case MonitorAssertionDtoAssertionTypeResponseTime:
-		return true
-	case MonitorAssertionDtoAssertionTypeResponseTimeWarn:
-		return true
-	case MonitorAssertionDtoAssertionTypeSslExpiry:
-		return true
-	case MonitorAssertionDtoAssertionTypeStatusCode:
-		return true
-	case MonitorAssertionDtoAssertionTypeTcpConnects:
-		return true
-	case MonitorAssertionDtoAssertionTypeTcpResponseTime:
-		return true
-	case MonitorAssertionDtoAssertionTypeTcpResponseTimeWarn:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for MonitorAssertionDtoSeverity.
-const (
-	MonitorAssertionDtoSeverityFail MonitorAssertionDtoSeverity = "fail"
-	MonitorAssertionDtoSeverityWarn MonitorAssertionDtoSeverity = "warn"
-)
-
-// Valid indicates whether the value is a known member of the MonitorAssertionDtoSeverity enum.
-func (e MonitorAssertionDtoSeverity) Valid() bool {
-	switch e {
-	case MonitorAssertionDtoSeverityFail:
-		return true
-	case MonitorAssertionDtoSeverityWarn:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for MonitorAuthDtoAuthType.
-const (
-	MonitorAuthDtoAuthTypeApiKey MonitorAuthDtoAuthType = "api_key"
-	MonitorAuthDtoAuthTypeBasic  MonitorAuthDtoAuthType = "basic"
-	MonitorAuthDtoAuthTypeBearer MonitorAuthDtoAuthType = "bearer"
-	MonitorAuthDtoAuthTypeHeader MonitorAuthDtoAuthType = "header"
-)
-
-// Valid indicates whether the value is a known member of the MonitorAuthDtoAuthType enum.
-func (e MonitorAuthDtoAuthType) Valid() bool {
-	switch e {
-	case MonitorAuthDtoAuthTypeApiKey:
-		return true
-	case MonitorAuthDtoAuthTypeBasic:
-		return true
-	case MonitorAuthDtoAuthTypeBearer:
-		return true
-	case MonitorAuthDtoAuthTypeHeader:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for MonitorDtoCurrentStatus.
-const (
-	MonitorDtoCurrentStatusDegraded MonitorDtoCurrentStatus = "degraded"
-	MonitorDtoCurrentStatusDown     MonitorDtoCurrentStatus = "down"
-	MonitorDtoCurrentStatusPaused   MonitorDtoCurrentStatus = "paused"
-	MonitorDtoCurrentStatusUnknown  MonitorDtoCurrentStatus = "unknown"
-	MonitorDtoCurrentStatusUp       MonitorDtoCurrentStatus = "up"
-)
-
-// Valid indicates whether the value is a known member of the MonitorDtoCurrentStatus enum.
-func (e MonitorDtoCurrentStatus) Valid() bool {
-	switch e {
-	case MonitorDtoCurrentStatusDegraded:
-		return true
-	case MonitorDtoCurrentStatusDown:
-		return true
-	case MonitorDtoCurrentStatusPaused:
-		return true
-	case MonitorDtoCurrentStatusUnknown:
-		return true
-	case MonitorDtoCurrentStatusUp:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for MonitorDtoManagedBy.
-const (
-	MonitorDtoManagedByAPI       MonitorDtoManagedBy = "API"
-	MonitorDtoManagedByCLI       MonitorDtoManagedBy = "CLI"
-	MonitorDtoManagedByDASHBOARD MonitorDtoManagedBy = "DASHBOARD"
-	MonitorDtoManagedByMCP       MonitorDtoManagedBy = "MCP"
-	MonitorDtoManagedByTERRAFORM MonitorDtoManagedBy = "TERRAFORM"
-)
-
-// Valid indicates whether the value is a known member of the MonitorDtoManagedBy enum.
-func (e MonitorDtoManagedBy) Valid() bool {
-	switch e {
-	case MonitorDtoManagedByAPI:
-		return true
-	case MonitorDtoManagedByCLI:
-		return true
-	case MonitorDtoManagedByDASHBOARD:
-		return true
-	case MonitorDtoManagedByMCP:
-		return true
-	case MonitorDtoManagedByTERRAFORM:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for MonitorDtoType.
-const (
-	MonitorDtoTypeDNS       MonitorDtoType = "DNS"
-	MonitorDtoTypeHEARTBEAT MonitorDtoType = "HEARTBEAT"
-	MonitorDtoTypeHTTP      MonitorDtoType = "HTTP"
-	MonitorDtoTypeICMP      MonitorDtoType = "ICMP"
-	MonitorDtoTypeMCPSERVER MonitorDtoType = "MCP_SERVER"
-	MonitorDtoTypeTCP       MonitorDtoType = "TCP"
-)
-
-// Valid indicates whether the value is a known member of the MonitorDtoType enum.
-func (e MonitorDtoType) Valid() bool {
-	switch e {
-	case MonitorDtoTypeDNS:
-		return true
-	case MonitorDtoTypeHEARTBEAT:
-		return true
-	case MonitorDtoTypeHTTP:
-		return true
-	case MonitorDtoTypeICMP:
-		return true
-	case MonitorDtoTypeMCPSERVER:
-		return true
-	case MonitorDtoTypeTCP:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for MonitorTestRequestType.
 const (
 	MonitorTestRequestTypeDNS       MonitorTestRequestType = "DNS"
@@ -2404,90 +1549,15 @@ func (e MonitorTestRequestType) Valid() bool {
 	}
 }
 
-// Defines values for MonitorVersionDtoChangedVia.
-const (
-	MonitorVersionDtoChangedViaAPI       MonitorVersionDtoChangedVia = "API"
-	MonitorVersionDtoChangedViaCLI       MonitorVersionDtoChangedVia = "CLI"
-	MonitorVersionDtoChangedViaDASHBOARD MonitorVersionDtoChangedVia = "DASHBOARD"
-	MonitorVersionDtoChangedViaTERRAFORM MonitorVersionDtoChangedVia = "TERRAFORM"
-)
-
-// Valid indicates whether the value is a known member of the MonitorVersionDtoChangedVia enum.
-func (e MonitorVersionDtoChangedVia) Valid() bool {
-	switch e {
-	case MonitorVersionDtoChangedViaAPI:
-		return true
-	case MonitorVersionDtoChangedViaCLI:
-		return true
-	case MonitorVersionDtoChangedViaDASHBOARD:
-		return true
-	case MonitorVersionDtoChangedViaTERRAFORM:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for NotificationDispatchDtoCompletionReason.
-const (
-	NotificationDispatchDtoCompletionReasonEXHAUSTED NotificationDispatchDtoCompletionReason = "EXHAUSTED"
-	NotificationDispatchDtoCompletionReasonNOSTEPS   NotificationDispatchDtoCompletionReason = "NO_STEPS"
-	NotificationDispatchDtoCompletionReasonRESOLVED  NotificationDispatchDtoCompletionReason = "RESOLVED"
-)
-
-// Valid indicates whether the value is a known member of the NotificationDispatchDtoCompletionReason enum.
-func (e NotificationDispatchDtoCompletionReason) Valid() bool {
-	switch e {
-	case NotificationDispatchDtoCompletionReasonEXHAUSTED:
-		return true
-	case NotificationDispatchDtoCompletionReasonNOSTEPS:
-		return true
-	case NotificationDispatchDtoCompletionReasonRESOLVED:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for NotificationDispatchDtoStatus.
-const (
-	NotificationDispatchDtoStatusACKNOWLEDGED NotificationDispatchDtoStatus = "ACKNOWLEDGED"
-	NotificationDispatchDtoStatusCOMPLETED    NotificationDispatchDtoStatus = "COMPLETED"
-	NotificationDispatchDtoStatusDELIVERED    NotificationDispatchDtoStatus = "DELIVERED"
-	NotificationDispatchDtoStatusDISPATCHING  NotificationDispatchDtoStatus = "DISPATCHING"
-	NotificationDispatchDtoStatusESCALATING   NotificationDispatchDtoStatus = "ESCALATING"
-	NotificationDispatchDtoStatusPENDING      NotificationDispatchDtoStatus = "PENDING"
-)
-
-// Valid indicates whether the value is a known member of the NotificationDispatchDtoStatus enum.
-func (e NotificationDispatchDtoStatus) Valid() bool {
-	switch e {
-	case NotificationDispatchDtoStatusACKNOWLEDGED:
-		return true
-	case NotificationDispatchDtoStatusCOMPLETED:
-		return true
-	case NotificationDispatchDtoStatusDELIVERED:
-		return true
-	case NotificationDispatchDtoStatusDISPATCHING:
-		return true
-	case NotificationDispatchDtoStatusESCALATING:
-		return true
-	case NotificationDispatchDtoStatusPENDING:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for OpsGenieChannelConfigChannelType.
 const (
-	Opsgenie OpsGenieChannelConfigChannelType = "opsgenie"
+	OpsGenieChannelConfigChannelTypeOpsgenie OpsGenieChannelConfigChannelType = "opsgenie"
 )
 
 // Valid indicates whether the value is a known member of the OpsGenieChannelConfigChannelType enum.
 func (e OpsGenieChannelConfigChannelType) Valid() bool {
 	switch e {
-	case Opsgenie:
+	case OpsGenieChannelConfigChannelTypeOpsgenie:
 		return true
 	default:
 		return false
@@ -2496,13 +1566,13 @@ func (e OpsGenieChannelConfigChannelType) Valid() bool {
 
 // Defines values for PagerDutyChannelConfigChannelType.
 const (
-	Pagerduty PagerDutyChannelConfigChannelType = "pagerduty"
+	PagerDutyChannelConfigChannelTypePagerduty PagerDutyChannelConfigChannelType = "pagerduty"
 )
 
 // Valid indicates whether the value is a known member of the PagerDutyChannelConfigChannelType enum.
 func (e PagerDutyChannelConfigChannelType) Valid() bool {
 	switch e {
-	case Pagerduty:
+	case PagerDutyChannelConfigChannelTypePagerduty:
 		return true
 	default:
 		return false
@@ -2589,13 +1659,13 @@ func (e PublishStatusPageIncidentRequestStatus) Valid() bool {
 
 // Defines values for RedirectCountAssertionType.
 const (
-	RedirectCount RedirectCountAssertionType = "redirect_count"
+	RedirectCountAssertionTypeRedirectCount RedirectCountAssertionType = "redirect_count"
 )
 
 // Valid indicates whether the value is a known member of the RedirectCountAssertionType enum.
 func (e RedirectCountAssertionType) Valid() bool {
 	switch e {
-	case RedirectCount:
+	case RedirectCountAssertionTypeRedirectCount:
 		return true
 	default:
 		return false
@@ -2634,13 +1704,13 @@ func (e RedirectTargetAssertionOperator) Valid() bool {
 
 // Defines values for RedirectTargetAssertionType.
 const (
-	RedirectTarget RedirectTargetAssertionType = "redirect_target"
+	RedirectTargetAssertionTypeRedirectTarget RedirectTargetAssertionType = "redirect_target"
 )
 
 // Valid indicates whether the value is a known member of the RedirectTargetAssertionType enum.
 func (e RedirectTargetAssertionType) Valid() bool {
 	switch e {
-	case RedirectTarget:
+	case RedirectTargetAssertionTypeRedirectTarget:
 		return true
 	default:
 		return false
@@ -2649,127 +1719,13 @@ func (e RedirectTargetAssertionType) Valid() bool {
 
 // Defines values for RegexBodyAssertionType.
 const (
-	RegexBody RegexBodyAssertionType = "regex_body"
+	RegexBodyAssertionTypeRegexBody RegexBodyAssertionType = "regex_body"
 )
 
 // Valid indicates whether the value is a known member of the RegexBodyAssertionType enum.
 func (e RegexBodyAssertionType) Valid() bool {
 	switch e {
-	case RegexBody:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for ResourceGroupDtoHealthThresholdType.
-const (
-	ResourceGroupDtoHealthThresholdTypeCOUNT      ResourceGroupDtoHealthThresholdType = "COUNT"
-	ResourceGroupDtoHealthThresholdTypePERCENTAGE ResourceGroupDtoHealthThresholdType = "PERCENTAGE"
-)
-
-// Valid indicates whether the value is a known member of the ResourceGroupDtoHealthThresholdType enum.
-func (e ResourceGroupDtoHealthThresholdType) Valid() bool {
-	switch e {
-	case ResourceGroupDtoHealthThresholdTypeCOUNT:
-		return true
-	case ResourceGroupDtoHealthThresholdTypePERCENTAGE:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for ResourceGroupDtoManagedBy.
-const (
-	ResourceGroupDtoManagedByAPI       ResourceGroupDtoManagedBy = "API"
-	ResourceGroupDtoManagedByCLI       ResourceGroupDtoManagedBy = "CLI"
-	ResourceGroupDtoManagedByDASHBOARD ResourceGroupDtoManagedBy = "DASHBOARD"
-	ResourceGroupDtoManagedByMCP       ResourceGroupDtoManagedBy = "MCP"
-	ResourceGroupDtoManagedByTERRAFORM ResourceGroupDtoManagedBy = "TERRAFORM"
-)
-
-// Valid indicates whether the value is a known member of the ResourceGroupDtoManagedBy enum.
-func (e ResourceGroupDtoManagedBy) Valid() bool {
-	switch e {
-	case ResourceGroupDtoManagedByAPI:
-		return true
-	case ResourceGroupDtoManagedByCLI:
-		return true
-	case ResourceGroupDtoManagedByDASHBOARD:
-		return true
-	case ResourceGroupDtoManagedByMCP:
-		return true
-	case ResourceGroupDtoManagedByTERRAFORM:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for ResourceGroupHealthDtoStatus.
-const (
-	ResourceGroupHealthDtoStatusDegraded    ResourceGroupHealthDtoStatus = "degraded"
-	ResourceGroupHealthDtoStatusDown        ResourceGroupHealthDtoStatus = "down"
-	ResourceGroupHealthDtoStatusMaintenance ResourceGroupHealthDtoStatus = "maintenance"
-	ResourceGroupHealthDtoStatusOperational ResourceGroupHealthDtoStatus = "operational"
-)
-
-// Valid indicates whether the value is a known member of the ResourceGroupHealthDtoStatus enum.
-func (e ResourceGroupHealthDtoStatus) Valid() bool {
-	switch e {
-	case ResourceGroupHealthDtoStatusDegraded:
-		return true
-	case ResourceGroupHealthDtoStatusDown:
-		return true
-	case ResourceGroupHealthDtoStatusMaintenance:
-		return true
-	case ResourceGroupHealthDtoStatusOperational:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for ResourceGroupHealthDtoThresholdStatus.
-const (
-	ResourceGroupHealthDtoThresholdStatusDegraded ResourceGroupHealthDtoThresholdStatus = "degraded"
-	ResourceGroupHealthDtoThresholdStatusDown     ResourceGroupHealthDtoThresholdStatus = "down"
-	ResourceGroupHealthDtoThresholdStatusHealthy  ResourceGroupHealthDtoThresholdStatus = "healthy"
-)
-
-// Valid indicates whether the value is a known member of the ResourceGroupHealthDtoThresholdStatus enum.
-func (e ResourceGroupHealthDtoThresholdStatus) Valid() bool {
-	switch e {
-	case ResourceGroupHealthDtoThresholdStatusDegraded:
-		return true
-	case ResourceGroupHealthDtoThresholdStatusDown:
-		return true
-	case ResourceGroupHealthDtoThresholdStatusHealthy:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for ResourceGroupMemberDtoStatus.
-const (
-	ResourceGroupMemberDtoStatusDegraded    ResourceGroupMemberDtoStatus = "degraded"
-	ResourceGroupMemberDtoStatusDown        ResourceGroupMemberDtoStatus = "down"
-	ResourceGroupMemberDtoStatusMaintenance ResourceGroupMemberDtoStatus = "maintenance"
-	ResourceGroupMemberDtoStatusOperational ResourceGroupMemberDtoStatus = "operational"
-)
-
-// Valid indicates whether the value is a known member of the ResourceGroupMemberDtoStatus enum.
-func (e ResourceGroupMemberDtoStatus) Valid() bool {
-	switch e {
-	case ResourceGroupMemberDtoStatusDegraded:
-		return true
-	case ResourceGroupMemberDtoStatusDown:
-		return true
-	case ResourceGroupMemberDtoStatusMaintenance:
-		return true
-	case ResourceGroupMemberDtoStatusOperational:
+	case RegexBodyAssertionTypeRegexBody:
 		return true
 	default:
 		return false
@@ -2778,13 +1734,13 @@ func (e ResourceGroupMemberDtoStatus) Valid() bool {
 
 // Defines values for ResponseSizeAssertionType.
 const (
-	ResponseSize ResponseSizeAssertionType = "response_size"
+	ResponseSizeAssertionTypeResponseSize ResponseSizeAssertionType = "response_size"
 )
 
 // Valid indicates whether the value is a known member of the ResponseSizeAssertionType enum.
 func (e ResponseSizeAssertionType) Valid() bool {
 	switch e {
-	case ResponseSize:
+	case ResponseSizeAssertionTypeResponseSize:
 		return true
 	default:
 		return false
@@ -2808,61 +1764,13 @@ func (e ResponseTimeAssertionType) Valid() bool {
 
 // Defines values for ResponseTimeWarnAssertionType.
 const (
-	ResponseTimeWarn ResponseTimeWarnAssertionType = "response_time_warn"
+	ResponseTimeWarnAssertionTypeResponseTimeWarn ResponseTimeWarnAssertionType = "response_time_warn"
 )
 
 // Valid indicates whether the value is a known member of the ResponseTimeWarnAssertionType enum.
 func (e ResponseTimeWarnAssertionType) Valid() bool {
 	switch e {
-	case ResponseTimeWarn:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for ResultSummaryDtoCurrentStatus.
-const (
-	ResultSummaryDtoCurrentStatusDegraded ResultSummaryDtoCurrentStatus = "degraded"
-	ResultSummaryDtoCurrentStatusDown     ResultSummaryDtoCurrentStatus = "down"
-	ResultSummaryDtoCurrentStatusPaused   ResultSummaryDtoCurrentStatus = "paused"
-	ResultSummaryDtoCurrentStatusUnknown  ResultSummaryDtoCurrentStatus = "unknown"
-	ResultSummaryDtoCurrentStatusUp       ResultSummaryDtoCurrentStatus = "up"
-)
-
-// Valid indicates whether the value is a known member of the ResultSummaryDtoCurrentStatus enum.
-func (e ResultSummaryDtoCurrentStatus) Valid() bool {
-	switch e {
-	case ResultSummaryDtoCurrentStatusDegraded:
-		return true
-	case ResultSummaryDtoCurrentStatusDown:
-		return true
-	case ResultSummaryDtoCurrentStatusPaused:
-		return true
-	case ResultSummaryDtoCurrentStatusUnknown:
-		return true
-	case ResultSummaryDtoCurrentStatusUp:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for ServiceSubscriptionDtoAlertSensitivity.
-const (
-	ALL           ServiceSubscriptionDtoAlertSensitivity = "ALL"
-	INCIDENTSONLY ServiceSubscriptionDtoAlertSensitivity = "INCIDENTS_ONLY"
-	MAJORONLY     ServiceSubscriptionDtoAlertSensitivity = "MAJOR_ONLY"
-)
-
-// Valid indicates whether the value is a known member of the ServiceSubscriptionDtoAlertSensitivity enum.
-func (e ServiceSubscriptionDtoAlertSensitivity) Valid() bool {
-	switch e {
-	case ALL:
-		return true
-	case INCIDENTSONLY:
-		return true
-	case MAJORONLY:
+	case ResponseTimeWarnAssertionTypeResponseTimeWarn:
 		return true
 	default:
 		return false
@@ -2871,13 +1779,13 @@ func (e ServiceSubscriptionDtoAlertSensitivity) Valid() bool {
 
 // Defines values for SlackChannelConfigChannelType.
 const (
-	Slack SlackChannelConfigChannelType = "slack"
+	SlackChannelConfigChannelTypeSlack SlackChannelConfigChannelType = "slack"
 )
 
 // Valid indicates whether the value is a known member of the SlackChannelConfigChannelType enum.
 func (e SlackChannelConfigChannelType) Valid() bool {
 	switch e {
-	case Slack:
+	case SlackChannelConfigChannelTypeSlack:
 		return true
 	default:
 		return false
@@ -2886,13 +1794,13 @@ func (e SlackChannelConfigChannelType) Valid() bool {
 
 // Defines values for SslExpiryAssertionType.
 const (
-	SslExpiry SslExpiryAssertionType = "ssl_expiry"
+	SslExpiryAssertionTypeSslExpiry SslExpiryAssertionType = "ssl_expiry"
 )
 
 // Valid indicates whether the value is a known member of the SslExpiryAssertionType enum.
 func (e SslExpiryAssertionType) Valid() bool {
 	switch e {
-	case SslExpiry:
+	case SslExpiryAssertionTypeSslExpiry:
 		return true
 	default:
 		return false
@@ -2901,16 +1809,16 @@ func (e SslExpiryAssertionType) Valid() bool {
 
 // Defines values for StateTransitionDetailsSource.
 const (
-	Pipeline  StateTransitionDetailsSource = "pipeline"
-	PublicApi StateTransitionDetailsSource = "public-api"
+	StateTransitionDetailsSourcePipeline  StateTransitionDetailsSource = "pipeline"
+	StateTransitionDetailsSourcePublicApi StateTransitionDetailsSource = "public-api"
 )
 
 // Valid indicates whether the value is a known member of the StateTransitionDetailsSource enum.
 func (e StateTransitionDetailsSource) Valid() bool {
 	switch e {
-	case Pipeline:
+	case StateTransitionDetailsSourcePipeline:
 		return true
-	case PublicApi:
+	case StateTransitionDetailsSourcePublicApi:
 		return true
 	default:
 		return false
@@ -2949,325 +1857,13 @@ func (e StatusCodeAssertionOperator) Valid() bool {
 
 // Defines values for StatusCodeAssertionType.
 const (
-	StatusCode StatusCodeAssertionType = "status_code"
+	StatusCodeAssertionTypeStatusCode StatusCodeAssertionType = "status_code"
 )
 
 // Valid indicates whether the value is a known member of the StatusCodeAssertionType enum.
 func (e StatusCodeAssertionType) Valid() bool {
 	switch e {
-	case StatusCode:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageComponentDtoCurrentStatus.
-const (
-	StatusPageComponentDtoCurrentStatusDEGRADEDPERFORMANCE StatusPageComponentDtoCurrentStatus = "DEGRADED_PERFORMANCE"
-	StatusPageComponentDtoCurrentStatusMAJOROUTAGE         StatusPageComponentDtoCurrentStatus = "MAJOR_OUTAGE"
-	StatusPageComponentDtoCurrentStatusOPERATIONAL         StatusPageComponentDtoCurrentStatus = "OPERATIONAL"
-	StatusPageComponentDtoCurrentStatusPARTIALOUTAGE       StatusPageComponentDtoCurrentStatus = "PARTIAL_OUTAGE"
-	StatusPageComponentDtoCurrentStatusUNDERMAINTENANCE    StatusPageComponentDtoCurrentStatus = "UNDER_MAINTENANCE"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageComponentDtoCurrentStatus enum.
-func (e StatusPageComponentDtoCurrentStatus) Valid() bool {
-	switch e {
-	case StatusPageComponentDtoCurrentStatusDEGRADEDPERFORMANCE:
-		return true
-	case StatusPageComponentDtoCurrentStatusMAJOROUTAGE:
-		return true
-	case StatusPageComponentDtoCurrentStatusOPERATIONAL:
-		return true
-	case StatusPageComponentDtoCurrentStatusPARTIALOUTAGE:
-		return true
-	case StatusPageComponentDtoCurrentStatusUNDERMAINTENANCE:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageComponentDtoType.
-const (
-	StatusPageComponentDtoTypeGROUP   StatusPageComponentDtoType = "GROUP"
-	StatusPageComponentDtoTypeMONITOR StatusPageComponentDtoType = "MONITOR"
-	StatusPageComponentDtoTypeSTATIC  StatusPageComponentDtoType = "STATIC"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageComponentDtoType enum.
-func (e StatusPageComponentDtoType) Valid() bool {
-	switch e {
-	case StatusPageComponentDtoTypeGROUP:
-		return true
-	case StatusPageComponentDtoTypeMONITOR:
-		return true
-	case StatusPageComponentDtoTypeSTATIC:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageCustomDomainDtoStatus.
-const (
-	ACTIVE              StatusPageCustomDomainDtoStatus = "ACTIVE"
-	FAILED              StatusPageCustomDomainDtoStatus = "FAILED"
-	PENDINGVERIFICATION StatusPageCustomDomainDtoStatus = "PENDING_VERIFICATION"
-	REMOVED             StatusPageCustomDomainDtoStatus = "REMOVED"
-	SSLPENDING          StatusPageCustomDomainDtoStatus = "SSL_PENDING"
-	VERIFICATIONFAILED  StatusPageCustomDomainDtoStatus = "VERIFICATION_FAILED"
-	VERIFIED            StatusPageCustomDomainDtoStatus = "VERIFIED"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageCustomDomainDtoStatus enum.
-func (e StatusPageCustomDomainDtoStatus) Valid() bool {
-	switch e {
-	case ACTIVE:
-		return true
-	case FAILED:
-		return true
-	case PENDINGVERIFICATION:
-		return true
-	case REMOVED:
-		return true
-	case SSLPENDING:
-		return true
-	case VERIFICATIONFAILED:
-		return true
-	case VERIFIED:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageCustomDomainDtoVerificationMethod.
-const (
-	StatusPageCustomDomainDtoVerificationMethodCNAME StatusPageCustomDomainDtoVerificationMethod = "CNAME"
-	StatusPageCustomDomainDtoVerificationMethodTXT   StatusPageCustomDomainDtoVerificationMethod = "TXT"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageCustomDomainDtoVerificationMethod enum.
-func (e StatusPageCustomDomainDtoVerificationMethod) Valid() bool {
-	switch e {
-	case StatusPageCustomDomainDtoVerificationMethodCNAME:
-		return true
-	case StatusPageCustomDomainDtoVerificationMethodTXT:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageDtoIncidentMode.
-const (
-	StatusPageDtoIncidentModeAUTOMATIC StatusPageDtoIncidentMode = "AUTOMATIC"
-	StatusPageDtoIncidentModeMANUAL    StatusPageDtoIncidentMode = "MANUAL"
-	StatusPageDtoIncidentModeREVIEW    StatusPageDtoIncidentMode = "REVIEW"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageDtoIncidentMode enum.
-func (e StatusPageDtoIncidentMode) Valid() bool {
-	switch e {
-	case StatusPageDtoIncidentModeAUTOMATIC:
-		return true
-	case StatusPageDtoIncidentModeMANUAL:
-		return true
-	case StatusPageDtoIncidentModeREVIEW:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageDtoManagedBy.
-const (
-	StatusPageDtoManagedByAPI       StatusPageDtoManagedBy = "API"
-	StatusPageDtoManagedByCLI       StatusPageDtoManagedBy = "CLI"
-	StatusPageDtoManagedByDASHBOARD StatusPageDtoManagedBy = "DASHBOARD"
-	StatusPageDtoManagedByMCP       StatusPageDtoManagedBy = "MCP"
-	StatusPageDtoManagedByTERRAFORM StatusPageDtoManagedBy = "TERRAFORM"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageDtoManagedBy enum.
-func (e StatusPageDtoManagedBy) Valid() bool {
-	switch e {
-	case StatusPageDtoManagedByAPI:
-		return true
-	case StatusPageDtoManagedByCLI:
-		return true
-	case StatusPageDtoManagedByDASHBOARD:
-		return true
-	case StatusPageDtoManagedByMCP:
-		return true
-	case StatusPageDtoManagedByTERRAFORM:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageDtoOverallStatus.
-const (
-	StatusPageDtoOverallStatusDEGRADEDPERFORMANCE StatusPageDtoOverallStatus = "DEGRADED_PERFORMANCE"
-	StatusPageDtoOverallStatusMAJOROUTAGE         StatusPageDtoOverallStatus = "MAJOR_OUTAGE"
-	StatusPageDtoOverallStatusOPERATIONAL         StatusPageDtoOverallStatus = "OPERATIONAL"
-	StatusPageDtoOverallStatusPARTIALOUTAGE       StatusPageDtoOverallStatus = "PARTIAL_OUTAGE"
-	StatusPageDtoOverallStatusUNDERMAINTENANCE    StatusPageDtoOverallStatus = "UNDER_MAINTENANCE"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageDtoOverallStatus enum.
-func (e StatusPageDtoOverallStatus) Valid() bool {
-	switch e {
-	case StatusPageDtoOverallStatusDEGRADEDPERFORMANCE:
-		return true
-	case StatusPageDtoOverallStatusMAJOROUTAGE:
-		return true
-	case StatusPageDtoOverallStatusOPERATIONAL:
-		return true
-	case StatusPageDtoOverallStatusPARTIALOUTAGE:
-		return true
-	case StatusPageDtoOverallStatusUNDERMAINTENANCE:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageDtoVisibility.
-const (
-	StatusPageDtoVisibilityIPRESTRICTED StatusPageDtoVisibility = "IP_RESTRICTED"
-	StatusPageDtoVisibilityPASSWORD     StatusPageDtoVisibility = "PASSWORD"
-	StatusPageDtoVisibilityPUBLIC       StatusPageDtoVisibility = "PUBLIC"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageDtoVisibility enum.
-func (e StatusPageDtoVisibility) Valid() bool {
-	switch e {
-	case StatusPageDtoVisibilityIPRESTRICTED:
-		return true
-	case StatusPageDtoVisibilityPASSWORD:
-		return true
-	case StatusPageDtoVisibilityPUBLIC:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageIncidentComponentDtoComponentStatus.
-const (
-	StatusPageIncidentComponentDtoComponentStatusDEGRADEDPERFORMANCE StatusPageIncidentComponentDtoComponentStatus = "DEGRADED_PERFORMANCE"
-	StatusPageIncidentComponentDtoComponentStatusMAJOROUTAGE         StatusPageIncidentComponentDtoComponentStatus = "MAJOR_OUTAGE"
-	StatusPageIncidentComponentDtoComponentStatusOPERATIONAL         StatusPageIncidentComponentDtoComponentStatus = "OPERATIONAL"
-	StatusPageIncidentComponentDtoComponentStatusPARTIALOUTAGE       StatusPageIncidentComponentDtoComponentStatus = "PARTIAL_OUTAGE"
-	StatusPageIncidentComponentDtoComponentStatusUNDERMAINTENANCE    StatusPageIncidentComponentDtoComponentStatus = "UNDER_MAINTENANCE"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageIncidentComponentDtoComponentStatus enum.
-func (e StatusPageIncidentComponentDtoComponentStatus) Valid() bool {
-	switch e {
-	case StatusPageIncidentComponentDtoComponentStatusDEGRADEDPERFORMANCE:
-		return true
-	case StatusPageIncidentComponentDtoComponentStatusMAJOROUTAGE:
-		return true
-	case StatusPageIncidentComponentDtoComponentStatusOPERATIONAL:
-		return true
-	case StatusPageIncidentComponentDtoComponentStatusPARTIALOUTAGE:
-		return true
-	case StatusPageIncidentComponentDtoComponentStatusUNDERMAINTENANCE:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageIncidentDtoImpact.
-const (
-	StatusPageIncidentDtoImpactCRITICAL StatusPageIncidentDtoImpact = "CRITICAL"
-	StatusPageIncidentDtoImpactMAJOR    StatusPageIncidentDtoImpact = "MAJOR"
-	StatusPageIncidentDtoImpactMINOR    StatusPageIncidentDtoImpact = "MINOR"
-	StatusPageIncidentDtoImpactNONE     StatusPageIncidentDtoImpact = "NONE"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageIncidentDtoImpact enum.
-func (e StatusPageIncidentDtoImpact) Valid() bool {
-	switch e {
-	case StatusPageIncidentDtoImpactCRITICAL:
-		return true
-	case StatusPageIncidentDtoImpactMAJOR:
-		return true
-	case StatusPageIncidentDtoImpactMINOR:
-		return true
-	case StatusPageIncidentDtoImpactNONE:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageIncidentDtoStatus.
-const (
-	StatusPageIncidentDtoStatusIDENTIFIED    StatusPageIncidentDtoStatus = "IDENTIFIED"
-	StatusPageIncidentDtoStatusINVESTIGATING StatusPageIncidentDtoStatus = "INVESTIGATING"
-	StatusPageIncidentDtoStatusMONITORING    StatusPageIncidentDtoStatus = "MONITORING"
-	StatusPageIncidentDtoStatusRESOLVED      StatusPageIncidentDtoStatus = "RESOLVED"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageIncidentDtoStatus enum.
-func (e StatusPageIncidentDtoStatus) Valid() bool {
-	switch e {
-	case StatusPageIncidentDtoStatusIDENTIFIED:
-		return true
-	case StatusPageIncidentDtoStatusINVESTIGATING:
-		return true
-	case StatusPageIncidentDtoStatusMONITORING:
-		return true
-	case StatusPageIncidentDtoStatusRESOLVED:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageIncidentUpdateDtoCreatedBy.
-const (
-	StatusPageIncidentUpdateDtoCreatedBySYSTEM StatusPageIncidentUpdateDtoCreatedBy = "SYSTEM"
-	StatusPageIncidentUpdateDtoCreatedByUSER   StatusPageIncidentUpdateDtoCreatedBy = "USER"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageIncidentUpdateDtoCreatedBy enum.
-func (e StatusPageIncidentUpdateDtoCreatedBy) Valid() bool {
-	switch e {
-	case StatusPageIncidentUpdateDtoCreatedBySYSTEM:
-		return true
-	case StatusPageIncidentUpdateDtoCreatedByUSER:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for StatusPageIncidentUpdateDtoStatus.
-const (
-	StatusPageIncidentUpdateDtoStatusIDENTIFIED    StatusPageIncidentUpdateDtoStatus = "IDENTIFIED"
-	StatusPageIncidentUpdateDtoStatusINVESTIGATING StatusPageIncidentUpdateDtoStatus = "INVESTIGATING"
-	StatusPageIncidentUpdateDtoStatusMONITORING    StatusPageIncidentUpdateDtoStatus = "MONITORING"
-	StatusPageIncidentUpdateDtoStatusRESOLVED      StatusPageIncidentUpdateDtoStatus = "RESOLVED"
-)
-
-// Valid indicates whether the value is a known member of the StatusPageIncidentUpdateDtoStatus enum.
-func (e StatusPageIncidentUpdateDtoStatus) Valid() bool {
-	switch e {
-	case StatusPageIncidentUpdateDtoStatusIDENTIFIED:
-		return true
-	case StatusPageIncidentUpdateDtoStatusINVESTIGATING:
-		return true
-	case StatusPageIncidentUpdateDtoStatusMONITORING:
-		return true
-	case StatusPageIncidentUpdateDtoStatusRESOLVED:
+	case StatusCodeAssertionTypeStatusCode:
 		return true
 	default:
 		return false
@@ -3291,13 +1887,13 @@ func (e TcpCheckType) Valid() bool {
 
 // Defines values for TcpConnectsAssertionType.
 const (
-	TcpConnects TcpConnectsAssertionType = "tcp_connects"
+	TcpConnectsAssertionTypeTcpConnects TcpConnectsAssertionType = "tcp_connects"
 )
 
 // Valid indicates whether the value is a known member of the TcpConnectsAssertionType enum.
 func (e TcpConnectsAssertionType) Valid() bool {
 	switch e {
-	case TcpConnects:
+	case TcpConnectsAssertionTypeTcpConnects:
 		return true
 	default:
 		return false
@@ -3306,13 +1902,13 @@ func (e TcpConnectsAssertionType) Valid() bool {
 
 // Defines values for TcpResponseTimeAssertionType.
 const (
-	TcpResponseTime TcpResponseTimeAssertionType = "tcp_response_time"
+	TcpResponseTimeAssertionTypeTcpResponseTime TcpResponseTimeAssertionType = "tcp_response_time"
 )
 
 // Valid indicates whether the value is a known member of the TcpResponseTimeAssertionType enum.
 func (e TcpResponseTimeAssertionType) Valid() bool {
 	switch e {
-	case TcpResponseTime:
+	case TcpResponseTimeAssertionTypeTcpResponseTime:
 		return true
 	default:
 		return false
@@ -3321,13 +1917,13 @@ func (e TcpResponseTimeAssertionType) Valid() bool {
 
 // Defines values for TcpResponseTimeWarnAssertionType.
 const (
-	TcpResponseTimeWarn TcpResponseTimeWarnAssertionType = "tcp_response_time_warn"
+	TcpResponseTimeWarnAssertionTypeTcpResponseTimeWarn TcpResponseTimeWarnAssertionType = "tcp_response_time_warn"
 )
 
 // Valid indicates whether the value is a known member of the TcpResponseTimeWarnAssertionType enum.
 func (e TcpResponseTimeWarnAssertionType) Valid() bool {
 	switch e {
-	case TcpResponseTimeWarn:
+	case TcpResponseTimeWarnAssertionTypeTcpResponseTimeWarn:
 		return true
 	default:
 		return false
@@ -3336,13 +1932,13 @@ func (e TcpResponseTimeWarnAssertionType) Valid() bool {
 
 // Defines values for TeamsChannelConfigChannelType.
 const (
-	Teams TeamsChannelConfigChannelType = "teams"
+	TeamsChannelConfigChannelTypeTeams TeamsChannelConfigChannelType = "teams"
 )
 
 // Valid indicates whether the value is a known member of the TeamsChannelConfigChannelType enum.
 func (e TeamsChannelConfigChannelType) Valid() bool {
 	switch e {
-	case Teams:
+	case TeamsChannelConfigChannelTypeTeams:
 		return true
 	default:
 		return false
@@ -3351,22 +1947,22 @@ func (e TeamsChannelConfigChannelType) Valid() bool {
 
 // Defines values for TriggerRuleAggregationType.
 const (
-	AllExceed TriggerRuleAggregationType = "all_exceed"
-	Average   TriggerRuleAggregationType = "average"
-	Max       TriggerRuleAggregationType = "max"
-	P95       TriggerRuleAggregationType = "p95"
+	TriggerRuleAggregationTypeAllExceed TriggerRuleAggregationType = "all_exceed"
+	TriggerRuleAggregationTypeAverage   TriggerRuleAggregationType = "average"
+	TriggerRuleAggregationTypeMax       TriggerRuleAggregationType = "max"
+	TriggerRuleAggregationTypeP95       TriggerRuleAggregationType = "p95"
 )
 
 // Valid indicates whether the value is a known member of the TriggerRuleAggregationType enum.
 func (e TriggerRuleAggregationType) Valid() bool {
 	switch e {
-	case AllExceed:
+	case TriggerRuleAggregationTypeAllExceed:
 		return true
-	case Average:
+	case TriggerRuleAggregationTypeAverage:
 		return true
-	case Max:
+	case TriggerRuleAggregationTypeMax:
 		return true
-	case P95:
+	case TriggerRuleAggregationTypeP95:
 		return true
 	default:
 		return false
@@ -3375,16 +1971,16 @@ func (e TriggerRuleAggregationType) Valid() bool {
 
 // Defines values for TriggerRuleScope.
 const (
-	AnyRegion TriggerRuleScope = "any_region"
-	PerRegion TriggerRuleScope = "per_region"
+	TriggerRuleScopeAnyRegion TriggerRuleScope = "any_region"
+	TriggerRuleScopePerRegion TriggerRuleScope = "per_region"
 )
 
 // Valid indicates whether the value is a known member of the TriggerRuleScope enum.
 func (e TriggerRuleScope) Valid() bool {
 	switch e {
-	case AnyRegion:
+	case TriggerRuleScopeAnyRegion:
 		return true
-	case PerRegion:
+	case TriggerRuleScopePerRegion:
 		return true
 	default:
 		return false
@@ -3459,16 +2055,16 @@ func (e UpdateAlertChannelRequestManagedBy) Valid() bool {
 
 // Defines values for UpdateAssertionRequestSeverity.
 const (
-	Fail UpdateAssertionRequestSeverity = "fail"
-	Warn UpdateAssertionRequestSeverity = "warn"
+	UpdateAssertionRequestSeverityFail UpdateAssertionRequestSeverity = "fail"
+	UpdateAssertionRequestSeverityWarn UpdateAssertionRequestSeverity = "warn"
 )
 
 // Valid indicates whether the value is a known member of the UpdateAssertionRequestSeverity enum.
 func (e UpdateAssertionRequestSeverity) Valid() bool {
 	switch e {
-	case Fail:
+	case UpdateAssertionRequestSeverityFail:
 		return true
-	case Warn:
+	case UpdateAssertionRequestSeverityWarn:
 		return true
 	default:
 		return false
@@ -3504,16 +2100,16 @@ func (e UpdateMonitorRequestManagedBy) Valid() bool {
 
 // Defines values for UpdateResourceGroupRequestHealthThresholdType.
 const (
-	COUNT      UpdateResourceGroupRequestHealthThresholdType = "COUNT"
-	PERCENTAGE UpdateResourceGroupRequestHealthThresholdType = "PERCENTAGE"
+	UpdateResourceGroupRequestHealthThresholdTypeCOUNT      UpdateResourceGroupRequestHealthThresholdType = "COUNT"
+	UpdateResourceGroupRequestHealthThresholdTypePERCENTAGE UpdateResourceGroupRequestHealthThresholdType = "PERCENTAGE"
 )
 
 // Valid indicates whether the value is a known member of the UpdateResourceGroupRequestHealthThresholdType enum.
 func (e UpdateResourceGroupRequestHealthThresholdType) Valid() bool {
 	switch e {
-	case COUNT:
+	case UpdateResourceGroupRequestHealthThresholdTypeCOUNT:
 		return true
-	case PERCENTAGE:
+	case UpdateResourceGroupRequestHealthThresholdTypePERCENTAGE:
 		return true
 	default:
 		return false
@@ -3645,19 +2241,19 @@ func (e UpdateStatusPageRequestManagedBy) Valid() bool {
 
 // Defines values for UpdateStatusPageRequestVisibility.
 const (
-	IPRESTRICTED UpdateStatusPageRequestVisibility = "IP_RESTRICTED"
-	PASSWORD     UpdateStatusPageRequestVisibility = "PASSWORD"
-	PUBLIC       UpdateStatusPageRequestVisibility = "PUBLIC"
+	UpdateStatusPageRequestVisibilityIPRESTRICTED UpdateStatusPageRequestVisibility = "IP_RESTRICTED"
+	UpdateStatusPageRequestVisibilityPASSWORD     UpdateStatusPageRequestVisibility = "PASSWORD"
+	UpdateStatusPageRequestVisibilityPUBLIC       UpdateStatusPageRequestVisibility = "PUBLIC"
 )
 
 // Valid indicates whether the value is a known member of the UpdateStatusPageRequestVisibility enum.
 func (e UpdateStatusPageRequestVisibility) Valid() bool {
 	switch e {
-	case IPRESTRICTED:
+	case UpdateStatusPageRequestVisibilityIPRESTRICTED:
 		return true
-	case PASSWORD:
+	case UpdateStatusPageRequestVisibilityPASSWORD:
 		return true
-	case PUBLIC:
+	case UpdateStatusPageRequestVisibilityPUBLIC:
 		return true
 	default:
 		return false
@@ -3711,13 +2307,13 @@ func (e UpdateWebhookEndpointRequestSubscribedEvents) Valid() bool {
 
 // Defines values for WebhookChannelConfigChannelType.
 const (
-	Webhook WebhookChannelConfigChannelType = "webhook"
+	WebhookChannelConfigChannelTypeWebhook WebhookChannelConfigChannelType = "webhook"
 )
 
 // Valid indicates whether the value is a known member of the WebhookChannelConfigChannelType enum.
 func (e WebhookChannelConfigChannelType) Valid() bool {
 	switch e {
-	case Webhook:
+	case WebhookChannelConfigChannelTypeWebhook:
 		return true
 	default:
 		return false
@@ -3816,25 +2412,25 @@ func (e List8ParamsType) Valid() bool {
 
 // Defines values for List8ParamsManagedBy.
 const (
-	API       List8ParamsManagedBy = "API"
-	CLI       List8ParamsManagedBy = "CLI"
-	DASHBOARD List8ParamsManagedBy = "DASHBOARD"
-	MCP       List8ParamsManagedBy = "MCP"
-	TERRAFORM List8ParamsManagedBy = "TERRAFORM"
+	List8ParamsManagedByAPI       List8ParamsManagedBy = "API"
+	List8ParamsManagedByCLI       List8ParamsManagedBy = "CLI"
+	List8ParamsManagedByDASHBOARD List8ParamsManagedBy = "DASHBOARD"
+	List8ParamsManagedByMCP       List8ParamsManagedBy = "MCP"
+	List8ParamsManagedByTERRAFORM List8ParamsManagedBy = "TERRAFORM"
 )
 
 // Valid indicates whether the value is a known member of the List8ParamsManagedBy enum.
 func (e List8ParamsManagedBy) Valid() bool {
 	switch e {
-	case API:
+	case List8ParamsManagedByAPI:
 		return true
-	case CLI:
+	case List8ParamsManagedByCLI:
 		return true
-	case DASHBOARD:
+	case List8ParamsManagedByDASHBOARD:
 		return true
-	case MCP:
+	case List8ParamsManagedByMCP:
 		return true
-	case TERRAFORM:
+	case List8ParamsManagedByTERRAFORM:
 		return true
 	default:
 		return false
@@ -4029,19 +2625,19 @@ func (e GetServiceUptimeParamsPeriod) Valid() bool {
 
 // Defines values for GetServiceUptimeParamsGranularity.
 const (
-	Daily   GetServiceUptimeParamsGranularity = "daily"
-	Hourly  GetServiceUptimeParamsGranularity = "hourly"
-	Monthly GetServiceUptimeParamsGranularity = "monthly"
+	GetServiceUptimeParamsGranularityDaily   GetServiceUptimeParamsGranularity = "daily"
+	GetServiceUptimeParamsGranularityHourly  GetServiceUptimeParamsGranularity = "hourly"
+	GetServiceUptimeParamsGranularityMonthly GetServiceUptimeParamsGranularity = "monthly"
 )
 
 // Valid indicates whether the value is a known member of the GetServiceUptimeParamsGranularity enum.
 func (e GetServiceUptimeParamsGranularity) Valid() bool {
 	switch e {
-	case Daily:
+	case GetServiceUptimeParamsGranularityDaily:
 		return true
-	case Hourly:
+	case GetServiceUptimeParamsGranularityHourly:
 		return true
-	case Monthly:
+	case GetServiceUptimeParamsGranularityMonthly:
 		return true
 	default:
 		return false
@@ -4050,22 +2646,22 @@ func (e GetServiceUptimeParamsGranularity) Valid() bool {
 
 // Defines values for ListIncidentsParamsStatus.
 const (
-	IDENTIFIED    ListIncidentsParamsStatus = "IDENTIFIED"
-	INVESTIGATING ListIncidentsParamsStatus = "INVESTIGATING"
-	MONITORING    ListIncidentsParamsStatus = "MONITORING"
-	RESOLVED      ListIncidentsParamsStatus = "RESOLVED"
+	ListIncidentsParamsStatusIDENTIFIED    ListIncidentsParamsStatus = "IDENTIFIED"
+	ListIncidentsParamsStatusINVESTIGATING ListIncidentsParamsStatus = "INVESTIGATING"
+	ListIncidentsParamsStatusMONITORING    ListIncidentsParamsStatus = "MONITORING"
+	ListIncidentsParamsStatusRESOLVED      ListIncidentsParamsStatus = "RESOLVED"
 )
 
 // Valid indicates whether the value is a known member of the ListIncidentsParamsStatus enum.
 func (e ListIncidentsParamsStatus) Valid() bool {
 	switch e {
-	case IDENTIFIED:
+	case ListIncidentsParamsStatusIDENTIFIED:
 		return true
-	case INVESTIGATING:
+	case ListIncidentsParamsStatusINVESTIGATING:
 		return true
-	case MONITORING:
+	case ListIncidentsParamsStatusMONITORING:
 		return true
-	case RESOLVED:
+	case ListIncidentsParamsStatusRESOLVED:
 		return true
 	default:
 		return false
@@ -4159,7 +2755,7 @@ type AlertChannelDisplayConfig struct {
 // AlertChannelDto Alert channel with non-sensitive configuration metadata
 type AlertChannelDto struct {
 	// ChannelType Channel integration type (e.g. SLACK, PAGERDUTY, EMAIL)
-	ChannelType AlertChannelDtoChannelType `json:"channelType"`
+	ChannelType string `json:"channelType"`
 
 	// ConfigHash SHA-256 hash of the channel config; use for change detection
 	ConfigHash *string `json:"configHash,omitempty"`
@@ -4178,7 +2774,7 @@ type AlertChannelDto struct {
 	LastDeliveryStatus *string `json:"lastDeliveryStatus,omitempty"`
 
 	// ManagedBy Source that created/owns this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on channels created before this attribution column existed.
-	ManagedBy *AlertChannelDtoManagedBy `json:"managedBy,omitempty"`
+	ManagedBy *string `json:"managedBy,omitempty"`
 
 	// Name Human-readable channel name
 	Name string `json:"name"`
@@ -4186,12 +2782,6 @@ type AlertChannelDto struct {
 	// UpdatedAt Timestamp when the channel was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 }
-
-// AlertChannelDtoChannelType Channel integration type (e.g. SLACK, PAGERDUTY, EMAIL)
-type AlertChannelDtoChannelType string
-
-// AlertChannelDtoManagedBy Source that created/owns this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on channels created before this attribution column existed.
-type AlertChannelDtoManagedBy string
 
 // AlertDeliveryDto Delivery record for a single channel within a notification dispatch
 type AlertDeliveryDto struct {
@@ -4218,7 +2808,7 @@ type AlertDeliveryDto struct {
 	ErrorMessage *string `json:"errorMessage,omitempty"`
 
 	// EventType Incident lifecycle event that triggered this delivery
-	EventType AlertDeliveryDtoEventType `json:"eventType"`
+	EventType string `json:"eventType"`
 
 	// FireCount Fire sequence within the step: 1 = initial, 2+ = repeat re-fires
 	FireCount int32              `json:"fireCount"`
@@ -4234,17 +2824,11 @@ type AlertDeliveryDto struct {
 	NextRetryAt *time.Time `json:"nextRetryAt,omitempty"`
 
 	// Status Current delivery status
-	Status AlertDeliveryDtoStatus `json:"status"`
+	Status string `json:"status"`
 
 	// StepNumber 1-based escalation step this delivery belongs to
 	StepNumber int32 `json:"stepNumber"`
 }
-
-// AlertDeliveryDtoEventType Incident lifecycle event that triggered this delivery
-type AlertDeliveryDtoEventType string
-
-// AlertDeliveryDtoStatus Current delivery status
-type AlertDeliveryDtoStatus string
 
 // ApiKeyAuthConfig defines model for ApiKeyAuthConfig.
 type ApiKeyAuthConfig struct {
@@ -4319,14 +2903,11 @@ type AssertionResultDto struct {
 	Passed bool `json:"passed"`
 
 	// Severity Assertion severity
-	Severity AssertionResultDtoSeverity `json:"severity"`
+	Severity string `json:"severity"`
 
 	// Type Assertion type
 	Type string `json:"type"`
 }
-
-// AssertionResultDtoSeverity Assertion severity
-type AssertionResultDtoSeverity string
 
 // AssertionTestResultDto defines model for AssertionTestResultDto.
 type AssertionTestResultDto struct {
@@ -4334,7 +2915,7 @@ type AssertionTestResultDto struct {
 	Actual *string `json:"actual,omitempty"`
 
 	// AssertionType Assertion type evaluated
-	AssertionType AssertionTestResultDtoAssertionType `json:"assertionType"`
+	AssertionType string `json:"assertionType"`
 
 	// Expected Expected value
 	Expected *string `json:"expected,omitempty"`
@@ -4346,14 +2927,8 @@ type AssertionTestResultDto struct {
 	Passed bool `json:"passed"`
 
 	// Severity Assertion severity: FAIL or WARN
-	Severity AssertionTestResultDtoSeverity `json:"severity"`
+	Severity string `json:"severity"`
 }
-
-// AssertionTestResultDtoAssertionType Assertion type evaluated
-type AssertionTestResultDtoAssertionType string
-
-// AssertionTestResultDtoSeverity Assertion severity: FAIL or WARN
-type AssertionTestResultDtoSeverity string
 
 // AuditEventDto defines model for AuditEventDto.
 type AuditEventDto struct {
@@ -5849,7 +4424,7 @@ type IncidentDto struct {
 	ReopenCount int32 `json:"reopenCount"`
 
 	// ResolutionReason How the incident was resolved (AUTO_RECOVERED, MANUAL, etc.)
-	ResolutionReason *IncidentDtoResolutionReason `json:"resolutionReason,omitempty"`
+	ResolutionReason *string `json:"resolutionReason,omitempty"`
 
 	// ResolvedAt Timestamp when the incident was resolved
 	ResolvedAt *time.Time `json:"resolvedAt,omitempty"`
@@ -5873,19 +4448,19 @@ type IncidentDto struct {
 	ServiceSlug *string `json:"serviceSlug,omitempty"`
 
 	// Severity Severity level: DOWN, DEGRADED, or MAINTENANCE
-	Severity IncidentDtoSeverity `json:"severity"`
+	Severity string `json:"severity"`
 
 	// Shortlink Short URL linking to the incident details
 	Shortlink *string `json:"shortlink,omitempty"`
 
 	// Source Incident origin: MONITOR, SERVICE, or MANUAL
-	Source IncidentDtoSource `json:"source"`
+	Source string `json:"source"`
 
 	// StartedAt Timestamp when the incident was detected or created
 	StartedAt *time.Time `json:"startedAt,omitempty"`
 
 	// Status Current lifecycle status (OPEN, RESOLVED, etc.)
-	Status IncidentDtoStatus `json:"status"`
+	Status string `json:"status"`
 
 	// StatusPageVisible Whether this incident is visible on the status page
 	StatusPageVisible bool `json:"statusPageVisible"`
@@ -5908,18 +4483,6 @@ type IncidentDto struct {
 	// UpdatedAt Timestamp when the incident was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 }
-
-// IncidentDtoResolutionReason How the incident was resolved (AUTO_RECOVERED, MANUAL, etc.)
-type IncidentDtoResolutionReason string
-
-// IncidentDtoSeverity Severity level: DOWN, DEGRADED, or MAINTENANCE
-type IncidentDtoSeverity string
-
-// IncidentDtoSource Incident origin: MONITOR, SERVICE, or MANUAL
-type IncidentDtoSource string
-
-// IncidentDtoStatus Current lifecycle status (OPEN, RESOLVED, etc.)
-type IncidentDtoStatus string
 
 // IncidentFilterParams defines model for IncidentFilterParams.
 type IncidentFilterParams struct {
@@ -6066,24 +4629,15 @@ type IncidentTimelineDto struct {
 
 // IncidentUpdateDto defines model for IncidentUpdateDto.
 type IncidentUpdateDto struct {
-	Body              *string                     `json:"body,omitempty"`
-	CreatedAt         time.Time                   `json:"createdAt"`
-	CreatedBy         *IncidentUpdateDtoCreatedBy `json:"createdBy,omitempty"`
-	Id                openapi_types.UUID          `json:"id"`
-	IncidentId        openapi_types.UUID          `json:"incidentId"`
-	NewStatus         *IncidentUpdateDtoNewStatus `json:"newStatus,omitempty"`
-	NotifySubscribers bool                        `json:"notifySubscribers"`
-	OldStatus         *IncidentUpdateDtoOldStatus `json:"oldStatus,omitempty"`
+	Body              *string            `json:"body,omitempty"`
+	CreatedAt         time.Time          `json:"createdAt"`
+	CreatedBy         *string            `json:"createdBy,omitempty"`
+	Id                openapi_types.UUID `json:"id"`
+	IncidentId        openapi_types.UUID `json:"incidentId"`
+	NewStatus         *string            `json:"newStatus,omitempty"`
+	NotifySubscribers bool               `json:"notifySubscribers"`
+	OldStatus         *string            `json:"oldStatus,omitempty"`
 }
-
-// IncidentUpdateDtoCreatedBy defines model for IncidentUpdateDto.CreatedBy.
-type IncidentUpdateDtoCreatedBy string
-
-// IncidentUpdateDtoNewStatus defines model for IncidentUpdateDto.NewStatus.
-type IncidentUpdateDtoNewStatus string
-
-// IncidentUpdateDtoOldStatus defines model for IncidentUpdateDto.OldStatus.
-type IncidentUpdateDtoOldStatus string
 
 // IncidentsSummaryDto Incident summary counters
 type IncidentsSummaryDto struct {
@@ -6100,19 +4654,16 @@ type IntegrationConfigSchemaDto struct {
 
 // IntegrationDto defines model for IntegrationDto.
 type IntegrationDto struct {
-	AuthType         string                         `json:"authType"`
-	ConfigSchema     IntegrationConfigSchemaDto     `json:"configSchema"`
-	Description      string                         `json:"description"`
-	Lifecycle        string                         `json:"lifecycle"`
-	LogoUrl          string                         `json:"logoUrl"`
-	Name             string                         `json:"name"`
-	SetupGuideUrl    string                         `json:"setupGuideUrl"`
-	TierAvailability IntegrationDtoTierAvailability `json:"tierAvailability"`
-	Type             string                         `json:"type"`
+	AuthType         string                     `json:"authType"`
+	ConfigSchema     IntegrationConfigSchemaDto `json:"configSchema"`
+	Description      string                     `json:"description"`
+	Lifecycle        string                     `json:"lifecycle"`
+	LogoUrl          string                     `json:"logoUrl"`
+	Name             string                     `json:"name"`
+	SetupGuideUrl    string                     `json:"setupGuideUrl"`
+	TierAvailability string                     `json:"tierAvailability"`
+	Type             string                     `json:"type"`
 }
-
-// IntegrationDtoTierAvailability defines model for IntegrationDto.TierAvailability.
-type IntegrationDtoTierAvailability string
 
 // IntegrationFieldDto defines model for IntegrationFieldDto.
 type IntegrationFieldDto struct {
@@ -6145,11 +4696,8 @@ type InviteDto struct {
 	RevokedAt *time.Time `json:"revokedAt,omitempty"`
 
 	// RoleOffered Role that will be assigned to the invitee on acceptance
-	RoleOffered InviteDtoRoleOffered `json:"roleOffered"`
+	RoleOffered string `json:"roleOffered"`
 }
-
-// InviteDtoRoleOffered Role that will be assigned to the invitee on acceptance
-type InviteDtoRoleOffered string
 
 // JsonPathAssertion defines model for JsonPathAssertion.
 type JsonPathAssertion struct {
@@ -6190,22 +4738,16 @@ type KeyInfo struct {
 
 // LinkedStatusPageIncidentDto defines model for LinkedStatusPageIncidentDto.
 type LinkedStatusPageIncidentDto struct {
-	Id             openapi_types.UUID                `json:"id"`
-	Impact         LinkedStatusPageIncidentDtoImpact `json:"impact"`
-	PublishedAt    *time.Time                        `json:"publishedAt,omitempty"`
-	Scheduled      bool                              `json:"scheduled"`
-	Status         LinkedStatusPageIncidentDtoStatus `json:"status"`
-	StatusPageId   openapi_types.UUID                `json:"statusPageId"`
-	StatusPageName string                            `json:"statusPageName"`
-	StatusPageSlug string                            `json:"statusPageSlug"`
-	Title          string                            `json:"title"`
+	Id             openapi_types.UUID `json:"id"`
+	Impact         string             `json:"impact"`
+	PublishedAt    *time.Time         `json:"publishedAt,omitempty"`
+	Scheduled      bool               `json:"scheduled"`
+	Status         string             `json:"status"`
+	StatusPageId   openapi_types.UUID `json:"statusPageId"`
+	StatusPageName string             `json:"statusPageName"`
+	StatusPageSlug string             `json:"statusPageSlug"`
+	Title          string             `json:"title"`
 }
-
-// LinkedStatusPageIncidentDtoImpact defines model for LinkedStatusPageIncidentDto.Impact.
-type LinkedStatusPageIncidentDtoImpact string
-
-// LinkedStatusPageIncidentDtoStatus defines model for LinkedStatusPageIncidentDto.Status.
-type LinkedStatusPageIncidentDtoStatus string
 
 // MaintenanceComponentRef A component affected by a scheduled maintenance window
 type MaintenanceComponentRef struct {
@@ -6415,20 +4957,14 @@ type MemberDto struct {
 	Name *string `json:"name,omitempty"`
 
 	// OrgRole Member role within this organization (OWNER, ADMIN, MEMBER)
-	OrgRole MemberDtoOrgRole `json:"orgRole"`
+	OrgRole string `json:"orgRole"`
 
 	// Status Membership status (ACTIVE, PENDING, SUSPENDED)
-	Status MemberDtoStatus `json:"status"`
+	Status string `json:"status"`
 
 	// UserId User identifier of the member
 	UserId int32 `json:"userId"`
 }
-
-// MemberDtoOrgRole Member role within this organization (OWNER, ADMIN, MEMBER)
-type MemberDtoOrgRole string
-
-// MemberDtoStatus Membership status (ACTIVE, PENDING, SUSPENDED)
-type MemberDtoStatus string
 
 // MemberRoleChangedMetadata Role transition recorded when an organization member's role changes.
 type MemberRoleChangedMetadata struct {
@@ -6452,23 +4988,17 @@ type MemberRoleChangedMetadataOldRole string
 
 // MonitorAssertionDto defines model for MonitorAssertionDto.
 type MonitorAssertionDto struct {
-	AssertionType MonitorAssertionDtoAssertionType `json:"assertionType"`
-	Config        MonitorAssertionDto_Config       `json:"config"`
-	Id            openapi_types.UUID               `json:"id"`
-	MonitorId     openapi_types.UUID               `json:"monitorId"`
-	Severity      MonitorAssertionDtoSeverity      `json:"severity"`
+	AssertionType string                     `json:"assertionType"`
+	Config        MonitorAssertionDto_Config `json:"config"`
+	Id            openapi_types.UUID         `json:"id"`
+	MonitorId     openapi_types.UUID         `json:"monitorId"`
+	Severity      string                     `json:"severity"`
 }
-
-// MonitorAssertionDtoAssertionType defines model for MonitorAssertionDto.AssertionType.
-type MonitorAssertionDtoAssertionType string
 
 // MonitorAssertionDto_Config defines model for MonitorAssertionDto.Config.
 type MonitorAssertionDto_Config struct {
 	union json.RawMessage
 }
-
-// MonitorAssertionDtoSeverity defines model for MonitorAssertionDto.Severity.
-type MonitorAssertionDtoSeverity string
 
 // MonitorAuthConfig New authentication configuration (full replacement)
 type MonitorAuthConfig struct {
@@ -6477,14 +5007,11 @@ type MonitorAuthConfig struct {
 
 // MonitorAuthDto defines model for MonitorAuthDto.
 type MonitorAuthDto struct {
-	AuthType  MonitorAuthDtoAuthType `json:"authType"`
-	Config    MonitorAuthDto_Config  `json:"config"`
-	Id        openapi_types.UUID     `json:"id"`
-	MonitorId openapi_types.UUID     `json:"monitorId"`
+	AuthType  string                `json:"authType"`
+	Config    MonitorAuthDto_Config `json:"config"`
+	Id        openapi_types.UUID    `json:"id"`
+	MonitorId openapi_types.UUID    `json:"monitorId"`
 }
-
-// MonitorAuthDtoAuthType defines model for MonitorAuthDto.AuthType.
-type MonitorAuthDtoAuthType string
 
 // MonitorAuthDto_Config defines model for MonitorAuthDto.Config.
 type MonitorAuthDto_Config struct {
@@ -6505,7 +5032,7 @@ type MonitorDto struct {
 	CreatedAt time.Time `json:"createdAt"`
 
 	// CurrentStatus Current operational state — UP, DOWN, DEGRADED, PAUSED, or UNKNOWN if no probe data yet
-	CurrentStatus *MonitorDtoCurrentStatus `json:"currentStatus,omitempty"`
+	CurrentStatus *string `json:"currentStatus,omitempty"`
 
 	// Enabled Whether the monitor is active
 	Enabled     bool     `json:"enabled"`
@@ -6519,7 +5046,7 @@ type MonitorDto struct {
 	IncidentPolicy *IncidentPolicyDto `json:"incidentPolicy,omitempty"`
 
 	// ManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API
-	ManagedBy MonitorDtoManagedBy `json:"managedBy"`
+	ManagedBy string `json:"managedBy"`
 
 	// Name Human-readable name for this monitor
 	Name string `json:"name"`
@@ -6534,8 +5061,8 @@ type MonitorDto struct {
 	Regions []string `json:"regions"`
 
 	// Tags Tags applied to this monitor
-	Tags *[]TagDto      `json:"tags,omitempty"`
-	Type MonitorDtoType `json:"type"`
+	Tags *[]TagDto `json:"tags,omitempty"`
+	Type string    `json:"type"`
 
 	// UpdatedAt Timestamp when the monitor was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -6545,15 +5072,6 @@ type MonitorDto struct {
 type MonitorDto_Config struct {
 	union json.RawMessage
 }
-
-// MonitorDtoCurrentStatus Current operational state — UP, DOWN, DEGRADED, PAUSED, or UNKNOWN if no probe data yet
-type MonitorDtoCurrentStatus string
-
-// MonitorDtoManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API
-type MonitorDtoManagedBy string
-
-// MonitorDtoType defines model for MonitorDto.Type.
-type MonitorDtoType string
 
 // MonitorReference Monitors that reference this secret; null on create/update responses
 type MonitorReference struct {
@@ -6606,7 +5124,7 @@ type MonitorVersionDto struct {
 	ChangedById *int32 `json:"changedById,omitempty"`
 
 	// ChangedVia Change source (DASHBOARD, CLI, API)
-	ChangedVia MonitorVersionDtoChangedVia `json:"changedVia"`
+	ChangedVia string `json:"changedVia"`
 
 	// CreatedAt Timestamp when this version was recorded
 	CreatedAt time.Time `json:"createdAt"`
@@ -6623,9 +5141,6 @@ type MonitorVersionDto struct {
 	// Version Monotonically increasing version number
 	Version int32 `json:"version"`
 }
-
-// MonitorVersionDtoChangedVia Change source (DASHBOARD, CLI, API)
-type MonitorVersionDtoChangedVia string
 
 // MonitorsSummaryDto Dashboard summary counters for monitors
 type MonitorsSummaryDto struct {
@@ -6666,7 +5181,7 @@ type NotificationDispatchDto struct {
 	AcknowledgedAt *time.Time `json:"acknowledgedAt,omitempty"`
 
 	// CompletionReason Why the dispatch reached COMPLETED: EXHAUSTED (all steps ran, no ack), RESOLVED (incident resolved), NO_STEPS (policy had no steps). Null for non-terminal states.
-	CompletionReason *NotificationDispatchDtoCompletionReason `json:"completionReason,omitempty"`
+	CompletionReason *string `json:"completionReason,omitempty"`
 
 	// CreatedAt Timestamp when the dispatch was created
 	CreatedAt time.Time `json:"createdAt"`
@@ -6696,7 +5211,7 @@ type NotificationDispatchDto struct {
 	PolicyName *string `json:"policyName,omitempty"`
 
 	// Status Current dispatch state
-	Status NotificationDispatchDtoStatus `json:"status"`
+	Status string `json:"status"`
 
 	// TotalSteps Total number of escalation steps in the policy (null if policy has been deleted)
 	TotalSteps *int32 `json:"totalSteps,omitempty"`
@@ -6704,12 +5219,6 @@ type NotificationDispatchDto struct {
 	// UpdatedAt Timestamp when the dispatch was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 }
-
-// NotificationDispatchDtoCompletionReason Why the dispatch reached COMPLETED: EXHAUSTED (all steps ran, no ack), RESOLVED (incident resolved), NO_STEPS (policy had no steps). Null for non-terminal states.
-type NotificationDispatchDtoCompletionReason string
-
-// NotificationDispatchDtoStatus Current dispatch state
-type NotificationDispatchDtoStatus string
 
 // NotificationDto In-app notification for the current user
 type NotificationDto struct {
@@ -7064,7 +5573,7 @@ type ResourceGroupDto struct {
 	Health ResourceGroupHealthDto `json:"health"`
 
 	// HealthThresholdType Health threshold type: COUNT or PERCENTAGE
-	HealthThresholdType *ResourceGroupDtoHealthThresholdType `json:"healthThresholdType,omitempty"`
+	HealthThresholdType *string `json:"healthThresholdType,omitempty"`
 
 	// HealthThresholdValue Health threshold value
 	HealthThresholdValue *float32 `json:"healthThresholdValue,omitempty"`
@@ -7073,7 +5582,7 @@ type ResourceGroupDto struct {
 	Id openapi_types.UUID `json:"id"`
 
 	// ManagedBy Source that created/owns this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on groups created before this attribution column existed.
-	ManagedBy *ResourceGroupDtoManagedBy `json:"managedBy,omitempty"`
+	ManagedBy *string `json:"managedBy,omitempty"`
 
 	// Members Member list with individual statuses; populated on detail GET only
 	Members *[]ResourceGroupMemberDto `json:"members,omitempty"`
@@ -7097,12 +5606,6 @@ type ResourceGroupDto struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-// ResourceGroupDtoHealthThresholdType Health threshold type: COUNT or PERCENTAGE
-type ResourceGroupDtoHealthThresholdType string
-
-// ResourceGroupDtoManagedBy Source that created/owns this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on groups created before this attribution column existed.
-type ResourceGroupDtoManagedBy string
-
 // ResourceGroupHealthDto Aggregated health summary for a resource group
 type ResourceGroupHealthDto struct {
 	// ActiveIncidents Number of members with an active incident or non-operational status
@@ -7115,20 +5618,14 @@ type ResourceGroupHealthDto struct {
 	OperationalCount int32 `json:"operationalCount"`
 
 	// Status Worst-of health status across all members
-	Status ResourceGroupHealthDtoStatus `json:"status"`
+	Status string `json:"status"`
 
 	// ThresholdStatus Computed group health status based on threshold: 'healthy', 'degraded', or 'down'. Null when no health threshold is configured.
-	ThresholdStatus *ResourceGroupHealthDtoThresholdStatus `json:"thresholdStatus,omitempty"`
+	ThresholdStatus *string `json:"thresholdStatus,omitempty"`
 
 	// TotalMembers Total number of members in the group
 	TotalMembers int32 `json:"totalMembers"`
 }
-
-// ResourceGroupHealthDtoStatus Worst-of health status across all members
-type ResourceGroupHealthDtoStatus string
-
-// ResourceGroupHealthDtoThresholdStatus Computed group health status based on threshold: 'healthy', 'degraded', or 'down'. Null when no health threshold is configured.
-type ResourceGroupHealthDtoThresholdStatus string
 
 // ResourceGroupMemberDto A single member of a resource group with its computed health status
 type ResourceGroupMemberDto struct {
@@ -7178,7 +5675,7 @@ type ResourceGroupMemberDto struct {
 	Slug *string `json:"slug,omitempty"`
 
 	// Status Computed health status for this member
-	Status ResourceGroupMemberDtoStatus `json:"status"`
+	Status string `json:"status"`
 
 	// SubscriptionId Subscription ID for the service (services only); used to link to the dependency detail page
 	SubscriptionId *openapi_types.UUID `json:"subscriptionId,omitempty"`
@@ -7186,9 +5683,6 @@ type ResourceGroupMemberDto struct {
 	// Uptime24h 24h uptime percentage; populated when includeMetrics=true
 	Uptime24h *float64 `json:"uptime24h,omitempty"`
 }
-
-// ResourceGroupMemberDtoStatus Computed health status for this member
-type ResourceGroupMemberDtoStatus string
 
 // ResponseSizeAssertion defines model for ResponseSizeAssertion.
 type ResponseSizeAssertion struct {
@@ -7227,7 +5721,7 @@ type ResultSummaryDto struct {
 	ChartData []ChartBucketDto `json:"chartData"`
 
 	// CurrentStatus Derived current status across all regions
-	CurrentStatus ResultSummaryDtoCurrentStatus `json:"currentStatus"`
+	CurrentStatus string `json:"currentStatus"`
 
 	// LatestPerRegion Latest check result per region
 	LatestPerRegion []RegionStatusDto `json:"latestPerRegion"`
@@ -7238,9 +5732,6 @@ type ResultSummaryDto struct {
 	// UptimeWindow Uptime percentage for the selected chart window; null when no data
 	UptimeWindow *float64 `json:"uptimeWindow,omitempty"`
 }
-
-// ResultSummaryDtoCurrentStatus Derived current status across all regions
-type ResultSummaryDtoCurrentStatus string
 
 // RetryStrategy Default retry strategy for member monitors; null clears
 type RetryStrategy struct {
@@ -7613,9 +6104,9 @@ type ServiceSubscriptionDto struct {
 	AdapterType string `json:"adapterType"`
 
 	// AlertSensitivity Alert sensitivity: ALL (synthetic + real incidents), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (real + DOWN severity)
-	AlertSensitivity ServiceSubscriptionDtoAlertSensitivity `json:"alertSensitivity"`
-	Category         *string                                `json:"category,omitempty"`
-	Component        *ServiceComponentDto                   `json:"component,omitempty"`
+	AlertSensitivity string               `json:"alertSensitivity"`
+	Category         *string              `json:"category,omitempty"`
+	Component        *ServiceComponentDto `json:"component,omitempty"`
 
 	// ComponentId Subscribed component id; null for whole-service subscription
 	ComponentId *openapi_types.UUID `json:"componentId,omitempty"`
@@ -7640,9 +6131,6 @@ type ServiceSubscriptionDto struct {
 	// SubscriptionId Unique subscription identifier
 	SubscriptionId openapi_types.UUID `json:"subscriptionId"`
 }
-
-// ServiceSubscriptionDtoAlertSensitivity Alert sensitivity: ALL (synthetic + real incidents), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (real + DOWN severity)
-type ServiceSubscriptionDtoAlertSensitivity string
 
 // ServiceUptimeResponse Uptime response with per-bucket breakdown and overall percentage for the period
 type ServiceUptimeResponse struct {
@@ -8086,29 +6574,23 @@ type StatusPageBranding struct {
 
 // StatusPageComponentDto defines model for StatusPageComponentDto.
 type StatusPageComponentDto struct {
-	CreatedAt          time.Time                           `json:"createdAt"`
-	CurrentStatus      StatusPageComponentDtoCurrentStatus `json:"currentStatus"`
-	Description        *string                             `json:"description,omitempty"`
-	DisplayOrder       int32                               `json:"displayOrder"`
-	ExcludeFromOverall bool                                `json:"excludeFromOverall"`
-	GroupId            *openapi_types.UUID                 `json:"groupId,omitempty"`
-	Id                 openapi_types.UUID                  `json:"id"`
-	MonitorId          *openapi_types.UUID                 `json:"monitorId,omitempty"`
-	Name               string                              `json:"name"`
-	PageOrder          int32                               `json:"pageOrder"`
-	ResourceGroupId    *openapi_types.UUID                 `json:"resourceGroupId,omitempty"`
-	ShowUptime         bool                                `json:"showUptime"`
-	StartDate          *time.Time                          `json:"startDate,omitempty"`
-	StatusPageId       openapi_types.UUID                  `json:"statusPageId"`
-	Type               StatusPageComponentDtoType          `json:"type"`
-	UpdatedAt          time.Time                           `json:"updatedAt"`
+	CreatedAt          time.Time           `json:"createdAt"`
+	CurrentStatus      string              `json:"currentStatus"`
+	Description        *string             `json:"description,omitempty"`
+	DisplayOrder       int32               `json:"displayOrder"`
+	ExcludeFromOverall bool                `json:"excludeFromOverall"`
+	GroupId            *openapi_types.UUID `json:"groupId,omitempty"`
+	Id                 openapi_types.UUID  `json:"id"`
+	MonitorId          *openapi_types.UUID `json:"monitorId,omitempty"`
+	Name               string              `json:"name"`
+	PageOrder          int32               `json:"pageOrder"`
+	ResourceGroupId    *openapi_types.UUID `json:"resourceGroupId,omitempty"`
+	ShowUptime         bool                `json:"showUptime"`
+	StartDate          *time.Time          `json:"startDate,omitempty"`
+	StatusPageId       openapi_types.UUID  `json:"statusPageId"`
+	Type               string              `json:"type"`
+	UpdatedAt          time.Time           `json:"updatedAt"`
 }
-
-// StatusPageComponentDtoCurrentStatus defines model for StatusPageComponentDto.CurrentStatus.
-type StatusPageComponentDtoCurrentStatus string
-
-// StatusPageComponentDtoType defines model for StatusPageComponentDto.Type.
-type StatusPageComponentDtoType string
 
 // StatusPageComponentGroupDto defines model for StatusPageComponentGroupDto.
 type StatusPageComponentGroupDto struct {
@@ -8126,72 +6608,51 @@ type StatusPageComponentGroupDto struct {
 
 // StatusPageCustomDomainDto defines model for StatusPageCustomDomainDto.
 type StatusPageCustomDomainDto struct {
-	CfCustomHostnameId      *string                                     `json:"cfCustomHostnameId,omitempty"`
-	CfSslStatus             *string                                     `json:"cfSslStatus,omitempty"`
-	CreatedAt               time.Time                                   `json:"createdAt"`
-	Hostname                string                                      `json:"hostname"`
-	Id                      openapi_types.UUID                          `json:"id"`
-	Primary                 bool                                        `json:"primary"`
-	SslActiveAt             *time.Time                                  `json:"sslActiveAt,omitempty"`
-	Status                  StatusPageCustomDomainDtoStatus             `json:"status"`
-	UpdatedAt               time.Time                                   `json:"updatedAt"`
-	VerificationCnameTarget string                                      `json:"verificationCnameTarget"`
-	VerificationError       *string                                     `json:"verificationError,omitempty"`
-	VerificationMethod      StatusPageCustomDomainDtoVerificationMethod `json:"verificationMethod"`
-	VerificationToken       string                                      `json:"verificationToken"`
-	VerifiedAt              *time.Time                                  `json:"verifiedAt,omitempty"`
+	CfCustomHostnameId      *string            `json:"cfCustomHostnameId,omitempty"`
+	CfSslStatus             *string            `json:"cfSslStatus,omitempty"`
+	CreatedAt               time.Time          `json:"createdAt"`
+	Hostname                string             `json:"hostname"`
+	Id                      openapi_types.UUID `json:"id"`
+	Primary                 bool               `json:"primary"`
+	SslActiveAt             *time.Time         `json:"sslActiveAt,omitempty"`
+	Status                  string             `json:"status"`
+	UpdatedAt               time.Time          `json:"updatedAt"`
+	VerificationCnameTarget string             `json:"verificationCnameTarget"`
+	VerificationError       *string            `json:"verificationError,omitempty"`
+	VerificationMethod      string             `json:"verificationMethod"`
+	VerificationToken       string             `json:"verificationToken"`
+	VerifiedAt              *time.Time         `json:"verifiedAt,omitempty"`
 }
-
-// StatusPageCustomDomainDtoStatus defines model for StatusPageCustomDomainDto.Status.
-type StatusPageCustomDomainDtoStatus string
-
-// StatusPageCustomDomainDtoVerificationMethod defines model for StatusPageCustomDomainDto.VerificationMethod.
-type StatusPageCustomDomainDtoVerificationMethod string
 
 // StatusPageDto defines model for StatusPageDto.
 type StatusPageDto struct {
 	// Branding Updated branding configuration; null preserves current
-	Branding       StatusPageBranding        `json:"branding"`
-	ComponentCount *int32                    `json:"componentCount,omitempty"`
-	CreatedAt      time.Time                 `json:"createdAt"`
-	Description    *string                   `json:"description,omitempty"`
-	Enabled        bool                      `json:"enabled"`
-	Id             openapi_types.UUID        `json:"id"`
-	IncidentMode   StatusPageDtoIncidentMode `json:"incidentMode"`
+	Branding       StatusPageBranding `json:"branding"`
+	ComponentCount *int32             `json:"componentCount,omitempty"`
+	CreatedAt      time.Time          `json:"createdAt"`
+	Description    *string            `json:"description,omitempty"`
+	Enabled        bool               `json:"enabled"`
+	Id             openapi_types.UUID `json:"id"`
+	IncidentMode   string             `json:"incidentMode"`
 
 	// ManagedBy Source that created/owns this status page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on pages created before this attribution column existed.
-	ManagedBy       *StatusPageDtoManagedBy     `json:"managedBy,omitempty"`
-	Name            string                      `json:"name"`
-	OrganizationId  int32                       `json:"organizationId"`
-	OverallStatus   *StatusPageDtoOverallStatus `json:"overallStatus,omitempty"`
-	Slug            string                      `json:"slug"`
-	SubscriberCount *int64                      `json:"subscriberCount,omitempty"`
-	UpdatedAt       time.Time                   `json:"updatedAt"`
-	Visibility      StatusPageDtoVisibility     `json:"visibility"`
-	WorkspaceId     int32                       `json:"workspaceId"`
+	ManagedBy       *string   `json:"managedBy,omitempty"`
+	Name            string    `json:"name"`
+	OrganizationId  int32     `json:"organizationId"`
+	OverallStatus   *string   `json:"overallStatus,omitempty"`
+	Slug            string    `json:"slug"`
+	SubscriberCount *int64    `json:"subscriberCount,omitempty"`
+	UpdatedAt       time.Time `json:"updatedAt"`
+	Visibility      string    `json:"visibility"`
+	WorkspaceId     int32     `json:"workspaceId"`
 }
-
-// StatusPageDtoIncidentMode defines model for StatusPageDto.IncidentMode.
-type StatusPageDtoIncidentMode string
-
-// StatusPageDtoManagedBy Source that created/owns this status page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on pages created before this attribution column existed.
-type StatusPageDtoManagedBy string
-
-// StatusPageDtoOverallStatus defines model for StatusPageDto.OverallStatus.
-type StatusPageDtoOverallStatus string
-
-// StatusPageDtoVisibility defines model for StatusPageDto.Visibility.
-type StatusPageDtoVisibility string
 
 // StatusPageIncidentComponentDto defines model for StatusPageIncidentComponentDto.
 type StatusPageIncidentComponentDto struct {
-	ComponentName         string                                        `json:"componentName"`
-	ComponentStatus       StatusPageIncidentComponentDtoComponentStatus `json:"componentStatus"`
-	StatusPageComponentId openapi_types.UUID                            `json:"statusPageComponentId"`
+	ComponentName         string             `json:"componentName"`
+	ComponentStatus       string             `json:"componentStatus"`
+	StatusPageComponentId openapi_types.UUID `json:"statusPageComponentId"`
 }
-
-// StatusPageIncidentComponentDtoComponentStatus defines model for StatusPageIncidentComponentDto.ComponentStatus.
-type StatusPageIncidentComponentDtoComponentStatus string
 
 // StatusPageIncidentDto defines model for StatusPageIncidentDto.
 type StatusPageIncidentDto struct {
@@ -8200,7 +6661,7 @@ type StatusPageIncidentDto struct {
 	CreatedAt          time.Time                         `json:"createdAt"`
 	CreatedByUserId    *int32                            `json:"createdByUserId,omitempty"`
 	Id                 openapi_types.UUID                `json:"id"`
-	Impact             StatusPageIncidentDtoImpact       `json:"impact"`
+	Impact             string                            `json:"impact"`
 	IncidentId         *openapi_types.UUID               `json:"incidentId,omitempty"`
 	PostmortemBody     *string                           `json:"postmortemBody,omitempty"`
 	PostmortemUrl      *string                           `json:"postmortemUrl,omitempty"`
@@ -8210,35 +6671,23 @@ type StatusPageIncidentDto struct {
 	ScheduledFor       *time.Time                        `json:"scheduledFor,omitempty"`
 	ScheduledUntil     *time.Time                        `json:"scheduledUntil,omitempty"`
 	StartedAt          time.Time                         `json:"startedAt"`
-	Status             StatusPageIncidentDtoStatus       `json:"status"`
+	Status             string                            `json:"status"`
 	StatusPageId       openapi_types.UUID                `json:"statusPageId"`
 	Title              string                            `json:"title"`
 	UpdatedAt          time.Time                         `json:"updatedAt"`
 	Updates            *[]StatusPageIncidentUpdateDto    `json:"updates,omitempty"`
 }
 
-// StatusPageIncidentDtoImpact defines model for StatusPageIncidentDto.Impact.
-type StatusPageIncidentDtoImpact string
-
-// StatusPageIncidentDtoStatus defines model for StatusPageIncidentDto.Status.
-type StatusPageIncidentDtoStatus string
-
 // StatusPageIncidentUpdateDto defines model for StatusPageIncidentUpdateDto.
 type StatusPageIncidentUpdateDto struct {
-	Body              string                                `json:"body"`
-	CreatedAt         time.Time                             `json:"createdAt"`
-	CreatedBy         *StatusPageIncidentUpdateDtoCreatedBy `json:"createdBy,omitempty"`
-	CreatedByUserId   *int32                                `json:"createdByUserId,omitempty"`
-	Id                openapi_types.UUID                    `json:"id"`
-	NotifySubscribers bool                                  `json:"notifySubscribers"`
-	Status            StatusPageIncidentUpdateDtoStatus     `json:"status"`
+	Body              string             `json:"body"`
+	CreatedAt         time.Time          `json:"createdAt"`
+	CreatedBy         *string            `json:"createdBy,omitempty"`
+	CreatedByUserId   *int32             `json:"createdByUserId,omitempty"`
+	Id                openapi_types.UUID `json:"id"`
+	NotifySubscribers bool               `json:"notifySubscribers"`
+	Status            string             `json:"status"`
 }
-
-// StatusPageIncidentUpdateDtoCreatedBy defines model for StatusPageIncidentUpdateDto.CreatedBy.
-type StatusPageIncidentUpdateDtoCreatedBy string
-
-// StatusPageIncidentUpdateDtoStatus defines model for StatusPageIncidentUpdateDto.Status.
-type StatusPageIncidentUpdateDtoStatus string
 
 // StatusPageSubscriberDto defines model for StatusPageSubscriberDto.
 type StatusPageSubscriberDto struct {

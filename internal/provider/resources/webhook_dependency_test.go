@@ -194,7 +194,7 @@ func TestDependency_DTOReadShape(t *testing.T) {
 		SubscriptionId:   subID,
 		Slug:             "aws",
 		Name:             "Amazon Web Services",
-		AlertSensitivity: generated.ServiceSubscriptionDtoAlertSensitivity("INCIDENTS_ONLY"),
+		AlertSensitivity: "INCIDENTS_ONLY",
 		ComponentId:      &cid,
 	}
 	if dto.SubscriptionId.String() != subID.String() {
