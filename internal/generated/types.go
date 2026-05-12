@@ -6092,7 +6092,7 @@ type ServiceStatusDto struct {
 
 // ServiceSubscribeRequest Optional body for subscribing to a specific component of a service
 type ServiceSubscribeRequest struct {
-	// AlertSensitivity Alert sensitivity level. Defaults to INCIDENTS_ONLY when not provided.
+	// AlertSensitivity Alert sensitivity: ALL (any status change), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (only DOWN-level incidents), AWARENESS (track silently — show on dashboard, never send alerts). Defaults to INCIDENTS_ONLY when not provided.
 	AlertSensitivity *string `json:"alertSensitivity,omitempty"`
 
 	// ComponentId ID of the component to subscribe to. Omit or null for whole-service subscription.
@@ -6103,7 +6103,7 @@ type ServiceSubscribeRequest struct {
 type ServiceSubscriptionDto struct {
 	AdapterType string `json:"adapterType"`
 
-	// AlertSensitivity Alert sensitivity: ALL (synthetic + real incidents), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (real + DOWN severity)
+	// AlertSensitivity Alert sensitivity: ALL (synthetic + real incidents), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (real + DOWN severity), AWARENESS (real vendor incidents tracked silently — visible on dashboard, never paged)
 	AlertSensitivity string               `json:"alertSensitivity"`
 	Category         *string              `json:"category,omitempty"`
 	Component        *ServiceComponentDto `json:"component,omitempty"`
@@ -7290,7 +7290,7 @@ type UpdateAlertChannelRequestManagedBy string
 
 // UpdateAlertSensitivityRequest Request body for updating alert sensitivity on a service subscription
 type UpdateAlertSensitivityRequest struct {
-	// AlertSensitivity Alert sensitivity: ALL (any status change), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (only DOWN-level incidents)
+	// AlertSensitivity Alert sensitivity: ALL (any status change), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (only DOWN-level incidents), AWARENESS (track silently — show on dashboard, never send alerts)
 	AlertSensitivity string `json:"alertSensitivity"`
 }
 
