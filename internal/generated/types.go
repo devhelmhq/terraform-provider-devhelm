@@ -4073,10 +4073,25 @@ type EnvironmentDto struct {
 	Variables map[string]string `json:"variables"`
 }
 
+// ErrorEntry One structured validation rejection
+type ErrorEntry struct {
+	// Code Stable machine-readable code; see ValidationErrorCode for the registry
+	Code string `json:"code"`
+
+	// Field JSON-pointer-like path to the offending field, or null for request-wide errors
+	Field *string `json:"field,omitempty"`
+
+	// Message Human-readable message; safe to surface to end users
+	Message string `json:"message"`
+}
+
 // ErrorResponse Uniform error envelope returned for every non-2xx response
 type ErrorResponse struct {
 	// Code Coarse machine-readable error category (e.g. NOT_FOUND, RATE_LIMITED); stable per status
 	Code string `json:"code"`
+
+	// Errors Structured per-field rejections; populated for validation errors, null otherwise
+	Errors *[]*ErrorEntry `json:"errors,omitempty"`
 
 	// Message Human-readable error message; safe to surface to end users
 	Message string `json:"message"`
@@ -5867,23 +5882,26 @@ type SeoMetadataDto struct {
 
 // ServiceCatalogDto Related services
 type ServiceCatalogDto struct {
-	ActiveIncidentCount    int64              `json:"activeIncidentCount"`
-	AdapterType            string             `json:"adapterType"`
-	Category               *string            `json:"category,omitempty"`
-	ComponentCount         int64              `json:"componentCount"`
-	CreatedAt              time.Time          `json:"createdAt"`
-	DataCompleteness       string             `json:"dataCompleteness"`
-	DeveloperContext       *string            `json:"developerContext,omitempty"`
-	Enabled                bool               `json:"enabled"`
-	Id                     openapi_types.UUID `json:"id"`
-	LogoUrl                *string            `json:"logoUrl,omitempty"`
-	Name                   string             `json:"name"`
-	OfficialStatusUrl      *string            `json:"officialStatusUrl,omitempty"`
-	OverallStatus          *string            `json:"overallStatus,omitempty"`
-	PollingIntervalSeconds int32              `json:"pollingIntervalSeconds"`
-	Published              bool               `json:"published"`
-	Slug                   string             `json:"slug"`
-	UpdatedAt              time.Time          `json:"updatedAt"`
+	ActiveIncidentCount int64              `json:"activeIncidentCount"`
+	AdapterType         string             `json:"adapterType"`
+	Category            *string            `json:"category,omitempty"`
+	ComponentCount      int64              `json:"componentCount"`
+	CreatedAt           time.Time          `json:"createdAt"`
+	DataCompleteness    string             `json:"dataCompleteness"`
+	DeveloperContext    *string            `json:"developerContext,omitempty"`
+	Enabled             bool               `json:"enabled"`
+	Id                  openapi_types.UUID `json:"id"`
+
+	// LifecycleStatus Service lifecycle state: ACTIVE, DEGRADED, DEPRECATED, or RETIRED
+	LifecycleStatus        string    `json:"lifecycleStatus"`
+	LogoUrl                *string   `json:"logoUrl,omitempty"`
+	Name                   string    `json:"name"`
+	OfficialStatusUrl      *string   `json:"officialStatusUrl,omitempty"`
+	OverallStatus          *string   `json:"overallStatus,omitempty"`
+	PollingIntervalSeconds int32     `json:"pollingIntervalSeconds"`
+	Published              bool      `json:"published"`
+	Slug                   string    `json:"slug"`
+	UpdatedAt              time.Time `json:"updatedAt"`
 
 	// Uptime30d Aggregated 30-day uptime percentage across all components
 	Uptime30d *float64 `json:"uptime30d,omitempty"`
@@ -5953,17 +5971,20 @@ type ServiceDayDetailDto struct {
 
 // ServiceDetailDto defines model for ServiceDetailDto.
 type ServiceDetailDto struct {
-	ActiveMaintenances     []ScheduledMaintenanceDto  `json:"activeMaintenances"`
-	AdapterType            string                     `json:"adapterType"`
-	Category               *string                    `json:"category,omitempty"`
-	Components             []ServiceComponentDto      `json:"components"`
-	ComponentsSummary      *ComponentsSummaryDto      `json:"componentsSummary,omitempty"`
-	CreatedAt              time.Time                  `json:"createdAt"`
-	CurrentStatus          *ServiceStatusDto          `json:"currentStatus,omitempty"`
-	DataCompleteness       string                     `json:"dataCompleteness"`
-	DeveloperContext       *string                    `json:"developerContext,omitempty"`
-	Enabled                bool                       `json:"enabled"`
-	Id                     openapi_types.UUID         `json:"id"`
+	ActiveMaintenances []ScheduledMaintenanceDto `json:"activeMaintenances"`
+	AdapterType        string                    `json:"adapterType"`
+	Category           *string                   `json:"category,omitempty"`
+	Components         []ServiceComponentDto     `json:"components"`
+	ComponentsSummary  *ComponentsSummaryDto     `json:"componentsSummary,omitempty"`
+	CreatedAt          time.Time                 `json:"createdAt"`
+	CurrentStatus      *ServiceStatusDto         `json:"currentStatus,omitempty"`
+	DataCompleteness   string                    `json:"dataCompleteness"`
+	DeveloperContext   *string                   `json:"developerContext,omitempty"`
+	Enabled            bool                      `json:"enabled"`
+	Id                 openapi_types.UUID        `json:"id"`
+
+	// LifecycleStatus Service lifecycle state: ACTIVE, DEGRADED, DEPRECATED, or RETIRED
+	LifecycleStatus        string                     `json:"lifecycleStatus"`
 	LogoUrl                *string                    `json:"logoUrl,omitempty"`
 	Name                   string                     `json:"name"`
 	OfficialStatusUrl      *string                    `json:"officialStatusUrl,omitempty"`
@@ -6092,7 +6113,7 @@ type ServiceStatusDto struct {
 
 // ServiceSubscribeRequest Optional body for subscribing to a specific component of a service
 type ServiceSubscribeRequest struct {
-	// AlertSensitivity Alert sensitivity level. Defaults to INCIDENTS_ONLY when not provided.
+	// AlertSensitivity Alert sensitivity: ALL (any status change), INCIDENTS_ONLY (real vendor incidents, page on every one), MAJOR_ONLY (only DOWN-level incidents), AWARENESS (track silently — show on dashboard, never send alerts). Defaults to AWARENESS when not provided — silent tracking is the friendliest first-run choice; switch to one of the paging modes to opt in to alert-channel fan-out.
 	AlertSensitivity *string `json:"alertSensitivity,omitempty"`
 
 	// ComponentId ID of the component to subscribe to. Omit or null for whole-service subscription.
@@ -6103,7 +6124,7 @@ type ServiceSubscribeRequest struct {
 type ServiceSubscriptionDto struct {
 	AdapterType string `json:"adapterType"`
 
-	// AlertSensitivity Alert sensitivity: ALL (synthetic + real incidents), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (real + DOWN severity)
+	// AlertSensitivity Alert sensitivity: ALL (synthetic + real incidents, paged), INCIDENTS_ONLY (real vendor incidents, paged), MAJOR_ONLY (real + DOWN severity, paged), AWARENESS (real vendor incidents tracked silently — visible on dashboard, never paged; default for new subscriptions)
 	AlertSensitivity string               `json:"alertSensitivity"`
 	Category         *string              `json:"category,omitempty"`
 	Component        *ServiceComponentDto `json:"component,omitempty"`
@@ -7290,7 +7311,7 @@ type UpdateAlertChannelRequestManagedBy string
 
 // UpdateAlertSensitivityRequest Request body for updating alert sensitivity on a service subscription
 type UpdateAlertSensitivityRequest struct {
-	// AlertSensitivity Alert sensitivity: ALL (any status change), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (only DOWN-level incidents)
+	// AlertSensitivity Alert sensitivity: ALL (any status change), INCIDENTS_ONLY (real vendor incidents, page on every one), MAJOR_ONLY (only DOWN-level incidents), AWARENESS (track silently — show on dashboard, never send alerts; default for new subscriptions)
 	AlertSensitivity string `json:"alertSensitivity"`
 }
 
