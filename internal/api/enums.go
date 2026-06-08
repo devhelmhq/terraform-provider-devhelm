@@ -97,6 +97,19 @@ var AlertChannelTypes = []string{
 	string(generated.OpsGenieChannelConfigChannelTypeOpsgenie),
 	string(generated.TeamsChannelConfigChannelTypeTeams),
 	string(generated.DiscordChannelConfigChannelTypeDiscord),
+	string(generated.TelegramChannelConfigChannelTypeTelegram),
+	string(generated.GoogleChatChannelConfigChannelTypeGoogleChat),
+	string(generated.PushoverChannelConfigChannelTypePushover),
+	string(generated.MattermostChannelConfigChannelTypeMattermost),
+	string(generated.SplunkOnCallChannelConfigChannelTypeSplunkOncall),
+	string(generated.PushbulletChannelConfigChannelTypePushbullet),
+	string(generated.LinearChannelConfigChannelTypeLinear),
+	string(generated.IncidentIoChannelConfigChannelTypeIncidentIo),
+	string(generated.RootlyChannelConfigChannelTypeRootly),
+	string(generated.ZapierChannelConfigChannelTypeZapier),
+	string(generated.DatadogChannelConfigChannelTypeDatadog),
+	string(generated.JiraChannelConfigChannelTypeJira),
+	string(generated.GitLabChannelConfigChannelTypeGitlab),
 }
 
 // AlertSensitivities lists every wire-format alert-sensitivity value for

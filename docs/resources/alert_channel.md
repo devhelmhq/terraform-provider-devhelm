@@ -79,22 +79,46 @@ resource "devhelm_alert_channel" "internal_webhook" {
 
 ### Required
 
-- `channel_type` (String) Channel type discriminator. One of: slack, email, pagerduty, opsgenie, discord, teams, webhook. Spec source of truth: `AlertChannelDto.channelType` enum. Each value gates a specific subset of optional attributes; see ValidateConfig in `alert_channel_validate.go` for the per-type required + forbidden field matrix.
+- `channel_type` (String) Channel type discriminator. Spec source of truth: `AlertChannelDto.channelType` enum. Each value gates a specific subset of optional attributes; see ValidateConfig in `alert_channel_validate.go` for the per-type required + forbidden field matrix.
 - `name` (String) Human-readable name for this alert channel
 
 ### Optional
 
-- `api_key` (String, Sensitive) OpsGenie API key
+- `access_token` (String, Sensitive) Pushbullet access token
+- `api_key` (String, Sensitive) Service API key
+- `api_token` (String, Sensitive) Atlassian API token
+- `app_token` (String, Sensitive) Pushover application API token
+- `authorization_key` (String, Sensitive) GitLab alert integration authorization key
+- `bot_token` (String, Sensitive) Telegram bot token from @BotFather
+- `channel` (String) Override channel (if webhook allows)
+- `chat_id` (String) Telegram chat, group, or channel ID
 - `custom_headers` (Map of String) Custom HTTP headers for webhook delivery
+- `device_iden` (String) Target device identifier (broadcasts to all if empty)
+- `domain` (String) Atlassian instance domain (e.g. yourteam.atlassian.net)
+- `email` (String) Atlassian account email for API authentication
+- `endpoint_url` (String) GitLab alert integration endpoint URL
+- `icon_url` (String) Custom bot icon URL for Mattermost
+- `issue_type` (String) Issue type name (e.g. Bug, Task, Incident)
+- `label_id` (String) Linear label ID to attach to created issues
 - `mention_role_id` (String) Role ID to mention for Discord notifications
 - `mention_text` (String) Mention text for Slack notifications
+- `priority` (String) Notification priority override (-2 to 2)
+- `project_key` (String) Jira project key where issues are created (e.g. OPS)
 - `recipients` (List of String) Email recipients (required for email type)
-- `region` (String) OpsGenie region
-- `routing_key` (String, Sensitive) PagerDuty routing key
+- `region` (String) OpsGenie API region (us or eu)
+- `routing_key` (String, Sensitive) Routing or integration key
+- `severity` (String) Severity slug override (e.g. sev0, sev1)
+- `severity_id` (String) Incident.io severity ID for created incidents
 - `severity_override` (String) PagerDuty severity override
 - `signing_secret` (String, Sensitive) HMAC signing secret for webhook payloads
+- `site` (String) Datadog site region (e.g. datadoghq.com, datadoghq.eu)
+- `sound` (String) Notification sound override
+- `tags` (String) Comma-separated tags to attach to events
+- `team_id` (String) Linear team ID to create issues in
 - `url` (String) Webhook endpoint URL (required for webhook type)
-- `webhook_url` (String) Webhook URL (required for slack, discord, teams)
+- `user_key` (String, Sensitive) Pushover user or group key
+- `visibility` (String) Incident visibility: public or private
+- `webhook_url` (String) Incoming webhook URL
 
 ### Read-Only
 
