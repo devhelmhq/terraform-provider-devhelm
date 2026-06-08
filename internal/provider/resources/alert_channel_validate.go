@@ -85,37 +85,102 @@ var alertChannelMatrix = map[string]alertChannelFieldShape{
 	"slack": {
 		required:  []string{"webhook_url"},
 		optional:  []string{"mention_text"},
-		forbidden: []string{"mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret"},
+		forbidden: []string{"mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
 	},
 	"discord": {
 		required:  []string{"webhook_url"},
 		optional:  []string{"mention_role_id"},
-		forbidden: []string{"mention_text", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret"},
+		forbidden: []string{"mention_text", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
 	},
 	"teams": {
 		required:  []string{"webhook_url"},
 		optional:  []string{},
-		forbidden: []string{"mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret"},
+		forbidden: []string{"mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
 	},
 	"email": {
 		required:  []string{"recipients"},
 		optional:  []string{},
-		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
 	},
 	"pagerduty": {
 		required:  []string{"routing_key"},
 		optional:  []string{"severity_override"},
-		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "api_key", "region", "url", "custom_headers", "signing_secret"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
 	},
 	"opsgenie": {
 		required:  []string{"api_key"},
 		optional:  []string{"region"},
-		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "url", "custom_headers", "signing_secret"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
 	},
 	"webhook": {
 		required:  []string{"url"},
 		optional:  []string{"custom_headers", "signing_secret"},
-		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"telegram": {
+		required:  []string{"bot_token", "chat_id"},
+		optional:  []string{},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"google_chat": {
+		required:  []string{"webhook_url"},
+		optional:  []string{},
+		forbidden: []string{"mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"pushover": {
+		required:  []string{"user_key", "app_token"},
+		optional:  []string{"priority", "sound"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"mattermost": {
+		required:  []string{"webhook_url"},
+		optional:  []string{"channel", "icon_url"},
+		forbidden: []string{"mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"splunk_oncall": {
+		required:  []string{"api_key", "routing_key"},
+		optional:  []string{},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "severity_override", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"pushbullet": {
+		required:  []string{"access_token"},
+		optional:  []string{"device_iden"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"linear": {
+		required:  []string{"api_key", "team_id"},
+		optional:  []string{"label_id"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"incident_io": {
+		required:  []string{"api_key"},
+		optional:  []string{"severity_id", "visibility"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"rootly": {
+		required:  []string{"api_key"},
+		optional:  []string{"severity"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"zapier": {
+		required:  []string{"webhook_url"},
+		optional:  []string{},
+		forbidden: []string{"mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"datadog": {
+		required:  []string{"api_key"},
+		optional:  []string{"site", "tags"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "domain", "email", "api_token", "project_key", "issue_type", "endpoint_url", "authorization_key"},
+	},
+	"jira": {
+		required:  []string{"domain", "email", "api_token", "project_key"},
+		optional:  []string{"issue_type"},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "endpoint_url", "authorization_key"},
+	},
+	"gitlab": {
+		required:  []string{"endpoint_url", "authorization_key"},
+		optional:  []string{},
+		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type"},
 	},
 }
 
@@ -134,6 +199,30 @@ var alertChannelAllVariantFields = []string{
 	"url",
 	"custom_headers",
 	"signing_secret",
+	"bot_token",
+	"chat_id",
+	"user_key",
+	"app_token",
+	"priority",
+	"sound",
+	"channel",
+	"icon_url",
+	"access_token",
+	"device_iden",
+	"team_id",
+	"label_id",
+	"severity_id",
+	"visibility",
+	"severity",
+	"site",
+	"tags",
+	"domain",
+	"email",
+	"api_token",
+	"project_key",
+	"issue_type",
+	"endpoint_url",
+	"authorization_key",
 }
 
 // attrSetByName returns the `attr.Value` for one of the variant
@@ -163,6 +252,54 @@ func (m *AlertChannelResourceModel) attrSetByName(name string) attr.Value {
 		return m.CustomHeaders
 	case "signing_secret":
 		return m.SigningSecret
+	case "bot_token":
+		return m.BotToken
+	case "chat_id":
+		return m.ChatID
+	case "user_key":
+		return m.UserKey
+	case "app_token":
+		return m.AppToken
+	case "priority":
+		return m.Priority
+	case "sound":
+		return m.Sound
+	case "channel":
+		return m.Channel
+	case "icon_url":
+		return m.IconURL
+	case "access_token":
+		return m.AccessToken
+	case "device_iden":
+		return m.DeviceIden
+	case "team_id":
+		return m.TeamID
+	case "label_id":
+		return m.LabelID
+	case "severity_id":
+		return m.SeverityID
+	case "visibility":
+		return m.Visibility
+	case "severity":
+		return m.Severity
+	case "site":
+		return m.Site
+	case "tags":
+		return m.Tags
+	case "domain":
+		return m.Domain
+	case "email":
+		return m.Email
+	case "api_token":
+		return m.APIToken
+	case "project_key":
+		return m.ProjectKey
+	case "issue_type":
+		return m.IssueType
+	case "endpoint_url":
+		return m.EndpointURL
+	case "authorization_key":
+		return m.AuthorizationKey
 	default:
 		return nil
 	}

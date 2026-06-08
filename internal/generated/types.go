@@ -616,6 +616,21 @@ func (e CreateWebhookEndpointRequestSubscribedEvents) Valid() bool {
 	}
 }
 
+// Defines values for DatadogChannelConfigChannelType.
+const (
+	DatadogChannelConfigChannelTypeDatadog DatadogChannelConfigChannelType = "datadog"
+)
+
+// Valid indicates whether the value is a known member of the DatadogChannelConfigChannelType enum.
+func (e DatadogChannelConfigChannelType) Valid() bool {
+	switch e {
+	case DatadogChannelConfigChannelTypeDatadog:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for DayIncidentImpact.
 const (
 	DayIncidentImpactCRITICAL DayIncidentImpact = "CRITICAL"
@@ -925,6 +940,36 @@ const (
 func (e EmailChannelConfigChannelType) Valid() bool {
 	switch e {
 	case EmailChannelConfigChannelTypeEmail:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for GitLabChannelConfigChannelType.
+const (
+	GitLabChannelConfigChannelTypeGitlab GitLabChannelConfigChannelType = "gitlab"
+)
+
+// Valid indicates whether the value is a known member of the GitLabChannelConfigChannelType enum.
+func (e GitLabChannelConfigChannelType) Valid() bool {
+	switch e {
+	case GitLabChannelConfigChannelTypeGitlab:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for GoogleChatChannelConfigChannelType.
+const (
+	GoogleChatChannelConfigChannelTypeGoogleChat GoogleChatChannelConfigChannelType = "google_chat"
+)
+
+// Valid indicates whether the value is a known member of the GoogleChatChannelConfigChannelType enum.
+func (e GoogleChatChannelConfigChannelType) Valid() bool {
+	switch e {
+	case GoogleChatChannelConfigChannelTypeGoogleChat:
 		return true
 	default:
 		return false
@@ -1243,6 +1288,36 @@ func (e IncidentFilterParamsStatus) Valid() bool {
 	}
 }
 
+// Defines values for IncidentIoChannelConfigChannelType.
+const (
+	IncidentIoChannelConfigChannelTypeIncidentIo IncidentIoChannelConfigChannelType = "incident_io"
+)
+
+// Valid indicates whether the value is a known member of the IncidentIoChannelConfigChannelType enum.
+func (e IncidentIoChannelConfigChannelType) Valid() bool {
+	switch e {
+	case IncidentIoChannelConfigChannelTypeIncidentIo:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraChannelConfigChannelType.
+const (
+	JiraChannelConfigChannelTypeJira JiraChannelConfigChannelType = "jira"
+)
+
+// Valid indicates whether the value is a known member of the JiraChannelConfigChannelType enum.
+func (e JiraChannelConfigChannelType) Valid() bool {
+	switch e {
+	case JiraChannelConfigChannelTypeJira:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for JsonPathAssertionOperator.
 const (
 	JsonPathAssertionOperatorContains    JsonPathAssertionOperator = "contains"
@@ -1288,6 +1363,21 @@ func (e JsonPathAssertionType) Valid() bool {
 	}
 }
 
+// Defines values for LinearChannelConfigChannelType.
+const (
+	LinearChannelConfigChannelTypeLinear LinearChannelConfigChannelType = "linear"
+)
+
+// Valid indicates whether the value is a known member of the LinearChannelConfigChannelType enum.
+func (e LinearChannelConfigChannelType) Valid() bool {
+	switch e {
+	case LinearChannelConfigChannelTypeLinear:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for MatchRuleType.
 const (
 	MatchRuleTypeComponentNameIn   MatchRuleType = "component_name_in"
@@ -1321,6 +1411,21 @@ func (e MatchRuleType) Valid() bool {
 	case MatchRuleTypeServiceIdIn:
 		return true
 	case MatchRuleTypeSeverityGte:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MattermostChannelConfigChannelType.
+const (
+	MattermostChannelConfigChannelTypeMattermost MattermostChannelConfigChannelType = "mattermost"
+)
+
+// Valid indicates whether the value is a known member of the MattermostChannelConfigChannelType enum.
+func (e MattermostChannelConfigChannelType) Valid() bool {
+	switch e {
+	case MattermostChannelConfigChannelTypeMattermost:
 		return true
 	default:
 		return false
@@ -1657,6 +1762,36 @@ func (e PublishStatusPageIncidentRequestStatus) Valid() bool {
 	}
 }
 
+// Defines values for PushbulletChannelConfigChannelType.
+const (
+	PushbulletChannelConfigChannelTypePushbullet PushbulletChannelConfigChannelType = "pushbullet"
+)
+
+// Valid indicates whether the value is a known member of the PushbulletChannelConfigChannelType enum.
+func (e PushbulletChannelConfigChannelType) Valid() bool {
+	switch e {
+	case PushbulletChannelConfigChannelTypePushbullet:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PushoverChannelConfigChannelType.
+const (
+	PushoverChannelConfigChannelTypePushover PushoverChannelConfigChannelType = "pushover"
+)
+
+// Valid indicates whether the value is a known member of the PushoverChannelConfigChannelType enum.
+func (e PushoverChannelConfigChannelType) Valid() bool {
+	switch e {
+	case PushoverChannelConfigChannelTypePushover:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for RedirectCountAssertionType.
 const (
 	RedirectCountAssertionTypeRedirectCount RedirectCountAssertionType = "redirect_count"
@@ -1777,6 +1912,21 @@ func (e ResponseTimeWarnAssertionType) Valid() bool {
 	}
 }
 
+// Defines values for RootlyChannelConfigChannelType.
+const (
+	RootlyChannelConfigChannelTypeRootly RootlyChannelConfigChannelType = "rootly"
+)
+
+// Valid indicates whether the value is a known member of the RootlyChannelConfigChannelType enum.
+func (e RootlyChannelConfigChannelType) Valid() bool {
+	switch e {
+	case RootlyChannelConfigChannelTypeRootly:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SlackChannelConfigChannelType.
 const (
 	SlackChannelConfigChannelTypeSlack SlackChannelConfigChannelType = "slack"
@@ -1786,6 +1936,21 @@ const (
 func (e SlackChannelConfigChannelType) Valid() bool {
 	switch e {
 	case SlackChannelConfigChannelTypeSlack:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SplunkOnCallChannelConfigChannelType.
+const (
+	SplunkOnCallChannelConfigChannelTypeSplunkOncall SplunkOnCallChannelConfigChannelType = "splunk_oncall"
+)
+
+// Valid indicates whether the value is a known member of the SplunkOnCallChannelConfigChannelType enum.
+func (e SplunkOnCallChannelConfigChannelType) Valid() bool {
+	switch e {
+	case SplunkOnCallChannelConfigChannelTypeSplunkOncall:
 		return true
 	default:
 		return false
@@ -1939,6 +2104,21 @@ const (
 func (e TeamsChannelConfigChannelType) Valid() bool {
 	switch e {
 	case TeamsChannelConfigChannelTypeTeams:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TelegramChannelConfigChannelType.
+const (
+	TelegramChannelConfigChannelTypeTelegram TelegramChannelConfigChannelType = "telegram"
+)
+
+// Valid indicates whether the value is a known member of the TelegramChannelConfigChannelType enum.
+func (e TelegramChannelConfigChannelType) Valid() bool {
+	switch e {
+	case TelegramChannelConfigChannelTypeTelegram:
 		return true
 	default:
 		return false
@@ -2320,33 +2500,87 @@ func (e WebhookChannelConfigChannelType) Valid() bool {
 	}
 }
 
+// Defines values for ZapierChannelConfigChannelType.
+const (
+	ZapierChannelConfigChannelTypeZapier ZapierChannelConfigChannelType = "zapier"
+)
+
+// Valid indicates whether the value is a known member of the ZapierChannelConfigChannelType enum.
+func (e ZapierChannelConfigChannelType) Valid() bool {
+	switch e {
+	case ZapierChannelConfigChannelTypeZapier:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for List14ParamsType.
 const (
-	List14ParamsTypeDiscord   List14ParamsType = "discord"
-	List14ParamsTypeEmail     List14ParamsType = "email"
-	List14ParamsTypeOpsgenie  List14ParamsType = "opsgenie"
-	List14ParamsTypePagerduty List14ParamsType = "pagerduty"
-	List14ParamsTypeSlack     List14ParamsType = "slack"
-	List14ParamsTypeTeams     List14ParamsType = "teams"
-	List14ParamsTypeWebhook   List14ParamsType = "webhook"
+	List14ParamsTypeDatadog      List14ParamsType = "datadog"
+	List14ParamsTypeDiscord      List14ParamsType = "discord"
+	List14ParamsTypeEmail        List14ParamsType = "email"
+	List14ParamsTypeGitlab       List14ParamsType = "gitlab"
+	List14ParamsTypeGoogleChat   List14ParamsType = "google_chat"
+	List14ParamsTypeIncidentIo   List14ParamsType = "incident_io"
+	List14ParamsTypeJira         List14ParamsType = "jira"
+	List14ParamsTypeLinear       List14ParamsType = "linear"
+	List14ParamsTypeMattermost   List14ParamsType = "mattermost"
+	List14ParamsTypeOpsgenie     List14ParamsType = "opsgenie"
+	List14ParamsTypePagerduty    List14ParamsType = "pagerduty"
+	List14ParamsTypePushbullet   List14ParamsType = "pushbullet"
+	List14ParamsTypePushover     List14ParamsType = "pushover"
+	List14ParamsTypeRootly       List14ParamsType = "rootly"
+	List14ParamsTypeSlack        List14ParamsType = "slack"
+	List14ParamsTypeSplunkOncall List14ParamsType = "splunk_oncall"
+	List14ParamsTypeTeams        List14ParamsType = "teams"
+	List14ParamsTypeTelegram     List14ParamsType = "telegram"
+	List14ParamsTypeWebhook      List14ParamsType = "webhook"
+	List14ParamsTypeZapier       List14ParamsType = "zapier"
 )
 
 // Valid indicates whether the value is a known member of the List14ParamsType enum.
 func (e List14ParamsType) Valid() bool {
 	switch e {
+	case List14ParamsTypeDatadog:
+		return true
 	case List14ParamsTypeDiscord:
 		return true
 	case List14ParamsTypeEmail:
+		return true
+	case List14ParamsTypeGitlab:
+		return true
+	case List14ParamsTypeGoogleChat:
+		return true
+	case List14ParamsTypeIncidentIo:
+		return true
+	case List14ParamsTypeJira:
+		return true
+	case List14ParamsTypeLinear:
+		return true
+	case List14ParamsTypeMattermost:
 		return true
 	case List14ParamsTypeOpsgenie:
 		return true
 	case List14ParamsTypePagerduty:
 		return true
+	case List14ParamsTypePushbullet:
+		return true
+	case List14ParamsTypePushover:
+		return true
+	case List14ParamsTypeRootly:
+		return true
 	case List14ParamsTypeSlack:
+		return true
+	case List14ParamsTypeSplunkOncall:
 		return true
 	case List14ParamsTypeTeams:
 		return true
+	case List14ParamsTypeTelegram:
+		return true
 	case List14ParamsTypeWebhook:
+		return true
+	case List14ParamsTypeZapier:
 		return true
 	default:
 		return false
@@ -2736,11 +2970,26 @@ type AffectedComponentStatus string
 
 // AlertChannelDisplayConfig Non-sensitive alert channel configuration metadata
 type AlertChannelDisplayConfig struct {
+	// Channel Mattermost channel override
+	Channel *string `json:"channel,omitempty"`
+
+	// ChatId Telegram chat ID
+	ChatId *string `json:"chatId,omitempty"`
+
 	// CustomHeaders Custom HTTP headers for webhook requests
 	CustomHeaders *map[string]*string `json:"customHeaders,omitempty"`
 
+	// DeviceIden Pushbullet target device identifier
+	DeviceIden *string `json:"deviceIden,omitempty"`
+
 	// MentionRoleId Discord role ID to mention in notifications
 	MentionRoleId *string `json:"mentionRoleId,omitempty"`
+
+	// Priority Pushover notification priority override
+	Priority *string `json:"priority,omitempty"`
+
+	// ProjectKey Jira project key
+	ProjectKey *string `json:"projectKey,omitempty"`
 
 	// Recipients Email recipients list (email channels)
 	Recipients *[]string `json:"recipients,omitempty"`
@@ -2748,8 +2997,23 @@ type AlertChannelDisplayConfig struct {
 	// Region OpsGenie API region: us or eu
 	Region *string `json:"region,omitempty"`
 
+	// RoutingKey Splunk On-Call routing key
+	RoutingKey *string `json:"routingKey,omitempty"`
+
+	// Severity Rootly incident severity slug
+	Severity *string `json:"severity,omitempty"`
+
 	// SeverityOverride PagerDuty severity override (critical, error, warning, info)
 	SeverityOverride *string `json:"severityOverride,omitempty"`
+
+	// Site Datadog site region
+	Site *string `json:"site,omitempty"`
+
+	// TeamId Linear team ID for issue creation
+	TeamId *string `json:"teamId,omitempty"`
+
+	// Visibility incident.io incident visibility
+	Visibility *string `json:"visibility,omitempty"`
 }
 
 // AlertChannelDto Alert channel with non-sensitive configuration metadata
@@ -3717,6 +3981,22 @@ type DashboardOverviewDto struct {
 	Monitors MonitorsSummaryDto `json:"monitors"`
 }
 
+// DatadogChannelConfig defines model for DatadogChannelConfig.
+type DatadogChannelConfig struct {
+	// ApiKey Datadog API key
+	ApiKey      string                          `json:"apiKey"`
+	ChannelType DatadogChannelConfigChannelType `json:"channelType"`
+
+	// Site Datadog site region (e.g. datadoghq.com, datadoghq.eu, us3.datadoghq.com)
+	Site *string `json:"site,omitempty"`
+
+	// Tags Comma-separated tags to attach to events
+	Tags *string `json:"tags,omitempty"`
+}
+
+// DatadogChannelConfigChannelType defines model for DatadogChannelConfig.ChannelType.
+type DatadogChannelConfigChannelType string
+
 // DayIncident Incident that overlapped the day
 type DayIncident struct {
 	// AffectedComponentNames Display names of components affected by this incident (deduplicated)
@@ -4073,10 +4353,25 @@ type EnvironmentDto struct {
 	Variables map[string]string `json:"variables"`
 }
 
+// ErrorEntry One structured validation rejection
+type ErrorEntry struct {
+	// Code Stable machine-readable code; see ValidationErrorCode for the registry
+	Code string `json:"code"`
+
+	// Field JSON-pointer-like path to the offending field, or null for request-wide errors
+	Field *string `json:"field,omitempty"`
+
+	// Message Human-readable message; safe to surface to end users
+	Message string `json:"message"`
+}
+
 // ErrorResponse Uniform error envelope returned for every non-2xx response
 type ErrorResponse struct {
 	// Code Coarse machine-readable error category (e.g. NOT_FOUND, RATE_LIMITED); stable per status
 	Code string `json:"code"`
+
+	// Errors Structured per-field rejections; populated for validation errors, null otherwise
+	Errors *[]*ErrorEntry `json:"errors,omitempty"`
 
 	// Message Human-readable error message; safe to surface to end users
 	Message string `json:"message"`
@@ -4127,6 +4422,19 @@ type FailureDetail struct {
 	Reason string `json:"reason"`
 }
 
+// GitLabChannelConfig defines model for GitLabChannelConfig.
+type GitLabChannelConfig struct {
+	// AuthorizationKey Authorization key from GitLab alert integration settings
+	AuthorizationKey string                         `json:"authorizationKey"`
+	ChannelType      GitLabChannelConfigChannelType `json:"channelType"`
+
+	// EndpointUrl GitLab alert integration endpoint URL
+	EndpointUrl string `json:"endpointUrl"`
+}
+
+// GitLabChannelConfigChannelType defines model for GitLabChannelConfig.ChannelType.
+type GitLabChannelConfigChannelType string
+
 // GlobalStatusSummaryDto Global status summary across all subscribed vendor services
 type GlobalStatusSummaryDto struct {
 	// ActiveIncidentCount Total number of active incidents across all services
@@ -4156,6 +4464,17 @@ type GlobalStatusSummaryDto struct {
 	// UnknownCount Number of services with unknown or null status
 	UnknownCount int32 `json:"unknownCount"`
 }
+
+// GoogleChatChannelConfig defines model for GoogleChatChannelConfig.
+type GoogleChatChannelConfig struct {
+	ChannelType GoogleChatChannelConfigChannelType `json:"channelType"`
+
+	// WebhookUrl Google Chat space webhook URL
+	WebhookUrl string `json:"webhookUrl"`
+}
+
+// GoogleChatChannelConfigChannelType defines model for GoogleChatChannelConfig.ChannelType.
+type GoogleChatChannelConfigChannelType string
 
 // GroupComponentOrder Component ordering within a single group
 type GroupComponentOrder struct {
@@ -4532,6 +4851,22 @@ type IncidentFilterParamsSource string
 // IncidentFilterParamsStatus Filter by incident lifecycle status; null returns every status
 type IncidentFilterParamsStatus string
 
+// IncidentIoChannelConfig defines model for IncidentIoChannelConfig.
+type IncidentIoChannelConfig struct {
+	// ApiKey incident.io API key with 'Create incidents' permission
+	ApiKey      string                             `json:"apiKey"`
+	ChannelType IncidentIoChannelConfigChannelType `json:"channelType"`
+
+	// SeverityId Severity ID for created incidents (from List Severities API)
+	SeverityId *string `json:"severityId,omitempty"`
+
+	// Visibility Incident visibility: public or private (default: public)
+	Visibility *string `json:"visibility,omitempty"`
+}
+
+// IncidentIoChannelConfigChannelType defines model for IncidentIoChannelConfig.ChannelType.
+type IncidentIoChannelConfigChannelType string
+
 // IncidentPolicyDto Incident detection, confirmation, and recovery policy for a monitor
 type IncidentPolicyDto struct {
 	// CheckFrequencySeconds Monitor check frequency in seconds (only set in internal API responses)
@@ -4699,6 +5034,28 @@ type InviteDto struct {
 	RoleOffered string `json:"roleOffered"`
 }
 
+// JiraChannelConfig defines model for JiraChannelConfig.
+type JiraChannelConfig struct {
+	// ApiToken Atlassian API token
+	ApiToken    string                       `json:"apiToken"`
+	ChannelType JiraChannelConfigChannelType `json:"channelType"`
+
+	// Domain Atlassian instance domain (e.g. yourteam.atlassian.net)
+	Domain string `json:"domain"`
+
+	// Email Atlassian account email for API authentication
+	Email string `json:"email"`
+
+	// IssueType Issue type name (e.g. Bug, Task, Incident)
+	IssueType *string `json:"issueType,omitempty"`
+
+	// ProjectKey Jira project key where issues are created (e.g. OPS)
+	ProjectKey string `json:"projectKey"`
+}
+
+// JiraChannelConfigChannelType defines model for JiraChannelConfig.ChannelType.
+type JiraChannelConfigChannelType string
+
 // JsonPathAssertion defines model for JsonPathAssertion.
 type JsonPathAssertion struct {
 	// Expected Expected value to compare against
@@ -4735,6 +5092,22 @@ type KeyInfo struct {
 	// Name Human-readable key name
 	Name string `json:"name"`
 }
+
+// LinearChannelConfig defines model for LinearChannelConfig.
+type LinearChannelConfig struct {
+	// ApiKey Linear API key
+	ApiKey      string                         `json:"apiKey"`
+	ChannelType LinearChannelConfigChannelType `json:"channelType"`
+
+	// LabelId Label ID to attach to created issues
+	LabelId *string `json:"labelId,omitempty"`
+
+	// TeamId Team ID to create issues in
+	TeamId string `json:"teamId"`
+}
+
+// LinearChannelConfigChannelType defines model for LinearChannelConfig.ChannelType.
+type LinearChannelConfigChannelType string
 
 // LinkedStatusPageIncidentDto defines model for LinkedStatusPageIncidentDto.
 type LinkedStatusPageIncidentDto struct {
@@ -4826,6 +5199,22 @@ type MatchRule struct {
 
 // MatchRuleType Rule type used to evaluate incidents and status events
 type MatchRuleType string
+
+// MattermostChannelConfig defines model for MattermostChannelConfig.
+type MattermostChannelConfig struct {
+	// Channel Override channel (if webhook allows)
+	Channel     *string                            `json:"channel,omitempty"`
+	ChannelType MattermostChannelConfigChannelType `json:"channelType"`
+
+	// IconUrl Custom bot icon URL
+	IconUrl *string `json:"iconUrl,omitempty"`
+
+	// WebhookUrl Mattermost incoming webhook URL
+	WebhookUrl string `json:"webhookUrl"`
+}
+
+// MattermostChannelConfigChannelType defines model for MattermostChannelConfig.ChannelType.
+type MattermostChannelConfigChannelType string
 
 // McpConnectsAssertion defines model for McpConnectsAssertion.
 type McpConnectsAssertion struct {
@@ -5437,6 +5826,38 @@ type PublishStatusPageIncidentRequestImpact string
 // PublishStatusPageIncidentRequestStatus Incident status; null keeps draft value (must be an active status)
 type PublishStatusPageIncidentRequestStatus string
 
+// PushbulletChannelConfig defines model for PushbulletChannelConfig.
+type PushbulletChannelConfig struct {
+	// AccessToken Pushbullet access token
+	AccessToken string                             `json:"accessToken"`
+	ChannelType PushbulletChannelConfigChannelType `json:"channelType"`
+
+	// DeviceIden Target device identifier (broadcasts to all if empty)
+	DeviceIden *string `json:"deviceIden,omitempty"`
+}
+
+// PushbulletChannelConfigChannelType defines model for PushbulletChannelConfig.ChannelType.
+type PushbulletChannelConfigChannelType string
+
+// PushoverChannelConfig defines model for PushoverChannelConfig.
+type PushoverChannelConfig struct {
+	// AppToken Pushover application API token
+	AppToken    string                           `json:"appToken"`
+	ChannelType PushoverChannelConfigChannelType `json:"channelType"`
+
+	// Priority Notification priority override (-2 to 2)
+	Priority *string `json:"priority,omitempty"`
+
+	// Sound Notification sound override
+	Sound *string `json:"sound,omitempty"`
+
+	// UserKey Pushover user or group key
+	UserKey string `json:"userKey"`
+}
+
+// PushoverChannelConfigChannelType defines model for PushoverChannelConfig.ChannelType.
+type PushoverChannelConfigChannelType string
+
 // RateLimitInfo Rate-limit quota for the current sliding window
 type RateLimitInfo struct {
 	// Remaining Requests remaining in the current window
@@ -5745,6 +6166,19 @@ type RetryStrategy struct {
 	Type string `json:"type"`
 }
 
+// RootlyChannelConfig defines model for RootlyChannelConfig.
+type RootlyChannelConfig struct {
+	// ApiKey Rootly API token with incident creation permission
+	ApiKey      string                         `json:"apiKey"`
+	ChannelType RootlyChannelConfigChannelType `json:"channelType"`
+
+	// Severity Severity slug override (e.g. sev0, sev1)
+	Severity *string `json:"severity,omitempty"`
+}
+
+// RootlyChannelConfigChannelType defines model for RootlyChannelConfig.ChannelType.
+type RootlyChannelConfigChannelType string
+
 // RuleEvaluationDto All rule evaluations that ran for this check
 type RuleEvaluationDto struct {
 	// CheckId Scheduler-minted check execution ID (V92) — the causal chain identifier
@@ -5867,23 +6301,26 @@ type SeoMetadataDto struct {
 
 // ServiceCatalogDto Related services
 type ServiceCatalogDto struct {
-	ActiveIncidentCount    int64              `json:"activeIncidentCount"`
-	AdapterType            string             `json:"adapterType"`
-	Category               *string            `json:"category,omitempty"`
-	ComponentCount         int64              `json:"componentCount"`
-	CreatedAt              time.Time          `json:"createdAt"`
-	DataCompleteness       string             `json:"dataCompleteness"`
-	DeveloperContext       *string            `json:"developerContext,omitempty"`
-	Enabled                bool               `json:"enabled"`
-	Id                     openapi_types.UUID `json:"id"`
-	LogoUrl                *string            `json:"logoUrl,omitempty"`
-	Name                   string             `json:"name"`
-	OfficialStatusUrl      *string            `json:"officialStatusUrl,omitempty"`
-	OverallStatus          *string            `json:"overallStatus,omitempty"`
-	PollingIntervalSeconds int32              `json:"pollingIntervalSeconds"`
-	Published              bool               `json:"published"`
-	Slug                   string             `json:"slug"`
-	UpdatedAt              time.Time          `json:"updatedAt"`
+	ActiveIncidentCount int64              `json:"activeIncidentCount"`
+	AdapterType         string             `json:"adapterType"`
+	Category            *string            `json:"category,omitempty"`
+	ComponentCount      int64              `json:"componentCount"`
+	CreatedAt           time.Time          `json:"createdAt"`
+	DataCompleteness    string             `json:"dataCompleteness"`
+	DeveloperContext    *string            `json:"developerContext,omitempty"`
+	Enabled             bool               `json:"enabled"`
+	Id                  openapi_types.UUID `json:"id"`
+
+	// LifecycleStatus Service lifecycle state: ACTIVE, DEGRADED, DEPRECATED, or RETIRED
+	LifecycleStatus        string    `json:"lifecycleStatus"`
+	LogoUrl                *string   `json:"logoUrl,omitempty"`
+	Name                   string    `json:"name"`
+	OfficialStatusUrl      *string   `json:"officialStatusUrl,omitempty"`
+	OverallStatus          *string   `json:"overallStatus,omitempty"`
+	PollingIntervalSeconds int32     `json:"pollingIntervalSeconds"`
+	Published              bool      `json:"published"`
+	Slug                   string    `json:"slug"`
+	UpdatedAt              time.Time `json:"updatedAt"`
 
 	// Uptime30d Aggregated 30-day uptime percentage across all components
 	Uptime30d *float64 `json:"uptime30d,omitempty"`
@@ -5953,17 +6390,20 @@ type ServiceDayDetailDto struct {
 
 // ServiceDetailDto defines model for ServiceDetailDto.
 type ServiceDetailDto struct {
-	ActiveMaintenances     []ScheduledMaintenanceDto  `json:"activeMaintenances"`
-	AdapterType            string                     `json:"adapterType"`
-	Category               *string                    `json:"category,omitempty"`
-	Components             []ServiceComponentDto      `json:"components"`
-	ComponentsSummary      *ComponentsSummaryDto      `json:"componentsSummary,omitempty"`
-	CreatedAt              time.Time                  `json:"createdAt"`
-	CurrentStatus          *ServiceStatusDto          `json:"currentStatus,omitempty"`
-	DataCompleteness       string                     `json:"dataCompleteness"`
-	DeveloperContext       *string                    `json:"developerContext,omitempty"`
-	Enabled                bool                       `json:"enabled"`
-	Id                     openapi_types.UUID         `json:"id"`
+	ActiveMaintenances []ScheduledMaintenanceDto `json:"activeMaintenances"`
+	AdapterType        string                    `json:"adapterType"`
+	Category           *string                   `json:"category,omitempty"`
+	Components         []ServiceComponentDto     `json:"components"`
+	ComponentsSummary  *ComponentsSummaryDto     `json:"componentsSummary,omitempty"`
+	CreatedAt          time.Time                 `json:"createdAt"`
+	CurrentStatus      *ServiceStatusDto         `json:"currentStatus,omitempty"`
+	DataCompleteness   string                    `json:"dataCompleteness"`
+	DeveloperContext   *string                   `json:"developerContext,omitempty"`
+	Enabled            bool                      `json:"enabled"`
+	Id                 openapi_types.UUID        `json:"id"`
+
+	// LifecycleStatus Service lifecycle state: ACTIVE, DEGRADED, DEPRECATED, or RETIRED
+	LifecycleStatus        string                     `json:"lifecycleStatus"`
 	LogoUrl                *string                    `json:"logoUrl,omitempty"`
 	Name                   string                     `json:"name"`
 	OfficialStatusUrl      *string                    `json:"officialStatusUrl,omitempty"`
@@ -6092,7 +6532,7 @@ type ServiceStatusDto struct {
 
 // ServiceSubscribeRequest Optional body for subscribing to a specific component of a service
 type ServiceSubscribeRequest struct {
-	// AlertSensitivity Alert sensitivity level. Defaults to INCIDENTS_ONLY when not provided.
+	// AlertSensitivity Alert sensitivity: ALL (any status change), INCIDENTS_ONLY (real vendor incidents, page on every one), MAJOR_ONLY (only DOWN-level incidents), AWARENESS (track silently — show on dashboard, never send alerts). Defaults to AWARENESS when not provided — silent tracking is the friendliest first-run choice; switch to one of the paging modes to opt in to alert-channel fan-out.
 	AlertSensitivity *string `json:"alertSensitivity,omitempty"`
 
 	// ComponentId ID of the component to subscribe to. Omit or null for whole-service subscription.
@@ -6103,7 +6543,7 @@ type ServiceSubscribeRequest struct {
 type ServiceSubscriptionDto struct {
 	AdapterType string `json:"adapterType"`
 
-	// AlertSensitivity Alert sensitivity: ALL (synthetic + real incidents), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (real + DOWN severity)
+	// AlertSensitivity Alert sensitivity: ALL (synthetic + real incidents, paged), INCIDENTS_ONLY (real vendor incidents, paged), MAJOR_ONLY (real + DOWN severity, paged), AWARENESS (real vendor incidents tracked silently — visible on dashboard, never paged; default for new subscriptions)
 	AlertSensitivity string               `json:"alertSensitivity"`
 	Category         *string              `json:"category,omitempty"`
 	Component        *ServiceComponentDto `json:"component,omitempty"`
@@ -6495,6 +6935,19 @@ type SlackChannelConfig struct {
 // SlackChannelConfigChannelType defines model for SlackChannelConfig.ChannelType.
 type SlackChannelConfigChannelType string
 
+// SplunkOnCallChannelConfig defines model for SplunkOnCallChannelConfig.
+type SplunkOnCallChannelConfig struct {
+	// ApiKey Splunk On-Call REST API key
+	ApiKey      string                               `json:"apiKey"`
+	ChannelType SplunkOnCallChannelConfigChannelType `json:"channelType"`
+
+	// RoutingKey Routing key for alert routing
+	RoutingKey string `json:"routingKey"`
+}
+
+// SplunkOnCallChannelConfigChannelType defines model for SplunkOnCallChannelConfig.ChannelType.
+type SplunkOnCallChannelConfigChannelType string
+
 // SslExpiryAssertion defines model for SslExpiryAssertion.
 type SslExpiryAssertion struct {
 	// MinDaysRemaining Minimum days before TLS certificate expiry; fails or warns below this threshold
@@ -6564,6 +7017,9 @@ type StatusPageBranding struct {
 
 	// ReportUrl URL where visitors can report a problem
 	ReportUrl *string `json:"reportUrl,omitempty"`
+
+	// ShowSubscribeButton Whether to show the 'Subscribe' button in the header (default: true)
+	ShowSubscribeButton *bool `json:"showSubscribeButton,omitempty"`
 
 	// TextColor Primary text color as hex, e.g. #09090B
 	TextColor *string `json:"textColor,omitempty"`
@@ -7118,6 +7574,19 @@ type TeamsChannelConfig struct {
 // TeamsChannelConfigChannelType defines model for TeamsChannelConfig.ChannelType.
 type TeamsChannelConfigChannelType string
 
+// TelegramChannelConfig defines model for TelegramChannelConfig.
+type TelegramChannelConfig struct {
+	// BotToken Telegram bot token from @BotFather
+	BotToken    string                           `json:"botToken"`
+	ChannelType TelegramChannelConfigChannelType `json:"channelType"`
+
+	// ChatId Chat, group, or channel ID to send alerts to
+	ChatId string `json:"chatId"`
+}
+
+// TelegramChannelConfigChannelType defines model for TelegramChannelConfig.ChannelType.
+type TelegramChannelConfigChannelType string
+
 // TestAlertChannelRequest Alert channel configuration to test without saving
 type TestAlertChannelRequest struct {
 	Config TestAlertChannelRequest_Config `json:"config"`
@@ -7290,7 +7759,7 @@ type UpdateAlertChannelRequestManagedBy string
 
 // UpdateAlertSensitivityRequest Request body for updating alert sensitivity on a service subscription
 type UpdateAlertSensitivityRequest struct {
-	// AlertSensitivity Alert sensitivity: ALL (any status change), INCIDENTS_ONLY (real vendor incidents, default), MAJOR_ONLY (only DOWN-level incidents)
+	// AlertSensitivity Alert sensitivity: ALL (any status change), INCIDENTS_ONLY (real vendor incidents, page on every one), MAJOR_ONLY (only DOWN-level incidents), AWARENESS (track silently — show on dashboard, never send alerts; default for new subscriptions)
 	AlertSensitivity string `json:"alertSensitivity"`
 }
 
@@ -7786,6 +8255,17 @@ type WorkspaceDto struct {
 	// UpdatedAt Timestamp when the workspace was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 }
+
+// ZapierChannelConfig defines model for ZapierChannelConfig.
+type ZapierChannelConfig struct {
+	ChannelType ZapierChannelConfigChannelType `json:"channelType"`
+
+	// WebhookUrl Zapier/n8n/Make catch webhook URL
+	WebhookUrl string `json:"webhookUrl"`
+}
+
+// ZapierChannelConfigChannelType defines model for ZapierChannelConfig.ChannelType.
+type ZapierChannelConfigChannelType string
 
 // List14Params defines parameters for List14.
 type List14Params struct {
@@ -8546,6 +9026,32 @@ func (t *CheckTypeDetailsDto) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsDatadogChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a DatadogChannelConfig
+func (t CreateAlertChannelRequest_Config) AsDatadogChannelConfig() (DatadogChannelConfig, error) {
+	var body DatadogChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDatadogChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided DatadogChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromDatadogChannelConfig(v DatadogChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDatadogChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided DatadogChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeDatadogChannelConfig(v DatadogChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsDiscordChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a DiscordChannelConfig
 func (t CreateAlertChannelRequest_Config) AsDiscordChannelConfig() (DiscordChannelConfig, error) {
 	var body DiscordChannelConfig
@@ -8588,6 +9094,162 @@ func (t *CreateAlertChannelRequest_Config) FromEmailChannelConfig(v EmailChannel
 
 // MergeEmailChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided EmailChannelConfig
 func (t *CreateAlertChannelRequest_Config) MergeEmailChannelConfig(v EmailChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGitLabChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a GitLabChannelConfig
+func (t CreateAlertChannelRequest_Config) AsGitLabChannelConfig() (GitLabChannelConfig, error) {
+	var body GitLabChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitLabChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided GitLabChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromGitLabChannelConfig(v GitLabChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitLabChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided GitLabChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeGitLabChannelConfig(v GitLabChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGoogleChatChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a GoogleChatChannelConfig
+func (t CreateAlertChannelRequest_Config) AsGoogleChatChannelConfig() (GoogleChatChannelConfig, error) {
+	var body GoogleChatChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGoogleChatChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided GoogleChatChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromGoogleChatChannelConfig(v GoogleChatChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGoogleChatChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided GoogleChatChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeGoogleChatChannelConfig(v GoogleChatChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIncidentIoChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a IncidentIoChannelConfig
+func (t CreateAlertChannelRequest_Config) AsIncidentIoChannelConfig() (IncidentIoChannelConfig, error) {
+	var body IncidentIoChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIncidentIoChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided IncidentIoChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromIncidentIoChannelConfig(v IncidentIoChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIncidentIoChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided IncidentIoChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeIncidentIoChannelConfig(v IncidentIoChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a JiraChannelConfig
+func (t CreateAlertChannelRequest_Config) AsJiraChannelConfig() (JiraChannelConfig, error) {
+	var body JiraChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided JiraChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromJiraChannelConfig(v JiraChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided JiraChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeJiraChannelConfig(v JiraChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsLinearChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a LinearChannelConfig
+func (t CreateAlertChannelRequest_Config) AsLinearChannelConfig() (LinearChannelConfig, error) {
+	var body LinearChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromLinearChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided LinearChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromLinearChannelConfig(v LinearChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeLinearChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided LinearChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeLinearChannelConfig(v LinearChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMattermostChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a MattermostChannelConfig
+func (t CreateAlertChannelRequest_Config) AsMattermostChannelConfig() (MattermostChannelConfig, error) {
+	var body MattermostChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMattermostChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided MattermostChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromMattermostChannelConfig(v MattermostChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMattermostChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided MattermostChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeMattermostChannelConfig(v MattermostChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -8650,6 +9312,84 @@ func (t *CreateAlertChannelRequest_Config) MergePagerDutyChannelConfig(v PagerDu
 	return err
 }
 
+// AsPushbulletChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a PushbulletChannelConfig
+func (t CreateAlertChannelRequest_Config) AsPushbulletChannelConfig() (PushbulletChannelConfig, error) {
+	var body PushbulletChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPushbulletChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided PushbulletChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromPushbulletChannelConfig(v PushbulletChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePushbulletChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided PushbulletChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergePushbulletChannelConfig(v PushbulletChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPushoverChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a PushoverChannelConfig
+func (t CreateAlertChannelRequest_Config) AsPushoverChannelConfig() (PushoverChannelConfig, error) {
+	var body PushoverChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPushoverChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided PushoverChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromPushoverChannelConfig(v PushoverChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePushoverChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided PushoverChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergePushoverChannelConfig(v PushoverChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRootlyChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a RootlyChannelConfig
+func (t CreateAlertChannelRequest_Config) AsRootlyChannelConfig() (RootlyChannelConfig, error) {
+	var body RootlyChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRootlyChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided RootlyChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromRootlyChannelConfig(v RootlyChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRootlyChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided RootlyChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeRootlyChannelConfig(v RootlyChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsSlackChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a SlackChannelConfig
 func (t CreateAlertChannelRequest_Config) AsSlackChannelConfig() (SlackChannelConfig, error) {
 	var body SlackChannelConfig
@@ -8666,6 +9406,32 @@ func (t *CreateAlertChannelRequest_Config) FromSlackChannelConfig(v SlackChannel
 
 // MergeSlackChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided SlackChannelConfig
 func (t *CreateAlertChannelRequest_Config) MergeSlackChannelConfig(v SlackChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSplunkOnCallChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a SplunkOnCallChannelConfig
+func (t CreateAlertChannelRequest_Config) AsSplunkOnCallChannelConfig() (SplunkOnCallChannelConfig, error) {
+	var body SplunkOnCallChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSplunkOnCallChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided SplunkOnCallChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromSplunkOnCallChannelConfig(v SplunkOnCallChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSplunkOnCallChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided SplunkOnCallChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeSplunkOnCallChannelConfig(v SplunkOnCallChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -8702,6 +9468,32 @@ func (t *CreateAlertChannelRequest_Config) MergeTeamsChannelConfig(v TeamsChanne
 	return err
 }
 
+// AsTelegramChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a TelegramChannelConfig
+func (t CreateAlertChannelRequest_Config) AsTelegramChannelConfig() (TelegramChannelConfig, error) {
+	var body TelegramChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTelegramChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided TelegramChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromTelegramChannelConfig(v TelegramChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeTelegramChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided TelegramChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeTelegramChannelConfig(v TelegramChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsWebhookChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a WebhookChannelConfig
 func (t CreateAlertChannelRequest_Config) AsWebhookChannelConfig() (WebhookChannelConfig, error) {
 	var body WebhookChannelConfig
@@ -8718,6 +9510,32 @@ func (t *CreateAlertChannelRequest_Config) FromWebhookChannelConfig(v WebhookCha
 
 // MergeWebhookChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided WebhookChannelConfig
 func (t *CreateAlertChannelRequest_Config) MergeWebhookChannelConfig(v WebhookChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsZapierChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a ZapierChannelConfig
+func (t CreateAlertChannelRequest_Config) AsZapierChannelConfig() (ZapierChannelConfig, error) {
+	var body ZapierChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromZapierChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided ZapierChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromZapierChannelConfig(v ZapierChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeZapierChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided ZapierChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeZapierChannelConfig(v ZapierChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -11817,6 +12635,32 @@ func (t *SetMonitorAuthRequest_Config) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsDatadogChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a DatadogChannelConfig
+func (t TestAlertChannelRequest_Config) AsDatadogChannelConfig() (DatadogChannelConfig, error) {
+	var body DatadogChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDatadogChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided DatadogChannelConfig
+func (t *TestAlertChannelRequest_Config) FromDatadogChannelConfig(v DatadogChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDatadogChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided DatadogChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeDatadogChannelConfig(v DatadogChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsDiscordChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a DiscordChannelConfig
 func (t TestAlertChannelRequest_Config) AsDiscordChannelConfig() (DiscordChannelConfig, error) {
 	var body DiscordChannelConfig
@@ -11859,6 +12703,162 @@ func (t *TestAlertChannelRequest_Config) FromEmailChannelConfig(v EmailChannelCo
 
 // MergeEmailChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided EmailChannelConfig
 func (t *TestAlertChannelRequest_Config) MergeEmailChannelConfig(v EmailChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGitLabChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a GitLabChannelConfig
+func (t TestAlertChannelRequest_Config) AsGitLabChannelConfig() (GitLabChannelConfig, error) {
+	var body GitLabChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitLabChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided GitLabChannelConfig
+func (t *TestAlertChannelRequest_Config) FromGitLabChannelConfig(v GitLabChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitLabChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided GitLabChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeGitLabChannelConfig(v GitLabChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGoogleChatChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a GoogleChatChannelConfig
+func (t TestAlertChannelRequest_Config) AsGoogleChatChannelConfig() (GoogleChatChannelConfig, error) {
+	var body GoogleChatChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGoogleChatChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided GoogleChatChannelConfig
+func (t *TestAlertChannelRequest_Config) FromGoogleChatChannelConfig(v GoogleChatChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGoogleChatChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided GoogleChatChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeGoogleChatChannelConfig(v GoogleChatChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIncidentIoChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a IncidentIoChannelConfig
+func (t TestAlertChannelRequest_Config) AsIncidentIoChannelConfig() (IncidentIoChannelConfig, error) {
+	var body IncidentIoChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIncidentIoChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided IncidentIoChannelConfig
+func (t *TestAlertChannelRequest_Config) FromIncidentIoChannelConfig(v IncidentIoChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIncidentIoChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided IncidentIoChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeIncidentIoChannelConfig(v IncidentIoChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a JiraChannelConfig
+func (t TestAlertChannelRequest_Config) AsJiraChannelConfig() (JiraChannelConfig, error) {
+	var body JiraChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided JiraChannelConfig
+func (t *TestAlertChannelRequest_Config) FromJiraChannelConfig(v JiraChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided JiraChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeJiraChannelConfig(v JiraChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsLinearChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a LinearChannelConfig
+func (t TestAlertChannelRequest_Config) AsLinearChannelConfig() (LinearChannelConfig, error) {
+	var body LinearChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromLinearChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided LinearChannelConfig
+func (t *TestAlertChannelRequest_Config) FromLinearChannelConfig(v LinearChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeLinearChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided LinearChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeLinearChannelConfig(v LinearChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMattermostChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a MattermostChannelConfig
+func (t TestAlertChannelRequest_Config) AsMattermostChannelConfig() (MattermostChannelConfig, error) {
+	var body MattermostChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMattermostChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided MattermostChannelConfig
+func (t *TestAlertChannelRequest_Config) FromMattermostChannelConfig(v MattermostChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMattermostChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided MattermostChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeMattermostChannelConfig(v MattermostChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -11921,6 +12921,84 @@ func (t *TestAlertChannelRequest_Config) MergePagerDutyChannelConfig(v PagerDuty
 	return err
 }
 
+// AsPushbulletChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a PushbulletChannelConfig
+func (t TestAlertChannelRequest_Config) AsPushbulletChannelConfig() (PushbulletChannelConfig, error) {
+	var body PushbulletChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPushbulletChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided PushbulletChannelConfig
+func (t *TestAlertChannelRequest_Config) FromPushbulletChannelConfig(v PushbulletChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePushbulletChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided PushbulletChannelConfig
+func (t *TestAlertChannelRequest_Config) MergePushbulletChannelConfig(v PushbulletChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPushoverChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a PushoverChannelConfig
+func (t TestAlertChannelRequest_Config) AsPushoverChannelConfig() (PushoverChannelConfig, error) {
+	var body PushoverChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPushoverChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided PushoverChannelConfig
+func (t *TestAlertChannelRequest_Config) FromPushoverChannelConfig(v PushoverChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePushoverChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided PushoverChannelConfig
+func (t *TestAlertChannelRequest_Config) MergePushoverChannelConfig(v PushoverChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRootlyChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a RootlyChannelConfig
+func (t TestAlertChannelRequest_Config) AsRootlyChannelConfig() (RootlyChannelConfig, error) {
+	var body RootlyChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRootlyChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided RootlyChannelConfig
+func (t *TestAlertChannelRequest_Config) FromRootlyChannelConfig(v RootlyChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRootlyChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided RootlyChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeRootlyChannelConfig(v RootlyChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsSlackChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a SlackChannelConfig
 func (t TestAlertChannelRequest_Config) AsSlackChannelConfig() (SlackChannelConfig, error) {
 	var body SlackChannelConfig
@@ -11937,6 +13015,32 @@ func (t *TestAlertChannelRequest_Config) FromSlackChannelConfig(v SlackChannelCo
 
 // MergeSlackChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided SlackChannelConfig
 func (t *TestAlertChannelRequest_Config) MergeSlackChannelConfig(v SlackChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSplunkOnCallChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a SplunkOnCallChannelConfig
+func (t TestAlertChannelRequest_Config) AsSplunkOnCallChannelConfig() (SplunkOnCallChannelConfig, error) {
+	var body SplunkOnCallChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSplunkOnCallChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided SplunkOnCallChannelConfig
+func (t *TestAlertChannelRequest_Config) FromSplunkOnCallChannelConfig(v SplunkOnCallChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSplunkOnCallChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided SplunkOnCallChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeSplunkOnCallChannelConfig(v SplunkOnCallChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -11973,6 +13077,32 @@ func (t *TestAlertChannelRequest_Config) MergeTeamsChannelConfig(v TeamsChannelC
 	return err
 }
 
+// AsTelegramChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a TelegramChannelConfig
+func (t TestAlertChannelRequest_Config) AsTelegramChannelConfig() (TelegramChannelConfig, error) {
+	var body TelegramChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTelegramChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided TelegramChannelConfig
+func (t *TestAlertChannelRequest_Config) FromTelegramChannelConfig(v TelegramChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeTelegramChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided TelegramChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeTelegramChannelConfig(v TelegramChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsWebhookChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a WebhookChannelConfig
 func (t TestAlertChannelRequest_Config) AsWebhookChannelConfig() (WebhookChannelConfig, error) {
 	var body WebhookChannelConfig
@@ -11999,6 +13129,32 @@ func (t *TestAlertChannelRequest_Config) MergeWebhookChannelConfig(v WebhookChan
 	return err
 }
 
+// AsZapierChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a ZapierChannelConfig
+func (t TestAlertChannelRequest_Config) AsZapierChannelConfig() (ZapierChannelConfig, error) {
+	var body ZapierChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromZapierChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided ZapierChannelConfig
+func (t *TestAlertChannelRequest_Config) FromZapierChannelConfig(v ZapierChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeZapierChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided ZapierChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeZapierChannelConfig(v ZapierChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t TestAlertChannelRequest_Config) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -12006,6 +13162,32 @@ func (t TestAlertChannelRequest_Config) MarshalJSON() ([]byte, error) {
 
 func (t *TestAlertChannelRequest_Config) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDatadogChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a DatadogChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsDatadogChannelConfig() (DatadogChannelConfig, error) {
+	var body DatadogChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDatadogChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided DatadogChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromDatadogChannelConfig(v DatadogChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDatadogChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided DatadogChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeDatadogChannelConfig(v DatadogChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
 	return err
 }
 
@@ -12051,6 +13233,162 @@ func (t *UpdateAlertChannelRequest_Config) FromEmailChannelConfig(v EmailChannel
 
 // MergeEmailChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided EmailChannelConfig
 func (t *UpdateAlertChannelRequest_Config) MergeEmailChannelConfig(v EmailChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGitLabChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a GitLabChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsGitLabChannelConfig() (GitLabChannelConfig, error) {
+	var body GitLabChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitLabChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided GitLabChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromGitLabChannelConfig(v GitLabChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitLabChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided GitLabChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeGitLabChannelConfig(v GitLabChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGoogleChatChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a GoogleChatChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsGoogleChatChannelConfig() (GoogleChatChannelConfig, error) {
+	var body GoogleChatChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGoogleChatChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided GoogleChatChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromGoogleChatChannelConfig(v GoogleChatChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGoogleChatChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided GoogleChatChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeGoogleChatChannelConfig(v GoogleChatChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIncidentIoChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a IncidentIoChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsIncidentIoChannelConfig() (IncidentIoChannelConfig, error) {
+	var body IncidentIoChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIncidentIoChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided IncidentIoChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromIncidentIoChannelConfig(v IncidentIoChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIncidentIoChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided IncidentIoChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeIncidentIoChannelConfig(v IncidentIoChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a JiraChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsJiraChannelConfig() (JiraChannelConfig, error) {
+	var body JiraChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided JiraChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromJiraChannelConfig(v JiraChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided JiraChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeJiraChannelConfig(v JiraChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsLinearChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a LinearChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsLinearChannelConfig() (LinearChannelConfig, error) {
+	var body LinearChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromLinearChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided LinearChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromLinearChannelConfig(v LinearChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeLinearChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided LinearChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeLinearChannelConfig(v LinearChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMattermostChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a MattermostChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsMattermostChannelConfig() (MattermostChannelConfig, error) {
+	var body MattermostChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMattermostChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided MattermostChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromMattermostChannelConfig(v MattermostChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMattermostChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided MattermostChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeMattermostChannelConfig(v MattermostChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -12113,6 +13451,84 @@ func (t *UpdateAlertChannelRequest_Config) MergePagerDutyChannelConfig(v PagerDu
 	return err
 }
 
+// AsPushbulletChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a PushbulletChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsPushbulletChannelConfig() (PushbulletChannelConfig, error) {
+	var body PushbulletChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPushbulletChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided PushbulletChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromPushbulletChannelConfig(v PushbulletChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePushbulletChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided PushbulletChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergePushbulletChannelConfig(v PushbulletChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPushoverChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a PushoverChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsPushoverChannelConfig() (PushoverChannelConfig, error) {
+	var body PushoverChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPushoverChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided PushoverChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromPushoverChannelConfig(v PushoverChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePushoverChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided PushoverChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergePushoverChannelConfig(v PushoverChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsRootlyChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a RootlyChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsRootlyChannelConfig() (RootlyChannelConfig, error) {
+	var body RootlyChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromRootlyChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided RootlyChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromRootlyChannelConfig(v RootlyChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeRootlyChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided RootlyChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeRootlyChannelConfig(v RootlyChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsSlackChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a SlackChannelConfig
 func (t UpdateAlertChannelRequest_Config) AsSlackChannelConfig() (SlackChannelConfig, error) {
 	var body SlackChannelConfig
@@ -12129,6 +13545,32 @@ func (t *UpdateAlertChannelRequest_Config) FromSlackChannelConfig(v SlackChannel
 
 // MergeSlackChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided SlackChannelConfig
 func (t *UpdateAlertChannelRequest_Config) MergeSlackChannelConfig(v SlackChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSplunkOnCallChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a SplunkOnCallChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsSplunkOnCallChannelConfig() (SplunkOnCallChannelConfig, error) {
+	var body SplunkOnCallChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSplunkOnCallChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided SplunkOnCallChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromSplunkOnCallChannelConfig(v SplunkOnCallChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSplunkOnCallChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided SplunkOnCallChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeSplunkOnCallChannelConfig(v SplunkOnCallChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -12165,6 +13607,32 @@ func (t *UpdateAlertChannelRequest_Config) MergeTeamsChannelConfig(v TeamsChanne
 	return err
 }
 
+// AsTelegramChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a TelegramChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsTelegramChannelConfig() (TelegramChannelConfig, error) {
+	var body TelegramChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTelegramChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided TelegramChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromTelegramChannelConfig(v TelegramChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeTelegramChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided TelegramChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeTelegramChannelConfig(v TelegramChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsWebhookChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a WebhookChannelConfig
 func (t UpdateAlertChannelRequest_Config) AsWebhookChannelConfig() (WebhookChannelConfig, error) {
 	var body WebhookChannelConfig
@@ -12181,6 +13649,32 @@ func (t *UpdateAlertChannelRequest_Config) FromWebhookChannelConfig(v WebhookCha
 
 // MergeWebhookChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided WebhookChannelConfig
 func (t *UpdateAlertChannelRequest_Config) MergeWebhookChannelConfig(v WebhookChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsZapierChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a ZapierChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsZapierChannelConfig() (ZapierChannelConfig, error) {
+	var body ZapierChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromZapierChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided ZapierChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromZapierChannelConfig(v ZapierChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeZapierChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided ZapierChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeZapierChannelConfig(v ZapierChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
