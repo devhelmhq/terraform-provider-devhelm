@@ -29,6 +29,7 @@ const (
 	PathNotificationPolicies = "/api/v1/notification-policies"
 	PathResourceGroups       = "/api/v1/resource-groups"
 	PathSecrets              = "/api/v1/secrets"
+	PathServices             = "/api/v1/services"
 	PathServiceSubscriptions = "/api/v1/service-subscriptions"
 	PathStatusPages          = "/api/v1/status-pages"
 	PathTags                 = "/api/v1/tags"
@@ -65,6 +66,11 @@ func ResourceGroupMemberPath(groupID, memberID string) string {
 
 // SecretPath returns /api/v1/secrets/{key}.
 func SecretPath(key string) string { return PathSecrets + "/" + key }
+
+// ServicePath returns /api/v1/services/{slugOrId} — the status-data service
+// catalog detail endpoint. Callers that pass user-supplied input should
+// pre-escape the segment.
+func ServicePath(slugOrID string) string { return PathServices + "/" + slugOrID }
 
 // ServiceSubscriptionPath returns /api/v1/service-subscriptions/{idOrSlug}.
 // Callers that pass user-supplied input should pre-escape the segment.
