@@ -115,6 +115,7 @@ func (p *DevhelmProvider) DataSources(_ context.Context) []func() datasource.Dat
 		datasources.NewAlertChannelDataSource,
 		datasources.NewMonitorDataSource,
 		datasources.NewResourceGroupDataSource,
+		datasources.NewServiceDataSource,
 		datasources.NewStatusPageDataSource,
 	}
 }

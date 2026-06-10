@@ -8446,6 +8446,9 @@ type ListServicesParams struct {
 	// Published Filter by published status for pSEO pages
 	Published *bool `form:"published,omitempty" json:"published,omitempty"`
 
+	// Search Case-insensitive substring match on service name or slug
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
 	// Cursor Opaque cursor from a previous response
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 
