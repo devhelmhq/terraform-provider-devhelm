@@ -6,10 +6,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -924,5 +926,131 @@ func TestValidateMonitorConfigJSON_UnknownTypeIsNoOp(t *testing.T) {
 	validateMonitorConfigJSON(&diags, `{"foo":"bar"}`, generated.CreateMonitorRequestType("BOGUS"))
 	if diags.HasError() {
 		t.Fatalf("unknown monitor type should not produce config diagnostics, got %v", diags)
+	}
+}
+
+// ── validateAssertionConfigJSON — per-type assertion config validation ──
+//
+// These exercise validateAssertionConfigJSON directly. The headline bug is
+// the value-type mismatch (a NUMBER where the API wants a STRING), which
+// previously planned cleanly and failed apply with "Provider produced
+// inconsistent result". Locking it in at plan time is the whole point of
+// the validator.
+
+func assertionCfgPath() path.Path {
+	return path.Root("assertions").AtListIndex(0).AtName("config")
+}
+
+func TestValidateAssertionConfigJSON_ValidPayloadsPass(t *testing.T) {
+	cases := map[string]string{
+		"status_code":   `{"expected":"200","operator":"equals"}`,
+		"response_time": `{"thresholdMs":500}`,
+		"body_contains": `{"substring":"ok"}`,
+		"ssl_expiry":    `{"minDaysRemaining":14}`,
+	}
+	for assertionType, raw := range cases {
+		assertionType, raw := assertionType, raw
+		t.Run(assertionType, func(t *testing.T) {
+			var diags diag.Diagnostics
+			validateAssertionConfigJSON(&diags, raw, assertionType, assertionCfgPath())
+			if diags.HasError() {
+				t.Fatalf("expected no diagnostics for valid %s config, got %v", assertionType, diags.Errors())
+			}
+		})
+	}
+}
+
+// TestValidateAssertionConfigJSON_NumberWhereStringExpectedRejected is the
+// regression guard for the headline bug: `expected = 200` (a JSON number)
+// must be rejected at plan time because StatusCodeAssertion.expected is a
+// string. Before the validator this surfaced only as an apply-time
+// "Provider produced inconsistent result".
+func TestValidateAssertionConfigJSON_NumberWhereStringExpectedRejected(t *testing.T) {
+	var diags diag.Diagnostics
+	validateAssertionConfigJSON(&diags, `{"expected":200,"operator":"equals"}`, "status_code", assertionCfgPath())
+	if !diags.HasError() {
+		t.Fatalf("expected error for numeric `expected`, got %v", diags)
+	}
+	if got := diags.Errors()[0].Summary(); !strings.Contains(got, "Invalid config for assertion type") {
+		t.Fatalf("expected invalid-config summary, got %q", got)
+	}
+}
+
+func TestValidateAssertionConfigJSON_StringWhereNumberExpectedRejected(t *testing.T) {
+	// response_time.thresholdMs is an int32; a quoted "500" must be rejected.
+	var diags diag.Diagnostics
+	validateAssertionConfigJSON(&diags, `{"thresholdMs":"500"}`, "response_time", assertionCfgPath())
+	if !diags.HasError() {
+		t.Fatalf("expected error for string thresholdMs, got %v", diags)
+	}
+}
+
+func TestValidateAssertionConfigJSON_InvalidJSONIsAttributeError(t *testing.T) {
+	var diags diag.Diagnostics
+	validateAssertionConfigJSON(&diags, `{"expected": "200`, "status_code", assertionCfgPath())
+	if !diags.HasError() {
+		t.Fatalf("expected error for malformed JSON, got %v", diags)
+	}
+	if got := diags.Errors()[0].Summary(); !strings.Contains(got, "Invalid JSON") {
+		t.Fatalf("expected invalid-JSON summary, got %q", got)
+	}
+}
+
+func TestValidateAssertionConfigJSON_UnknownFieldRejected(t *testing.T) {
+	var diags diag.Diagnostics
+	validateAssertionConfigJSON(&diags, `{"expected":"200","operator":"equals","bogus":true}`, "status_code", assertionCfgPath())
+	if !diags.HasError() {
+		t.Fatalf("expected error for unknown field, got %v", diags)
+	}
+}
+
+func TestValidateAssertionConfigJSON_CaseMismatchedFieldRejected(t *testing.T) {
+	// `Substring` (capitalized) must not silently decode into `substring`.
+	var diags diag.Diagnostics
+	validateAssertionConfigJSON(&diags, `{"Substring":"ok"}`, "body_contains", assertionCfgPath())
+	if !diags.HasError() {
+		t.Fatalf("expected error for case-mismatched field, got %v", diags)
+	}
+}
+
+func TestValidateAssertionConfigJSON_MissingRequiredFieldRejected(t *testing.T) {
+	// body_contains requires `substring`; an empty object must fail.
+	var diags diag.Diagnostics
+	validateAssertionConfigJSON(&diags, `{}`, "body_contains", assertionCfgPath())
+	if !diags.HasError() {
+		t.Fatalf("expected error for missing required field, got %v", diags)
+	}
+	if got := diags.Errors()[0].Summary(); !strings.Contains(got, "Missing or invalid fields") {
+		t.Fatalf("expected missing-fields summary, got %q", got)
+	}
+}
+
+func TestValidateAssertionConfigJSON_EmptyStringIsNoOp(t *testing.T) {
+	var diags diag.Diagnostics
+	validateAssertionConfigJSON(&diags, "", "status_code", assertionCfgPath())
+	if diags.HasError() {
+		t.Fatalf("empty config string should not produce diagnostics, got %v", diags)
+	}
+}
+
+func TestValidateAssertionConfigJSON_UnknownTypeIsNoOp(t *testing.T) {
+	// Unknown assertion type is reported by `type`'s OneOf validator; the
+	// config validator must not double-emit a confusing second error.
+	var diags diag.Diagnostics
+	validateAssertionConfigJSON(&diags, `{"foo":"bar"}`, "bogus_assertion", assertionCfgPath())
+	if diags.HasError() {
+		t.Fatalf("unknown assertion type should not produce config diagnostics, got %v", diags)
+	}
+}
+
+// TestAssertionConfigPrototype_CoversEveryAssertionType locks in lockstep
+// between api.AssertionTypes (the schema's OneOf set) and the validator's
+// prototype switch — a new spec assertion type that isn't wired here would
+// silently skip plan-time validation.
+func TestAssertionConfigPrototype_CoversEveryAssertionType(t *testing.T) {
+	for _, at := range api.AssertionTypes {
+		if assertionConfigPrototype(at) == nil {
+			t.Errorf("assertionConfigPrototype(%q) = nil; every api.AssertionTypes entry must map to a generated struct", at)
+		}
 	}
 }

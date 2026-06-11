@@ -112,6 +112,7 @@ func (p *DevhelmProvider) DataSources(_ context.Context) []func() datasource.Dat
 	return []func() datasource.DataSource{
 		datasources.NewTagDataSource,
 		datasources.NewEnvironmentDataSource,
+		datasources.NewSecretDataSource,
 		datasources.NewAlertChannelDataSource,
 		datasources.NewMonitorDataSource,
 		datasources.NewResourceGroupDataSource,

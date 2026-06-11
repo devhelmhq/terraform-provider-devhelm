@@ -373,6 +373,43 @@ func TestMapEnvironmentToState_PopulatesAllFields(t *testing.T) {
 	}
 }
 
+// ── mapSecretToState ────────────────────────────────────────────────────
+
+func TestMapSecretToState_PopulatesIdKeyAndHashOnly(t *testing.T) {
+	id := mustUUID(t, "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+	dto := &generated.SecretDto{
+		Id:        id,
+		Key:       "DATABASE_URL",
+		ValueHash: "abc123",
+	}
+	var model SecretDataSourceModel
+	mapSecretToState(&model, dto)
+	if model.ID.ValueString() != id.String() {
+		t.Errorf("ID: got %q, want %q", model.ID.ValueString(), id.String())
+	}
+	if model.Key.ValueString() != "DATABASE_URL" {
+		t.Errorf("Key: got %q", model.Key.ValueString())
+	}
+	if model.ValueHash.ValueString() != "abc123" {
+		t.Errorf("ValueHash: got %q", model.ValueHash.ValueString())
+	}
+}
+
+// TestSecretLookupByKey_MatchesExactly confirms the data source's lookup
+// strategy: List + filter by `key` (secret keys are unique per workspace,
+// so a single match is expected). Uses the shared matchByName helper the
+// Read path funnels through.
+func TestSecretLookupByKey_MatchesExactly(t *testing.T) {
+	secrets := []generated.SecretDto{
+		{Id: mustUUID(t, "00000000-0000-0000-0000-000000000001"), Key: "API_KEY"},
+		{Id: mustUUID(t, "00000000-0000-0000-0000-000000000002"), Key: "DATABASE_URL"},
+	}
+	got := matchByName(secrets, "DATABASE_URL", func(s generated.SecretDto) string { return s.Key })
+	if len(got) != 1 || got[0].Key != "DATABASE_URL" {
+		t.Fatalf("expected single DATABASE_URL match, got %v", got)
+	}
+}
+
 // contains is a tiny zero-import substring helper; we deliberately avoid
 // pulling in `strings` for one call so this test file's import surface
 // stays minimal and obvious to reviewers.

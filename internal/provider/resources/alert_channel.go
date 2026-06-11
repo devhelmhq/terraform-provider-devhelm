@@ -119,17 +119,17 @@ func (r *AlertChannelResource) Schema(_ context.Context, _ resource.SchemaReques
 			"name": schema.StringAttribute{
 				Required: true, Description: "Human-readable name for this alert channel",
 			},
-		"channel_type": schema.StringAttribute{
-			Required: true,
-			Description: "Channel type discriminator. " +
-				"Spec source of truth: `AlertChannelDto.channelType` enum. " +
-				"Each value gates a specific subset of optional attributes; " +
-				"see ValidateConfig in `alert_channel_validate.go` for the " +
-				"per-type required + forbidden field matrix.",
-			Validators: []validator.String{
-				stringvalidator.OneOf(api.AlertChannelTypes...),
+			"channel_type": schema.StringAttribute{
+				Required: true,
+				Description: "Channel type discriminator. " +
+					"Spec source of truth: `AlertChannelDto.channelType` enum. " +
+					"Each value gates a specific subset of optional attributes; " +
+					"see ValidateConfig in `alert_channel_validate.go` for the " +
+					"per-type required + forbidden field matrix.",
+				Validators: []validator.String{
+					stringvalidator.OneOf(api.AlertChannelTypes...),
+				},
 			},
-		},
 			"config_hash": schema.StringAttribute{
 				Computed: true, Description: "Content-addressed hash of the channel configuration",
 			},
@@ -501,13 +501,101 @@ func (r *AlertChannelResource) Read(ctx context.Context, req resource.ReadReques
 
 	state.Name = types.StringValue(found.Name)
 	state.ChannelType = types.StringValue(string(found.ChannelType))
-	state.ConfigHash = stringValue(found.ConfigHash)
 
 	// Config fields are write-only (secrets). The API only returns a display
-	// config with non-sensitive hints plus a configHash for change detection.
-	// We preserve current state values for all config attributes so Terraform
-	// doesn't detect phantom diffs on sensitive fields.
+	// config with non-sensitive hints plus a `configHash` for change
+	// detection. We preserve current state values for all config attributes
+	// so Terraform doesn't detect phantom diffs on sensitive fields.
+	//
+	// Drift detection: compare the server's `configHash` against the hash
+	// stored in state. When they diverge the channel config was changed
+	// out-of-band (dashboard, raw API, another tool). We deliberately do NOT
+	// overwrite `state.ConfigHash` with the server value — doing so would
+	// mask the divergence and the next plan would look clean. Instead we keep
+	// the stored hash (the divergence signal) and NULL the write-only config
+	// attributes so the next plan surfaces a diff; the subsequent Update
+	// re-pushes the HCL-declared config and reconciles the channel.
+	serverHash := stringValue(found.ConfigHash)
+	if !state.ConfigHash.IsNull() && !state.ConfigHash.IsUnknown() && !serverHash.Equal(state.ConfigHash) {
+		clearAlertChannelConfigAttrs(&state)
+	} else {
+		state.ConfigHash = serverHash
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+}
+
+// clearAlertChannelConfigAttrs sets every type-specific config attribute on
+// the model to its typed null. Called when out-of-band drift is detected so
+// the write-only config (which the API never echoes back) reads as null in
+// state, forcing the next `terraform plan` to show a diff against the
+// HCL-declared config. The identity attributes (id, name, channel_type) and
+// config_hash are intentionally left untouched.
+func clearAlertChannelConfigAttrs(m *AlertChannelResourceModel) {
+	// Slack / Discord / Teams / Google Chat / Mattermost / Zapier
+	m.WebhookURL = types.StringNull()
+	m.MentionText = types.StringNull()
+	m.MentionRoleID = types.StringNull()
+
+	// Email
+	m.Recipients = types.ListNull(types.StringType)
+
+	// PagerDuty / Splunk On-Call
+	m.RoutingKey = types.StringNull()
+	m.SeverityOverride = types.StringNull()
+
+	// OpsGenie / Linear / Incident.io / Rootly / Datadog / Splunk On-Call
+	m.APIKey = types.StringNull()
+	m.Region = types.StringNull()
+
+	// Webhook
+	m.URL = types.StringNull()
+	m.CustomHeaders = types.MapNull(types.StringType)
+	m.SigningSecret = types.StringNull()
+
+	// Telegram
+	m.BotToken = types.StringNull()
+	m.ChatID = types.StringNull()
+
+	// Pushover
+	m.UserKey = types.StringNull()
+	m.AppToken = types.StringNull()
+	m.Priority = types.StringNull()
+	m.Sound = types.StringNull()
+
+	// Mattermost
+	m.Channel = types.StringNull()
+	m.IconURL = types.StringNull()
+
+	// Pushbullet
+	m.AccessToken = types.StringNull()
+	m.DeviceIden = types.StringNull()
+
+	// Linear
+	m.TeamID = types.StringNull()
+	m.LabelID = types.StringNull()
+
+	// Incident.io
+	m.SeverityID = types.StringNull()
+	m.Visibility = types.StringNull()
+
+	// Rootly
+	m.Severity = types.StringNull()
+
+	// Datadog
+	m.Site = types.StringNull()
+	m.Tags = types.StringNull()
+
+	// Jira
+	m.Domain = types.StringNull()
+	m.Email = types.StringNull()
+	m.APIToken = types.StringNull()
+	m.ProjectKey = types.StringNull()
+	m.IssueType = types.StringNull()
+
+	// GitLab
+	m.EndpointURL = types.StringNull()
+	m.AuthorizationKey = types.StringNull()
 }
 
 func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {

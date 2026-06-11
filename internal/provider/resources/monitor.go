@@ -402,6 +402,26 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 		validateMonitorConfigJSON(&resp.Diagnostics, configJSON, monitorType)
 	}
 
+	// Assertion config validation: each assertion's `config` is a JSON
+	// string whose shape depends on the sibling `type` discriminator.
+	// Decode it against the generated per-assertion-type struct so type
+	// mismatches (e.g. `expected = 200` where the API wants the STRING
+	// "200"), typos, and missing required fields surface at plan time
+	// instead of failing apply with "Provider produced inconsistent
+	// result". Diagnostics are routed to the offending block's `config`.
+	if !model.Assertions.IsNull() && !model.Assertions.IsUnknown() {
+		var assertions []assertionModel
+		if d := model.Assertions.ElementsAs(ctx, &assertions, false); !d.HasError() {
+			for i, a := range assertions {
+				if a.Config.IsNull() || a.Config.IsUnknown() || a.Type.IsNull() || a.Type.IsUnknown() {
+					continue
+				}
+				cfgPath := path.Root("assertions").AtListIndex(i).AtName("config")
+				validateAssertionConfigJSON(&resp.Diagnostics, a.Config.ValueString(), a.Type.ValueString(), cfgPath)
+			}
+		}
+	}
+
 	// Auth validation: enforce the exactly-one-variant invariant and
 	// per-variant required fields at plan time. The schema cannot express
 	// "exactly one of bearer/basic/header/api_key" on its own (every
@@ -584,6 +604,215 @@ func validateMonitorConfigJSON(diags *diag.Diagnostics, raw string, monitorType 
 			validationErr.Error(),
 		)
 	}
+}
+
+// validateAssertionConfigJSON parses an assertion's JSON-string `config`
+// and validates it against the generated Go struct that matches the
+// declared assertion `type`. It is the assertion analogue of
+// validateMonitorConfigJSON and catches the same three bug classes at
+// plan time instead of apply time:
+//
+//  1. Invalid JSON (parse failure).
+//  2. Wrong JSON value type for a field — the bug that motivated this
+//     validator. Users write `jsonencode({expected = 200})` (a NUMBER)
+//     where `StatusCodeAssertion.expected` is a STRING. Decoding into the
+//     typed struct fails with "cannot unmarshal number into … string",
+//     surfacing the mismatch at `terraform plan` instead of the API
+//     normalizing it on the round-trip and triggering "Provider produced
+//     inconsistent result after apply".
+//  3. Unknown keys / case-mismatched typos (DisallowUnknownFields plus the
+//     case-sensitive key walk) and missing required fields (ValidateDTO).
+//
+// The per-assertion `config` omits the `type` discriminator (it lives on
+// the sibling `type` attribute), so we inject it before decoding —
+// mirroring buildAssertions — both to satisfy the struct's required
+// `type` field and to keep the decode shape aligned with the wire format.
+//
+// This is the "Option B" interim approach: validate against generated
+// structs without migrating `config` to a typed nested block (which would
+// touch every surface fixture, example, and acc test).
+func validateAssertionConfigJSON(diags *diag.Diagnostics, raw, assertionType string, cfgPath path.Path) {
+	if raw == "" {
+		return
+	}
+	if !json.Valid([]byte(raw)) {
+		diags.AddAttributeError(
+			cfgPath,
+			"Invalid JSON in assertion config",
+			fmt.Sprintf("The config attribute must be valid JSON; got %q", truncate(raw, 80)),
+		)
+		return
+	}
+
+	proto := assertionConfigPrototype(assertionType)
+	if proto == nil {
+		// Unknown assertion type — `type`'s OneOf validator already flags it.
+		return
+	}
+
+	// Inject the discriminator (unless the user already supplied one) so the
+	// generated struct's required `type` field is satisfied and the decode
+	// shape matches the API wire format.
+	var rawMap map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(raw), &rawMap); err != nil {
+		diags.AddAttributeError(cfgPath, "Invalid JSON in assertion config", err.Error())
+		return
+	}
+	if _, ok := rawMap["type"]; !ok {
+		rawMap["type"] = json.RawMessage(fmt.Sprintf("%q", assertionType))
+	}
+	wrapped, err := json.Marshal(rawMap)
+	if err != nil {
+		diags.AddAttributeError(cfgPath, "Invalid JSON in assertion config", err.Error())
+		return
+	}
+
+	schemaName := assertionConfigSchemaName(assertionType)
+
+	dec := json.NewDecoder(strings.NewReader(string(wrapped)))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(proto); err != nil {
+		diags.AddAttributeError(
+			cfgPath,
+			fmt.Sprintf("Invalid config for assertion type %q", assertionType),
+			fmt.Sprintf("%s. Field names are camelCase and JSON value types must match the API contract "+
+				"exactly — e.g. status_code.expected is a STRING (\"200\", not 200) while "+
+				"response_time.thresholdMs is a NUMBER. Refer to the %s schema in the OpenAPI spec.",
+				err, schemaName),
+		)
+		return
+	}
+
+	// Go's encoding/json matches struct field tags case-insensitively, so a
+	// typo like `Substring` decodes into `substring` even with
+	// DisallowUnknownFields. Catch that class case-sensitively.
+	if extra := caseSensitiveUnknownKeys(string(wrapped), proto); len(extra) > 0 {
+		diags.AddAttributeError(
+			cfgPath,
+			fmt.Sprintf("Unknown field(s) in %q assertion config", assertionType),
+			fmt.Sprintf("Field name(s) %v are not in the %s schema. JSON keys are case-sensitive — "+
+				"check that the field name matches the spec exactly.", extra, schemaName),
+		)
+		return
+	}
+
+	if validationErr := api.ValidateDTO(proto, fmt.Sprintf("%s assertion config", assertionType)); validationErr != nil {
+		diags.AddAttributeError(
+			cfgPath,
+			fmt.Sprintf("Missing or invalid fields in %q assertion config", assertionType),
+			validationErr.Error(),
+		)
+	}
+}
+
+// assertionConfigPrototype returns a pointer to the generated Go struct
+// matching the given wire-format assertion type, or nil when the type is
+// unknown (the `type` OneOf validator handles that case). The mapping
+// mirrors api.AssertionTypes — every entry there has a struct here.
+func assertionConfigPrototype(assertionType string) any {
+	switch assertionType {
+	case string(generated.BodyContainsAssertionTypeBodyContains):
+		return &generated.BodyContainsAssertion{}
+	case string(generated.DnsExpectedCnameAssertionTypeDnsExpectedCname):
+		return &generated.DnsExpectedCnameAssertion{}
+	case string(generated.DnsExpectedIpsAssertionTypeDnsExpectedIps):
+		return &generated.DnsExpectedIpsAssertion{}
+	case string(generated.DnsMaxAnswersAssertionTypeDnsMaxAnswers):
+		return &generated.DnsMaxAnswersAssertion{}
+	case string(generated.DnsMinAnswersAssertionTypeDnsMinAnswers):
+		return &generated.DnsMinAnswersAssertion{}
+	case string(generated.DnsRecordContainsAssertionTypeDnsRecordContains):
+		return &generated.DnsRecordContainsAssertion{}
+	case string(generated.DnsRecordEqualsAssertionTypeDnsRecordEquals):
+		return &generated.DnsRecordEqualsAssertion{}
+	case string(generated.DnsResolvesAssertionTypeDnsResolves):
+		return &generated.DnsResolvesAssertion{}
+	case string(generated.DnsResponseTimeAssertionTypeDnsResponseTime):
+		return &generated.DnsResponseTimeAssertion{}
+	case string(generated.DnsResponseTimeWarnAssertionTypeDnsResponseTimeWarn):
+		return &generated.DnsResponseTimeWarnAssertion{}
+	case string(generated.DnsTtlHighAssertionTypeDnsTtlHigh):
+		return &generated.DnsTtlHighAssertion{}
+	case string(generated.DnsTtlLowAssertionTypeDnsTtlLow):
+		return &generated.DnsTtlLowAssertion{}
+	case string(generated.DnsTxtContainsAssertionTypeDnsTxtContains):
+		return &generated.DnsTxtContainsAssertion{}
+	case string(generated.HeaderValueAssertionTypeHeaderValue):
+		return &generated.HeaderValueAssertion{}
+	case string(generated.HeartbeatIntervalDriftAssertionTypeHeartbeatIntervalDrift):
+		return &generated.HeartbeatIntervalDriftAssertion{}
+	case string(generated.HeartbeatMaxIntervalAssertionTypeHeartbeatMaxInterval):
+		return &generated.HeartbeatMaxIntervalAssertion{}
+	case string(generated.HeartbeatPayloadContainsAssertionTypeHeartbeatPayloadContains):
+		return &generated.HeartbeatPayloadContainsAssertion{}
+	case string(generated.HeartbeatReceivedAssertionTypeHeartbeatReceived):
+		return &generated.HeartbeatReceivedAssertion{}
+	case string(generated.IcmpPacketLossAssertionTypeIcmpPacketLoss):
+		return &generated.IcmpPacketLossAssertion{}
+	case string(generated.IcmpReachableAssertionTypeIcmpReachable):
+		return &generated.IcmpReachableAssertion{}
+	case string(generated.IcmpResponseTimeAssertionTypeIcmpResponseTime):
+		return &generated.IcmpResponseTimeAssertion{}
+	case string(generated.IcmpResponseTimeWarnAssertionTypeIcmpResponseTimeWarn):
+		return &generated.IcmpResponseTimeWarnAssertion{}
+	case string(generated.JsonPathAssertionTypeJsonPath):
+		return &generated.JsonPathAssertion{}
+	case string(generated.McpConnectsAssertionTypeMcpConnects):
+		return &generated.McpConnectsAssertion{}
+	case string(generated.McpHasCapabilityAssertionTypeMcpHasCapability):
+		return &generated.McpHasCapabilityAssertion{}
+	case string(generated.McpMinToolsAssertionTypeMcpMinTools):
+		return &generated.McpMinToolsAssertion{}
+	case string(generated.McpProtocolVersionAssertionTypeMcpProtocolVersion):
+		return &generated.McpProtocolVersionAssertion{}
+	case string(generated.McpResponseTimeAssertionTypeMcpResponseTime):
+		return &generated.McpResponseTimeAssertion{}
+	case string(generated.McpResponseTimeWarnAssertionTypeMcpResponseTimeWarn):
+		return &generated.McpResponseTimeWarnAssertion{}
+	case string(generated.McpToolAvailableAssertionTypeMcpToolAvailable):
+		return &generated.McpToolAvailableAssertion{}
+	case string(generated.McpToolCountChangedAssertionTypeMcpToolCountChanged):
+		return &generated.McpToolCountChangedAssertion{}
+	case string(generated.RedirectCountAssertionTypeRedirectCount):
+		return &generated.RedirectCountAssertion{}
+	case string(generated.RedirectTargetAssertionTypeRedirectTarget):
+		return &generated.RedirectTargetAssertion{}
+	case string(generated.RegexBodyAssertionTypeRegexBody):
+		return &generated.RegexBodyAssertion{}
+	case string(generated.ResponseSizeAssertionTypeResponseSize):
+		return &generated.ResponseSizeAssertion{}
+	case string(generated.ResponseTimeAssertionTypeResponseTime):
+		return &generated.ResponseTimeAssertion{}
+	case string(generated.ResponseTimeWarnAssertionTypeResponseTimeWarn):
+		return &generated.ResponseTimeWarnAssertion{}
+	case string(generated.SslExpiryAssertionTypeSslExpiry):
+		return &generated.SslExpiryAssertion{}
+	case string(generated.StatusCodeAssertionTypeStatusCode):
+		return &generated.StatusCodeAssertion{}
+	case string(generated.TcpConnectsAssertionTypeTcpConnects):
+		return &generated.TcpConnectsAssertion{}
+	case string(generated.TcpResponseTimeAssertionTypeTcpResponseTime):
+		return &generated.TcpResponseTimeAssertion{}
+	case string(generated.TcpResponseTimeWarnAssertionTypeTcpResponseTimeWarn):
+		return &generated.TcpResponseTimeWarnAssertion{}
+	default:
+		return nil
+	}
+}
+
+// assertionConfigSchemaName returns the OpenAPI schema name (the generated
+// Go struct name) for a given assertion type, derived by reflecting over
+// the prototype so it stays in lockstep with assertionConfigPrototype.
+func assertionConfigSchemaName(assertionType string) string {
+	proto := assertionConfigPrototype(assertionType)
+	if proto == nil {
+		return "Assertion"
+	}
+	t := reflect.TypeOf(proto)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	return t.Name()
 }
 
 // caseSensitiveUnknownKeys returns top-level JSON keys in `raw` that have

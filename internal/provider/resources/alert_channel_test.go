@@ -153,3 +153,55 @@ func TestAlertChannel_BuildConfig_AlwaysSetsChannelType(t *testing.T) {
 		}
 	}
 }
+
+// TestClearAlertChannelConfigAttrs_NullsEveryConfigFieldButKeepsIdentity
+// guards the drift-detection helper: when out-of-band drift is detected,
+// every type-specific config attribute must become typed-null so the next
+// plan shows a diff, while id/name/channel_type/config_hash are preserved
+// (they carry the divergence signal and the resource identity).
+func TestClearAlertChannelConfigAttrs_NullsEveryConfigFieldButKeepsIdentity(t *testing.T) {
+	m := &AlertChannelResourceModel{
+		ID:          types.StringValue("11111111-1111-1111-1111-111111111111"),
+		Name:        types.StringValue("ops-slack"),
+		ChannelType: types.StringValue("slack"),
+		ConfigHash:  types.StringValue("old-hash"),
+
+		WebhookURL:    types.StringValue("https://hooks.slack.com/x"),
+		MentionText:   types.StringValue("@here"),
+		MentionRoleID: types.StringValue("role"),
+		Recipients:    types.ListValueMust(types.StringType, []attr.Value{types.StringValue("a@b.com")}),
+		RoutingKey:    types.StringValue("rk"),
+		APIKey:        types.StringValue("ak"),
+		URL:           types.StringValue("https://example.com"),
+		CustomHeaders: types.MapValueMust(types.StringType, map[string]attr.Value{"X": types.StringValue("y")}),
+		SigningSecret: types.StringValue("ss"),
+		BotToken:      types.StringValue("bt"),
+		ChatID:        types.StringValue("c"),
+		Domain:        types.StringValue("acme.atlassian.net"),
+		APIToken:      types.StringValue("at"),
+		ProjectKey:    types.StringValue("OPS"),
+		EndpointURL:   types.StringValue("https://gitlab/x"),
+	}
+
+	clearAlertChannelConfigAttrs(m)
+
+	// Identity + divergence signal preserved.
+	if m.ID.IsNull() || m.Name.IsNull() || m.ChannelType.IsNull() {
+		t.Errorf("identity attrs must be preserved: id=%v name=%v type=%v", m.ID, m.Name, m.ChannelType)
+	}
+	if m.ConfigHash.ValueString() != "old-hash" {
+		t.Errorf("config_hash must be preserved (divergence signal), got %q", m.ConfigHash.ValueString())
+	}
+
+	// A representative spread of config attrs across element kinds.
+	if !m.WebhookURL.IsNull() || !m.MentionText.IsNull() || !m.SigningSecret.IsNull() ||
+		!m.APIKey.IsNull() || !m.URL.IsNull() || !m.Domain.IsNull() || !m.EndpointURL.IsNull() {
+		t.Errorf("string config attrs must be nulled: %+v", m)
+	}
+	if !m.Recipients.IsNull() {
+		t.Errorf("recipients list must be nulled, got %v", m.Recipients)
+	}
+	if !m.CustomHeaders.IsNull() {
+		t.Errorf("custom_headers map must be nulled, got %v", m.CustomHeaders)
+	}
+}
