@@ -8297,6 +8297,12 @@ type List19Params struct {
 	Size         *int32     `form:"size,omitempty" json:"size,omitempty"`
 }
 
+// ListCategoriesParams defines parameters for ListCategories.
+type ListCategoriesParams struct {
+	// PublishedOnly Count only published services (curated public pSEO set); default false
+	PublishedOnly *bool `form:"publishedOnly,omitempty" json:"publishedOnly,omitempty"`
+}
+
 // ListMonitorRuleEvaluationsParams defines parameters for ListMonitorRuleEvaluations.
 type ListMonitorRuleEvaluationsParams struct {
 	RuleType    *string    `form:"ruleType,omitempty" json:"ruleType,omitempty"`
@@ -8449,6 +8455,9 @@ type ListServicesParams struct {
 	// Search Case-insensitive substring match on service name or slug
 	Search *string `form:"search,omitempty" json:"search,omitempty"`
 
+	// Sort Result ordering: 'recent' (default, newest first) or 'curated' (curated/recognizable first)
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
 	// Cursor Opaque cursor from a previous response
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 
@@ -8472,10 +8481,19 @@ type ListCrossServiceIncidentsParams struct {
 // ListCrossServiceIncidentsParamsStatus defines parameters for ListCrossServiceIncidents.
 type ListCrossServiceIncidentsParamsStatus string
 
+// GetGlobalStatusSummaryParams defines parameters for GetGlobalStatusSummary.
+type GetGlobalStatusSummaryParams struct {
+	// PublishedOnly Aggregate only published services (curated public pSEO set); default false
+	PublishedOnly *bool `form:"publishedOnly,omitempty" json:"publishedOnly,omitempty"`
+}
+
 // GetServiceParams defines parameters for GetService.
 type GetServiceParams struct {
 	// Summary Return a curated subset of components (groups + showcase + impacted + ungrouped) and a componentsSummary block; default false
 	Summary *bool `form:"summary,omitempty" json:"summary,omitempty"`
+
+	// PublishedOnly Resolve only published services (curated public pSEO set); 404 otherwise. Default false
+	PublishedOnly *bool `form:"publishedOnly,omitempty" json:"publishedOnly,omitempty"`
 }
 
 // GetComponentsParams defines parameters for GetComponents.
