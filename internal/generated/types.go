@@ -6419,6 +6419,7 @@ type ServiceDetailDto struct {
 // ServiceIncidentDetailDto defines model for ServiceIncidentDetailDto.
 type ServiceIncidentDetailDto struct {
 	AffectedComponents *[]string                  `json:"affectedComponents,omitempty"`
+	AffectedRegions    *[]string                  `json:"affectedRegions,omitempty"`
 	DetectedAt         *time.Time                 `json:"detectedAt,omitempty"`
 	Id                 openapi_types.UUID         `json:"id"`
 	Impact             *string                    `json:"impact,omitempty"`
@@ -6432,6 +6433,7 @@ type ServiceIncidentDetailDto struct {
 
 // ServiceIncidentDto defines model for ServiceIncidentDto.
 type ServiceIncidentDto struct {
+	AffectedRegions *[]string          `json:"affectedRegions,omitempty"`
 	DetectedAt      *time.Time         `json:"detectedAt,omitempty"`
 	ExternalId      *string            `json:"externalId,omitempty"`
 	Id              openapi_types.UUID `json:"id"`
@@ -8500,6 +8502,15 @@ type GetServiceParams struct {
 type GetComponentsParams struct {
 	// GroupId Restrict result to direct children of this group component id
 	GroupId *openapi_types.UUID `form:"groupId,omitempty" json:"groupId,omitempty"`
+
+	// Search Case-insensitive substring match on component name
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Page Zero-based page index
+	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size Page size (default 25, max 100)
+	Size *int32 `form:"size,omitempty" json:"size,omitempty"`
 }
 
 // GetBatchComponentUptimeParams defines parameters for GetBatchComponentUptime.
