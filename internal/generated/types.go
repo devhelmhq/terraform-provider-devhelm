@@ -8062,6 +8062,9 @@ type UpdateStatusPageRequest struct {
 	// Name New name; null preserves current
 	Name *string `json:"name,omitempty"`
 
+	// Slug URL-safe slug used in the public URL; null preserves current
+	Slug *string `json:"slug,omitempty"`
+
 	// Visibility Page visibility; null preserves current
 	Visibility *UpdateStatusPageRequestVisibility `json:"visibility,omitempty"`
 }
