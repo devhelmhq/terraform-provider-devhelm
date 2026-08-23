@@ -182,6 +182,38 @@ var alertChannelMatrix = map[string]alertChannelFieldShape{
 		optional:  []string{},
 		forbidden: []string{"webhook_url", "mention_text", "mention_role_id", "recipients", "routing_key", "severity_override", "api_key", "region", "url", "custom_headers", "signing_secret", "bot_token", "chat_id", "user_key", "app_token", "priority", "sound", "channel", "icon_url", "access_token", "device_iden", "team_id", "label_id", "severity_id", "visibility", "severity", "site", "tags", "domain", "email", "api_token", "project_key", "issue_type"},
 	},
+	"sms": {
+		required: []string{},
+		optional: []string{"phone_number", "verified_phone_number_id", "preferred_language"},
+	},
+	"phone_call": {
+		required: []string{},
+		optional: []string{"phone_number", "verified_phone_number_id", "preferred_language", "voice_language"},
+	},
+}
+
+func init() {
+	// New variant attributes land in alertChannelAllVariantFields first.
+	// Any type that does not list them as required/optional gets them
+	// appended to forbidden so the exhaustive partition stays closed.
+	for k, shape := range alertChannelMatrix {
+		seen := make(map[string]struct{}, len(shape.required)+len(shape.optional)+len(shape.forbidden))
+		for _, f := range shape.required {
+			seen[f] = struct{}{}
+		}
+		for _, f := range shape.optional {
+			seen[f] = struct{}{}
+		}
+		for _, f := range shape.forbidden {
+			seen[f] = struct{}{}
+		}
+		for _, f := range alertChannelAllVariantFields {
+			if _, ok := seen[f]; !ok {
+				shape.forbidden = append(shape.forbidden, f)
+			}
+		}
+		alertChannelMatrix[k] = shape
+	}
 }
 
 // alertChannelAllVariantFields enumerates every variant attribute the
@@ -223,6 +255,10 @@ var alertChannelAllVariantFields = []string{
 	"issue_type",
 	"endpoint_url",
 	"authorization_key",
+	"phone_number",
+	"verified_phone_number_id",
+	"preferred_language",
+	"voice_language",
 }
 
 // attrSetByName returns the `attr.Value` for one of the variant
@@ -300,6 +336,14 @@ func (m *AlertChannelResourceModel) attrSetByName(name string) attr.Value {
 		return m.EndpointURL
 	case "authorization_key":
 		return m.AuthorizationKey
+	case "phone_number":
+		return m.PhoneNumber
+	case "verified_phone_number_id":
+		return m.VerifiedPhoneNumberID
+	case "preferred_language":
+		return m.PreferredLanguage
+	case "voice_language":
+		return m.VoiceLanguage
 	default:
 		return nil
 	}
@@ -384,6 +428,19 @@ func validateAlertChannelModel(cfg *AlertChannelResourceModel, diags *diag.Diagn
 				"attribute. See the per-type field shape matrix in "+
 				"`alert_channel_validate.go`.",
 		)
+	}
+
+	if channelType == "sms" || channelType == "phone_call" {
+		phoneMissing := cfg.PhoneNumber.IsNull() || cfg.PhoneNumber.ValueString() == ""
+		idMissing := cfg.VerifiedPhoneNumberID.IsNull()
+		if !cfg.PhoneNumber.IsUnknown() && !cfg.VerifiedPhoneNumberID.IsUnknown() && phoneMissing && idMissing {
+			diags.AddAttributeError(
+				path.Root("phone_number"),
+				"Missing destination for channel type",
+				"`phone_number` or `verified_phone_number_id` is required when `channel_type` is "+
+					"`"+channelType+"`.",
+			)
+		}
 	}
 }
 

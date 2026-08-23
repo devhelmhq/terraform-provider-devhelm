@@ -31,14 +31,15 @@ type NotificationPolicyResource struct {
 }
 
 type NotificationPolicyModel struct {
-	ID         types.String `tfsdk:"id"`
-	Name       types.String `tfsdk:"name"`
-	Enabled    types.Bool   `tfsdk:"enabled"`
-	Priority   types.Int64  `tfsdk:"priority"`
-	MatchRules types.List   `tfsdk:"match_rule"`
-	Escalation types.List   `tfsdk:"escalation_step"`
-	OnResolve  types.String `tfsdk:"on_resolve"`
-	OnReopen   types.String `tfsdk:"on_reopen"`
+	ID          types.String `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	Description types.String `tfsdk:"description"`
+	Enabled     types.Bool   `tfsdk:"enabled"`
+	Priority    types.Int64  `tfsdk:"priority"`
+	MatchRules  types.List   `tfsdk:"match_rule"`
+	Escalation  types.List   `tfsdk:"escalation_step"`
+	OnResolve   types.String `tfsdk:"on_resolve"`
+	OnReopen    types.String `tfsdk:"on_reopen"`
 }
 
 func NewNotificationPolicyResource() resource.Resource {
@@ -60,6 +61,14 @@ func (r *NotificationPolicyResource) Schema(_ context.Context, _ resource.Schema
 			},
 			"name": schema.StringAttribute{
 				Required: true, Description: "Human-readable name for this notification policy",
+			},
+			"description": schema.StringAttribute{
+				Optional: true,
+				Description: "Optional note for this policy. Omit to clear an existing " +
+					"description; empty string is rejected.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"enabled": schema.BoolAttribute{
 				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
@@ -216,9 +225,10 @@ func (r *NotificationPolicyResource) buildRequest(ctx context.Context, plan *Not
 	}
 
 	req := &generated.CreateNotificationPolicyRequest{
-		Name:     plan.Name.ValueString(),
-		Enabled:  &createEnabled,
-		Priority: &createPriority,
+		Name:        plan.Name.ValueString(),
+		Description: stringPtrOrNil(plan.Description),
+		Enabled:     &createEnabled,
+		Priority:    &createPriority,
 		Escalation: generated.EscalationChain{
 			Steps:     apiSteps,
 			OnResolve: stringPtrOrNil(plan.OnResolve),
@@ -282,9 +292,10 @@ func (r *NotificationPolicyResource) buildUpdateRequest(ctx context.Context, pla
 	}
 
 	return &generated.UpdateNotificationPolicyRequest{
-		Name:     stringPtrOrNil(plan.Name),
-		Enabled:  &enabled,
-		Priority: &priority,
+		Name:        stringPtrOrNil(plan.Name),
+		Description: descriptionPtrForClear(plan.Description),
+		Enabled:     &enabled,
+		Priority:    &priority,
 		Escalation: &generated.EscalationChain{
 			Steps:     apiSteps,
 			OnResolve: stringPtrOrNil(plan.OnResolve),
@@ -351,6 +362,7 @@ func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *Noti
 
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
+	model.Description = stringValueClearable(dto.Description)
 	model.Enabled = types.BoolValue(dto.Enabled)
 	model.Priority = types.Int64Value(int64(dto.Priority))
 	model.OnResolve = stringValue(dto.Escalation.OnResolve)

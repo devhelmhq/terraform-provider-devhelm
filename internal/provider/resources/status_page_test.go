@@ -342,30 +342,38 @@ func TestStatusPageComponent_ValidateTypeRefs_Matrix(t *testing.T) {
 		typ         string
 		monitorID   string
 		resGroupID  string
+		serviceSub  string
 		expectError string
 	}{
-		{"monitor-ok", "MONITOR", uuid.NewString(), "", ""},
-		{"monitor-missing-monitor", "MONITOR", "", "", "monitor_id"},
-		{"monitor-with-rg", "MONITOR", uuid.NewString(), uuid.NewString(), "resource_group_id"},
-		{"group-ok", "GROUP", "", uuid.NewString(), ""},
-		{"group-missing-rg", "GROUP", "", "", "resource_group_id"},
-		{"group-with-monitor", "GROUP", uuid.NewString(), uuid.NewString(), "monitor_id"},
-		{"static-ok", "STATIC", "", "", ""},
-		{"static-with-monitor", "STATIC", uuid.NewString(), "", "monitor_id"},
-		{"static-with-rg", "STATIC", "", uuid.NewString(), "resource_group_id"},
+		{"monitor-ok", "MONITOR", uuid.NewString(), "", "", ""},
+		{"monitor-missing-monitor", "MONITOR", "", "", "", "monitor_id"},
+		{"monitor-with-rg", "MONITOR", uuid.NewString(), uuid.NewString(), "", "resource_group_id"},
+		{"group-ok", "GROUP", "", uuid.NewString(), "", ""},
+		{"group-missing-rg", "GROUP", "", "", "", "resource_group_id"},
+		{"group-with-monitor", "GROUP", uuid.NewString(), uuid.NewString(), "", "monitor_id"},
+		{"static-ok", "STATIC", "", "", "", ""},
+		{"static-with-monitor", "STATIC", uuid.NewString(), "", "", "monitor_id"},
+		{"static-with-rg", "STATIC", "", uuid.NewString(), "", "resource_group_id"},
+		{"dependency-ok", "DEPENDENCY", "", "", uuid.NewString(), ""},
+		{"dependency-missing-sub", "DEPENDENCY", "", "", "", "service_subscription_id"},
+		{"dependency-with-monitor", "DEPENDENCY", uuid.NewString(), "", uuid.NewString(), "monitor_id"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			plan := &StatusPageComponentResourceModel{
-				Type:            types.StringValue(tc.typ),
-				MonitorID:       types.StringValue(tc.monitorID),
-				ResourceGroupID: types.StringValue(tc.resGroupID),
+				Type:                  types.StringValue(tc.typ),
+				MonitorID:             types.StringValue(tc.monitorID),
+				ResourceGroupID:       types.StringValue(tc.resGroupID),
+				ServiceSubscriptionID: types.StringValue(tc.serviceSub),
 			}
 			if tc.monitorID == "" {
 				plan.MonitorID = types.StringNull()
 			}
 			if tc.resGroupID == "" {
 				plan.ResourceGroupID = types.StringNull()
+			}
+			if tc.serviceSub == "" {
+				plan.ServiceSubscriptionID = types.StringNull()
 			}
 			var diags []string
 			r.validateTypeRefs(plan, &diags)
@@ -388,20 +396,22 @@ func TestStatusPageComponent_MapToState_PopulatesEveryField(t *testing.T) {
 	gid := openapi_types.UUID(uuid.New())
 	mid := openapi_types.UUID(uuid.New())
 	rgid := openapi_types.UUID(uuid.New())
+	ssid := openapi_types.UUID(uuid.New())
 	desc := "api comp"
 	startDate := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
 	dto := &generated.StatusPageComponentDto{
-		Id:                 id,
-		Name:               "Public API",
-		Description:        &desc,
-		Type:               "MONITOR",
-		GroupId:            &gid,
-		MonitorId:          &mid,
-		ResourceGroupId:    &rgid, // odd combo, but proves we map every field
-		DisplayOrder:       3,
-		ExcludeFromOverall: false,
-		ShowUptime:         true,
-		StartDate:          &startDate,
+		Id:                    id,
+		Name:                  "Public API",
+		Description:           &desc,
+		Type:                  "MONITOR",
+		GroupId:               &gid,
+		MonitorId:             &mid,
+		ResourceGroupId:       &rgid, // odd combo, but proves we map every field
+		ServiceSubscriptionId: &ssid,
+		DisplayOrder:          3,
+		ExcludeFromOverall:    false,
+		ShowUptime:            true,
+		StartDate:             &startDate,
 	}
 	model := &StatusPageComponentResourceModel{}
 	r.mapToState(model, dto)
@@ -419,6 +429,9 @@ func TestStatusPageComponent_MapToState_PopulatesEveryField(t *testing.T) {
 	}
 	if model.ResourceGroupID.ValueString() != rgid.String() {
 		t.Errorf("ResourceGroupID")
+	}
+	if model.ServiceSubscriptionID.ValueString() != ssid.String() {
+		t.Errorf("ServiceSubscriptionID")
 	}
 	if model.StartDate.ValueString() != "2024-01-15" {
 		t.Errorf("StartDate = %q", model.StartDate.ValueString())
@@ -449,6 +462,9 @@ func TestStatusPageComponent_MapToState_NullsForOptionalRefs(t *testing.T) {
 	}
 	if !model.ResourceGroupID.IsNull() {
 		t.Errorf("ResourceGroupID = %v, want null", model.ResourceGroupID)
+	}
+	if !model.ServiceSubscriptionID.IsNull() {
+		t.Errorf("ServiceSubscriptionID = %v, want null", model.ServiceSubscriptionID)
 	}
 	if !model.StartDate.IsNull() {
 		t.Errorf("StartDate = %v, want null", model.StartDate)

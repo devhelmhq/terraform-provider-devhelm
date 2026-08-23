@@ -188,9 +188,10 @@ func TestNotificationPolicy_BuildUpdateRequest_PopulatesEveryField(t *testing.T)
 	rule := newMatchRuleValue(t, "severity_gte", "ERROR")
 
 	plan := &NotificationPolicyModel{
-		Name:     types.StringValue("oncall"),
-		Enabled:  types.BoolValue(true),
-		Priority: types.Int64Value(10),
+		Name:        types.StringValue("oncall"),
+		Description: types.StringValue("page on-call"),
+		Enabled:     types.BoolValue(true),
+		Priority:    types.Int64Value(10),
 		Escalation: types.ListValueMust(
 			escalationStepObjectType(),
 			[]attr.Value{step},
@@ -209,6 +210,9 @@ func TestNotificationPolicy_BuildUpdateRequest_PopulatesEveryField(t *testing.T)
 	}
 	if body.Name == nil || *body.Name != "oncall" {
 		t.Errorf("Name = %v", body.Name)
+	}
+	if body.Description == nil || *body.Description != "page on-call" {
+		t.Errorf("Description = %v", body.Description)
 	}
 	if body.Enabled == nil || !*body.Enabled {
 		t.Errorf("Enabled = %v", body.Enabled)
@@ -244,6 +248,40 @@ func TestNotificationPolicy_BuildUpdateRequest_PopulatesEveryField(t *testing.T)
 	}
 	if mr.Value == nil || *mr.Value != "ERROR" {
 		t.Errorf("MatchRule.Value = %v", mr.Value)
+	}
+}
+
+func TestNotificationPolicy_BuildUpdateRequest_NullDescriptionClears(t *testing.T) {
+	ctx := context.Background()
+	r := &NotificationPolicyResource{}
+	plan := &NotificationPolicyModel{
+		Name:        types.StringValue("oncall"),
+		Description: types.StringNull(),
+		Escalation:  types.ListNull(escalationStepObjectType()),
+		MatchRules:  types.ListNull(matchRuleObjectType()),
+	}
+
+	body, err := r.buildUpdateRequest(ctx, plan)
+	if err != nil {
+		t.Fatalf("buildUpdateRequest: %v", err)
+	}
+	if body.Description == nil || *body.Description != "" {
+		t.Errorf("Description = %v, want pointer to empty string (API clear)", body.Description)
+	}
+}
+
+func TestNotificationPolicy_MapToState_NullDescriptionStaysNull(t *testing.T) {
+	ctx := context.Background()
+	r := &NotificationPolicyResource{}
+	dto := fullyPopulatedPolicyDto()
+	dto.Description = nil
+
+	model := &NotificationPolicyModel{}
+	if diags := r.mapToState(ctx, model, dto); diags.HasError() {
+		t.Fatalf("mapToState: %v", diags)
+	}
+	if !model.Description.IsNull() {
+		t.Errorf("Description = %v, want null", model.Description)
 	}
 }
 
@@ -324,11 +362,13 @@ func fullyPopulatedPolicyDto() *generated.NotificationPolicyDto {
 	onResolve := "slack"
 	onReopen := "pagerduty"
 
+	desc := "page on-call"
 	return &generated.NotificationPolicyDto{
-		Id:       openapi_types.UUID(uuid.New()),
-		Name:     "oncall",
-		Enabled:  true,
-		Priority: 10,
+		Id:          openapi_types.UUID(uuid.New()),
+		Name:        "oncall",
+		Description: &desc,
+		Enabled:     true,
+		Priority:    10,
 		Escalation: generated.EscalationChain{
 			Steps: []generated.EscalationStep{{
 				ChannelIds:            []openapi_types.UUID{channelID},
@@ -363,6 +403,9 @@ func TestNotificationPolicy_MapToState_PopulatesEveryField(t *testing.T) {
 	}
 	if model.Name.ValueString() != "oncall" {
 		t.Errorf("Name = %q", model.Name.ValueString())
+	}
+	if model.Description.ValueString() != "page on-call" {
+		t.Errorf("Description = %q", model.Description.ValueString())
 	}
 	if !model.Enabled.ValueBool() {
 		t.Errorf("Enabled = false")

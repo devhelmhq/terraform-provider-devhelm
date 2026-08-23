@@ -34,6 +34,7 @@ func alertChannelFixture(name, hash string) generated.AlertChannelDto {
 		Id:          openapi_types.UUID(id),
 		Name:        name,
 		ChannelType: "slack",
+		Enabled:     true,
 		ConfigHash:  &hashCopy,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),

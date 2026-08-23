@@ -110,6 +110,8 @@ var AlertChannelTypes = []string{
 	string(generated.DatadogChannelConfigChannelTypeDatadog),
 	string(generated.JiraChannelConfigChannelTypeJira),
 	string(generated.GitLabChannelConfigChannelTypeGitlab),
+	string(generated.PhoneCallChannelConfigChannelTypePhoneCall),
+	string(generated.SmsChannelConfigChannelTypeSms),
 }
 
 // AlertSensitivities lists every wire-format alert-sensitivity value for

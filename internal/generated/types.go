@@ -40,6 +40,27 @@ func (e AddIncidentUpdateRequestNewStatus) Valid() bool {
 	}
 }
 
+// Defines values for AdminAddSubscriberRequestChannel.
+const (
+	AdminAddSubscriberRequestChannelEMAIL   AdminAddSubscriberRequestChannel = "EMAIL"
+	AdminAddSubscriberRequestChannelSMS     AdminAddSubscriberRequestChannel = "SMS"
+	AdminAddSubscriberRequestChannelWEBHOOK AdminAddSubscriberRequestChannel = "WEBHOOK"
+)
+
+// Valid indicates whether the value is a known member of the AdminAddSubscriberRequestChannel enum.
+func (e AdminAddSubscriberRequestChannel) Valid() bool {
+	switch e {
+	case AdminAddSubscriberRequestChannelEMAIL:
+		return true
+	case AdminAddSubscriberRequestChannelSMS:
+		return true
+	case AdminAddSubscriberRequestChannelWEBHOOK:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AffectedComponentStatus.
 const (
 	AffectedComponentStatusDEGRADEDPERFORMANCE AffectedComponentStatus = "DEGRADED_PERFORMANCE"
@@ -205,6 +226,21 @@ func (e ChangeStatusRequestStatus) Valid() bool {
 	}
 }
 
+// Defines values for CodeCheckType.
+const (
+	CodeCheckTypeCode CodeCheckType = "code"
+)
+
+// Valid indicates whether the value is a known member of the CodeCheckType enum.
+func (e CodeCheckType) Valid() bool {
+	switch e {
+	case CodeCheckTypeCode:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ConfirmationPolicyType.
 const (
 	ConfirmationPolicyTypeMultiRegion ConfirmationPolicyType = "multi_region"
@@ -336,17 +372,21 @@ func (e CreateMonitorRequestManagedBy) Valid() bool {
 
 // Defines values for CreateMonitorRequestType.
 const (
-	CreateMonitorRequestTypeDNS       CreateMonitorRequestType = "DNS"
-	CreateMonitorRequestTypeHEARTBEAT CreateMonitorRequestType = "HEARTBEAT"
-	CreateMonitorRequestTypeHTTP      CreateMonitorRequestType = "HTTP"
-	CreateMonitorRequestTypeICMP      CreateMonitorRequestType = "ICMP"
-	CreateMonitorRequestTypeMCPSERVER CreateMonitorRequestType = "MCP_SERVER"
-	CreateMonitorRequestTypeTCP       CreateMonitorRequestType = "TCP"
+	CreateMonitorRequestTypeBROWSER      CreateMonitorRequestType = "BROWSER"
+	CreateMonitorRequestTypeDNS          CreateMonitorRequestType = "DNS"
+	CreateMonitorRequestTypeHEARTBEAT    CreateMonitorRequestType = "HEARTBEAT"
+	CreateMonitorRequestTypeHTTP         CreateMonitorRequestType = "HTTP"
+	CreateMonitorRequestTypeICMP         CreateMonitorRequestType = "ICMP"
+	CreateMonitorRequestTypeMCPSERVER    CreateMonitorRequestType = "MCP_SERVER"
+	CreateMonitorRequestTypeMULTISTEPAPI CreateMonitorRequestType = "MULTI_STEP_API"
+	CreateMonitorRequestTypeTCP          CreateMonitorRequestType = "TCP"
 )
 
 // Valid indicates whether the value is a known member of the CreateMonitorRequestType enum.
 func (e CreateMonitorRequestType) Valid() bool {
 	switch e {
+	case CreateMonitorRequestTypeBROWSER:
+		return true
 	case CreateMonitorRequestTypeDNS:
 		return true
 	case CreateMonitorRequestTypeHEARTBEAT:
@@ -356,6 +396,8 @@ func (e CreateMonitorRequestType) Valid() bool {
 	case CreateMonitorRequestTypeICMP:
 		return true
 	case CreateMonitorRequestTypeMCPSERVER:
+		return true
+	case CreateMonitorRequestTypeMULTISTEPAPI:
 		return true
 	case CreateMonitorRequestTypeTCP:
 		return true
@@ -411,14 +453,17 @@ func (e CreateResourceGroupRequestManagedBy) Valid() bool {
 
 // Defines values for CreateStatusPageComponentRequestType.
 const (
-	CreateStatusPageComponentRequestTypeGROUP   CreateStatusPageComponentRequestType = "GROUP"
-	CreateStatusPageComponentRequestTypeMONITOR CreateStatusPageComponentRequestType = "MONITOR"
-	CreateStatusPageComponentRequestTypeSTATIC  CreateStatusPageComponentRequestType = "STATIC"
+	CreateStatusPageComponentRequestTypeDEPENDENCY CreateStatusPageComponentRequestType = "DEPENDENCY"
+	CreateStatusPageComponentRequestTypeGROUP      CreateStatusPageComponentRequestType = "GROUP"
+	CreateStatusPageComponentRequestTypeMONITOR    CreateStatusPageComponentRequestType = "MONITOR"
+	CreateStatusPageComponentRequestTypeSTATIC     CreateStatusPageComponentRequestType = "STATIC"
 )
 
 // Valid indicates whether the value is a known member of the CreateStatusPageComponentRequestType enum.
 func (e CreateStatusPageComponentRequestType) Valid() bool {
 	switch e {
+	case CreateStatusPageComponentRequestTypeDEPENDENCY:
+		return true
 	case CreateStatusPageComponentRequestTypeGROUP:
 		return true
 	case CreateStatusPageComponentRequestTypeMONITOR:
@@ -496,6 +541,54 @@ func (e CreateStatusPageIncidentUpdateRequestStatus) Valid() bool {
 	case CreateStatusPageIncidentUpdateRequestStatusMONITORING:
 		return true
 	case CreateStatusPageIncidentUpdateRequestStatusRESOLVED:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateStatusPageMaintenanceRequestImpact.
+const (
+	CreateStatusPageMaintenanceRequestImpactCRITICAL CreateStatusPageMaintenanceRequestImpact = "CRITICAL"
+	CreateStatusPageMaintenanceRequestImpactMAJOR    CreateStatusPageMaintenanceRequestImpact = "MAJOR"
+	CreateStatusPageMaintenanceRequestImpactMINOR    CreateStatusPageMaintenanceRequestImpact = "MINOR"
+	CreateStatusPageMaintenanceRequestImpactNONE     CreateStatusPageMaintenanceRequestImpact = "NONE"
+)
+
+// Valid indicates whether the value is a known member of the CreateStatusPageMaintenanceRequestImpact enum.
+func (e CreateStatusPageMaintenanceRequestImpact) Valid() bool {
+	switch e {
+	case CreateStatusPageMaintenanceRequestImpactCRITICAL:
+		return true
+	case CreateStatusPageMaintenanceRequestImpactMAJOR:
+		return true
+	case CreateStatusPageMaintenanceRequestImpactMINOR:
+		return true
+	case CreateStatusPageMaintenanceRequestImpactNONE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateStatusPageMaintenanceRequestStatus.
+const (
+	CreateStatusPageMaintenanceRequestStatusIDENTIFIED    CreateStatusPageMaintenanceRequestStatus = "IDENTIFIED"
+	CreateStatusPageMaintenanceRequestStatusINVESTIGATING CreateStatusPageMaintenanceRequestStatus = "INVESTIGATING"
+	CreateStatusPageMaintenanceRequestStatusMONITORING    CreateStatusPageMaintenanceRequestStatus = "MONITORING"
+	CreateStatusPageMaintenanceRequestStatusRESOLVED      CreateStatusPageMaintenanceRequestStatus = "RESOLVED"
+)
+
+// Valid indicates whether the value is a known member of the CreateStatusPageMaintenanceRequestStatus enum.
+func (e CreateStatusPageMaintenanceRequestStatus) Valid() bool {
+	switch e {
+	case CreateStatusPageMaintenanceRequestStatusIDENTIFIED:
+		return true
+	case CreateStatusPageMaintenanceRequestStatusINVESTIGATING:
+		return true
+	case CreateStatusPageMaintenanceRequestStatusMONITORING:
+		return true
+	case CreateStatusPageMaintenanceRequestStatusRESOLVED:
 		return true
 	default:
 		return false
@@ -1626,17 +1719,21 @@ func (e MemberRoleChangedMetadataOldRole) Valid() bool {
 
 // Defines values for MonitorTestRequestType.
 const (
-	MonitorTestRequestTypeDNS       MonitorTestRequestType = "DNS"
-	MonitorTestRequestTypeHEARTBEAT MonitorTestRequestType = "HEARTBEAT"
-	MonitorTestRequestTypeHTTP      MonitorTestRequestType = "HTTP"
-	MonitorTestRequestTypeICMP      MonitorTestRequestType = "ICMP"
-	MonitorTestRequestTypeMCPSERVER MonitorTestRequestType = "MCP_SERVER"
-	MonitorTestRequestTypeTCP       MonitorTestRequestType = "TCP"
+	MonitorTestRequestTypeBROWSER      MonitorTestRequestType = "BROWSER"
+	MonitorTestRequestTypeDNS          MonitorTestRequestType = "DNS"
+	MonitorTestRequestTypeHEARTBEAT    MonitorTestRequestType = "HEARTBEAT"
+	MonitorTestRequestTypeHTTP         MonitorTestRequestType = "HTTP"
+	MonitorTestRequestTypeICMP         MonitorTestRequestType = "ICMP"
+	MonitorTestRequestTypeMCPSERVER    MonitorTestRequestType = "MCP_SERVER"
+	MonitorTestRequestTypeMULTISTEPAPI MonitorTestRequestType = "MULTI_STEP_API"
+	MonitorTestRequestTypeTCP          MonitorTestRequestType = "TCP"
 )
 
 // Valid indicates whether the value is a known member of the MonitorTestRequestType enum.
 func (e MonitorTestRequestType) Valid() bool {
 	switch e {
+	case MonitorTestRequestTypeBROWSER:
+		return true
 	case MonitorTestRequestTypeDNS:
 		return true
 	case MonitorTestRequestTypeHEARTBEAT:
@@ -1646,6 +1743,8 @@ func (e MonitorTestRequestType) Valid() bool {
 	case MonitorTestRequestTypeICMP:
 		return true
 	case MonitorTestRequestTypeMCPSERVER:
+		return true
+	case MonitorTestRequestTypeMULTISTEPAPI:
 		return true
 	case MonitorTestRequestTypeTCP:
 		return true
@@ -1678,6 +1777,21 @@ const (
 func (e PagerDutyChannelConfigChannelType) Valid() bool {
 	switch e {
 	case PagerDutyChannelConfigChannelTypePagerduty:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PhoneCallChannelConfigChannelType.
+const (
+	PhoneCallChannelConfigChannelTypePhoneCall PhoneCallChannelConfigChannelType = "phone_call"
+)
+
+// Valid indicates whether the value is a known member of the PhoneCallChannelConfigChannelType enum.
+func (e PhoneCallChannelConfigChannelType) Valid() bool {
+	switch e {
+	case PhoneCallChannelConfigChannelTypePhoneCall:
 		return true
 	default:
 		return false
@@ -1927,6 +2041,63 @@ func (e RootlyChannelConfigChannelType) Valid() bool {
 	}
 }
 
+// Defines values for SetStatusPageComponentOverrideRequestStatus.
+const (
+	SetStatusPageComponentOverrideRequestStatusDEGRADEDPERFORMANCE SetStatusPageComponentOverrideRequestStatus = "DEGRADED_PERFORMANCE"
+	SetStatusPageComponentOverrideRequestStatusMAJOROUTAGE         SetStatusPageComponentOverrideRequestStatus = "MAJOR_OUTAGE"
+	SetStatusPageComponentOverrideRequestStatusOPERATIONAL         SetStatusPageComponentOverrideRequestStatus = "OPERATIONAL"
+	SetStatusPageComponentOverrideRequestStatusPARTIALOUTAGE       SetStatusPageComponentOverrideRequestStatus = "PARTIAL_OUTAGE"
+	SetStatusPageComponentOverrideRequestStatusUNDERMAINTENANCE    SetStatusPageComponentOverrideRequestStatus = "UNDER_MAINTENANCE"
+)
+
+// Valid indicates whether the value is a known member of the SetStatusPageComponentOverrideRequestStatus enum.
+func (e SetStatusPageComponentOverrideRequestStatus) Valid() bool {
+	switch e {
+	case SetStatusPageComponentOverrideRequestStatusDEGRADEDPERFORMANCE:
+		return true
+	case SetStatusPageComponentOverrideRequestStatusMAJOROUTAGE:
+		return true
+	case SetStatusPageComponentOverrideRequestStatusOPERATIONAL:
+		return true
+	case SetStatusPageComponentOverrideRequestStatusPARTIALOUTAGE:
+		return true
+	case SetStatusPageComponentOverrideRequestStatusUNDERMAINTENANCE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SkippedDispatchStatus.
+const (
+	SkippedDispatchStatusACKNOWLEDGED SkippedDispatchStatus = "ACKNOWLEDGED"
+	SkippedDispatchStatusCOMPLETED    SkippedDispatchStatus = "COMPLETED"
+	SkippedDispatchStatusDELIVERED    SkippedDispatchStatus = "DELIVERED"
+	SkippedDispatchStatusDISPATCHING  SkippedDispatchStatus = "DISPATCHING"
+	SkippedDispatchStatusESCALATING   SkippedDispatchStatus = "ESCALATING"
+	SkippedDispatchStatusPENDING      SkippedDispatchStatus = "PENDING"
+)
+
+// Valid indicates whether the value is a known member of the SkippedDispatchStatus enum.
+func (e SkippedDispatchStatus) Valid() bool {
+	switch e {
+	case SkippedDispatchStatusACKNOWLEDGED:
+		return true
+	case SkippedDispatchStatusCOMPLETED:
+		return true
+	case SkippedDispatchStatusDELIVERED:
+		return true
+	case SkippedDispatchStatusDISPATCHING:
+		return true
+	case SkippedDispatchStatusESCALATING:
+		return true
+	case SkippedDispatchStatusPENDING:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SlackChannelConfigChannelType.
 const (
 	SlackChannelConfigChannelTypeSlack SlackChannelConfigChannelType = "slack"
@@ -1936,6 +2107,21 @@ const (
 func (e SlackChannelConfigChannelType) Valid() bool {
 	switch e {
 	case SlackChannelConfigChannelTypeSlack:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SmsChannelConfigChannelType.
+const (
+	SmsChannelConfigChannelTypeSms SmsChannelConfigChannelType = "sms"
+)
+
+// Valid indicates whether the value is a known member of the SmsChannelConfigChannelType enum.
+func (e SmsChannelConfigChannelType) Valid() bool {
+	switch e {
+	case SmsChannelConfigChannelTypeSms:
 		return true
 	default:
 		return false
@@ -2251,6 +2437,162 @@ func (e UpdateAssertionRequestSeverity) Valid() bool {
 	}
 }
 
+// Defines values for UpdateDatadogChannelConfigChannelType.
+const (
+	UpdateDatadogChannelConfigChannelTypeDatadog UpdateDatadogChannelConfigChannelType = "datadog"
+)
+
+// Valid indicates whether the value is a known member of the UpdateDatadogChannelConfigChannelType enum.
+func (e UpdateDatadogChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateDatadogChannelConfigChannelTypeDatadog:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateDiscordChannelConfigChannelType.
+const (
+	UpdateDiscordChannelConfigChannelTypeDiscord UpdateDiscordChannelConfigChannelType = "discord"
+)
+
+// Valid indicates whether the value is a known member of the UpdateDiscordChannelConfigChannelType enum.
+func (e UpdateDiscordChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateDiscordChannelConfigChannelTypeDiscord:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateEmailChannelConfigChannelType.
+const (
+	UpdateEmailChannelConfigChannelTypeEmail UpdateEmailChannelConfigChannelType = "email"
+)
+
+// Valid indicates whether the value is a known member of the UpdateEmailChannelConfigChannelType enum.
+func (e UpdateEmailChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateEmailChannelConfigChannelTypeEmail:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateGitLabChannelConfigChannelType.
+const (
+	UpdateGitLabChannelConfigChannelTypeGitlab UpdateGitLabChannelConfigChannelType = "gitlab"
+)
+
+// Valid indicates whether the value is a known member of the UpdateGitLabChannelConfigChannelType enum.
+func (e UpdateGitLabChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateGitLabChannelConfigChannelTypeGitlab:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateGoogleChatChannelConfigChannelType.
+const (
+	UpdateGoogleChatChannelConfigChannelTypeGoogleChat UpdateGoogleChatChannelConfigChannelType = "google_chat"
+)
+
+// Valid indicates whether the value is a known member of the UpdateGoogleChatChannelConfigChannelType enum.
+func (e UpdateGoogleChatChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateGoogleChatChannelConfigChannelTypeGoogleChat:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateIncidentIoChannelConfigChannelType.
+const (
+	UpdateIncidentIoChannelConfigChannelTypeIncidentIo UpdateIncidentIoChannelConfigChannelType = "incident_io"
+)
+
+// Valid indicates whether the value is a known member of the UpdateIncidentIoChannelConfigChannelType enum.
+func (e UpdateIncidentIoChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateIncidentIoChannelConfigChannelTypeIncidentIo:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateIncidentRequestSeverity.
+const (
+	UpdateIncidentRequestSeverityDEGRADED    UpdateIncidentRequestSeverity = "DEGRADED"
+	UpdateIncidentRequestSeverityDOWN        UpdateIncidentRequestSeverity = "DOWN"
+	UpdateIncidentRequestSeverityMAINTENANCE UpdateIncidentRequestSeverity = "MAINTENANCE"
+)
+
+// Valid indicates whether the value is a known member of the UpdateIncidentRequestSeverity enum.
+func (e UpdateIncidentRequestSeverity) Valid() bool {
+	switch e {
+	case UpdateIncidentRequestSeverityDEGRADED:
+		return true
+	case UpdateIncidentRequestSeverityDOWN:
+		return true
+	case UpdateIncidentRequestSeverityMAINTENANCE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateJiraChannelConfigChannelType.
+const (
+	UpdateJiraChannelConfigChannelTypeJira UpdateJiraChannelConfigChannelType = "jira"
+)
+
+// Valid indicates whether the value is a known member of the UpdateJiraChannelConfigChannelType enum.
+func (e UpdateJiraChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateJiraChannelConfigChannelTypeJira:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateLinearChannelConfigChannelType.
+const (
+	UpdateLinearChannelConfigChannelTypeLinear UpdateLinearChannelConfigChannelType = "linear"
+)
+
+// Valid indicates whether the value is a known member of the UpdateLinearChannelConfigChannelType enum.
+func (e UpdateLinearChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateLinearChannelConfigChannelTypeLinear:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateMattermostChannelConfigChannelType.
+const (
+	UpdateMattermostChannelConfigChannelTypeMattermost UpdateMattermostChannelConfigChannelType = "mattermost"
+)
+
+// Valid indicates whether the value is a known member of the UpdateMattermostChannelConfigChannelType enum.
+func (e UpdateMattermostChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateMattermostChannelConfigChannelTypeMattermost:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UpdateMonitorRequestManagedBy.
 const (
 	UpdateMonitorRequestManagedByAPI       UpdateMonitorRequestManagedBy = "API"
@@ -2272,6 +2614,81 @@ func (e UpdateMonitorRequestManagedBy) Valid() bool {
 	case UpdateMonitorRequestManagedByMCP:
 		return true
 	case UpdateMonitorRequestManagedByTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateOpsGenieChannelConfigChannelType.
+const (
+	UpdateOpsGenieChannelConfigChannelTypeOpsgenie UpdateOpsGenieChannelConfigChannelType = "opsgenie"
+)
+
+// Valid indicates whether the value is a known member of the UpdateOpsGenieChannelConfigChannelType enum.
+func (e UpdateOpsGenieChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateOpsGenieChannelConfigChannelTypeOpsgenie:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdatePagerDutyChannelConfigChannelType.
+const (
+	UpdatePagerDutyChannelConfigChannelTypePagerduty UpdatePagerDutyChannelConfigChannelType = "pagerduty"
+)
+
+// Valid indicates whether the value is a known member of the UpdatePagerDutyChannelConfigChannelType enum.
+func (e UpdatePagerDutyChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdatePagerDutyChannelConfigChannelTypePagerduty:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdatePhoneCallChannelConfigChannelType.
+const (
+	UpdatePhoneCallChannelConfigChannelTypePhoneCall UpdatePhoneCallChannelConfigChannelType = "phone_call"
+)
+
+// Valid indicates whether the value is a known member of the UpdatePhoneCallChannelConfigChannelType enum.
+func (e UpdatePhoneCallChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdatePhoneCallChannelConfigChannelTypePhoneCall:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdatePushbulletChannelConfigChannelType.
+const (
+	UpdatePushbulletChannelConfigChannelTypePushbullet UpdatePushbulletChannelConfigChannelType = "pushbullet"
+)
+
+// Valid indicates whether the value is a known member of the UpdatePushbulletChannelConfigChannelType enum.
+func (e UpdatePushbulletChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdatePushbulletChannelConfigChannelTypePushbullet:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdatePushoverChannelConfigChannelType.
+const (
+	UpdatePushoverChannelConfigChannelTypePushover UpdatePushoverChannelConfigChannelType = "pushover"
+)
+
+// Valid indicates whether the value is a known member of the UpdatePushoverChannelConfigChannelType enum.
+func (e UpdatePushoverChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdatePushoverChannelConfigChannelTypePushover:
 		return true
 	default:
 		return false
@@ -2323,6 +2740,66 @@ func (e UpdateResourceGroupRequestManagedBy) Valid() bool {
 	}
 }
 
+// Defines values for UpdateRootlyChannelConfigChannelType.
+const (
+	UpdateRootlyChannelConfigChannelTypeRootly UpdateRootlyChannelConfigChannelType = "rootly"
+)
+
+// Valid indicates whether the value is a known member of the UpdateRootlyChannelConfigChannelType enum.
+func (e UpdateRootlyChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateRootlyChannelConfigChannelTypeRootly:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateSlackChannelConfigChannelType.
+const (
+	UpdateSlackChannelConfigChannelTypeSlack UpdateSlackChannelConfigChannelType = "slack"
+)
+
+// Valid indicates whether the value is a known member of the UpdateSlackChannelConfigChannelType enum.
+func (e UpdateSlackChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateSlackChannelConfigChannelTypeSlack:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateSmsChannelConfigChannelType.
+const (
+	UpdateSmsChannelConfigChannelTypeSms UpdateSmsChannelConfigChannelType = "sms"
+)
+
+// Valid indicates whether the value is a known member of the UpdateSmsChannelConfigChannelType enum.
+func (e UpdateSmsChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateSmsChannelConfigChannelTypeSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateSplunkOnCallChannelConfigChannelType.
+const (
+	UpdateSplunkOnCallChannelConfigChannelTypeSplunkOncall UpdateSplunkOnCallChannelConfigChannelType = "splunk_oncall"
+)
+
+// Valid indicates whether the value is a known member of the UpdateSplunkOnCallChannelConfigChannelType enum.
+func (e UpdateSplunkOnCallChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateSplunkOnCallChannelConfigChannelTypeSplunkOncall:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UpdateStatusPageIncidentRequestImpact.
 const (
 	UpdateStatusPageIncidentRequestImpactCRITICAL UpdateStatusPageIncidentRequestImpact = "CRITICAL"
@@ -2365,6 +2842,30 @@ func (e UpdateStatusPageIncidentRequestStatus) Valid() bool {
 	case UpdateStatusPageIncidentRequestStatusMONITORING:
 		return true
 	case UpdateStatusPageIncidentRequestStatusRESOLVED:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateStatusPageIncidentUpdateRequestStatus.
+const (
+	UpdateStatusPageIncidentUpdateRequestStatusIDENTIFIED    UpdateStatusPageIncidentUpdateRequestStatus = "IDENTIFIED"
+	UpdateStatusPageIncidentUpdateRequestStatusINVESTIGATING UpdateStatusPageIncidentUpdateRequestStatus = "INVESTIGATING"
+	UpdateStatusPageIncidentUpdateRequestStatusMONITORING    UpdateStatusPageIncidentUpdateRequestStatus = "MONITORING"
+	UpdateStatusPageIncidentUpdateRequestStatusRESOLVED      UpdateStatusPageIncidentUpdateRequestStatus = "RESOLVED"
+)
+
+// Valid indicates whether the value is a known member of the UpdateStatusPageIncidentUpdateRequestStatus enum.
+func (e UpdateStatusPageIncidentUpdateRequestStatus) Valid() bool {
+	switch e {
+	case UpdateStatusPageIncidentUpdateRequestStatusIDENTIFIED:
+		return true
+	case UpdateStatusPageIncidentUpdateRequestStatusINVESTIGATING:
+		return true
+	case UpdateStatusPageIncidentUpdateRequestStatusMONITORING:
+		return true
+	case UpdateStatusPageIncidentUpdateRequestStatusRESOLVED:
 		return true
 	default:
 		return false
@@ -2440,6 +2941,51 @@ func (e UpdateStatusPageRequestVisibility) Valid() bool {
 	}
 }
 
+// Defines values for UpdateTeamsChannelConfigChannelType.
+const (
+	UpdateTeamsChannelConfigChannelTypeTeams UpdateTeamsChannelConfigChannelType = "teams"
+)
+
+// Valid indicates whether the value is a known member of the UpdateTeamsChannelConfigChannelType enum.
+func (e UpdateTeamsChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateTeamsChannelConfigChannelTypeTeams:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateTelegramChannelConfigChannelType.
+const (
+	UpdateTelegramChannelConfigChannelTypeTelegram UpdateTelegramChannelConfigChannelType = "telegram"
+)
+
+// Valid indicates whether the value is a known member of the UpdateTelegramChannelConfigChannelType enum.
+func (e UpdateTelegramChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateTelegramChannelConfigChannelTypeTelegram:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateWebhookChannelConfigChannelType.
+const (
+	UpdateWebhookChannelConfigChannelTypeWebhook UpdateWebhookChannelConfigChannelType = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the UpdateWebhookChannelConfigChannelType enum.
+func (e UpdateWebhookChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateWebhookChannelConfigChannelTypeWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UpdateWebhookEndpointRequestSubscribedEvents.
 const (
 	UpdateWebhookEndpointRequestSubscribedEventsIncidentCreated         UpdateWebhookEndpointRequestSubscribedEvents = "incident.created"
@@ -2479,6 +3025,21 @@ func (e UpdateWebhookEndpointRequestSubscribedEvents) Valid() bool {
 	case UpdateWebhookEndpointRequestSubscribedEventsServiceIncidentUpdated:
 		return true
 	case UpdateWebhookEndpointRequestSubscribedEventsServiceStatusChanged:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateZapierChannelConfigChannelType.
+const (
+	UpdateZapierChannelConfigChannelTypeZapier UpdateZapierChannelConfigChannelType = "zapier"
+)
+
+// Valid indicates whether the value is a known member of the UpdateZapierChannelConfigChannelType enum.
+func (e UpdateZapierChannelConfigChannelType) Valid() bool {
+	switch e {
+	case UpdateZapierChannelConfigChannelTypeZapier:
 		return true
 	default:
 		return false
@@ -2528,10 +3089,12 @@ const (
 	List14ParamsTypeMattermost   List14ParamsType = "mattermost"
 	List14ParamsTypeOpsgenie     List14ParamsType = "opsgenie"
 	List14ParamsTypePagerduty    List14ParamsType = "pagerduty"
+	List14ParamsTypePhoneCall    List14ParamsType = "phone_call"
 	List14ParamsTypePushbullet   List14ParamsType = "pushbullet"
 	List14ParamsTypePushover     List14ParamsType = "pushover"
 	List14ParamsTypeRootly       List14ParamsType = "rootly"
 	List14ParamsTypeSlack        List14ParamsType = "slack"
+	List14ParamsTypeSms          List14ParamsType = "sms"
 	List14ParamsTypeSplunkOncall List14ParamsType = "splunk_oncall"
 	List14ParamsTypeTeams        List14ParamsType = "teams"
 	List14ParamsTypeTelegram     List14ParamsType = "telegram"
@@ -2564,6 +3127,8 @@ func (e List14ParamsType) Valid() bool {
 		return true
 	case List14ParamsTypePagerduty:
 		return true
+	case List14ParamsTypePhoneCall:
+		return true
 	case List14ParamsTypePushbullet:
 		return true
 	case List14ParamsTypePushover:
@@ -2571,6 +3136,8 @@ func (e List14ParamsType) Valid() bool {
 	case List14ParamsTypeRootly:
 		return true
 	case List14ParamsTypeSlack:
+		return true
+	case List14ParamsTypeSms:
 		return true
 	case List14ParamsTypeSplunkOncall:
 		return true
@@ -2616,17 +3183,21 @@ func (e List14ParamsManagedBy) Valid() bool {
 
 // Defines values for List8ParamsType.
 const (
-	List8ParamsTypeDNS       List8ParamsType = "DNS"
-	List8ParamsTypeHEARTBEAT List8ParamsType = "HEARTBEAT"
-	List8ParamsTypeHTTP      List8ParamsType = "HTTP"
-	List8ParamsTypeICMP      List8ParamsType = "ICMP"
-	List8ParamsTypeMCPSERVER List8ParamsType = "MCP_SERVER"
-	List8ParamsTypeTCP       List8ParamsType = "TCP"
+	List8ParamsTypeBROWSER      List8ParamsType = "BROWSER"
+	List8ParamsTypeDNS          List8ParamsType = "DNS"
+	List8ParamsTypeHEARTBEAT    List8ParamsType = "HEARTBEAT"
+	List8ParamsTypeHTTP         List8ParamsType = "HTTP"
+	List8ParamsTypeICMP         List8ParamsType = "ICMP"
+	List8ParamsTypeMCPSERVER    List8ParamsType = "MCP_SERVER"
+	List8ParamsTypeMULTISTEPAPI List8ParamsType = "MULTI_STEP_API"
+	List8ParamsTypeTCP          List8ParamsType = "TCP"
 )
 
 // Valid indicates whether the value is a known member of the List8ParamsType enum.
 func (e List8ParamsType) Valid() bool {
 	switch e {
+	case List8ParamsTypeBROWSER:
+		return true
 	case List8ParamsTypeDNS:
 		return true
 	case List8ParamsTypeHEARTBEAT:
@@ -2636,6 +3207,8 @@ func (e List8ParamsType) Valid() bool {
 	case List8ParamsTypeICMP:
 		return true
 	case List8ParamsTypeMCPSERVER:
+		return true
+	case List8ParamsTypeMULTISTEPAPI:
 		return true
 	case List8ParamsTypeTCP:
 		return true
@@ -2824,6 +3397,27 @@ func (e GetPollSummaryParamsWindow) Valid() bool {
 	}
 }
 
+// Defines values for ListStatusEventsParamsPeriod.
+const (
+	ListStatusEventsParamsPeriodN30d ListStatusEventsParamsPeriod = "30d"
+	ListStatusEventsParamsPeriodN7d  ListStatusEventsParamsPeriod = "7d"
+	ListStatusEventsParamsPeriodN90d ListStatusEventsParamsPeriod = "90d"
+)
+
+// Valid indicates whether the value is a known member of the ListStatusEventsParamsPeriod enum.
+func (e ListStatusEventsParamsPeriod) Valid() bool {
+	switch e {
+	case ListStatusEventsParamsPeriodN30d:
+		return true
+	case ListStatusEventsParamsPeriodN7d:
+		return true
+	case ListStatusEventsParamsPeriodN90d:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GetServiceUptimeParamsPeriod.
 const (
 	GetServiceUptimeParamsPeriodAll  GetServiceUptimeParamsPeriod = "all"
@@ -2902,6 +3496,63 @@ func (e ListIncidentsParamsStatus) Valid() bool {
 	}
 }
 
+// Defines values for ListMaintenanceParamsStatus.
+const (
+	ListMaintenanceParamsStatusIDENTIFIED    ListMaintenanceParamsStatus = "IDENTIFIED"
+	ListMaintenanceParamsStatusINVESTIGATING ListMaintenanceParamsStatus = "INVESTIGATING"
+	ListMaintenanceParamsStatusMONITORING    ListMaintenanceParamsStatus = "MONITORING"
+	ListMaintenanceParamsStatusRESOLVED      ListMaintenanceParamsStatus = "RESOLVED"
+)
+
+// Valid indicates whether the value is a known member of the ListMaintenanceParamsStatus enum.
+func (e ListMaintenanceParamsStatus) Valid() bool {
+	switch e {
+	case ListMaintenanceParamsStatusIDENTIFIED:
+		return true
+	case ListMaintenanceParamsStatusINVESTIGATING:
+		return true
+	case ListMaintenanceParamsStatusMONITORING:
+		return true
+	case ListMaintenanceParamsStatusRESOLVED:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListNotificationDeliveriesParamsEventType.
+const (
+	ListNotificationDeliveriesParamsEventTypeINCIDENTCREATED          ListNotificationDeliveriesParamsEventType = "INCIDENT_CREATED"
+	ListNotificationDeliveriesParamsEventTypeINCIDENTRESOLVED         ListNotificationDeliveriesParamsEventType = "INCIDENT_RESOLVED"
+	ListNotificationDeliveriesParamsEventTypeINCIDENTUPDATED          ListNotificationDeliveriesParamsEventType = "INCIDENT_UPDATED"
+	ListNotificationDeliveriesParamsEventTypeSUBSCRIPTIONCONFIRMATION ListNotificationDeliveriesParamsEventType = "SUBSCRIPTION_CONFIRMATION"
+)
+
+// Valid indicates whether the value is a known member of the ListNotificationDeliveriesParamsEventType enum.
+func (e ListNotificationDeliveriesParamsEventType) Valid() bool {
+	switch e {
+	case ListNotificationDeliveriesParamsEventTypeINCIDENTCREATED:
+		return true
+	case ListNotificationDeliveriesParamsEventTypeINCIDENTRESOLVED:
+		return true
+	case ListNotificationDeliveriesParamsEventTypeINCIDENTUPDATED:
+		return true
+	case ListNotificationDeliveriesParamsEventTypeSUBSCRIPTIONCONFIRMATION:
+		return true
+	default:
+		return false
+	}
+}
+
+// AcknowledgeAllIncidentsResponse Result of acknowledging all acknowledgeable dispatches for an incident
+type AcknowledgeAllIncidentsResponse struct {
+	// Acknowledged Dispatches successfully acknowledged in this request
+	Acknowledged []NotificationDispatchDto `json:"acknowledged"`
+
+	// Skipped Dispatches skipped (already acked or not in an acknowledgeable state)
+	Skipped []SkippedDispatch `json:"skipped"`
+}
+
 // AcquireDeployLockRequest Request to acquire a deploy lock for the current workspace
 type AcquireDeployLockRequest struct {
 	// LockedBy Identity of the lock requester (e.g. hostname, CI job ID)
@@ -2952,9 +3603,24 @@ type AddResourceGroupMemberRequest struct {
 
 // AdminAddSubscriberRequest defines model for AdminAddSubscriberRequest.
 type AdminAddSubscriberRequest struct {
-	// Email Email address to add as a confirmed subscriber
-	Email openapi_types.Email `json:"email"`
+	// Channel Delivery channel (default: EMAIL)
+	Channel *AdminAddSubscriberRequestChannel `json:"channel,omitempty"`
+
+	// ComponentIds Component IDs to scope; omit to leave existing scope; empty list widens to the whole page
+	ComponentIds *[]openapi_types.UUID `json:"componentIds,omitempty"`
+
+	// Destination Channel destination (email, phone, or webhook URL)
+	Destination *string `json:"destination,omitempty"`
+
+	// Email Email for EMAIL channel; legacy clients may send only this
+	Email *openapi_types.Email `json:"email,omitempty"`
+
+	// RequireConfirmation When true (EMAIL only), create unconfirmed and send opt-in; null/false confirms immediately
+	RequireConfirmation *bool `json:"requireConfirmation,omitempty"`
 }
+
+// AdminAddSubscriberRequestChannel Delivery channel (default: EMAIL)
+type AdminAddSubscriberRequestChannel string
 
 // AffectedComponent Updated affected components; null preserves current
 type AffectedComponent struct {
@@ -2985,6 +3651,15 @@ type AlertChannelDisplayConfig struct {
 	// MentionRoleId Discord role ID to mention in notifications
 	MentionRoleId *string `json:"mentionRoleId,omitempty"`
 
+	// PhoneNumber Recipient phone number in E.164 format (SMS / phone-call channels)
+	PhoneNumber *string `json:"phoneNumber,omitempty"`
+
+	// PhoneNumbers Deprecated mirror of phoneNumber as a length-1 list for older clients
+	PhoneNumbers *[]string `json:"phoneNumbers,omitempty"`
+
+	// PreferredLanguage Preferred language for SMS/voice (BCP-47, e.g. en-US, de-DE)
+	PreferredLanguage *string `json:"preferredLanguage,omitempty"`
+
 	// Priority Pushover notification priority override
 	Priority *string `json:"priority,omitempty"`
 
@@ -3012,8 +3687,14 @@ type AlertChannelDisplayConfig struct {
 	// TeamId Linear team ID for issue creation
 	TeamId *string `json:"teamId,omitempty"`
 
+	// VerifiedPhoneNumberId Id of the org verified_phone_number row bound to this channel
+	VerifiedPhoneNumberId *int64 `json:"verifiedPhoneNumberId,omitempty"`
+
 	// Visibility incident.io incident visibility
 	Visibility *string `json:"visibility,omitempty"`
+
+	// VoiceLanguage BCP-47 voice language for phone-call TTS (e.g. en-US, de-DE)
+	VoiceLanguage *string `json:"voiceLanguage,omitempty"`
 }
 
 // AlertChannelDto Alert channel with non-sensitive configuration metadata
@@ -3027,6 +3708,9 @@ type AlertChannelDto struct {
 	// CreatedAt Timestamp when the channel was created
 	CreatedAt     time.Time                  `json:"createdAt"`
 	DisplayConfig *AlertChannelDisplayConfig `json:"displayConfig,omitempty"`
+
+	// Enabled Whether this channel is enabled and will receive alerts
+	Enabled bool `json:"enabled"`
 
 	// Id Unique alert channel identifier
 	Id openapi_types.UUID `json:"id"`
@@ -3424,6 +4108,47 @@ type CheckTypeDetailsDto struct {
 	union json.RawMessage
 }
 
+// Code Code check (browser / multi-step API) specific details
+type Code struct {
+	CheckType CodeCheckType `json:"check_type"`
+
+	// ExitCode Container exit code (0 = pass)
+	ExitCode int32 `json:"exitCode"`
+
+	// FailureKind Failure classification: timeout, assertion, or error
+	FailureKind *string `json:"failureKind,omitempty"`
+
+	// StderrSnippet Truncated stderr from the container
+	StderrSnippet *string `json:"stderrSnippet,omitempty"`
+
+	// StdoutSnippet Truncated stdout from the container
+	StdoutSnippet *string `json:"stdoutSnippet,omitempty"`
+
+	// Steps Named steps extracted from Playwright test output
+	Steps *[]*CodeCheckStep `json:"steps,omitempty"`
+
+	// TimedOut Whether the run hit a step/total/run-budget timeout
+	TimedOut *bool `json:"timedOut,omitempty"`
+}
+
+// CodeCheckType defines model for Code.CheckType.
+type CodeCheckType string
+
+// CodeCheckStep A single named step within a code check execution
+type CodeCheckStep struct {
+	// DurationMs Step duration in milliseconds
+	DurationMs *int32 `json:"durationMs,omitempty"`
+
+	// Error Error message if the step failed
+	Error *string `json:"error,omitempty"`
+
+	// Name Step name from test.step() or test() call
+	Name string `json:"name"`
+
+	// Status Step outcome: passed, failed, skipped, or timedOut
+	Status string `json:"status"`
+}
+
 // ComponentImpact One component's uptime contribution for the day
 type ComponentImpact struct {
 	// ComponentId Status page component UUID
@@ -3457,6 +4182,21 @@ type ComponentPosition struct {
 	GroupId *openapi_types.UUID `json:"groupId,omitempty"`
 }
 
+// ComponentSample One component sample inside a transition rollup
+type ComponentSample struct {
+	// ComponentId Component ID
+	ComponentId openapi_types.UUID `json:"componentId"`
+
+	// ComponentName Component display name
+	ComponentName *string `json:"componentName,omitempty"`
+
+	// NewStatus New status after the flip
+	NewStatus string `json:"newStatus"`
+
+	// OldStatus Previous status before the flip
+	OldStatus *string `json:"oldStatus,omitempty"`
+}
+
 // ComponentStatusDto Current status of each active component
 type ComponentStatusDto struct {
 	// Id Component UUID
@@ -3467,6 +4207,18 @@ type ComponentStatusDto struct {
 
 	// Status Current component status, e.g. operational, degraded_performance
 	Status string `json:"status"`
+}
+
+// ComponentTransitionEventDto Rolled-up component status transitions for a status-events rail row
+type ComponentTransitionEventDto struct {
+	// ComponentCount Total components in the 5-minute rollup bucket
+	ComponentCount int32 `json:"componentCount"`
+
+	// ComponentSample Up to 5 sample components from the bucket
+	ComponentSample []ComponentSample `json:"componentSample"`
+
+	// NewStatus New status that defines this rollup bucket
+	NewStatus string `json:"newStatus"`
 }
 
 // ComponentUptimeDayDto Daily uptime data for a component
@@ -3632,6 +4384,12 @@ type CreateManualIncidentRequest struct {
 	// MonitorId Monitor to associate with this incident
 	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
 
+	// ServiceId Vendor service to link; optional for Dependencies create CTA
+	ServiceId *openapi_types.UUID `json:"serviceId,omitempty"`
+
+	// ServiceIncidentId Vendor incident to link; idempotent if an active org incident already links it
+	ServiceIncidentId *openapi_types.UUID `json:"serviceIncidentId,omitempty"`
+
 	// Severity Incident severity: DOWN, DEGRADED, or MAINTENANCE
 	Severity CreateManualIncidentRequestSeverity `json:"severity"`
 
@@ -3689,6 +4447,9 @@ type CreateMonitorRequestType string
 
 // CreateNotificationPolicyRequest Request body for creating a notification policy
 type CreateNotificationPolicyRequest struct {
+	// Description Optional note; omit or null when unused
+	Description *string `json:"description,omitempty"`
+
 	// Enabled Whether this policy is enabled (default true)
 	Enabled *bool `json:"enabled,omitempty"`
 
@@ -3726,7 +4487,7 @@ type CreateResourceGroupRequest struct {
 	DefaultRegions       *[]string      `json:"defaultRegions,omitempty"`
 	DefaultRetryStrategy *RetryStrategy `json:"defaultRetryStrategy,omitempty"`
 
-	// Description Optional description
+	// Description Optional description (max 500)
 	Description *string `json:"description,omitempty"`
 
 	// HealthThresholdType Health threshold type: COUNT or PERCENTAGE
@@ -3786,7 +4547,7 @@ type CreateStatusPageComponentRequest struct {
 	// DisplayOrder Position in the component list
 	DisplayOrder *int32 `json:"displayOrder,omitempty"`
 
-	// ExcludeFromOverall Exclude from overall status calculation (default: false, use true for third-party deps)
+	// ExcludeFromOverall Exclude from overall status calculation (default: false; true for DEPENDENCY)
 	ExcludeFromOverall *bool `json:"excludeFromOverall,omitempty"`
 
 	// GroupId Component group ID for visual grouping
@@ -3801,17 +4562,20 @@ type CreateStatusPageComponentRequest struct {
 	// ResourceGroupId Resource group ID (required when type=GROUP)
 	ResourceGroupId *openapi_types.UUID `json:"resourceGroupId,omitempty"`
 
-	// ShowUptime Whether to show the uptime bar (default: true)
+	// ServiceSubscriptionId Service subscription (Dependency) ID — required when type=DEPENDENCY. Bind an existing org subscription; catalog picks must create the subscription first, then pass its id
+	ServiceSubscriptionId *openapi_types.UUID `json:"serviceSubscriptionId,omitempty"`
+
+	// ShowUptime Whether to show the uptime bar (default: true; false for DEPENDENCY)
 	ShowUptime *bool `json:"showUptime,omitempty"`
 
 	// StartDate Date from which to start showing uptime; defaults to component creation. Set earlier to backdate (e.g. launch day); clamped at the monitor's createdAt for MONITOR-type components
 	StartDate *openapi_types.Date `json:"startDate,omitempty"`
 
-	// Type Component type: MONITOR, GROUP, or STATIC
+	// Type Component type: MONITOR, GROUP, STATIC, or DEPENDENCY
 	Type CreateStatusPageComponentRequestType `json:"type"`
 }
 
-// CreateStatusPageComponentRequestType Component type: MONITOR, GROUP, or STATIC
+// CreateStatusPageComponentRequestType Component type: MONITOR, GROUP, STATIC, or DEPENDENCY
 type CreateStatusPageComponentRequestType string
 
 // CreateStatusPageIncidentRequest defines model for CreateStatusPageIncidentRequest.
@@ -3819,26 +4583,17 @@ type CreateStatusPageIncidentRequest struct {
 	// AffectedComponents Component IDs affected by this incident
 	AffectedComponents *[]AffectedComponent `json:"affectedComponents,omitempty"`
 
-	// AutoResolve Auto-resolve at scheduledUntil (default: false)
-	AutoResolve *bool `json:"autoResolve,omitempty"`
-
 	// Body Initial update body in markdown
 	Body string `json:"body"`
 
 	// Impact Impact level: NONE, MINOR, MAJOR, or CRITICAL
 	Impact CreateStatusPageIncidentRequestImpact `json:"impact"`
 
+	// MonitoringIncidentId Monitoring incident ID to link this status page incident to; null for standalone
+	MonitoringIncidentId *openapi_types.UUID `json:"monitoringIncidentId,omitempty"`
+
 	// NotifySubscribers Whether to email confirmed subscribers about this incident (default: true)
 	NotifySubscribers *bool `json:"notifySubscribers,omitempty"`
-
-	// Scheduled Whether this is a scheduled maintenance (default: false)
-	Scheduled *bool `json:"scheduled,omitempty"`
-
-	// ScheduledFor Maintenance start time (required when scheduled=true)
-	ScheduledFor *time.Time `json:"scheduledFor,omitempty"`
-
-	// ScheduledUntil Maintenance end time
-	ScheduledUntil *time.Time `json:"scheduledUntil,omitempty"`
 
 	// Status Initial status (default: INVESTIGATING)
 	Status *CreateStatusPageIncidentRequestStatus `json:"status,omitempty"`
@@ -3870,6 +4625,42 @@ type CreateStatusPageIncidentUpdateRequest struct {
 
 // CreateStatusPageIncidentUpdateRequestStatus Incident status at this point in the timeline
 type CreateStatusPageIncidentUpdateRequestStatus string
+
+// CreateStatusPageMaintenanceRequest defines model for CreateStatusPageMaintenanceRequest.
+type CreateStatusPageMaintenanceRequest struct {
+	// AffectedComponents Component IDs affected by this window
+	AffectedComponents *[]AffectedComponent `json:"affectedComponents,omitempty"`
+
+	// AutoResolve Auto-resolve at scheduledUntil (default: false)
+	AutoResolve *bool `json:"autoResolve,omitempty"`
+
+	// Body Initial update body in markdown
+	Body string `json:"body"`
+
+	// Impact Impact level: NONE, MINOR, MAJOR, or CRITICAL
+	Impact CreateStatusPageMaintenanceRequestImpact `json:"impact"`
+
+	// NotifySubscribers Whether to email confirmed subscribers about this window (default: true)
+	NotifySubscribers *bool `json:"notifySubscribers,omitempty"`
+
+	// ScheduledFor Maintenance start time
+	ScheduledFor time.Time `json:"scheduledFor"`
+
+	// ScheduledUntil Maintenance end time
+	ScheduledUntil *time.Time `json:"scheduledUntil,omitempty"`
+
+	// Status Initial status (default: INVESTIGATING)
+	Status *CreateStatusPageMaintenanceRequestStatus `json:"status,omitempty"`
+
+	// Title Customer-facing maintenance title
+	Title string `json:"title"`
+}
+
+// CreateStatusPageMaintenanceRequestImpact Impact level: NONE, MINOR, MAJOR, or CRITICAL
+type CreateStatusPageMaintenanceRequestImpact string
+
+// CreateStatusPageMaintenanceRequestStatus Initial status (default: INVESTIGATING)
+type CreateStatusPageMaintenanceRequestStatus string
 
 // CreateStatusPageRequest defines model for CreateStatusPageRequest.
 type CreateStatusPageRequest struct {
@@ -3936,10 +4727,55 @@ type CreateWorkspaceRequest struct {
 	Name string `json:"name"`
 }
 
+// CreditPolicy Service credit policy for SLA violations
+type CreditPolicy struct {
+	// ClaimWindowDays Days to submit a credit claim after eligibility
+	ClaimWindowDays *int32 `json:"claimWindowDays,omitempty"`
+
+	// CreditApplicationDays Days for credit to be applied after approval
+	CreditApplicationDays *int32 `json:"creditApplicationDays,omitempty"`
+
+	// MaxCreditPercent Max credit as percent of monthly fee
+	MaxCreditPercent *int32 `json:"maxCreditPercent,omitempty"`
+
+	// Summary Brief summary of credit policy
+	Summary *string `json:"summary,omitempty"`
+
+	// Tiers Credit tiers by uptime threshold
+	Tiers *[]CreditTier `json:"tiers,omitempty"`
+}
+
+// CreditTier Credit tiers by uptime threshold
+type CreditTier struct {
+	// CreditPercent Credit percent of monthly fee
+	CreditPercent *int32 `json:"creditPercent,omitempty"`
+
+	// Formula Credit formula when percent is not a fixed number
+	Formula *string `json:"formula,omitempty"`
+
+	// Notes Additional notes on this credit tier
+	Notes *string `json:"notes,omitempty"`
+
+	// UptimeRange Uptime range, e.g. '99.1% – 99.98%'
+	UptimeRange string `json:"uptimeRange"`
+}
+
 // CursorPageCheckResultDto Cursor-paginated response for time-series and append-only data
 type CursorPageCheckResultDto struct {
 	// Data Items on this page
 	Data []CheckResultDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
+// CursorPageIncidentActivityEventDto Cursor-paginated response for time-series and append-only data
+type CursorPageIncidentActivityEventDto struct {
+	// Data Items on this page
+	Data []IncidentActivityEventDto `json:"data"`
 
 	// HasMore Whether more results exist beyond this page
 	HasMore bool `json:"hasMore"`
@@ -3964,6 +4800,18 @@ type CursorPageServiceCatalogDto struct {
 type CursorPageServicePollResultDto struct {
 	// Data Items on this page
 	Data []ServicePollResultDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
+// CursorPageStatusEventDto Cursor-paginated response for time-series and append-only data
+type CursorPageStatusEventDto struct {
+	// Data Items on this page
+	Data []StatusEventDto `json:"data"`
 
 	// HasMore Whether more results exist beyond this page
 	HasMore bool `json:"hasMore"`
@@ -3999,6 +4847,9 @@ type DatadogChannelConfigChannelType string
 
 // DayIncident Incident that overlapped the day
 type DayIncident struct {
+	// AffectedComponentIds UUIDs of components this incident affected
+	AffectedComponentIds []openapi_types.UUID `json:"affectedComponentIds"`
+
 	// AffectedComponentNames Display names of components affected by this incident (deduplicated)
 	AffectedComponentNames []string `json:"affectedComponentNames"`
 
@@ -4011,7 +4862,7 @@ type DayIncident struct {
 	// ResolvedAt Incident resolved timestamp; null while still active
 	ResolvedAt *time.Time `json:"resolvedAt,omitempty"`
 
-	// Scheduled True for scheduled maintenances; false for unplanned incidents
+	// Scheduled True for a maintenance window; false for an incident
 	Scheduled bool `json:"scheduled"`
 
 	// StartedAt Incident start timestamp
@@ -4690,11 +5541,106 @@ type IcmpResponseTimeWarnAssertion struct {
 // IcmpResponseTimeWarnAssertionType defines model for IcmpResponseTimeWarnAssertion.Type.
 type IcmpResponseTimeWarnAssertionType string
 
+// IncidentActivityEventDto Merged incident activity event (updates, dispatches, deliveries, forensics, SP updates)
+type IncidentActivityEventDto struct {
+	// Actor Actor label when known (user email, system, etc.)
+	Actor *string `json:"actor,omitempty"`
+
+	// At When the event occurred (ISO 8601)
+	At time.Time `json:"at"`
+
+	// Id Stable event ID (source row ID)
+	Id openapi_types.UUID `json:"id"`
+
+	// Kind Activity event kind in the merged incident activity stream
+	Kind    string                      `json:"kind"`
+	Payload *IncidentActivityPayloadDto `json:"payload,omitempty"`
+
+	// Summary Human-readable summary of the event
+	Summary string `json:"summary"`
+}
+
+// IncidentActivityPayloadDto Kind-specific activity fields; omitted keys are absent, not null
+type IncidentActivityPayloadDto struct {
+	// AcknowledgedBy Who acknowledged the dispatch
+	AcknowledgedBy *string `json:"acknowledgedBy,omitempty"`
+
+	// AcknowledgedVia Ack channel (UI, Slack, …)
+	AcknowledgedVia *string `json:"acknowledgedVia,omitempty"`
+
+	// AffectedRegions Regions named on the forensic transition
+	AffectedRegions *[]string `json:"affectedRegions,omitempty"`
+
+	// Body Update or status-page note body
+	Body *string `json:"body,omitempty"`
+
+	// ChannelId Alert channel id
+	ChannelId *string `json:"channelId,omitempty"`
+
+	// ChannelName Alert channel name
+	ChannelName *string `json:"channelName,omitempty"`
+
+	// ChannelType Alert channel type
+	ChannelType *string `json:"channelType,omitempty"`
+
+	// CreatedBy Who created the update (SYSTEM, USER, …)
+	CreatedBy *string `json:"createdBy,omitempty"`
+
+	// CurrentStep Current escalation step (1-based)
+	CurrentStep *int32 `json:"currentStep,omitempty"`
+
+	// DispatchId Notification dispatch id
+	DispatchId *string `json:"dispatchId,omitempty"`
+
+	// ErrorMessage Delivery error message when the send failed
+	ErrorMessage *string `json:"errorMessage,omitempty"`
+
+	// EventType Alert delivery event type
+	EventType *string `json:"eventType,omitempty"`
+
+	// FireCount How many times this delivery has fired
+	FireCount *int32 `json:"fireCount,omitempty"`
+
+	// FromStatus Forensic from-status
+	FromStatus *string `json:"fromStatus,omitempty"`
+
+	// NewStatus New incident status on an update
+	NewStatus *string `json:"newStatus,omitempty"`
+
+	// OldStatus Previous incident status on an update
+	OldStatus *string `json:"oldStatus,omitempty"`
+
+	// Phase Dispatch lifecycle phase (fired, acked)
+	Phase *string `json:"phase,omitempty"`
+
+	// PolicyId Notification policy id for a dispatch row
+	PolicyId *string `json:"policyId,omitempty"`
+
+	// PolicyName Notification policy name when resolved
+	PolicyName *string `json:"policyName,omitempty"`
+
+	// Reason Forensic transition reason
+	Reason *string `json:"reason,omitempty"`
+
+	// Status Dispatch, delivery, or status-page status
+	Status *string `json:"status,omitempty"`
+
+	// StatusPageIncidentId Linked status-page incident id
+	StatusPageIncidentId *string `json:"statusPageIncidentId,omitempty"`
+
+	// StepNumber Escalation step that sent this delivery
+	StepNumber *int32 `json:"stepNumber,omitempty"`
+
+	// ToStatus Forensic to-status
+	ToStatus *string `json:"toStatus,omitempty"`
+}
+
 // IncidentDetailDto defines model for IncidentDetailDto.
 type IncidentDetailDto struct {
 	// Incident Incident triggered by a monitor check failure or manual creation
 	Incident            IncidentDto                    `json:"incident"`
 	StatusPageIncidents *[]LinkedStatusPageIncidentDto `json:"statusPageIncidents,omitempty"`
+	Trigger             *IncidentTriggerDto            `json:"trigger,omitempty"`
 	Updates             []IncidentUpdateDto            `json:"updates"`
 }
 
@@ -4705,6 +5651,9 @@ type IncidentDto struct {
 
 	// AffectedRegions Probe regions that observed the failure
 	AffectedRegions []string `json:"affectedRegions"`
+
+	// AlertCollapsedByResourceGroupIds Sticky union of resource-group IDs that suppressed a paging dispatch for this member incident; null when never written / legacy
+	AlertCollapsedByResourceGroupIds *[]openapi_types.UUID `json:"alertCollapsedByResourceGroupIds,omitempty"`
 
 	// ConfirmedAt Timestamp when the incident was confirmed (multi-region confirmation)
 	ConfirmedAt *time.Time `json:"confirmedAt,omitempty"`
@@ -4718,11 +5667,17 @@ type IncidentDto struct {
 	// CreatedByUserId User who created the incident (manual incidents only)
 	CreatedByUserId *int32 `json:"createdByUserId,omitempty"`
 
+	// DisplayKey Org-scoped human-readable incident code, e.g. "ABC-42". Null on incidents created by pre-INC-keys API pods before the sweep; treat missing as unknown and fall back to the id
+	DisplayKey *string `json:"displayKey,omitempty"`
+
 	// EngineVersion Detection engine semver that evaluated the rule. Omitted from JSON when null, treat missing as null.
 	EngineVersion *string `json:"engineVersion,omitempty"`
 
 	// ExternalRef External reference ID (e.g. PagerDuty incident ID)
 	ExternalRef *string `json:"externalRef,omitempty"`
+
+	// FailingMembersAtPeak Frozen failing members at peakFailingMemberCount; null when not a group incident or never snapshotted
+	FailingMembersAtPeak *[]IncidentFailingMemberSnapshotDto `json:"failingMembersAtPeak,omitempty"`
 
 	// Id Unique incident identifier
 	Id openapi_types.UUID `json:"id"`
@@ -4739,8 +5694,14 @@ type IncidentDto struct {
 	// OrganizationId Organization this incident belongs to
 	OrganizationId int32 `json:"organizationId"`
 
+	// PeakFailingMemberCount Peak non-operational member count while this RESOURCE_GROUP incident was open; null otherwise
+	PeakFailingMemberCount *int32 `json:"peakFailingMemberCount,omitempty"`
+
 	// ReopenCount Number of times this incident has been reopened
 	ReopenCount int32 `json:"reopenCount"`
+
+	// ResolutionNote Body from the most recent resolve update; null when not currently resolved, auto-resolved without a note, or no resolve update body was provided
+	ResolutionNote *string `json:"resolutionNote,omitempty"`
 
 	// ResolutionReason How the incident was resolved (AUTO_RECOVERED, MANUAL, etc.)
 	ResolutionReason *string `json:"resolutionReason,omitempty"`
@@ -4784,6 +5745,9 @@ type IncidentDto struct {
 	// StatusPageVisible Whether this incident is visible on the status page
 	StatusPageVisible bool `json:"statusPageVisible"`
 
+	// SuppressDispatch When true, alert channels are suppressed (AWARENESS silent tracking); false means Alerted
+	SuppressDispatch bool `json:"suppressDispatch"`
+
 	// Title Short summary of the incident; null for auto-generated incidents
 	Title *string `json:"title,omitempty"`
 
@@ -4803,10 +5767,73 @@ type IncidentDto struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+// IncidentEventDto Vendor incident fields for a status-events rail row
+type IncidentEventDto struct {
+	// AffectedComponentIds Affected component IDs from the vendor incident join
+	AffectedComponentIds *[]openapi_types.UUID `json:"affectedComponentIds,omitempty"`
+
+	// Body Update body text (only set on incident.update rows)
+	Body *string `json:"body,omitempty"`
+
+	// DetectedAt When DevHelm first detected the incident
+	DetectedAt *time.Time `json:"detectedAt,omitempty"`
+
+	// DurationSeconds Total duration in seconds (set on incident.resolved)
+	DurationSeconds *int64 `json:"durationSeconds,omitempty"`
+
+	// ExternalId Vendor-supplied external incident ID
+	ExternalId *string `json:"externalId,omitempty"`
+
+	// Impact Vendor impact level (major, minor, none)
+	Impact *string `json:"impact,omitempty"`
+
+	// IncidentId Vendor catalog incident ID
+	IncidentId openapi_types.UUID `json:"incidentId"`
+
+	// ResolvedAt When the vendor incident resolved
+	ResolvedAt *time.Time `json:"resolvedAt,omitempty"`
+
+	// Shortlink Short public URL for the vendor incident
+	Shortlink *string `json:"shortlink,omitempty"`
+
+	// StartedAt When the vendor incident started
+	StartedAt *time.Time `json:"startedAt,omitempty"`
+
+	// Status Vendor lifecycle status (only set on incident.update rows)
+	Status *string `json:"status,omitempty"`
+
+	// Title Incident title from the vendor status page
+	Title string `json:"title"`
+
+	// VendorCreatedAt Vendor-reported creation timestamp
+	VendorCreatedAt *time.Time `json:"vendorCreatedAt,omitempty"`
+}
+
+// IncidentFailingMemberSnapshotDto Frozen failing member identity at peak failing count for a resource-group incident
+type IncidentFailingMemberSnapshotDto struct {
+	// MemberType Member type: monitor or service
+	MemberType string `json:"memberType"`
+
+	// MembershipId Membership row ID when available
+	MembershipId *openapi_types.UUID `json:"membershipId,omitempty"`
+
+	// MonitorId Monitor ID when memberType is monitor
+	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
+
+	// Name Frozen display name at snapshot time
+	Name string `json:"name"`
+
+	// ServiceId Service ID when memberType is service
+	ServiceId *openapi_types.UUID `json:"serviceId,omitempty"`
+}
+
 // IncidentFilterParams defines model for IncidentFilterParams.
 type IncidentFilterParams struct {
 	// EnvironmentId Only return incidents whose monitor lives in this environment
 	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
+
+	// ExcludeId Exclude this incident ID from results (related-incident lists)
+	ExcludeId *openapi_types.UUID `json:"excludeId,omitempty"`
 
 	// MonitorId Only return incidents tied to this monitor ID
 	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
@@ -4814,7 +5841,7 @@ type IncidentFilterParams struct {
 	// Page Zero-based page index (default: 0)
 	Page int32 `json:"page"`
 
-	// ResourceGroupId Only return incidents whose monitor belongs to this resource group
+	// ResourceGroupId Only return incidents owned by this resource group (incidents.resource_group_id)
 	ResourceGroupId *openapi_types.UUID `json:"resourceGroupId,omitempty"`
 
 	// ServiceId Only return incidents tied to this service ID (third-party services)
@@ -4962,6 +5989,30 @@ type IncidentTimelineDto struct {
 	TriggeringEvaluations []RuleEvaluationDto `json:"triggeringEvaluations"`
 }
 
+// IncidentTriggerDto Honest trigger metadata for the incident origin tooltip / TTD strip
+type IncidentTriggerDto struct {
+	// Count Observed failing_streak or failures_in_window from forensics; null when unavailable
+	Count *int32 `json:"count,omitempty"`
+
+	// FirstFailedCheckAt Earliest failing check timestamp in the confirm window when computable; null otherwise
+	FirstFailedCheckAt *time.Time `json:"firstFailedCheckAt,omitempty"`
+
+	// LastError failure_reason from the triggering check result; null when unavailable
+	LastError *string `json:"lastError,omitempty"`
+
+	// RuleIndex 0-based index into the policy trigger_rules array; null when unknown
+	RuleIndex *int32 `json:"ruleIndex,omitempty"`
+
+	// RuleType Trigger rule type (consecutive_failures, failures_in_window, response_time); null when unknown
+	RuleType *string `json:"ruleType,omitempty"`
+
+	// Source Where the enrichment came from: forensics, checks, or none (STATUS_DATA/manual/no data)
+	Source string `json:"source"`
+
+	// Threshold Rule required count or threshold_ms from forensics; null when unavailable
+	Threshold *int32 `json:"threshold,omitempty"`
+}
+
 // IncidentUpdateDto defines model for IncidentUpdateDto.
 type IncidentUpdateDto struct {
 	Body              *string            `json:"body,omitempty"`
@@ -5017,6 +6068,9 @@ type IntegrationFieldDto struct {
 type InviteDto struct {
 	// ConsumedAt Timestamp when the invite was accepted; null if not yet used
 	ConsumedAt *time.Time `json:"consumedAt,omitempty"`
+
+	// CreatedAt Timestamp when the invite was created
+	CreatedAt time.Time `json:"createdAt"`
 
 	// Email Email address the invite was sent to
 	Email string `json:"email"`
@@ -5111,15 +6165,41 @@ type LinearChannelConfigChannelType string
 
 // LinkedStatusPageIncidentDto defines model for LinkedStatusPageIncidentDto.
 type LinkedStatusPageIncidentDto struct {
-	Id             openapi_types.UUID `json:"id"`
-	Impact         string             `json:"impact"`
-	PublishedAt    *time.Time         `json:"publishedAt,omitempty"`
-	Scheduled      bool               `json:"scheduled"`
-	Status         string             `json:"status"`
-	StatusPageId   openapi_types.UUID `json:"statusPageId"`
-	StatusPageName string             `json:"statusPageName"`
-	StatusPageSlug string             `json:"statusPageSlug"`
-	Title          string             `json:"title"`
+	// ConnectionMode Whether the linked SPI was created by automation (AUTO) or by a human/API caller (MANUAL)
+	ConnectionMode string `json:"connectionMode"`
+
+	// Id Status page incident ID (same value as spIncidentId; kept for backwards compatibility)
+	Id openapi_types.UUID `json:"id"`
+
+	// Impact Impact level (NONE, MINOR, MAJOR, CRITICAL)
+	Impact string `json:"impact"`
+
+	// PageIncidentMode Incident mode of the parent status page at read time (MANUAL, REVIEW, AUTOMATIC)
+	PageIncidentMode string `json:"pageIncidentMode"`
+
+	// PublishedAt Publish time; null while draft
+	PublishedAt *time.Time `json:"publishedAt,omitempty"`
+
+	// Scheduled Scheduled maintenance flag
+	Scheduled bool `json:"scheduled"`
+
+	// SpIncidentId Status page incident ID (alias for id) — use this when the outer context is a monitoring incident
+	SpIncidentId openapi_types.UUID `json:"spIncidentId"`
+
+	// Status Current lifecycle status (INVESTIGATING, IDENTIFIED, MONITORING, RESOLVED)
+	Status string `json:"status"`
+
+	// StatusPageId Parent status page ID
+	StatusPageId openapi_types.UUID `json:"statusPageId"`
+
+	// StatusPageName Parent status page display name
+	StatusPageName string `json:"statusPageName"`
+
+	// StatusPageSlug Parent status page URL slug
+	StatusPageSlug string `json:"statusPageSlug"`
+
+	// Title Customer-facing incident title
+	Title string `json:"title"`
 }
 
 // MaintenanceComponentRef A component affected by a scheduled maintenance window
@@ -5132,6 +6212,42 @@ type MaintenanceComponentRef struct {
 
 	// Status Component status at the time of the maintenance update
 	Status string `json:"status"`
+}
+
+// MaintenanceEventDto Vendor maintenance fields for a status-events rail row
+type MaintenanceEventDto struct {
+	// AffectedComponentIds Affected component IDs
+	AffectedComponentIds *[]openapi_types.UUID `json:"affectedComponentIds,omitempty"`
+
+	// CompletedAt When maintenance completed
+	CompletedAt *time.Time `json:"completedAt,omitempty"`
+
+	// ExternalId Vendor-supplied external maintenance ID
+	ExternalId string `json:"externalId"`
+
+	// Impact Vendor impact level
+	Impact *string `json:"impact,omitempty"`
+
+	// MaintenanceId Vendor catalog maintenance ID
+	MaintenanceId openapi_types.UUID `json:"maintenanceId"`
+
+	// ScheduledFor Scheduled start; null for undated maintenance
+	ScheduledFor *time.Time `json:"scheduledFor,omitempty"`
+
+	// ScheduledUntil Scheduled end
+	ScheduledUntil *time.Time `json:"scheduledUntil,omitempty"`
+
+	// Shortlink Short public URL for the vendor maintenance
+	Shortlink *string `json:"shortlink,omitempty"`
+
+	// StartedAt When maintenance actually started
+	StartedAt *time.Time `json:"startedAt,omitempty"`
+
+	// Status Lifecycle status: scheduled, in_progress, verifying, completed
+	Status string `json:"status"`
+
+	// Title Maintenance title from the vendor status page
+	Title string `json:"title"`
 }
 
 // MaintenanceUpdateDto A status update within a scheduled maintenance lifecycle
@@ -5564,10 +6680,31 @@ type NewTagRequest struct {
 	Name string `json:"name"`
 }
 
+// NoSlaContext Context for vendors with no public SLA
+type NoSlaContext struct {
+	// EnterpriseNote Note about enterprise/custom SLA availability
+	EnterpriseNote *string `json:"enterpriseNote,omitempty"`
+
+	// HistoricalClaim Non-binding historical uptime claim
+	HistoricalClaim *string `json:"historicalClaim,omitempty"`
+
+	// Reason Reason no SLA is published
+	Reason *string `json:"reason,omitempty"`
+
+	// SupportSla Support response time SLA if different from uptime SLA
+	SupportSla *string `json:"supportSla,omitempty"`
+}
+
 // NotificationDispatchDto Dispatch state for a single (incident, notification policy) pair, with delivery history
 type NotificationDispatchDto struct {
 	// AcknowledgedAt Timestamp when this dispatch was acknowledged (null if not acknowledged)
 	AcknowledgedAt *time.Time `json:"acknowledgedAt,omitempty"`
+
+	// AcknowledgedBy Actor who acknowledged this dispatch (user email, api-key:<id>, voice:<callSid>, etc.); null if not acknowledged
+	AcknowledgedBy *string `json:"acknowledgedBy,omitempty"`
+
+	// AcknowledgedVia Channel used to acknowledge (DASHBOARD, API, PHONE_CALL, INTERNAL, etc.); null if not acknowledged
+	AcknowledgedVia *string `json:"acknowledgedVia,omitempty"`
 
 	// CompletionReason Why the dispatch reached COMPLETED: EXHAUSTED (all steps ran, no ack), RESOLVED (incident resolved), NO_STEPS (policy had no steps). Null for non-terminal states.
 	CompletionReason *string `json:"completionReason,omitempty"`
@@ -5587,8 +6724,14 @@ type NotificationDispatchDto struct {
 	// IncidentId Incident this dispatch is for
 	IncidentId openapi_types.UUID `json:"incidentId"`
 
+	// IncidentTitle Incident title at read time; null if untitled or missing
+	IncidentTitle *string `json:"incidentTitle,omitempty"`
+
 	// LastNotifiedAt Timestamp of the most recent notification delivery
 	LastNotifiedAt *time.Time `json:"lastNotifiedAt,omitempty"`
+
+	// MatchedRules Labels of match rules that caused this dispatch (same wording as TestMatchResult); null on pre-V138 rows; catch-all is ["(catch-all: no rules defined)"]
+	MatchedRules *[]string `json:"matchedRules,omitempty"`
 
 	// NextEscalationAt Timestamp when the next escalation step will fire (null if not scheduled)
 	NextEscalationAt *time.Time `json:"nextEscalationAt,omitempty"`
@@ -5641,6 +6784,9 @@ type NotificationPolicyDto struct {
 	// CreatedAt Timestamp when the policy was created
 	CreatedAt time.Time `json:"createdAt"`
 
+	// Description Optional note; null when unset
+	Description *string `json:"description,omitempty"`
+
 	// Enabled Whether this policy is active
 	Enabled bool `json:"enabled"`
 
@@ -5649,6 +6795,12 @@ type NotificationPolicyDto struct {
 
 	// Id Unique notification policy identifier
 	Id openapi_types.UUID `json:"id"`
+
+	// LastFiredAt Created-at of the most recent dispatch for this policy; null if never fired
+	LastFiredAt *time.Time `json:"lastFiredAt,omitempty"`
+
+	// LastFiredIncidentId Incident id of the most recent dispatch; null if never fired
+	LastFiredIncidentId *openapi_types.UUID `json:"lastFiredIncidentId,omitempty"`
 
 	// MatchRules Match rules (all must pass; empty = catch-all)
 	MatchRules []MatchRule `json:"matchRules"`
@@ -5660,10 +6812,66 @@ type NotificationPolicyDto struct {
 	OrganizationId int32 `json:"organizationId"`
 
 	// Priority Evaluation order; higher value = evaluated first
-	Priority int32 `json:"priority"`
+	Priority int32                             `json:"priority"`
+	Stats30d *NotificationPolicyWindowStatsDto `json:"stats30d,omitempty"`
+	Stats7d  *NotificationPolicyWindowStatsDto `json:"stats7d,omitempty"`
 
 	// UpdatedAt Timestamp when the policy was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// NotificationPolicyWindowStatsDto Time-bounded notification policy activity aggregates
+type NotificationPolicyWindowStatsDto struct {
+	// AckableFires Ack ratio denominator: fires when the policy has an ack gate, else 0
+	AckableFires int32 `json:"ackableFires"`
+
+	// Acknowledgements Fires in the window that were acknowledged
+	Acknowledgements int32 `json:"acknowledgements"`
+
+	// DeepestStepReached Highest escalation step reached in the window; null when no fires
+	DeepestStepReached *int32 `json:"deepestStepReached,omitempty"`
+
+	// Expired Fires that exhausted escalation without acknowledgment
+	Expired int32 `json:"expired"`
+
+	// FailedSends Linked deliveries with status FAILED
+	FailedSends int32 `json:"failedSends"`
+
+	// Fires Dispatches created in the window
+	Fires int32 `json:"fires"`
+
+	// LastFiredAt Created-at of the most recent fire in the window; null when none
+	LastFiredAt *time.Time `json:"lastFiredAt,omitempty"`
+
+	// LastFiredIncidentId Incident id of the most recent fire in the window; null when none
+	LastFiredIncidentId *openapi_types.UUID `json:"lastFiredIncidentId,omitempty"`
+
+	// MedianAckSeconds Median seconds from fire to ack among acknowledged fires; null when none
+	MedianAckSeconds *int64 `json:"medianAckSeconds,omitempty"`
+
+	// Sends Alert deliveries linked to fires in the window
+	Sends int32 `json:"sends"`
+}
+
+// OfficialSla The vendor's officially advertised SLA commitment
+type OfficialSla struct {
+	// AppliesToPlans Plan names this SLA applies to, e.g. ['Enterprise']
+	AppliesToPlans *[]string `json:"appliesToPlans,omitempty"`
+
+	// Exclusions Summary of exclusions from SLA calculation
+	Exclusions *string `json:"exclusions,omitempty"`
+
+	// Measurement How the vendor measures uptime for SLA purposes
+	Measurement *string `json:"measurement,omitempty"`
+
+	// NotCovered Services/components NOT covered by the SLA
+	NotCovered *string `json:"notCovered,omitempty"`
+
+	// Percentage Advertised uptime percentage, e.g. '99.99%'
+	Percentage *string `json:"percentage,omitempty"`
+
+	// Scope Scope of the SLA, e.g. 'Monthly uptime per region'
+	Scope *string `json:"scope,omitempty"`
 }
 
 // OpsGenieChannelConfig defines model for OpsGenieChannelConfig.
@@ -5678,6 +6886,27 @@ type OpsGenieChannelConfig struct {
 
 // OpsGenieChannelConfigChannelType defines model for OpsGenieChannelConfig.ChannelType.
 type OpsGenieChannelConfigChannelType string
+
+// OrgIncidentAnnotationDto Linked internal incident annotation on a vendor status-event row
+type OrgIncidentAnnotationDto struct {
+	// Alerted Whether alert channels were eligible to fire (false for AWARENESS silent tracking)
+	Alerted bool `json:"alerted"`
+
+	// DisplayKey Human display key (e.g. DEV-42); null until platform INC codes ship
+	DisplayKey *string `json:"displayKey,omitempty"`
+
+	// IncidentId Internal org incident ID
+	IncidentId openapi_types.UUID `json:"incidentId"`
+
+	// Severity Internal incident severity
+	Severity string `json:"severity"`
+
+	// StartedAt When the internal incident started
+	StartedAt *time.Time `json:"startedAt,omitempty"`
+
+	// Status Internal incident lifecycle status
+	Status string `json:"status"`
+}
 
 // OrgInfo Organization the key belongs to
 type OrgInfo struct {
@@ -5742,6 +6971,29 @@ type PagerDutyChannelConfig struct {
 // PagerDutyChannelConfigChannelType defines model for PagerDutyChannelConfig.ChannelType.
 type PagerDutyChannelConfigChannelType string
 
+// PhoneCallChannelConfig defines model for PhoneCallChannelConfig.
+type PhoneCallChannelConfig struct {
+	ChannelType PhoneCallChannelConfigChannelType `json:"channelType"`
+
+	// PhoneNumber Recipient phone number in E.164 format, e.g. +14155550123
+	PhoneNumber *string `json:"phoneNumber,omitempty"`
+
+	// PhoneNumbers Deprecated: use phoneNumber. Accepted as a length-1 list for one release; ignored when phoneNumber or id is set
+	PhoneNumbers *[]*string `json:"phoneNumbers,omitempty"`
+
+	// PreferredLanguage Preferred language for TTS and notifications (BCP-47, e.g. en-US, de-DE). Alias for voiceLanguage
+	PreferredLanguage *string `json:"preferredLanguage,omitempty"`
+
+	// VerifiedPhoneNumberId Id of an org verified_phone_number row; alternative to phoneNumber
+	VerifiedPhoneNumberId *int64 `json:"verifiedPhoneNumberId,omitempty"`
+
+	// VoiceLanguage TTS voice language/locale (default: en-US). See VoiceLanguage for supported values
+	VoiceLanguage *string `json:"voiceLanguage,omitempty"`
+}
+
+// PhoneCallChannelConfigChannelType defines model for PhoneCallChannelConfig.ChannelType.
+type PhoneCallChannelConfigChannelType string
+
 // PlanInfo Billing plan and entitlement state
 type PlanInfo struct {
 	// Entitlements Entitlement limits keyed by entitlement name
@@ -5797,6 +7049,18 @@ type PollChartBucketDto struct {
 
 	// UptimePercent Uptime percentage for this bucket; null when no data
 	UptimePercent *float64 `json:"uptimePercent,omitempty"`
+}
+
+// PricingTier Pricing tiers with associated SLA levels
+type PricingTier struct {
+	// Name Tier name, e.g. 'Free', 'Pro', 'Enterprise'
+	Name string `json:"name"`
+
+	// PriceFrom Starting price, e.g. '$0', '$25/mo', 'Custom'
+	PriceFrom *string `json:"priceFrom,omitempty"`
+
+	// SlaPercentage SLA percentage for this tier, e.g. '99.9%'
+	SlaPercentage *string `json:"slaPercentage,omitempty"`
 }
 
 // PublishStatusPageIncidentRequest defines model for PublishStatusPageIncidentRequest.
@@ -5936,6 +7200,15 @@ type RegionStatusDto struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// RelatedIncidentsResponse Related incidents sharing the same origin within a time window
+type RelatedIncidentsResponse struct {
+	// Data Related incident rows (newest first, capped by limit)
+	Data []IncidentDto `json:"data"`
+
+	// Total Total matching incidents in the window, excluding the current incident
+	Total int64 `json:"total"`
+}
+
 // RemoveMonitorTagsRequest Request body for removing tags from a monitor
 type RemoveMonitorTagsRequest struct {
 	// TagIds IDs of the tags to detach from the monitor
@@ -5963,6 +7236,27 @@ type ResolveIncidentRequest struct {
 	Body *string `json:"body,omitempty"`
 }
 
+// ResourceGroupDeleteBlockerDto Status-page component that references this resource group (blocks delete; public exposure)
+type ResourceGroupDeleteBlockerDto struct {
+	// ComponentId Blocking GROUP-typed status page component ID
+	ComponentId openapi_types.UUID `json:"componentId"`
+
+	// ComponentName Blocking component display name
+	ComponentName string `json:"componentName"`
+
+	// Hostname Public hostname when a custom domain is configured; null otherwise
+	Hostname *string `json:"hostname,omitempty"`
+
+	// StatusPageId Status page that owns the blocking component
+	StatusPageId openapi_types.UUID `json:"statusPageId"`
+
+	// StatusPageName Human-readable status page name
+	StatusPageName string `json:"statusPageName"`
+
+	// StatusPageSlug URL-safe status page slug
+	StatusPageSlug string `json:"statusPageSlug"`
+}
+
 // ResourceGroupDto Resource group with health summary and optional member details
 type ResourceGroupDto struct {
 	// AlertPolicyId Notification policy applied to this group
@@ -5987,6 +7281,9 @@ type ResourceGroupDto struct {
 	DefaultRegions       *[]string      `json:"defaultRegions,omitempty"`
 	DefaultRetryStrategy *RetryStrategy `json:"defaultRetryStrategy,omitempty"`
 
+	// DeleteBlockedBy Status-page GROUP components that reference this group (delete blockers / public exposure); populated on detail GET only — omitted on list
+	DeleteBlockedBy *[]ResourceGroupDeleteBlockerDto `json:"deleteBlockedBy,omitempty"`
+
 	// Description Optional group description
 	Description *string `json:"description,omitempty"`
 
@@ -6009,7 +7306,8 @@ type ResourceGroupDto struct {
 	Members *[]ResourceGroupMemberDto `json:"members,omitempty"`
 
 	// Name Human-readable group name
-	Name string `json:"name"`
+	Name               string       `json:"name"`
+	OpenRegionIncident *IncidentDto `json:"openRegionIncident,omitempty"`
 
 	// OrganizationId Organization this group belongs to
 	OrganizationId int32 `json:"organizationId"`
@@ -6029,11 +7327,17 @@ type ResourceGroupDto struct {
 
 // ResourceGroupHealthDto Aggregated health summary for a resource group
 type ResourceGroupHealthDto struct {
-	// ActiveIncidents Number of members with an active incident or non-operational status
+	// ActiveIncidents Number of members currently non-operational (not an incident-row count)
 	ActiveIncidents int32 `json:"activeIncidents"`
 
-	// FailingCount Number of failing members at time of last evaluation
+	// FailingCount Number of failing members at time of last evaluation; null when no threshold configured
 	FailingCount *int32 `json:"failingCount,omitempty"`
+
+	// HealthBreachedSince When the health threshold was first breached in the current cycle; null when not breached
+	HealthBreachedSince *time.Time `json:"healthBreachedSince,omitempty"`
+
+	// HealthEvaluatedAt When group health was last evaluated (threshold or stamp-only); null until first evaluation
+	HealthEvaluatedAt *time.Time `json:"healthEvaluatedAt,omitempty"`
 
 	// OperationalCount Number of members currently in operational status
 	OperationalCount int32 `json:"operationalCount"`
@@ -6050,6 +7354,9 @@ type ResourceGroupHealthDto struct {
 
 // ResourceGroupMemberDto A single member of a resource group with its computed health status
 type ResourceGroupMemberDto struct {
+	// AlertCollapsed True when an active member incident records this group among alertCollapsedByResourceGroupIds; detail GET only — omitted on list
+	AlertCollapsed *bool `json:"alertCollapsed,omitempty"`
+
 	// AvgLatencyMs Average latency in ms (monitors only); populated when includeMetrics=true
 	AvgLatencyMs *float64 `json:"avgLatencyMs,omitempty"`
 
@@ -6065,11 +7372,20 @@ type ResourceGroupMemberDto struct {
 	// EnvironmentName Environment name; monitors only
 	EnvironmentName *string `json:"environmentName,omitempty"`
 
+	// FailingSince Start of the current non-operational stretch; null when operational or unknown (services OK); detail GET only — omitted on list
+	FailingSince *time.Time `json:"failingSince,omitempty"`
+
 	// GroupId Resource group this member belongs to
 	GroupId openapi_types.UUID `json:"groupId"`
 
+	// GroupMembershipCount Count of resource groups this monitor or service belongs to; detail GET only — omitted on list
+	GroupMembershipCount *int32 `json:"groupMembershipCount,omitempty"`
+
 	// Id Unique group member record identifier
 	Id openapi_types.UUID `json:"id"`
+
+	// IncidentMarks Incident marks for the trailing 24h strip; null when metrics omitted or failed; detail GET only — omitted on list
+	IncidentMarks *[]ResourceGroupMemberIncidentMarkDto `json:"incidentMarks,omitempty"`
 
 	// LastCheckedAt Timestamp of the most recent health check; populated when includeMetrics=true
 	LastCheckedAt *time.Time `json:"lastCheckedAt,omitempty"`
@@ -6103,6 +7419,18 @@ type ResourceGroupMemberDto struct {
 
 	// Uptime24h 24h uptime percentage; populated when includeMetrics=true
 	Uptime24h *float64 `json:"uptime24h,omitempty"`
+}
+
+// ResourceGroupMemberIncidentMarkDto Member incident mark for the trailing 24h uptime strip
+type ResourceGroupMemberIncidentMarkDto struct {
+	// At Incident startedAt (or first confirmed) within the trailing 24h window
+	At time.Time `json:"at"`
+
+	// IncidentId Incident ID for navigation; null when unknown
+	IncidentId *openapi_types.UUID `json:"incidentId,omitempty"`
+
+	// Severity Optional severity display hint
+	Severity *string `json:"severity,omitempty"`
 }
 
 // ResponseSizeAssertion defines model for ResponseSizeAssertion.
@@ -6263,6 +7591,15 @@ type ScheduledMaintenanceDto struct {
 	Updates []MaintenanceUpdateDto `json:"updates"`
 }
 
+// ScriptMonitorConfig defines model for ScriptMonitorConfig.
+type ScriptMonitorConfig struct {
+	// Script Playwright test script source code
+	Script string `json:"script"`
+
+	// TimeoutSeconds Maximum execution time in seconds (5–120)
+	TimeoutSeconds *int32 `json:"timeoutSeconds,omitempty"`
+}
+
 // SecretDto Secret with change-detection hash; plaintext value is never returned
 type SecretDto struct {
 	// CreatedAt Timestamp when the secret was created
@@ -6299,6 +7636,21 @@ type SeoMetadataDto struct {
 	ShortDescription *string `json:"shortDescription,omitempty"`
 }
 
+// ServiceBreakdown Per-service breakdown for vendors with per_service SLA type
+type ServiceBreakdown struct {
+	// Notes Additional notes on measurement or conditions
+	Notes *string `json:"notes,omitempty"`
+
+	// Scope Scope qualifier, e.g. 'Region (Multi-AZ)'
+	Scope *string `json:"scope,omitempty"`
+
+	// Service Sub-service name, e.g. 'EC2', 'S3'
+	Service string `json:"service"`
+
+	// SlaPercentage SLA percentage for this sub-service
+	SlaPercentage *string `json:"slaPercentage,omitempty"`
+}
+
 // ServiceCatalogDto Related services
 type ServiceCatalogDto struct {
 	ActiveIncidentCount int64              `json:"activeIncidentCount"`
@@ -6312,15 +7664,18 @@ type ServiceCatalogDto struct {
 	Id                  openapi_types.UUID `json:"id"`
 
 	// LifecycleStatus Service lifecycle state: ACTIVE, DEGRADED, DEPRECATED, or RETIRED
-	LifecycleStatus        string    `json:"lifecycleStatus"`
-	LogoUrl                *string   `json:"logoUrl,omitempty"`
-	Name                   string    `json:"name"`
-	OfficialStatusUrl      *string   `json:"officialStatusUrl,omitempty"`
-	OverallStatus          *string   `json:"overallStatus,omitempty"`
-	PollingIntervalSeconds int32     `json:"pollingIntervalSeconds"`
-	Published              bool      `json:"published"`
-	Slug                   string    `json:"slug"`
-	UpdatedAt              time.Time `json:"updatedAt"`
+	LifecycleStatus        string  `json:"lifecycleStatus"`
+	LogoUrl                *string `json:"logoUrl,omitempty"`
+	Name                   string  `json:"name"`
+	OfficialStatusUrl      *string `json:"officialStatusUrl,omitempty"`
+	OverallStatus          *string `json:"overallStatus,omitempty"`
+	PollingIntervalSeconds int32   `json:"pollingIntervalSeconds"`
+	Published              bool    `json:"published"`
+
+	// SlaPublished Whether the service's SLA page is publicly visible
+	SlaPublished bool      `json:"slaPublished"`
+	Slug         string    `json:"slug"`
+	UpdatedAt    time.Time `json:"updatedAt"`
 
 	// Uptime30d Aggregated 30-day uptime percentage across all components
 	Uptime30d *float64 `json:"uptime30d,omitempty"`
@@ -6403,22 +7758,27 @@ type ServiceDetailDto struct {
 	Id                 openapi_types.UUID        `json:"id"`
 
 	// LifecycleStatus Service lifecycle state: ACTIVE, DEGRADED, DEPRECATED, or RETIRED
-	LifecycleStatus        string                     `json:"lifecycleStatus"`
-	LogoUrl                *string                    `json:"logoUrl,omitempty"`
-	Name                   string                     `json:"name"`
-	OfficialStatusUrl      *string                    `json:"officialStatusUrl,omitempty"`
-	PollingIntervalSeconds int32                      `json:"pollingIntervalSeconds"`
-	RecentIncidents        []ServiceIncidentDto       `json:"recentIncidents"`
-	RelatedServices        *[]ServiceCatalogDto       `json:"relatedServices,omitempty"`
-	SeoMetadata            *SeoMetadataDto            `json:"seoMetadata,omitempty"`
-	Slug                   string                     `json:"slug"`
-	UpdatedAt              time.Time                  `json:"updatedAt"`
-	Uptime                 *ComponentUptimeSummaryDto `json:"uptime,omitempty"`
+	LifecycleStatus        string               `json:"lifecycleStatus"`
+	LogoUrl                *string              `json:"logoUrl,omitempty"`
+	Name                   string               `json:"name"`
+	OfficialStatusUrl      *string              `json:"officialStatusUrl,omitempty"`
+	PollingIntervalSeconds int32                `json:"pollingIntervalSeconds"`
+	RecentIncidents        []ServiceIncidentDto `json:"recentIncidents"`
+	RelatedServices        *[]ServiceCatalogDto `json:"relatedServices,omitempty"`
+	SeoMetadata            *SeoMetadataDto      `json:"seoMetadata,omitempty"`
+	SlaData                *SlaDataDto          `json:"slaData,omitempty"`
+
+	// SlaPublished Whether the service's SLA page is publicly visible
+	SlaPublished bool                       `json:"slaPublished"`
+	Slug         string                     `json:"slug"`
+	UpdatedAt    time.Time                  `json:"updatedAt"`
+	Uptime       *ComponentUptimeSummaryDto `json:"uptime,omitempty"`
 }
 
 // ServiceIncidentDetailDto defines model for ServiceIncidentDetailDto.
 type ServiceIncidentDetailDto struct {
 	AffectedComponents *[]string                  `json:"affectedComponents,omitempty"`
+	AffectedRegions    *[]string                  `json:"affectedRegions,omitempty"`
 	DetectedAt         *time.Time                 `json:"detectedAt,omitempty"`
 	Id                 openapi_types.UUID         `json:"id"`
 	Impact             *string                    `json:"impact,omitempty"`
@@ -6432,6 +7792,7 @@ type ServiceIncidentDetailDto struct {
 
 // ServiceIncidentDto defines model for ServiceIncidentDto.
 type ServiceIncidentDto struct {
+	AffectedRegions *[]string          `json:"affectedRegions,omitempty"`
 	DetectedAt      *time.Time         `json:"detectedAt,omitempty"`
 	ExternalId      *string            `json:"externalId,omitempty"`
 	Id              openapi_types.UUID `json:"id"`
@@ -6596,6 +7957,12 @@ type SetAlertChannelsRequest struct {
 	ChannelIds []openapi_types.UUID `json:"channelIds"`
 }
 
+// SetEnabledRequest Request body for toggling a resource's enabled state
+type SetEnabledRequest struct {
+	// Enabled Whether the resource should be enabled
+	Enabled bool `json:"enabled"`
+}
+
 // SetMonitorAuthRequest defines model for SetMonitorAuthRequest.
 type SetMonitorAuthRequest struct {
 	Config SetMonitorAuthRequest_Config `json:"config"`
@@ -6604,6 +7971,27 @@ type SetMonitorAuthRequest struct {
 // SetMonitorAuthRequest_Config defines model for SetMonitorAuthRequest.Config.
 type SetMonitorAuthRequest_Config struct {
 	union json.RawMessage
+}
+
+// SetStatusPageComponentOverrideRequest defines model for SetStatusPageComponentOverrideRequest.
+type SetStatusPageComponentOverrideRequest struct {
+	// ExpiresAt When the override expires (must be in the future, at most 24h from now)
+	ExpiresAt time.Time `json:"expiresAt"`
+
+	// Reason Optional operator reason shown in the builder
+	Reason *string `json:"reason,omitempty"`
+
+	// Status Override status while active; takes precedence over binding until expiry/clear
+	Status SetStatusPageComponentOverrideRequestStatus `json:"status"`
+}
+
+// SetStatusPageComponentOverrideRequestStatus Override status while active; takes precedence over binding until expiry/clear
+type SetStatusPageComponentOverrideRequestStatus string
+
+// SingleValueResponseAcknowledgeAllIncidentsResponse defines model for SingleValueResponseAcknowledgeAllIncidentsResponse.
+type SingleValueResponseAcknowledgeAllIncidentsResponse struct {
+	// Data Result of acknowledging all acknowledgeable dispatches for an incident
+	Data AcknowledgeAllIncidentsResponse `json:"data"`
 }
 
 // SingleValueResponseAlertChannelDto defines model for SingleValueResponseAlertChannelDto.
@@ -6697,6 +8085,12 @@ type SingleValueResponseIncidentPolicyDto struct {
 // SingleValueResponseIncidentTimelineDto defines model for SingleValueResponseIncidentTimelineDto.
 type SingleValueResponseIncidentTimelineDto struct {
 	Data IncidentTimelineDto `json:"data"`
+}
+
+// SingleValueResponseIncidentTriggerDto defines model for SingleValueResponseIncidentTriggerDto.
+type SingleValueResponseIncidentTriggerDto struct {
+	// Data Honest trigger metadata for the incident origin tooltip / TTD strip
+	Data IncidentTriggerDto `json:"data"`
 }
 
 // SingleValueResponseInviteDto defines model for SingleValueResponseInviteDto.
@@ -6866,6 +8260,23 @@ type SingleValueResponseStatusPageIncidentDto struct {
 	Data StatusPageIncidentDto `json:"data"`
 }
 
+// SingleValueResponseStatusPageIncidentUpdateDto defines model for SingleValueResponseStatusPageIncidentUpdateDto.
+type SingleValueResponseStatusPageIncidentUpdateDto struct {
+	Data StatusPageIncidentUpdateDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageMeasuredComponentUptimeDto defines model for SingleValueResponseStatusPageMeasuredComponentUptimeDto.
+type SingleValueResponseStatusPageMeasuredComponentUptimeDto struct {
+	// Data Measured (check-based) daily uptime for a MONITOR status-page component
+	Data StatusPageMeasuredComponentUptimeDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageNotificationDeliveryDto defines model for SingleValueResponseStatusPageNotificationDeliveryDto.
+type SingleValueResponseStatusPageNotificationDeliveryDto struct {
+	// Data Delivery receipt for a status page subscriber notification
+	Data StatusPageNotificationDeliveryDto `json:"data"`
+}
+
 // SingleValueResponseStatusPageSubscriberDto defines model for SingleValueResponseStatusPageSubscriberDto.
 type SingleValueResponseStatusPageSubscriberDto struct {
 	Data StatusPageSubscriberDto `json:"data"`
@@ -6921,6 +8332,44 @@ type SingleValueResponseWorkspaceDto struct {
 	Data WorkspaceDto `json:"data"`
 }
 
+// SkippedDispatch A dispatch that was not acknowledged by ack-all
+type SkippedDispatch struct {
+	// Id Dispatch identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Reason Why this dispatch was skipped
+	Reason string `json:"reason"`
+
+	// Status Current dispatch status
+	Status SkippedDispatchStatus `json:"status"`
+}
+
+// SkippedDispatchStatus Current dispatch status
+type SkippedDispatchStatus string
+
+// SlaDataDto Researched vendor SLA/pricing data for pSEO SLA report pages
+type SlaDataDto struct {
+	CreditPolicy *CreditPolicy `json:"creditPolicy,omitempty"`
+
+	// LastResearched ISO date when this data was last manually researched
+	LastResearched *string       `json:"lastResearched,omitempty"`
+	NoSlaContext   *NoSlaContext `json:"noSlaContext,omitempty"`
+	OfficialSla    *OfficialSla  `json:"officialSla,omitempty"`
+
+	// PricingTiers Pricing tiers with associated SLA levels
+	PricingTiers *[]PricingTier `json:"pricingTiers,omitempty"`
+
+	// ResearchNotes Freeform operator notes about the research
+	ResearchNotes *string `json:"researchNotes,omitempty"`
+
+	// ServiceBreakdown Per-service breakdown for vendors with per_service SLA type
+	ServiceBreakdown *[]ServiceBreakdown `json:"serviceBreakdown,omitempty"`
+
+	// SlaType SLA pattern: plan_gated, per_service, no_public_sla, or universal
+	SlaType    *string     `json:"slaType,omitempty"`
+	SourceUrls *SourceUrls `json:"sourceUrls,omitempty"`
+}
+
 // SlackChannelConfig defines model for SlackChannelConfig.
 type SlackChannelConfig struct {
 	ChannelType SlackChannelConfigChannelType `json:"channelType"`
@@ -6934,6 +8383,44 @@ type SlackChannelConfig struct {
 
 // SlackChannelConfigChannelType defines model for SlackChannelConfig.ChannelType.
 type SlackChannelConfigChannelType string
+
+// SmsChannelConfig defines model for SmsChannelConfig.
+type SmsChannelConfig struct {
+	ChannelType SmsChannelConfigChannelType `json:"channelType"`
+
+	// PhoneNumber Recipient phone number in E.164 format, e.g. +14155550123
+	PhoneNumber *string `json:"phoneNumber,omitempty"`
+
+	// PhoneNumbers Deprecated: use phoneNumber. Accepted as a length-1 list for one release; ignored when phoneNumber or id is set
+	PhoneNumbers *[]*string `json:"phoneNumbers,omitempty"`
+
+	// PreferredLanguage Preferred language for SMS body (BCP-47, e.g. en-US, de-DE). Default: en-US
+	PreferredLanguage *string `json:"preferredLanguage,omitempty"`
+
+	// VerifiedPhoneNumberId Id of an org verified_phone_number row; alternative to phoneNumber
+	VerifiedPhoneNumberId *int64 `json:"verifiedPhoneNumberId,omitempty"`
+}
+
+// SmsChannelConfigChannelType defines model for SmsChannelConfig.ChannelType.
+type SmsChannelConfigChannelType string
+
+// SourceUrls Source URLs for SLA, pricing, and ToS pages
+type SourceUrls struct {
+	// AllSlasPage URL to vendor's all-services SLA listing
+	AllSlasPage *string `json:"allSlasPage,omitempty"`
+
+	// PricingPage URL to vendor's pricing page
+	PricingPage *string `json:"pricingPage,omitempty"`
+
+	// SlaPage URL to vendor's SLA page
+	SlaPage *string `json:"slaPage,omitempty"`
+
+	// StatusPage URL to vendor's status page
+	StatusPage *string `json:"statusPage,omitempty"`
+
+	// TosPage URL to vendor's Terms of Service
+	TosPage *string `json:"tosPage,omitempty"`
+}
 
 // SplunkOnCallChannelConfig defines model for SplunkOnCallChannelConfig.
 type SplunkOnCallChannelConfig struct {
@@ -6983,6 +8470,22 @@ type StatusCodeAssertionOperator string
 // StatusCodeAssertionType defines model for StatusCodeAssertion.Type.
 type StatusCodeAssertionType string
 
+// StatusEventDto Curated vendor status-event row for the Dependencies Detail rail
+type StatusEventDto struct {
+	// At Canonical timestamp used for reverse-chronological ordering
+	At        time.Time                    `json:"at"`
+	Component *ComponentTransitionEventDto `json:"component,omitempty"`
+
+	// Id Stable row ID (incident/update/maintenance UUID or transition bucket key)
+	Id            openapi_types.UUID        `json:"id"`
+	Incident      *IncidentEventDto         `json:"incident,omitempty"`
+	Maintenance   *MaintenanceEventDto      `json:"maintenance,omitempty"`
+	OrgAnnotation *OrgIncidentAnnotationDto `json:"orgAnnotation,omitempty"`
+
+	// Type Status event row type on the Dependencies Detail rail
+	Type string `json:"type"`
+}
+
 // StatusPageBranding Updated branding configuration; null preserves current
 type StatusPageBranding struct {
 	// BorderColor Card border color as hex, e.g. #E4E4E7
@@ -7030,7 +8533,9 @@ type StatusPageBranding struct {
 
 // StatusPageComponentDto defines model for StatusPageComponentDto.
 type StatusPageComponentDto struct {
-	CreatedAt          time.Time           `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt"`
+
+	// CurrentStatus Effective display status (incident > active override > binding)
 	CurrentStatus      string              `json:"currentStatus"`
 	Description        *string             `json:"description,omitempty"`
 	DisplayOrder       int32               `json:"displayOrder"`
@@ -7039,13 +8544,34 @@ type StatusPageComponentDto struct {
 	Id                 openapi_types.UUID  `json:"id"`
 	MonitorId          *openapi_types.UUID `json:"monitorId,omitempty"`
 	Name               string              `json:"name"`
-	PageOrder          int32               `json:"pageOrder"`
-	ResourceGroupId    *openapi_types.UUID `json:"resourceGroupId,omitempty"`
-	ShowUptime         bool                `json:"showUptime"`
-	StartDate          *time.Time          `json:"startDate,omitempty"`
-	StatusPageId       openapi_types.UUID  `json:"statusPageId"`
-	Type               string              `json:"type"`
-	UpdatedAt          time.Time           `json:"updatedAt"`
+
+	// OverrideActor User id who set the override; null for API-key actors or when inactive
+	OverrideActor *int32 `json:"overrideActor,omitempty"`
+
+	// OverrideExpiresAt When the active override expires; null when unset or expired
+	OverrideExpiresAt *time.Time `json:"overrideExpiresAt,omitempty"`
+
+	// OverrideReason Optional operator reason for the active override
+	OverrideReason *string `json:"overrideReason,omitempty"`
+
+	// OverrideStatus Active timed override status; null when unset or expired
+	OverrideStatus  *string             `json:"overrideStatus,omitempty"`
+	PageOrder       int32               `json:"pageOrder"`
+	ResourceGroupId *openapi_types.UUID `json:"resourceGroupId,omitempty"`
+
+	// ServiceName Display name of the subscribed catalog service (denormalized for display)
+	ServiceName *string `json:"serviceName,omitempty"`
+
+	// ServiceSlug Slug of the subscribed catalog service (denormalized for display)
+	ServiceSlug *string `json:"serviceSlug,omitempty"`
+
+	// ServiceSubscriptionId Service subscription (Dependency) id when type=DEPENDENCY
+	ServiceSubscriptionId *openapi_types.UUID `json:"serviceSubscriptionId,omitempty"`
+	ShowUptime            bool                `json:"showUptime"`
+	StartDate             *time.Time          `json:"startDate,omitempty"`
+	StatusPageId          openapi_types.UUID  `json:"statusPageId"`
+	Type                  string              `json:"type"`
+	UpdatedAt             time.Time           `json:"updatedAt"`
 }
 
 // StatusPageComponentGroupDto defines model for StatusPageComponentGroupDto.
@@ -7092,15 +8618,16 @@ type StatusPageDto struct {
 	IncidentMode   string             `json:"incidentMode"`
 
 	// ManagedBy Source that created/owns this status page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on pages created before this attribution column existed.
-	ManagedBy       *string   `json:"managedBy,omitempty"`
-	Name            string    `json:"name"`
-	OrganizationId  int32     `json:"organizationId"`
-	OverallStatus   *string   `json:"overallStatus,omitempty"`
-	Slug            string    `json:"slug"`
-	SubscriberCount *int64    `json:"subscriberCount,omitempty"`
-	UpdatedAt       time.Time `json:"updatedAt"`
-	Visibility      string    `json:"visibility"`
-	WorkspaceId     int32     `json:"workspaceId"`
+	ManagedBy       *string                           `json:"managedBy,omitempty"`
+	Name            string                            `json:"name"`
+	OpenIncident    *StatusPageOpenIncidentSummaryDto `json:"openIncident,omitempty"`
+	OrganizationId  int32                             `json:"organizationId"`
+	OverallStatus   *string                           `json:"overallStatus,omitempty"`
+	Slug            string                            `json:"slug"`
+	SubscriberCount *int64                            `json:"subscriberCount,omitempty"`
+	UpdatedAt       time.Time                         `json:"updatedAt"`
+	Visibility      string                            `json:"visibility"`
+	WorkspaceId     int32                             `json:"workspaceId"`
 }
 
 // StatusPageIncidentComponentDto defines model for StatusPageIncidentComponentDto.
@@ -7145,12 +8672,130 @@ type StatusPageIncidentUpdateDto struct {
 	Status            string             `json:"status"`
 }
 
+// StatusPageMeasuredComponentUptimeDto Measured (check-based) daily uptime for a MONITOR status-page component
+type StatusPageMeasuredComponentUptimeDto struct {
+	// ComponentId Status-page component ID
+	ComponentId openapi_types.UUID `json:"componentId"`
+
+	// Days Dense daily buckets from tracking start through today (oldest → newest)
+	Days []StatusPageMeasuredUptimeDayDto `json:"days"`
+
+	// MonitorId Linked monitor whose check rollups feed this series
+	MonitorId openapi_types.UUID `json:"monitorId"`
+
+	// Source Uptime source discriminator; always measured for this resource
+	Source string `json:"source"`
+
+	// TrackingSince ISO-8601 date bars start (Camp A tracking-since); null only if unresolved
+	TrackingSince *string `json:"trackingSince,omitempty"`
+}
+
+// StatusPageMeasuredUptimeDayDto One UTC day of measured (check-based) uptime for a MONITOR status-page component
+type StatusPageMeasuredUptimeDayDto struct {
+	// Date Start-of-day timestamp for this bucket (UTC midnight, ISO 8601)
+	Date time.Time `json:"date"`
+
+	// PassedChecks Checks that passed that day across regions
+	PassedChecks int64 `json:"passedChecks"`
+
+	// TotalChecks Total probe checks recorded that day across regions
+	TotalChecks int64 `json:"totalChecks"`
+
+	// UptimePercentage passedChecks / totalChecks × 100; null when totalChecks is 0
+	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
+}
+
+// StatusPageNotificationDeliveryDto Delivery receipt for a status page subscriber notification
+type StatusPageNotificationDeliveryDto struct {
+	// AttemptCount Number of delivery attempts made
+	AttemptCount int32 `json:"attemptCount"`
+
+	// Channel Delivery channel from the subscriber (EMAIL, SMS, WEBHOOK)
+	Channel string `json:"channel"`
+
+	// CreatedAt When the delivery row was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// DeliveredAt When delivery was confirmed; null if not delivered
+	DeliveredAt *time.Time `json:"deliveredAt,omitempty"`
+
+	// Destination Subscriber destination (email, phone, or webhook URL)
+	Destination *string `json:"destination,omitempty"`
+
+	// ErrorMessage Error summary from the last failed attempt
+	ErrorMessage *string `json:"errorMessage,omitempty"`
+
+	// EventType Notification event type that triggered this delivery
+	EventType string `json:"eventType"`
+
+	// Id Delivery receipt ID
+	Id openapi_types.UUID `json:"id"`
+
+	// IncidentId Related status-page incident ID, if any
+	IncidentId *openapi_types.UUID `json:"incidentId,omitempty"`
+
+	// IncidentUpdateId Related incident update ID, if any
+	IncidentUpdateId *openapi_types.UUID `json:"incidentUpdateId,omitempty"`
+
+	// LastAttemptAt When the last attempt was made
+	LastAttemptAt *time.Time `json:"lastAttemptAt,omitempty"`
+
+	// NextRetryAt When the next retry is scheduled; null if not retrying
+	NextRetryAt *time.Time `json:"nextRetryAt,omitempty"`
+
+	// Status Current delivery status
+	Status string `json:"status"`
+
+	// StatusPageId Status page that owns this delivery
+	StatusPageId openapi_types.UUID `json:"statusPageId"`
+
+	// SubscriberId Subscriber this delivery targeted
+	SubscriberId openapi_types.UUID `json:"subscriberId"`
+}
+
+// StatusPageOpenIncidentSummaryDto Newest open status-page incident; omitted from JSON when none
+type StatusPageOpenIncidentSummaryDto struct {
+	// Id Incident id for dashboard CTAs that open the matching drawer
+	Id *openapi_types.UUID `json:"id,omitempty"`
+
+	// StartedAt When the incident started (ISO 8601)
+	StartedAt time.Time `json:"startedAt"`
+
+	// Status Lifecycle status of the open incident
+	Status string `json:"status"`
+
+	// Title Incident title shown on the list card live row
+	Title string `json:"title"`
+
+	// UpdatedAt When the incident was last updated (ISO 8601)
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
 // StatusPageSubscriberDto defines model for StatusPageSubscriberDto.
 type StatusPageSubscriberDto struct {
-	Confirmed bool               `json:"confirmed"`
-	CreatedAt time.Time          `json:"createdAt"`
-	Email     string             `json:"email"`
-	Id        openapi_types.UUID `json:"id"`
+	// Channel Delivery channel (EMAIL, SMS, WEBHOOK)
+	Channel string `json:"channel"`
+
+	// ComponentIds Scoped component IDs; null means whole page
+	ComponentIds *[]openapi_types.UUID `json:"componentIds,omitempty"`
+
+	// ConfirmationSent True when this call sent a confirmation email; omitted on list reads
+	ConfirmationSent *bool `json:"confirmationSent,omitempty"`
+
+	// Confirmed Whether the subscriber has confirmed opt-in
+	Confirmed bool `json:"confirmed"`
+
+	// CreatedAt When the subscriber was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Destination Channel destination (email, phone, or webhook URL)
+	Destination string `json:"destination"`
+
+	// Email Email when channel is EMAIL; null for other channels
+	Email *string `json:"email,omitempty"`
+
+	// Id Subscriber id
+	Id openapi_types.UUID `json:"id"`
 }
 
 // Summary Environment associated with this monitor; null when unassigned
@@ -7165,6 +8810,7 @@ type TableValueResultAlertChannelDto struct {
 	Data          []AlertChannelDto `json:"data"`
 	HasNext       bool              `json:"hasNext"`
 	HasPrev       bool              `json:"hasPrev"`
+	NextCursor    *string           `json:"nextCursor,omitempty"`
 	TotalElements *int64            `json:"totalElements,omitempty"`
 	TotalPages    *int32            `json:"totalPages,omitempty"`
 }
@@ -7174,6 +8820,7 @@ type TableValueResultAlertDeliveryDto struct {
 	Data          []AlertDeliveryDto `json:"data"`
 	HasNext       bool               `json:"hasNext"`
 	HasPrev       bool               `json:"hasPrev"`
+	NextCursor    *string            `json:"nextCursor,omitempty"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
 }
@@ -7183,6 +8830,7 @@ type TableValueResultApiKeyDto struct {
 	Data          []ApiKeyDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
+	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -7192,6 +8840,7 @@ type TableValueResultAuditEventDto struct {
 	Data          []AuditEventDto `json:"data"`
 	HasNext       bool            `json:"hasNext"`
 	HasPrev       bool            `json:"hasPrev"`
+	NextCursor    *string         `json:"nextCursor,omitempty"`
 	TotalElements *int64          `json:"totalElements,omitempty"`
 	TotalPages    *int32          `json:"totalPages,omitempty"`
 }
@@ -7201,6 +8850,7 @@ type TableValueResultCategoryDto struct {
 	Data          []CategoryDto `json:"data"`
 	HasNext       bool          `json:"hasNext"`
 	HasPrev       bool          `json:"hasPrev"`
+	NextCursor    *string       `json:"nextCursor,omitempty"`
 	TotalElements *int64        `json:"totalElements,omitempty"`
 	TotalPages    *int32        `json:"totalPages,omitempty"`
 }
@@ -7210,6 +8860,7 @@ type TableValueResultComponentUptimeDayDto struct {
 	Data          []ComponentUptimeDayDto `json:"data"`
 	HasNext       bool                    `json:"hasNext"`
 	HasPrev       bool                    `json:"hasPrev"`
+	NextCursor    *string                 `json:"nextCursor,omitempty"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
@@ -7219,6 +8870,7 @@ type TableValueResultDeliveryAttemptDto struct {
 	Data          []DeliveryAttemptDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
+	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -7228,6 +8880,7 @@ type TableValueResultEnvironmentDto struct {
 	Data          []EnvironmentDto `json:"data"`
 	HasNext       bool             `json:"hasNext"`
 	HasPrev       bool             `json:"hasPrev"`
+	NextCursor    *string          `json:"nextCursor,omitempty"`
 	TotalElements *int64           `json:"totalElements,omitempty"`
 	TotalPages    *int32           `json:"totalPages,omitempty"`
 }
@@ -7237,6 +8890,7 @@ type TableValueResultIncidentDto struct {
 	Data          []IncidentDto `json:"data"`
 	HasNext       bool          `json:"hasNext"`
 	HasPrev       bool          `json:"hasPrev"`
+	NextCursor    *string       `json:"nextCursor,omitempty"`
 	TotalElements *int64        `json:"totalElements,omitempty"`
 	TotalPages    *int32        `json:"totalPages,omitempty"`
 }
@@ -7246,6 +8900,7 @@ type TableValueResultIncidentStateTransitionDto struct {
 	Data          []IncidentStateTransitionDto `json:"data"`
 	HasNext       bool                         `json:"hasNext"`
 	HasPrev       bool                         `json:"hasPrev"`
+	NextCursor    *string                      `json:"nextCursor,omitempty"`
 	TotalElements *int64                       `json:"totalElements,omitempty"`
 	TotalPages    *int32                       `json:"totalPages,omitempty"`
 }
@@ -7255,6 +8910,7 @@ type TableValueResultIntegrationDto struct {
 	Data          []IntegrationDto `json:"data"`
 	HasNext       bool             `json:"hasNext"`
 	HasPrev       bool             `json:"hasPrev"`
+	NextCursor    *string          `json:"nextCursor,omitempty"`
 	TotalElements *int64           `json:"totalElements,omitempty"`
 	TotalPages    *int32           `json:"totalPages,omitempty"`
 }
@@ -7264,6 +8920,7 @@ type TableValueResultInviteDto struct {
 	Data          []InviteDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
+	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -7273,6 +8930,7 @@ type TableValueResultMaintenanceWindowDto struct {
 	Data          []MaintenanceWindowDto `json:"data"`
 	HasNext       bool                   `json:"hasNext"`
 	HasPrev       bool                   `json:"hasPrev"`
+	NextCursor    *string                `json:"nextCursor,omitempty"`
 	TotalElements *int64                 `json:"totalElements,omitempty"`
 	TotalPages    *int32                 `json:"totalPages,omitempty"`
 }
@@ -7282,6 +8940,7 @@ type TableValueResultMemberDto struct {
 	Data          []MemberDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
+	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -7291,6 +8950,7 @@ type TableValueResultMonitorDto struct {
 	Data          []MonitorDto `json:"data"`
 	HasNext       bool         `json:"hasNext"`
 	HasPrev       bool         `json:"hasPrev"`
+	NextCursor    *string      `json:"nextCursor,omitempty"`
 	TotalElements *int64       `json:"totalElements,omitempty"`
 	TotalPages    *int32       `json:"totalPages,omitempty"`
 }
@@ -7300,6 +8960,7 @@ type TableValueResultMonitorVersionDto struct {
 	Data          []MonitorVersionDto `json:"data"`
 	HasNext       bool                `json:"hasNext"`
 	HasPrev       bool                `json:"hasPrev"`
+	NextCursor    *string             `json:"nextCursor,omitempty"`
 	TotalElements *int64              `json:"totalElements,omitempty"`
 	TotalPages    *int32              `json:"totalPages,omitempty"`
 }
@@ -7309,6 +8970,7 @@ type TableValueResultNotificationDispatchDto struct {
 	Data          []NotificationDispatchDto `json:"data"`
 	HasNext       bool                      `json:"hasNext"`
 	HasPrev       bool                      `json:"hasPrev"`
+	NextCursor    *string                   `json:"nextCursor,omitempty"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -7318,6 +8980,7 @@ type TableValueResultNotificationDto struct {
 	Data          []NotificationDto `json:"data"`
 	HasNext       bool              `json:"hasNext"`
 	HasPrev       bool              `json:"hasPrev"`
+	NextCursor    *string           `json:"nextCursor,omitempty"`
 	TotalElements *int64            `json:"totalElements,omitempty"`
 	TotalPages    *int32            `json:"totalPages,omitempty"`
 }
@@ -7327,6 +8990,7 @@ type TableValueResultNotificationPolicyDto struct {
 	Data          []NotificationPolicyDto `json:"data"`
 	HasNext       bool                    `json:"hasNext"`
 	HasPrev       bool                    `json:"hasPrev"`
+	NextCursor    *string                 `json:"nextCursor,omitempty"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
@@ -7336,6 +9000,7 @@ type TableValueResultResourceGroupDto struct {
 	Data          []ResourceGroupDto `json:"data"`
 	HasNext       bool               `json:"hasNext"`
 	HasPrev       bool               `json:"hasPrev"`
+	NextCursor    *string            `json:"nextCursor,omitempty"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
 }
@@ -7345,6 +9010,7 @@ type TableValueResultRuleEvaluationDto struct {
 	Data          []RuleEvaluationDto `json:"data"`
 	HasNext       bool                `json:"hasNext"`
 	HasPrev       bool                `json:"hasPrev"`
+	NextCursor    *string             `json:"nextCursor,omitempty"`
 	TotalElements *int64              `json:"totalElements,omitempty"`
 	TotalPages    *int32              `json:"totalPages,omitempty"`
 }
@@ -7354,6 +9020,7 @@ type TableValueResultScheduledMaintenanceDto struct {
 	Data          []ScheduledMaintenanceDto `json:"data"`
 	HasNext       bool                      `json:"hasNext"`
 	HasPrev       bool                      `json:"hasPrev"`
+	NextCursor    *string                   `json:"nextCursor,omitempty"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -7363,6 +9030,7 @@ type TableValueResultSecretDto struct {
 	Data          []SecretDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
+	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -7372,6 +9040,7 @@ type TableValueResultServiceComponentDto struct {
 	Data          []ServiceComponentDto `json:"data"`
 	HasNext       bool                  `json:"hasNext"`
 	HasPrev       bool                  `json:"hasPrev"`
+	NextCursor    *string               `json:"nextCursor,omitempty"`
 	TotalElements *int64                `json:"totalElements,omitempty"`
 	TotalPages    *int32                `json:"totalPages,omitempty"`
 }
@@ -7381,6 +9050,7 @@ type TableValueResultServiceIncidentDto struct {
 	Data          []ServiceIncidentDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
+	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -7390,6 +9060,7 @@ type TableValueResultServiceSubscriptionDto struct {
 	Data          []ServiceSubscriptionDto `json:"data"`
 	HasNext       bool                     `json:"hasNext"`
 	HasPrev       bool                     `json:"hasPrev"`
+	NextCursor    *string                  `json:"nextCursor,omitempty"`
 	TotalElements *int64                   `json:"totalElements,omitempty"`
 	TotalPages    *int32                   `json:"totalPages,omitempty"`
 }
@@ -7399,6 +9070,7 @@ type TableValueResultStatusPageComponentDto struct {
 	Data          []StatusPageComponentDto `json:"data"`
 	HasNext       bool                     `json:"hasNext"`
 	HasPrev       bool                     `json:"hasPrev"`
+	NextCursor    *string                  `json:"nextCursor,omitempty"`
 	TotalElements *int64                   `json:"totalElements,omitempty"`
 	TotalPages    *int32                   `json:"totalPages,omitempty"`
 }
@@ -7408,6 +9080,7 @@ type TableValueResultStatusPageComponentGroupDto struct {
 	Data          []StatusPageComponentGroupDto `json:"data"`
 	HasNext       bool                          `json:"hasNext"`
 	HasPrev       bool                          `json:"hasPrev"`
+	NextCursor    *string                       `json:"nextCursor,omitempty"`
 	TotalElements *int64                        `json:"totalElements,omitempty"`
 	TotalPages    *int32                        `json:"totalPages,omitempty"`
 }
@@ -7417,6 +9090,7 @@ type TableValueResultStatusPageCustomDomainDto struct {
 	Data          []StatusPageCustomDomainDto `json:"data"`
 	HasNext       bool                        `json:"hasNext"`
 	HasPrev       bool                        `json:"hasPrev"`
+	NextCursor    *string                     `json:"nextCursor,omitempty"`
 	TotalElements *int64                      `json:"totalElements,omitempty"`
 	TotalPages    *int32                      `json:"totalPages,omitempty"`
 }
@@ -7426,6 +9100,7 @@ type TableValueResultStatusPageDto struct {
 	Data          []StatusPageDto `json:"data"`
 	HasNext       bool            `json:"hasNext"`
 	HasPrev       bool            `json:"hasPrev"`
+	NextCursor    *string         `json:"nextCursor,omitempty"`
 	TotalElements *int64          `json:"totalElements,omitempty"`
 	TotalPages    *int32          `json:"totalPages,omitempty"`
 }
@@ -7435,8 +9110,19 @@ type TableValueResultStatusPageIncidentDto struct {
 	Data          []StatusPageIncidentDto `json:"data"`
 	HasNext       bool                    `json:"hasNext"`
 	HasPrev       bool                    `json:"hasPrev"`
+	NextCursor    *string                 `json:"nextCursor,omitempty"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
+}
+
+// TableValueResultStatusPageNotificationDeliveryDto defines model for TableValueResultStatusPageNotificationDeliveryDto.
+type TableValueResultStatusPageNotificationDeliveryDto struct {
+	Data          []StatusPageNotificationDeliveryDto `json:"data"`
+	HasNext       bool                                `json:"hasNext"`
+	HasPrev       bool                                `json:"hasPrev"`
+	NextCursor    *string                             `json:"nextCursor,omitempty"`
+	TotalElements *int64                              `json:"totalElements,omitempty"`
+	TotalPages    *int32                              `json:"totalPages,omitempty"`
 }
 
 // TableValueResultStatusPageSubscriberDto defines model for TableValueResultStatusPageSubscriberDto.
@@ -7444,6 +9130,7 @@ type TableValueResultStatusPageSubscriberDto struct {
 	Data          []StatusPageSubscriberDto `json:"data"`
 	HasNext       bool                      `json:"hasNext"`
 	HasPrev       bool                      `json:"hasPrev"`
+	NextCursor    *string                   `json:"nextCursor,omitempty"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -7453,8 +9140,29 @@ type TableValueResultTagDto struct {
 	Data          []TagDto `json:"data"`
 	HasNext       bool     `json:"hasNext"`
 	HasPrev       bool     `json:"hasPrev"`
+	NextCursor    *string  `json:"nextCursor,omitempty"`
 	TotalElements *int64   `json:"totalElements,omitempty"`
 	TotalPages    *int32   `json:"totalPages,omitempty"`
+}
+
+// TableValueResultTestChannelResult defines model for TableValueResultTestChannelResult.
+type TableValueResultTestChannelResult struct {
+	Data          []TestChannelResult `json:"data"`
+	HasNext       bool                `json:"hasNext"`
+	HasPrev       bool                `json:"hasPrev"`
+	NextCursor    *string             `json:"nextCursor,omitempty"`
+	TotalElements *int64              `json:"totalElements,omitempty"`
+	TotalPages    *int32              `json:"totalPages,omitempty"`
+}
+
+// TableValueResultVoiceLanguageDto defines model for TableValueResultVoiceLanguageDto.
+type TableValueResultVoiceLanguageDto struct {
+	Data          []VoiceLanguageDto `json:"data"`
+	HasNext       bool               `json:"hasNext"`
+	HasPrev       bool               `json:"hasPrev"`
+	NextCursor    *string            `json:"nextCursor,omitempty"`
+	TotalElements *int64             `json:"totalElements,omitempty"`
+	TotalPages    *int32             `json:"totalPages,omitempty"`
 }
 
 // TableValueResultWebhookDeliveryDto defines model for TableValueResultWebhookDeliveryDto.
@@ -7462,6 +9170,7 @@ type TableValueResultWebhookDeliveryDto struct {
 	Data          []WebhookDeliveryDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
+	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -7471,6 +9180,7 @@ type TableValueResultWebhookEndpointDto struct {
 	Data          []WebhookEndpointDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
+	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -7480,6 +9190,7 @@ type TableValueResultWorkspaceDto struct {
 	Data          []WorkspaceDto `json:"data"`
 	HasNext       bool           `json:"hasNext"`
 	HasPrev       bool           `json:"hasPrev"`
+	NextCursor    *string        `json:"nextCursor,omitempty"`
 	TotalElements *int64         `json:"totalElements,omitempty"`
 	TotalPages    *int32         `json:"totalPages,omitempty"`
 }
@@ -7615,6 +9326,15 @@ type TestMatchResult struct {
 	UnmatchedRules []string `json:"unmatchedRules"`
 }
 
+// TestMonitorNotificationsRequest Request to send test notifications through a monitor's alert channels
+type TestMonitorNotificationsRequest struct {
+	// ChannelIds Channel IDs to test; null or empty tests all channels attached to the monitor
+	ChannelIds *[]openapi_types.UUID `json:"channelIds,omitempty"`
+
+	// IncludeResolved Whether to include a resolved notification in the test (default: false)
+	IncludeResolved bool `json:"includeResolved"`
+}
+
 // TestNotificationPolicyRequest Event context for a dry-run match evaluation against a notification policy
 type TestNotificationPolicyRequest struct {
 	// ComponentName Component name to test against (status data events, e.g. "Actions")
@@ -7650,7 +9370,7 @@ type TestWebhookEndpointRequest struct {
 
 // TimingPhasesDto Per-phase HTTP request timing breakdown (milliseconds)
 type TimingPhasesDto struct {
-	// DnsMs DNS resolution time in milliseconds
+	// DnsMs Legacy DNS phase; null for new checks (no longer measured)
 	DnsMs *int32 `json:"dns_ms,omitempty"`
 
 	// DownloadMs Response body download time in milliseconds
@@ -7742,6 +9462,9 @@ type TriggerRuleType string
 type UpdateAlertChannelRequest struct {
 	Config UpdateAlertChannelRequest_Config `json:"config"`
 
+	// Enabled Whether this channel is enabled (default: true); null preserves current value
+	Enabled *bool `json:"enabled,omitempty"`
+
 	// ManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
 	ManagedBy *UpdateAlertChannelRequestManagedBy `json:"managedBy,omitempty"`
 
@@ -7785,6 +9508,47 @@ type UpdateAssertionRequest_Config struct {
 // UpdateAssertionRequestSeverity New outcome severity: FAIL or WARN
 type UpdateAssertionRequestSeverity string
 
+// UpdateDatadogChannelConfig defines model for UpdateDatadogChannelConfig.
+type UpdateDatadogChannelConfig struct {
+	// ApiKey Datadog API key
+	ApiKey      *string                               `json:"apiKey,omitempty"`
+	ChannelType UpdateDatadogChannelConfigChannelType `json:"channelType"`
+
+	// Site Datadog site region (e.g. datadoghq.com, datadoghq.eu, us3.datadoghq.com)
+	Site *string `json:"site,omitempty"`
+
+	// Tags Comma-separated tags to attach to events
+	Tags *string `json:"tags,omitempty"`
+}
+
+// UpdateDatadogChannelConfigChannelType defines model for UpdateDatadogChannelConfig.ChannelType.
+type UpdateDatadogChannelConfigChannelType string
+
+// UpdateDiscordChannelConfig defines model for UpdateDiscordChannelConfig.
+type UpdateDiscordChannelConfig struct {
+	ChannelType UpdateDiscordChannelConfigChannelType `json:"channelType"`
+
+	// MentionRoleId Optional Discord role ID to mention in notifications
+	MentionRoleId *string `json:"mentionRoleId,omitempty"`
+
+	// WebhookUrl Discord webhook URL
+	WebhookUrl *string `json:"webhookUrl,omitempty"`
+}
+
+// UpdateDiscordChannelConfigChannelType defines model for UpdateDiscordChannelConfig.ChannelType.
+type UpdateDiscordChannelConfigChannelType string
+
+// UpdateEmailChannelConfig defines model for UpdateEmailChannelConfig.
+type UpdateEmailChannelConfig struct {
+	ChannelType UpdateEmailChannelConfigChannelType `json:"channelType"`
+
+	// Recipients Email addresses to send notifications to
+	Recipients []openapi_types.Email `json:"recipients"`
+}
+
+// UpdateEmailChannelConfigChannelType defines model for UpdateEmailChannelConfig.ChannelType.
+type UpdateEmailChannelConfigChannelType string
+
 // UpdateEnvironmentRequest defines model for UpdateEnvironmentRequest.
 type UpdateEnvironmentRequest struct {
 	// IsDefault Whether this is the default environment; null preserves current
@@ -7797,6 +9561,46 @@ type UpdateEnvironmentRequest struct {
 	Variables *map[string]*string `json:"variables,omitempty"`
 }
 
+// UpdateGitLabChannelConfig defines model for UpdateGitLabChannelConfig.
+type UpdateGitLabChannelConfig struct {
+	// AuthorizationKey Authorization key from GitLab alert integration settings
+	AuthorizationKey *string                              `json:"authorizationKey,omitempty"`
+	ChannelType      UpdateGitLabChannelConfigChannelType `json:"channelType"`
+
+	// EndpointUrl GitLab alert integration endpoint URL
+	EndpointUrl string `json:"endpointUrl"`
+}
+
+// UpdateGitLabChannelConfigChannelType defines model for UpdateGitLabChannelConfig.ChannelType.
+type UpdateGitLabChannelConfigChannelType string
+
+// UpdateGoogleChatChannelConfig defines model for UpdateGoogleChatChannelConfig.
+type UpdateGoogleChatChannelConfig struct {
+	ChannelType UpdateGoogleChatChannelConfigChannelType `json:"channelType"`
+
+	// WebhookUrl Google Chat space webhook URL
+	WebhookUrl *string `json:"webhookUrl,omitempty"`
+}
+
+// UpdateGoogleChatChannelConfigChannelType defines model for UpdateGoogleChatChannelConfig.ChannelType.
+type UpdateGoogleChatChannelConfigChannelType string
+
+// UpdateIncidentIoChannelConfig defines model for UpdateIncidentIoChannelConfig.
+type UpdateIncidentIoChannelConfig struct {
+	// ApiKey incident.io API key with 'Create incidents' permission
+	ApiKey      *string                                  `json:"apiKey,omitempty"`
+	ChannelType UpdateIncidentIoChannelConfigChannelType `json:"channelType"`
+
+	// SeverityId Severity ID for created incidents (from List Severities API)
+	SeverityId *string `json:"severityId,omitempty"`
+
+	// Visibility Incident visibility: public or private (default: public)
+	Visibility *string `json:"visibility,omitempty"`
+}
+
+// UpdateIncidentIoChannelConfigChannelType defines model for UpdateIncidentIoChannelConfig.ChannelType.
+type UpdateIncidentIoChannelConfigChannelType string
+
 // UpdateIncidentPolicyRequest Request body for updating an incident policy
 type UpdateIncidentPolicyRequest struct {
 	// Confirmation Multi-region confirmation settings
@@ -7808,6 +9612,56 @@ type UpdateIncidentPolicyRequest struct {
 	// TriggerRules Array of trigger rules; at least one required
 	TriggerRules []TriggerRule `json:"triggerRules"`
 }
+
+// UpdateIncidentRequest defines model for UpdateIncidentRequest.
+type UpdateIncidentRequest struct {
+	// Severity New severity: DOWN, DEGRADED, or MAINTENANCE; null preserves current
+	Severity *UpdateIncidentRequestSeverity `json:"severity,omitempty"`
+
+	// Title New title; null preserves current (min 1 char if present)
+	Title *string `json:"title,omitempty"`
+}
+
+// UpdateIncidentRequestSeverity New severity: DOWN, DEGRADED, or MAINTENANCE; null preserves current
+type UpdateIncidentRequestSeverity string
+
+// UpdateJiraChannelConfig defines model for UpdateJiraChannelConfig.
+type UpdateJiraChannelConfig struct {
+	// ApiToken Atlassian API token
+	ApiToken    *string                            `json:"apiToken,omitempty"`
+	ChannelType UpdateJiraChannelConfigChannelType `json:"channelType"`
+
+	// Domain Atlassian instance domain (e.g. yourteam.atlassian.net)
+	Domain string `json:"domain"`
+
+	// Email Atlassian account email for API authentication
+	Email string `json:"email"`
+
+	// IssueType Issue type name (e.g. Bug, Task, Incident)
+	IssueType *string `json:"issueType,omitempty"`
+
+	// ProjectKey Jira project key where issues are created (e.g. OPS)
+	ProjectKey string `json:"projectKey"`
+}
+
+// UpdateJiraChannelConfigChannelType defines model for UpdateJiraChannelConfig.ChannelType.
+type UpdateJiraChannelConfigChannelType string
+
+// UpdateLinearChannelConfig defines model for UpdateLinearChannelConfig.
+type UpdateLinearChannelConfig struct {
+	// ApiKey Linear API key
+	ApiKey      *string                              `json:"apiKey,omitempty"`
+	ChannelType UpdateLinearChannelConfigChannelType `json:"channelType"`
+
+	// LabelId Label ID to attach to created issues
+	LabelId *string `json:"labelId,omitempty"`
+
+	// TeamId Team ID to create issues in
+	TeamId string `json:"teamId"`
+}
+
+// UpdateLinearChannelConfigChannelType defines model for UpdateLinearChannelConfig.ChannelType.
+type UpdateLinearChannelConfigChannelType string
 
 // UpdateMaintenanceWindowRequest defines model for UpdateMaintenanceWindowRequest.
 type UpdateMaintenanceWindowRequest struct {
@@ -7829,6 +9683,22 @@ type UpdateMaintenanceWindowRequest struct {
 	// SuppressAlerts Whether to suppress alerts during this window; null defaults to true
 	SuppressAlerts *bool `json:"suppressAlerts,omitempty"`
 }
+
+// UpdateMattermostChannelConfig defines model for UpdateMattermostChannelConfig.
+type UpdateMattermostChannelConfig struct {
+	// Channel Override channel (if webhook allows)
+	Channel     *string                                  `json:"channel,omitempty"`
+	ChannelType UpdateMattermostChannelConfigChannelType `json:"channelType"`
+
+	// IconUrl Custom bot icon URL
+	IconUrl *string `json:"iconUrl,omitempty"`
+
+	// WebhookUrl Mattermost incoming webhook URL
+	WebhookUrl *string `json:"webhookUrl,omitempty"`
+}
+
+// UpdateMattermostChannelConfigChannelType defines model for UpdateMattermostChannelConfig.ChannelType.
+type UpdateMattermostChannelConfigChannelType string
 
 // UpdateMonitorAuthRequest defines model for UpdateMonitorAuthRequest.
 type UpdateMonitorAuthRequest struct {
@@ -7887,6 +9757,9 @@ type UpdateMonitorRequestManagedBy string
 
 // UpdateNotificationPolicyRequest Request body for updating a notification policy (null fields are preserved)
 type UpdateNotificationPolicyRequest struct {
+	// Description New note; null preserves current, empty string clears
+	Description *string `json:"description,omitempty"`
+
 	// Enabled Whether this policy is enabled; null preserves current
 	Enabled    *bool            `json:"enabled,omitempty"`
 	Escalation *EscalationChain `json:"escalation,omitempty"`
@@ -7900,6 +9773,19 @@ type UpdateNotificationPolicyRequest struct {
 	// Priority Evaluation priority; higher value = evaluated first; null preserves current
 	Priority *int32 `json:"priority,omitempty"`
 }
+
+// UpdateOpsGenieChannelConfig defines model for UpdateOpsGenieChannelConfig.
+type UpdateOpsGenieChannelConfig struct {
+	// ApiKey OpsGenie API key for alert creation
+	ApiKey      *string                                `json:"apiKey,omitempty"`
+	ChannelType UpdateOpsGenieChannelConfigChannelType `json:"channelType"`
+
+	// Region OpsGenie API region: us or eu
+	Region *string `json:"region,omitempty"`
+}
+
+// UpdateOpsGenieChannelConfigChannelType defines model for UpdateOpsGenieChannelConfig.ChannelType.
+type UpdateOpsGenieChannelConfigChannelType string
 
 // UpdateOrgDetailsRequest defines model for UpdateOrgDetailsRequest.
 type UpdateOrgDetailsRequest struct {
@@ -7918,6 +9804,75 @@ type UpdateOrgDetailsRequest struct {
 	// WebsiteUrl Organization website URL (max 255 chars)
 	WebsiteUrl *string `json:"websiteUrl,omitempty"`
 }
+
+// UpdatePagerDutyChannelConfig defines model for UpdatePagerDutyChannelConfig.
+type UpdatePagerDutyChannelConfig struct {
+	ChannelType UpdatePagerDutyChannelConfigChannelType `json:"channelType"`
+
+	// RoutingKey PagerDuty Events API v2 routing (integration) key
+	RoutingKey *string `json:"routingKey,omitempty"`
+
+	// SeverityOverride Override PagerDuty severity mapping
+	SeverityOverride *string `json:"severityOverride,omitempty"`
+}
+
+// UpdatePagerDutyChannelConfigChannelType defines model for UpdatePagerDutyChannelConfig.ChannelType.
+type UpdatePagerDutyChannelConfigChannelType string
+
+// UpdatePhoneCallChannelConfig defines model for UpdatePhoneCallChannelConfig.
+type UpdatePhoneCallChannelConfig struct {
+	ChannelType UpdatePhoneCallChannelConfigChannelType `json:"channelType"`
+
+	// PhoneNumber Recipient phone number in E.164 format; null preserves current
+	PhoneNumber *string `json:"phoneNumber,omitempty"`
+
+	// PhoneNumbers Deprecated: use phoneNumber
+	PhoneNumbers *[]*string `json:"phoneNumbers,omitempty"`
+
+	// PreferredLanguage Preferred language for TTS and notifications (BCP-47, e.g. en-US, de-DE). Alias for voiceLanguage
+	PreferredLanguage *string `json:"preferredLanguage,omitempty"`
+
+	// VerifiedPhoneNumberId Id of an org verified_phone_number row; null preserves current when phoneNumber also null
+	VerifiedPhoneNumberId *int64 `json:"verifiedPhoneNumberId,omitempty"`
+
+	// VoiceLanguage TTS voice language/locale (default: en-US). See VoiceLanguage for supported values
+	VoiceLanguage *string `json:"voiceLanguage,omitempty"`
+}
+
+// UpdatePhoneCallChannelConfigChannelType defines model for UpdatePhoneCallChannelConfig.ChannelType.
+type UpdatePhoneCallChannelConfigChannelType string
+
+// UpdatePushbulletChannelConfig defines model for UpdatePushbulletChannelConfig.
+type UpdatePushbulletChannelConfig struct {
+	// AccessToken Pushbullet access token
+	AccessToken *string                                  `json:"accessToken,omitempty"`
+	ChannelType UpdatePushbulletChannelConfigChannelType `json:"channelType"`
+
+	// DeviceIden Target device identifier (broadcasts to all if empty)
+	DeviceIden *string `json:"deviceIden,omitempty"`
+}
+
+// UpdatePushbulletChannelConfigChannelType defines model for UpdatePushbulletChannelConfig.ChannelType.
+type UpdatePushbulletChannelConfigChannelType string
+
+// UpdatePushoverChannelConfig defines model for UpdatePushoverChannelConfig.
+type UpdatePushoverChannelConfig struct {
+	// AppToken Pushover application API token
+	AppToken    *string                                `json:"appToken,omitempty"`
+	ChannelType UpdatePushoverChannelConfigChannelType `json:"channelType"`
+
+	// Priority Notification priority override (-2 to 2)
+	Priority *string `json:"priority,omitempty"`
+
+	// Sound Notification sound override
+	Sound *string `json:"sound,omitempty"`
+
+	// UserKey Pushover user or group key
+	UserKey *string `json:"userKey,omitempty"`
+}
+
+// UpdatePushoverChannelConfigChannelType defines model for UpdatePushoverChannelConfig.ChannelType.
+type UpdatePushoverChannelConfigChannelType string
 
 // UpdateResourceGroupRequest Request body for updating a resource group
 type UpdateResourceGroupRequest struct {
@@ -7940,7 +9895,7 @@ type UpdateResourceGroupRequest struct {
 	DefaultRegions       *[]string      `json:"defaultRegions,omitempty"`
 	DefaultRetryStrategy *RetryStrategy `json:"defaultRetryStrategy,omitempty"`
 
-	// Description Optional description; null clears the existing value
+	// Description Optional description (max 500); null clears the existing value
 	Description *string `json:"description,omitempty"`
 
 	// HealthThresholdType Health threshold type: COUNT or PERCENTAGE; null disables threshold
@@ -7968,11 +9923,71 @@ type UpdateResourceGroupRequestHealthThresholdType string
 // UpdateResourceGroupRequestManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
 type UpdateResourceGroupRequestManagedBy string
 
+// UpdateRootlyChannelConfig defines model for UpdateRootlyChannelConfig.
+type UpdateRootlyChannelConfig struct {
+	// ApiKey Rootly API token with incident creation permission
+	ApiKey      *string                              `json:"apiKey,omitempty"`
+	ChannelType UpdateRootlyChannelConfigChannelType `json:"channelType"`
+
+	// Severity Severity slug override (e.g. sev0, sev1)
+	Severity *string `json:"severity,omitempty"`
+}
+
+// UpdateRootlyChannelConfigChannelType defines model for UpdateRootlyChannelConfig.ChannelType.
+type UpdateRootlyChannelConfigChannelType string
+
 // UpdateSecretRequest defines model for UpdateSecretRequest.
 type UpdateSecretRequest struct {
 	// Value New secret value, stored encrypted (max 32KB)
 	Value string `json:"value"`
 }
+
+// UpdateSlackChannelConfig defines model for UpdateSlackChannelConfig.
+type UpdateSlackChannelConfig struct {
+	ChannelType UpdateSlackChannelConfigChannelType `json:"channelType"`
+
+	// MentionText Optional mention text included in notifications, e.g. @channel
+	MentionText *string `json:"mentionText,omitempty"`
+
+	// WebhookUrl Slack incoming webhook URL
+	WebhookUrl *string `json:"webhookUrl,omitempty"`
+}
+
+// UpdateSlackChannelConfigChannelType defines model for UpdateSlackChannelConfig.ChannelType.
+type UpdateSlackChannelConfigChannelType string
+
+// UpdateSmsChannelConfig defines model for UpdateSmsChannelConfig.
+type UpdateSmsChannelConfig struct {
+	ChannelType UpdateSmsChannelConfigChannelType `json:"channelType"`
+
+	// PhoneNumber Recipient phone number in E.164 format; null preserves current
+	PhoneNumber *string `json:"phoneNumber,omitempty"`
+
+	// PhoneNumbers Deprecated: use phoneNumber
+	PhoneNumbers *[]*string `json:"phoneNumbers,omitempty"`
+
+	// PreferredLanguage Preferred language for SMS body (BCP-47, e.g. en-US, de-DE). Default: en-US
+	PreferredLanguage *string `json:"preferredLanguage,omitempty"`
+
+	// VerifiedPhoneNumberId Id of an org verified_phone_number row; null preserves current when phoneNumber also null
+	VerifiedPhoneNumberId *int64 `json:"verifiedPhoneNumberId,omitempty"`
+}
+
+// UpdateSmsChannelConfigChannelType defines model for UpdateSmsChannelConfig.ChannelType.
+type UpdateSmsChannelConfigChannelType string
+
+// UpdateSplunkOnCallChannelConfig defines model for UpdateSplunkOnCallChannelConfig.
+type UpdateSplunkOnCallChannelConfig struct {
+	// ApiKey Splunk On-Call REST API key
+	ApiKey      *string                                    `json:"apiKey,omitempty"`
+	ChannelType UpdateSplunkOnCallChannelConfigChannelType `json:"channelType"`
+
+	// RoutingKey Routing key for alert routing
+	RoutingKey string `json:"routingKey"`
+}
+
+// UpdateSplunkOnCallChannelConfigChannelType defines model for UpdateSplunkOnCallChannelConfig.ChannelType.
+type UpdateSplunkOnCallChannelConfigChannelType string
 
 // UpdateStatusPageComponentGroupRequest defines model for UpdateStatusPageComponentGroupRequest.
 type UpdateStatusPageComponentGroupRequest struct {
@@ -8021,6 +10036,9 @@ type UpdateStatusPageIncidentRequest struct {
 	// AffectedComponents Updated affected components; null preserves current
 	AffectedComponents *[]AffectedComponent `json:"affectedComponents,omitempty"`
 
+	// AutoResolve Whether the window auto-completes at scheduledUntil; null preserves current
+	AutoResolve *bool `json:"autoResolve,omitempty"`
+
 	// Impact New impact level; null preserves current
 	Impact *UpdateStatusPageIncidentRequestImpact `json:"impact,omitempty"`
 
@@ -8029,6 +10047,15 @@ type UpdateStatusPageIncidentRequest struct {
 
 	// PostmortemUrl URL to an external postmortem document; empty string clears
 	PostmortemUrl *string `json:"postmortemUrl,omitempty"`
+
+	// Published Whether the incident is published on the public page; null preserves current. true publishes (sets publishedAt); false unpublishes (clears publishedAt)
+	Published *bool `json:"published,omitempty"`
+
+	// ScheduledFor New maintenance window start; null preserves current. Only for scheduled incidents
+	ScheduledFor *time.Time `json:"scheduledFor,omitempty"`
+
+	// ScheduledUntil New maintenance window end; null preserves current. Only for scheduled incidents
+	ScheduledUntil *time.Time `json:"scheduledUntil,omitempty"`
 
 	// Status New status; null preserves current
 	Status *UpdateStatusPageIncidentRequestStatus `json:"status,omitempty"`
@@ -8042,6 +10069,18 @@ type UpdateStatusPageIncidentRequestImpact string
 
 // UpdateStatusPageIncidentRequestStatus New status; null preserves current
 type UpdateStatusPageIncidentRequestStatus string
+
+// UpdateStatusPageIncidentUpdateRequest defines model for UpdateStatusPageIncidentUpdateRequest.
+type UpdateStatusPageIncidentUpdateRequest struct {
+	// Body Replacement update body in markdown
+	Body string `json:"body"`
+
+	// Status Replacement lifecycle status for this update; null preserves current
+	Status *UpdateStatusPageIncidentUpdateRequestStatus `json:"status,omitempty"`
+}
+
+// UpdateStatusPageIncidentUpdateRequestStatus Replacement lifecycle status for this update; null preserves current
+type UpdateStatusPageIncidentUpdateRequestStatus string
 
 // UpdateStatusPageRequest defines model for UpdateStatusPageRequest.
 type UpdateStatusPageRequest struct {
@@ -8084,6 +10123,47 @@ type UpdateTagRequest struct {
 	Name *string `json:"name,omitempty"`
 }
 
+// UpdateTeamsChannelConfig defines model for UpdateTeamsChannelConfig.
+type UpdateTeamsChannelConfig struct {
+	ChannelType UpdateTeamsChannelConfigChannelType `json:"channelType"`
+
+	// WebhookUrl Microsoft Teams incoming webhook URL
+	WebhookUrl *string `json:"webhookUrl,omitempty"`
+}
+
+// UpdateTeamsChannelConfigChannelType defines model for UpdateTeamsChannelConfig.ChannelType.
+type UpdateTeamsChannelConfigChannelType string
+
+// UpdateTelegramChannelConfig defines model for UpdateTelegramChannelConfig.
+type UpdateTelegramChannelConfig struct {
+	// BotToken Telegram bot token from @BotFather
+	BotToken    *string                                `json:"botToken,omitempty"`
+	ChannelType UpdateTelegramChannelConfigChannelType `json:"channelType"`
+
+	// ChatId Chat, group, or channel ID to send alerts to
+	ChatId string `json:"chatId"`
+}
+
+// UpdateTelegramChannelConfigChannelType defines model for UpdateTelegramChannelConfig.ChannelType.
+type UpdateTelegramChannelConfigChannelType string
+
+// UpdateWebhookChannelConfig defines model for UpdateWebhookChannelConfig.
+type UpdateWebhookChannelConfig struct {
+	ChannelType UpdateWebhookChannelConfigChannelType `json:"channelType"`
+
+	// CustomHeaders Additional HTTP headers to include in webhook requests
+	CustomHeaders *map[string]*string `json:"customHeaders,omitempty"`
+
+	// SigningSecret HMAC secret for X-DevHelm-Signature header; omit for unsigned delivery
+	SigningSecret *string `json:"signingSecret,omitempty"`
+
+	// Url Webhook endpoint URL that receives alert payloads
+	Url *string `json:"url,omitempty"`
+}
+
+// UpdateWebhookChannelConfigChannelType defines model for UpdateWebhookChannelConfig.ChannelType.
+type UpdateWebhookChannelConfigChannelType string
+
 // UpdateWebhookEndpointRequest defines model for UpdateWebhookEndpointRequest.
 type UpdateWebhookEndpointRequest struct {
 	// Description New description; null preserves current
@@ -8108,6 +10188,17 @@ type UpdateWorkspaceRequest struct {
 	Name string `json:"name"`
 }
 
+// UpdateZapierChannelConfig defines model for UpdateZapierChannelConfig.
+type UpdateZapierChannelConfig struct {
+	ChannelType UpdateZapierChannelConfigChannelType `json:"channelType"`
+
+	// WebhookUrl Zapier/n8n/Make catch webhook URL
+	WebhookUrl *string `json:"webhookUrl,omitempty"`
+}
+
+// UpdateZapierChannelConfigChannelType defines model for UpdateZapierChannelConfig.ChannelType.
+type UpdateZapierChannelConfigChannelType string
+
 // UptimeBucketDto Uptime statistics for a single time bucket
 type UptimeBucketDto struct {
 	// Timestamp Start of the bucket interval (ISO 8601)
@@ -8125,6 +10216,12 @@ type UptimeDto struct {
 	// AvgLatencyMs Weighted average latency in milliseconds; null when no data
 	AvgLatencyMs *float64 `json:"avgLatencyMs,omitempty"`
 
+	// IncidentCount Number of incidents that started within the requested window
+	IncidentCount int64 `json:"incidentCount"`
+
+	// P50LatencyMs 50th-percentile (median) latency in milliseconds; null when no data
+	P50LatencyMs *float64 `json:"p50LatencyMs,omitempty"`
+
 	// P95LatencyMs 95th-percentile latency in milliseconds (upper bound across regions); null when no data
 	P95LatencyMs *float64 `json:"p95LatencyMs,omitempty"`
 
@@ -8138,6 +10235,15 @@ type UptimeDto struct {
 	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
 }
 
+// VoiceLanguageDto Supported TTS voice language for phone call alerts
+type VoiceLanguageDto struct {
+	// Code BCP-47 locale code, e.g. en-US
+	Code string `json:"code"`
+
+	// Label Human-readable label, e.g. English (US)
+	Label string `json:"label"`
+}
+
 // WebhookChannelConfig defines model for WebhookChannelConfig.
 type WebhookChannelConfig struct {
 	ChannelType WebhookChannelConfigChannelType `json:"channelType"`
@@ -8145,7 +10251,7 @@ type WebhookChannelConfig struct {
 	// CustomHeaders Additional HTTP headers to include in webhook requests
 	CustomHeaders *map[string]*string `json:"customHeaders,omitempty"`
 
-	// SigningSecret Optional HMAC signing secret for payload verification
+	// SigningSecret HMAC secret for X-DevHelm-Signature header; omit for unsigned delivery
 	SigningSecret *string `json:"signingSecret,omitempty"`
 
 	// Url Webhook endpoint URL that receives alert payloads
@@ -8286,8 +10392,8 @@ type List14ParamsType string
 // List14ParamsManagedBy defines parameters for List14.
 type List14ParamsManagedBy string
 
-// List19Params defines parameters for List19.
-type List19Params struct {
+// List20Params defines parameters for List20.
+type List20Params struct {
 	Action       *string    `form:"action,omitempty" json:"action,omitempty"`
 	ActorId      *int32     `form:"actorId,omitempty" json:"actorId,omitempty"`
 	ResourceType *string    `form:"resourceType,omitempty" json:"resourceType,omitempty"`
@@ -8331,6 +10437,18 @@ type List11Params struct {
 	Params IncidentFilterParams `form:"params" json:"params"`
 }
 
+// ListEvents1Params defines parameters for ListEvents1.
+type ListEvents1Params struct {
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// ListRelatedParams defines parameters for ListRelated.
+type ListRelatedParams struct {
+	WindowDays *int32 `form:"windowDays,omitempty" json:"windowDays,omitempty"`
+	Limit      *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // List9Params defines parameters for List9.
 type List9Params struct {
 	// MonitorId Filter by monitor UUID
@@ -8340,8 +10458,8 @@ type List9Params struct {
 	Filter *string `form:"filter,omitempty" json:"filter,omitempty"`
 }
 
-// List17Params defines parameters for List17.
-type List17Params struct {
+// List18Params defines parameters for List18.
+type List18Params struct {
 	Pageable Pageable `form:"pageable" json:"pageable"`
 }
 
@@ -8429,8 +10547,23 @@ type ListByIncidentParams struct {
 	IncidentId openapi_types.UUID `form:"incident_id" json:"incident_id"`
 }
 
-// List16Params defines parameters for List16.
-type List16Params struct {
+// ListDispatchesParams defines parameters for ListDispatches.
+type ListDispatchesParams struct {
+	// Since Inclusive lower bound (ISO-8601); defaults to now−30d when windowing
+	Since *time.Time `form:"since,omitempty" json:"since,omitempty"`
+
+	// Until Exclusive upper bound (ISO-8601); defaults to now when windowing
+	Until *time.Time `form:"until,omitempty" json:"until,omitempty"`
+
+	// Cursor Opaque cursor from a previous nextCursor
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size 1–100 when windowing/paginating (default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// List17Params defines parameters for List17.
+type List17Params struct {
 	UnreadOnly *bool  `form:"unreadOnly,omitempty" json:"unreadOnly,omitempty"`
 	Page       *int32 `form:"page,omitempty" json:"page,omitempty"`
 	Size       *int32 `form:"size,omitempty" json:"size,omitempty"`
@@ -8451,6 +10584,9 @@ type ListServicesParams struct {
 
 	// Published Filter by published status for pSEO pages
 	Published *bool `form:"published,omitempty" json:"published,omitempty"`
+
+	// SlaPublished Filter by SLA page publication status
+	SlaPublished *bool `form:"slaPublished,omitempty" json:"slaPublished,omitempty"`
 
 	// Search Case-insensitive substring match on service name or slug
 	Search *string `form:"search,omitempty" json:"search,omitempty"`
@@ -8500,6 +10636,15 @@ type GetServiceParams struct {
 type GetComponentsParams struct {
 	// GroupId Restrict result to direct children of this group component id
 	GroupId *openapi_types.UUID `form:"groupId,omitempty" json:"groupId,omitempty"`
+
+	// Search Case-insensitive substring match on component name
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Page Zero-based page index
+	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size Page size (default 25, max 100)
+	Size *int32 `form:"size,omitempty" json:"size,omitempty"`
 }
 
 // GetBatchComponentUptimeParams defines parameters for GetBatchComponentUptime.
@@ -8569,6 +10714,30 @@ type GetPollSummaryParams struct {
 // GetPollSummaryParamsWindow defines parameters for GetPollSummary.
 type GetPollSummaryParamsWindow string
 
+// ListStatusEventsParams defines parameters for ListStatusEvents.
+type ListStatusEventsParams struct {
+	// Types Comma-separated type buckets: incident, maintenance, component (default: all)
+	Types *string `form:"types,omitempty" json:"types,omitempty"`
+
+	// Period Preset window
+	Period *ListStatusEventsParamsPeriod `form:"period,omitempty" json:"period,omitempty"`
+
+	// From Explicit lower bound (ISO 8601); overrides period
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Explicit upper bound (ISO 8601); default now
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Cursor Opaque cursor from a previous response
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// ListStatusEventsParamsPeriod defines parameters for ListStatusEvents.
+type ListStatusEventsParamsPeriod string
+
 // GetServiceUptimeParams defines parameters for GetServiceUptime.
 type GetServiceUptimeParams struct {
 	// Period Time window
@@ -8584,6 +10753,11 @@ type GetServiceUptimeParamsPeriod string
 // GetServiceUptimeParamsGranularity defines parameters for GetServiceUptime.
 type GetServiceUptimeParamsGranularity string
 
+// ComponentMeasuredUptimeParams defines parameters for ComponentMeasuredUptime.
+type ComponentMeasuredUptimeParams struct {
+	Days *int32 `form:"days,omitempty" json:"days,omitempty"`
+}
+
 // ComponentUptime1Params defines parameters for ComponentUptime1.
 type ComponentUptime1Params struct {
 	Days *int32 `form:"days,omitempty" json:"days,omitempty"`
@@ -8597,6 +10771,24 @@ type ListIncidentsParams struct {
 
 // ListIncidentsParamsStatus defines parameters for ListIncidents.
 type ListIncidentsParamsStatus string
+
+// ListMaintenanceParams defines parameters for ListMaintenance.
+type ListMaintenanceParams struct {
+	Status   *[]ListMaintenanceParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+	Pageable Pageable                       `form:"pageable" json:"pageable"`
+}
+
+// ListMaintenanceParamsStatus defines parameters for ListMaintenance.
+type ListMaintenanceParamsStatus string
+
+// ListNotificationDeliveriesParams defines parameters for ListNotificationDeliveries.
+type ListNotificationDeliveriesParams struct {
+	IncidentId *openapi_types.UUID                        `form:"incidentId,omitempty" json:"incidentId,omitempty"`
+	EventType  *ListNotificationDeliveriesParamsEventType `form:"eventType,omitempty" json:"eventType,omitempty"`
+}
+
+// ListNotificationDeliveriesParamsEventType defines parameters for ListNotificationDeliveries.
+type ListNotificationDeliveriesParamsEventType string
 
 // ListSubscribersParams defines parameters for ListSubscribers.
 type ListSubscribersParams struct {
@@ -8632,11 +10824,14 @@ type TestConfigJSONRequestBody = TestAlertChannelRequest
 // Update14JSONRequestBody defines body for Update14 for application/json ContentType.
 type Update14JSONRequestBody = UpdateAlertChannelRequest
 
+// SetEnabledJSONRequestBody defines body for SetEnabled for application/json ContentType.
+type SetEnabledJSONRequestBody = SetEnabledRequest
+
 // Create14JSONRequestBody defines body for Create14 for application/json ContentType.
 type Create14JSONRequestBody = CreateApiKeyRequest
 
-// Update15JSONRequestBody defines body for Update15 for application/json ContentType.
-type Update15JSONRequestBody = UpdateApiKeyRequest
+// Update16JSONRequestBody defines body for Update16 for application/json ContentType.
+type Update16JSONRequestBody = UpdateApiKeyRequest
 
 // AcquireJSONRequestBody defines body for Acquire for application/json ContentType.
 type AcquireJSONRequestBody = AcquireDeployLockRequest
@@ -8655,6 +10850,9 @@ type PingPostTextRequestBody = PingPostTextBody
 
 // Create12JSONRequestBody defines body for Create12 for application/json ContentType.
 type Create12JSONRequestBody = CreateManualIncidentRequest
+
+// Update15JSONRequestBody defines body for Update15 for application/json ContentType.
+type Update15JSONRequestBody = UpdateIncidentRequest
 
 // ResolveJSONRequestBody defines body for Resolve for application/json ContentType.
 type ResolveJSONRequestBody = ResolveIncidentRequest
@@ -8694,6 +10892,9 @@ type RemoveMonitorTagsJSONRequestBody = RemoveMonitorTagsRequest
 
 // AddMonitorTagsJSONRequestBody defines body for AddMonitorTags for application/json ContentType.
 type AddMonitorTagsJSONRequestBody = AddMonitorTagsRequest
+
+// TestNotificationsJSONRequestBody defines body for TestNotifications for application/json ContentType.
+type TestNotificationsJSONRequestBody = TestMonitorNotificationsRequest
 
 // SetChannelsJSONRequestBody defines body for SetChannels for application/json ContentType.
 type SetChannelsJSONRequestBody = SetAlertChannelsRequest
@@ -8761,6 +10962,9 @@ type ReorderComponentsJSONRequestBody = ReorderComponentsRequest
 // UpdateComponentJSONRequestBody defines body for UpdateComponent for application/json ContentType.
 type UpdateComponentJSONRequestBody = UpdateStatusPageComponentRequest
 
+// SetComponentOverrideJSONRequestBody defines body for SetComponentOverride for application/json ContentType.
+type SetComponentOverrideJSONRequestBody = SetStatusPageComponentOverrideRequest
+
 // AddDomainJSONRequestBody defines body for AddDomain for application/json ContentType.
 type AddDomainJSONRequestBody = AddCustomDomainRequest
 
@@ -8782,8 +10986,26 @@ type PublishIncidentJSONRequestBody = PublishStatusPageIncidentRequest
 // PostIncidentUpdateJSONRequestBody defines body for PostIncidentUpdate for application/json ContentType.
 type PostIncidentUpdateJSONRequestBody = CreateStatusPageIncidentUpdateRequest
 
+// PatchIncidentUpdateJSONRequestBody defines body for PatchIncidentUpdate for application/json ContentType.
+type PatchIncidentUpdateJSONRequestBody = UpdateStatusPageIncidentUpdateRequest
+
 // ReorderLayoutJSONRequestBody defines body for ReorderLayout for application/json ContentType.
 type ReorderLayoutJSONRequestBody = ReorderPageLayoutRequest
+
+// CreateMaintenanceJSONRequestBody defines body for CreateMaintenance for application/json ContentType.
+type CreateMaintenanceJSONRequestBody = CreateStatusPageMaintenanceRequest
+
+// UpdateMaintenanceJSONRequestBody defines body for UpdateMaintenance for application/json ContentType.
+type UpdateMaintenanceJSONRequestBody = UpdateStatusPageIncidentRequest
+
+// PublishMaintenanceJSONRequestBody defines body for PublishMaintenance for application/json ContentType.
+type PublishMaintenanceJSONRequestBody = PublishStatusPageIncidentRequest
+
+// PostMaintenanceUpdateJSONRequestBody defines body for PostMaintenanceUpdate for application/json ContentType.
+type PostMaintenanceUpdateJSONRequestBody = CreateStatusPageIncidentUpdateRequest
+
+// PatchMaintenanceUpdateJSONRequestBody defines body for PatchMaintenanceUpdate for application/json ContentType.
+type PatchMaintenanceUpdateJSONRequestBody = UpdateStatusPageIncidentUpdateRequest
 
 // AddSubscriberJSONRequestBody defines body for AddSubscriber for application/json ContentType.
 type AddSubscriberJSONRequestBody = AdminAddSubscriberRequest
@@ -9008,6 +11230,34 @@ func (t *CheckTypeDetailsDto) MergeMcpServer(v McpServer) error {
 	return err
 }
 
+// AsCode returns the union data inside the CheckTypeDetailsDto as a Code
+func (t CheckTypeDetailsDto) AsCode() (Code, error) {
+	var body Code
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCode overwrites any union data inside the CheckTypeDetailsDto as the provided Code
+func (t *CheckTypeDetailsDto) FromCode(v Code) error {
+	v.CheckType = "code"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCode performs a merge with any union data inside the CheckTypeDetailsDto, using the provided Code
+func (t *CheckTypeDetailsDto) MergeCode(v Code) error {
+	v.CheckType = "code"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t CheckTypeDetailsDto) Discriminator() (string, error) {
 	var discriminator struct {
 		Discriminator string `json:"check_type"`
@@ -9022,6 +11272,8 @@ func (t CheckTypeDetailsDto) ValueByDiscriminator() (interface{}, error) {
 		return nil, err
 	}
 	switch discriminator {
+	case "code":
+		return t.AsCode()
 	case "dns":
 		return t.AsDns()
 	case "http":
@@ -9333,6 +11585,32 @@ func (t *CreateAlertChannelRequest_Config) MergePagerDutyChannelConfig(v PagerDu
 	return err
 }
 
+// AsPhoneCallChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a PhoneCallChannelConfig
+func (t CreateAlertChannelRequest_Config) AsPhoneCallChannelConfig() (PhoneCallChannelConfig, error) {
+	var body PhoneCallChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPhoneCallChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided PhoneCallChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromPhoneCallChannelConfig(v PhoneCallChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePhoneCallChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided PhoneCallChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergePhoneCallChannelConfig(v PhoneCallChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsPushbulletChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a PushbulletChannelConfig
 func (t CreateAlertChannelRequest_Config) AsPushbulletChannelConfig() (PushbulletChannelConfig, error) {
 	var body PushbulletChannelConfig
@@ -9427,6 +11705,32 @@ func (t *CreateAlertChannelRequest_Config) FromSlackChannelConfig(v SlackChannel
 
 // MergeSlackChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided SlackChannelConfig
 func (t *CreateAlertChannelRequest_Config) MergeSlackChannelConfig(v SlackChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSmsChannelConfig returns the union data inside the CreateAlertChannelRequest_Config as a SmsChannelConfig
+func (t CreateAlertChannelRequest_Config) AsSmsChannelConfig() (SmsChannelConfig, error) {
+	var body SmsChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSmsChannelConfig overwrites any union data inside the CreateAlertChannelRequest_Config as the provided SmsChannelConfig
+func (t *CreateAlertChannelRequest_Config) FromSmsChannelConfig(v SmsChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSmsChannelConfig performs a merge with any union data inside the CreateAlertChannelRequest_Config, using the provided SmsChannelConfig
+func (t *CreateAlertChannelRequest_Config) MergeSmsChannelConfig(v SmsChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -10799,6 +13103,32 @@ func (t *CreateMonitorRequest_Config) FromMcpServerMonitorConfig(v McpServerMoni
 
 // MergeMcpServerMonitorConfig performs a merge with any union data inside the CreateMonitorRequest_Config, using the provided McpServerMonitorConfig
 func (t *CreateMonitorRequest_Config) MergeMcpServerMonitorConfig(v McpServerMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsScriptMonitorConfig returns the union data inside the CreateMonitorRequest_Config as a ScriptMonitorConfig
+func (t CreateMonitorRequest_Config) AsScriptMonitorConfig() (ScriptMonitorConfig, error) {
+	var body ScriptMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromScriptMonitorConfig overwrites any union data inside the CreateMonitorRequest_Config as the provided ScriptMonitorConfig
+func (t *CreateMonitorRequest_Config) FromScriptMonitorConfig(v ScriptMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeScriptMonitorConfig performs a merge with any union data inside the CreateMonitorRequest_Config, using the provided ScriptMonitorConfig
+func (t *CreateMonitorRequest_Config) MergeScriptMonitorConfig(v ScriptMonitorConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -12340,6 +14670,32 @@ func (t *MonitorDto_Config) MergeMcpServerMonitorConfig(v McpServerMonitorConfig
 	return err
 }
 
+// AsScriptMonitorConfig returns the union data inside the MonitorDto_Config as a ScriptMonitorConfig
+func (t MonitorDto_Config) AsScriptMonitorConfig() (ScriptMonitorConfig, error) {
+	var body ScriptMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromScriptMonitorConfig overwrites any union data inside the MonitorDto_Config as the provided ScriptMonitorConfig
+func (t *MonitorDto_Config) FromScriptMonitorConfig(v ScriptMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeScriptMonitorConfig performs a merge with any union data inside the MonitorDto_Config, using the provided ScriptMonitorConfig
+func (t *MonitorDto_Config) MergeScriptMonitorConfig(v ScriptMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsTcpMonitorConfig returns the union data inside the MonitorDto_Config as a TcpMonitorConfig
 func (t MonitorDto_Config) AsTcpMonitorConfig() (TcpMonitorConfig, error) {
 	var body TcpMonitorConfig
@@ -12496,6 +14852,32 @@ func (t *MonitorTestRequest_Config) FromMcpServerMonitorConfig(v McpServerMonito
 
 // MergeMcpServerMonitorConfig performs a merge with any union data inside the MonitorTestRequest_Config, using the provided McpServerMonitorConfig
 func (t *MonitorTestRequest_Config) MergeMcpServerMonitorConfig(v McpServerMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsScriptMonitorConfig returns the union data inside the MonitorTestRequest_Config as a ScriptMonitorConfig
+func (t MonitorTestRequest_Config) AsScriptMonitorConfig() (ScriptMonitorConfig, error) {
+	var body ScriptMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromScriptMonitorConfig overwrites any union data inside the MonitorTestRequest_Config as the provided ScriptMonitorConfig
+func (t *MonitorTestRequest_Config) FromScriptMonitorConfig(v ScriptMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeScriptMonitorConfig performs a merge with any union data inside the MonitorTestRequest_Config, using the provided ScriptMonitorConfig
+func (t *MonitorTestRequest_Config) MergeScriptMonitorConfig(v ScriptMonitorConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -12942,6 +15324,32 @@ func (t *TestAlertChannelRequest_Config) MergePagerDutyChannelConfig(v PagerDuty
 	return err
 }
 
+// AsPhoneCallChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a PhoneCallChannelConfig
+func (t TestAlertChannelRequest_Config) AsPhoneCallChannelConfig() (PhoneCallChannelConfig, error) {
+	var body PhoneCallChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPhoneCallChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided PhoneCallChannelConfig
+func (t *TestAlertChannelRequest_Config) FromPhoneCallChannelConfig(v PhoneCallChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePhoneCallChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided PhoneCallChannelConfig
+func (t *TestAlertChannelRequest_Config) MergePhoneCallChannelConfig(v PhoneCallChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsPushbulletChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a PushbulletChannelConfig
 func (t TestAlertChannelRequest_Config) AsPushbulletChannelConfig() (PushbulletChannelConfig, error) {
 	var body PushbulletChannelConfig
@@ -13036,6 +15444,32 @@ func (t *TestAlertChannelRequest_Config) FromSlackChannelConfig(v SlackChannelCo
 
 // MergeSlackChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided SlackChannelConfig
 func (t *TestAlertChannelRequest_Config) MergeSlackChannelConfig(v SlackChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSmsChannelConfig returns the union data inside the TestAlertChannelRequest_Config as a SmsChannelConfig
+func (t TestAlertChannelRequest_Config) AsSmsChannelConfig() (SmsChannelConfig, error) {
+	var body SmsChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSmsChannelConfig overwrites any union data inside the TestAlertChannelRequest_Config as the provided SmsChannelConfig
+func (t *TestAlertChannelRequest_Config) FromSmsChannelConfig(v SmsChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSmsChannelConfig performs a merge with any union data inside the TestAlertChannelRequest_Config, using the provided SmsChannelConfig
+func (t *TestAlertChannelRequest_Config) MergeSmsChannelConfig(v SmsChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13186,22 +15620,22 @@ func (t *TestAlertChannelRequest_Config) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// AsDatadogChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a DatadogChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsDatadogChannelConfig() (DatadogChannelConfig, error) {
-	var body DatadogChannelConfig
+// AsUpdateDatadogChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateDatadogChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateDatadogChannelConfig() (UpdateDatadogChannelConfig, error) {
+	var body UpdateDatadogChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromDatadogChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided DatadogChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromDatadogChannelConfig(v DatadogChannelConfig) error {
+// FromUpdateDatadogChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateDatadogChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateDatadogChannelConfig(v UpdateDatadogChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeDatadogChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided DatadogChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeDatadogChannelConfig(v DatadogChannelConfig) error {
+// MergeUpdateDatadogChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateDatadogChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateDatadogChannelConfig(v UpdateDatadogChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13212,22 +15646,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeDatadogChannelConfig(v DatadogCh
 	return err
 }
 
-// AsDiscordChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a DiscordChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsDiscordChannelConfig() (DiscordChannelConfig, error) {
-	var body DiscordChannelConfig
+// AsUpdateDiscordChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateDiscordChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateDiscordChannelConfig() (UpdateDiscordChannelConfig, error) {
+	var body UpdateDiscordChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromDiscordChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided DiscordChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromDiscordChannelConfig(v DiscordChannelConfig) error {
+// FromUpdateDiscordChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateDiscordChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateDiscordChannelConfig(v UpdateDiscordChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeDiscordChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided DiscordChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeDiscordChannelConfig(v DiscordChannelConfig) error {
+// MergeUpdateDiscordChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateDiscordChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateDiscordChannelConfig(v UpdateDiscordChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13238,22 +15672,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeDiscordChannelConfig(v DiscordCh
 	return err
 }
 
-// AsEmailChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a EmailChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsEmailChannelConfig() (EmailChannelConfig, error) {
-	var body EmailChannelConfig
+// AsUpdateEmailChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateEmailChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateEmailChannelConfig() (UpdateEmailChannelConfig, error) {
+	var body UpdateEmailChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromEmailChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided EmailChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromEmailChannelConfig(v EmailChannelConfig) error {
+// FromUpdateEmailChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateEmailChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateEmailChannelConfig(v UpdateEmailChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeEmailChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided EmailChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeEmailChannelConfig(v EmailChannelConfig) error {
+// MergeUpdateEmailChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateEmailChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateEmailChannelConfig(v UpdateEmailChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13264,22 +15698,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeEmailChannelConfig(v EmailChanne
 	return err
 }
 
-// AsGitLabChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a GitLabChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsGitLabChannelConfig() (GitLabChannelConfig, error) {
-	var body GitLabChannelConfig
+// AsUpdateGitLabChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateGitLabChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateGitLabChannelConfig() (UpdateGitLabChannelConfig, error) {
+	var body UpdateGitLabChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromGitLabChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided GitLabChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromGitLabChannelConfig(v GitLabChannelConfig) error {
+// FromUpdateGitLabChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateGitLabChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateGitLabChannelConfig(v UpdateGitLabChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeGitLabChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided GitLabChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeGitLabChannelConfig(v GitLabChannelConfig) error {
+// MergeUpdateGitLabChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateGitLabChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateGitLabChannelConfig(v UpdateGitLabChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13290,22 +15724,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeGitLabChannelConfig(v GitLabChan
 	return err
 }
 
-// AsGoogleChatChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a GoogleChatChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsGoogleChatChannelConfig() (GoogleChatChannelConfig, error) {
-	var body GoogleChatChannelConfig
+// AsUpdateGoogleChatChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateGoogleChatChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateGoogleChatChannelConfig() (UpdateGoogleChatChannelConfig, error) {
+	var body UpdateGoogleChatChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromGoogleChatChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided GoogleChatChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromGoogleChatChannelConfig(v GoogleChatChannelConfig) error {
+// FromUpdateGoogleChatChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateGoogleChatChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateGoogleChatChannelConfig(v UpdateGoogleChatChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeGoogleChatChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided GoogleChatChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeGoogleChatChannelConfig(v GoogleChatChannelConfig) error {
+// MergeUpdateGoogleChatChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateGoogleChatChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateGoogleChatChannelConfig(v UpdateGoogleChatChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13316,22 +15750,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeGoogleChatChannelConfig(v Google
 	return err
 }
 
-// AsIncidentIoChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a IncidentIoChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsIncidentIoChannelConfig() (IncidentIoChannelConfig, error) {
-	var body IncidentIoChannelConfig
+// AsUpdateIncidentIoChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateIncidentIoChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateIncidentIoChannelConfig() (UpdateIncidentIoChannelConfig, error) {
+	var body UpdateIncidentIoChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromIncidentIoChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided IncidentIoChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromIncidentIoChannelConfig(v IncidentIoChannelConfig) error {
+// FromUpdateIncidentIoChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateIncidentIoChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateIncidentIoChannelConfig(v UpdateIncidentIoChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeIncidentIoChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided IncidentIoChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeIncidentIoChannelConfig(v IncidentIoChannelConfig) error {
+// MergeUpdateIncidentIoChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateIncidentIoChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateIncidentIoChannelConfig(v UpdateIncidentIoChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13342,22 +15776,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeIncidentIoChannelConfig(v Incide
 	return err
 }
 
-// AsJiraChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a JiraChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsJiraChannelConfig() (JiraChannelConfig, error) {
-	var body JiraChannelConfig
+// AsUpdateJiraChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateJiraChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateJiraChannelConfig() (UpdateJiraChannelConfig, error) {
+	var body UpdateJiraChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromJiraChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided JiraChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromJiraChannelConfig(v JiraChannelConfig) error {
+// FromUpdateJiraChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateJiraChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateJiraChannelConfig(v UpdateJiraChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeJiraChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided JiraChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeJiraChannelConfig(v JiraChannelConfig) error {
+// MergeUpdateJiraChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateJiraChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateJiraChannelConfig(v UpdateJiraChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13368,22 +15802,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeJiraChannelConfig(v JiraChannelC
 	return err
 }
 
-// AsLinearChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a LinearChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsLinearChannelConfig() (LinearChannelConfig, error) {
-	var body LinearChannelConfig
+// AsUpdateLinearChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateLinearChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateLinearChannelConfig() (UpdateLinearChannelConfig, error) {
+	var body UpdateLinearChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromLinearChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided LinearChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromLinearChannelConfig(v LinearChannelConfig) error {
+// FromUpdateLinearChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateLinearChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateLinearChannelConfig(v UpdateLinearChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeLinearChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided LinearChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeLinearChannelConfig(v LinearChannelConfig) error {
+// MergeUpdateLinearChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateLinearChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateLinearChannelConfig(v UpdateLinearChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13394,22 +15828,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeLinearChannelConfig(v LinearChan
 	return err
 }
 
-// AsMattermostChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a MattermostChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsMattermostChannelConfig() (MattermostChannelConfig, error) {
-	var body MattermostChannelConfig
+// AsUpdateMattermostChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateMattermostChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateMattermostChannelConfig() (UpdateMattermostChannelConfig, error) {
+	var body UpdateMattermostChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromMattermostChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided MattermostChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromMattermostChannelConfig(v MattermostChannelConfig) error {
+// FromUpdateMattermostChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateMattermostChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateMattermostChannelConfig(v UpdateMattermostChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeMattermostChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided MattermostChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeMattermostChannelConfig(v MattermostChannelConfig) error {
+// MergeUpdateMattermostChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateMattermostChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateMattermostChannelConfig(v UpdateMattermostChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13420,22 +15854,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeMattermostChannelConfig(v Matter
 	return err
 }
 
-// AsOpsGenieChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a OpsGenieChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsOpsGenieChannelConfig() (OpsGenieChannelConfig, error) {
-	var body OpsGenieChannelConfig
+// AsUpdateOpsGenieChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateOpsGenieChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateOpsGenieChannelConfig() (UpdateOpsGenieChannelConfig, error) {
+	var body UpdateOpsGenieChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromOpsGenieChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided OpsGenieChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromOpsGenieChannelConfig(v OpsGenieChannelConfig) error {
+// FromUpdateOpsGenieChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateOpsGenieChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateOpsGenieChannelConfig(v UpdateOpsGenieChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeOpsGenieChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided OpsGenieChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeOpsGenieChannelConfig(v OpsGenieChannelConfig) error {
+// MergeUpdateOpsGenieChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateOpsGenieChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateOpsGenieChannelConfig(v UpdateOpsGenieChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13446,22 +15880,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeOpsGenieChannelConfig(v OpsGenie
 	return err
 }
 
-// AsPagerDutyChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a PagerDutyChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsPagerDutyChannelConfig() (PagerDutyChannelConfig, error) {
-	var body PagerDutyChannelConfig
+// AsUpdatePagerDutyChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdatePagerDutyChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdatePagerDutyChannelConfig() (UpdatePagerDutyChannelConfig, error) {
+	var body UpdatePagerDutyChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromPagerDutyChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided PagerDutyChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromPagerDutyChannelConfig(v PagerDutyChannelConfig) error {
+// FromUpdatePagerDutyChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdatePagerDutyChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdatePagerDutyChannelConfig(v UpdatePagerDutyChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergePagerDutyChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided PagerDutyChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergePagerDutyChannelConfig(v PagerDutyChannelConfig) error {
+// MergeUpdatePagerDutyChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdatePagerDutyChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdatePagerDutyChannelConfig(v UpdatePagerDutyChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13472,22 +15906,22 @@ func (t *UpdateAlertChannelRequest_Config) MergePagerDutyChannelConfig(v PagerDu
 	return err
 }
 
-// AsPushbulletChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a PushbulletChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsPushbulletChannelConfig() (PushbulletChannelConfig, error) {
-	var body PushbulletChannelConfig
+// AsUpdatePhoneCallChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdatePhoneCallChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdatePhoneCallChannelConfig() (UpdatePhoneCallChannelConfig, error) {
+	var body UpdatePhoneCallChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromPushbulletChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided PushbulletChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromPushbulletChannelConfig(v PushbulletChannelConfig) error {
+// FromUpdatePhoneCallChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdatePhoneCallChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdatePhoneCallChannelConfig(v UpdatePhoneCallChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergePushbulletChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided PushbulletChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergePushbulletChannelConfig(v PushbulletChannelConfig) error {
+// MergeUpdatePhoneCallChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdatePhoneCallChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdatePhoneCallChannelConfig(v UpdatePhoneCallChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13498,22 +15932,22 @@ func (t *UpdateAlertChannelRequest_Config) MergePushbulletChannelConfig(v Pushbu
 	return err
 }
 
-// AsPushoverChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a PushoverChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsPushoverChannelConfig() (PushoverChannelConfig, error) {
-	var body PushoverChannelConfig
+// AsUpdatePushbulletChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdatePushbulletChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdatePushbulletChannelConfig() (UpdatePushbulletChannelConfig, error) {
+	var body UpdatePushbulletChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromPushoverChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided PushoverChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromPushoverChannelConfig(v PushoverChannelConfig) error {
+// FromUpdatePushbulletChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdatePushbulletChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdatePushbulletChannelConfig(v UpdatePushbulletChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergePushoverChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided PushoverChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergePushoverChannelConfig(v PushoverChannelConfig) error {
+// MergeUpdatePushbulletChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdatePushbulletChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdatePushbulletChannelConfig(v UpdatePushbulletChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13524,22 +15958,22 @@ func (t *UpdateAlertChannelRequest_Config) MergePushoverChannelConfig(v Pushover
 	return err
 }
 
-// AsRootlyChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a RootlyChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsRootlyChannelConfig() (RootlyChannelConfig, error) {
-	var body RootlyChannelConfig
+// AsUpdatePushoverChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdatePushoverChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdatePushoverChannelConfig() (UpdatePushoverChannelConfig, error) {
+	var body UpdatePushoverChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRootlyChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided RootlyChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromRootlyChannelConfig(v RootlyChannelConfig) error {
+// FromUpdatePushoverChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdatePushoverChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdatePushoverChannelConfig(v UpdatePushoverChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeRootlyChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided RootlyChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeRootlyChannelConfig(v RootlyChannelConfig) error {
+// MergeUpdatePushoverChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdatePushoverChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdatePushoverChannelConfig(v UpdatePushoverChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13550,22 +15984,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeRootlyChannelConfig(v RootlyChan
 	return err
 }
 
-// AsSlackChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a SlackChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsSlackChannelConfig() (SlackChannelConfig, error) {
-	var body SlackChannelConfig
+// AsUpdateRootlyChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateRootlyChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateRootlyChannelConfig() (UpdateRootlyChannelConfig, error) {
+	var body UpdateRootlyChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromSlackChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided SlackChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromSlackChannelConfig(v SlackChannelConfig) error {
+// FromUpdateRootlyChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateRootlyChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateRootlyChannelConfig(v UpdateRootlyChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeSlackChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided SlackChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeSlackChannelConfig(v SlackChannelConfig) error {
+// MergeUpdateRootlyChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateRootlyChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateRootlyChannelConfig(v UpdateRootlyChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13576,22 +16010,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeSlackChannelConfig(v SlackChanne
 	return err
 }
 
-// AsSplunkOnCallChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a SplunkOnCallChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsSplunkOnCallChannelConfig() (SplunkOnCallChannelConfig, error) {
-	var body SplunkOnCallChannelConfig
+// AsUpdateSlackChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateSlackChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateSlackChannelConfig() (UpdateSlackChannelConfig, error) {
+	var body UpdateSlackChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromSplunkOnCallChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided SplunkOnCallChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromSplunkOnCallChannelConfig(v SplunkOnCallChannelConfig) error {
+// FromUpdateSlackChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateSlackChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateSlackChannelConfig(v UpdateSlackChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeSplunkOnCallChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided SplunkOnCallChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeSplunkOnCallChannelConfig(v SplunkOnCallChannelConfig) error {
+// MergeUpdateSlackChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateSlackChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateSlackChannelConfig(v UpdateSlackChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13602,22 +16036,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeSplunkOnCallChannelConfig(v Splu
 	return err
 }
 
-// AsTeamsChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a TeamsChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsTeamsChannelConfig() (TeamsChannelConfig, error) {
-	var body TeamsChannelConfig
+// AsUpdateSmsChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateSmsChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateSmsChannelConfig() (UpdateSmsChannelConfig, error) {
+	var body UpdateSmsChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromTeamsChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided TeamsChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromTeamsChannelConfig(v TeamsChannelConfig) error {
+// FromUpdateSmsChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateSmsChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateSmsChannelConfig(v UpdateSmsChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeTeamsChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided TeamsChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeTeamsChannelConfig(v TeamsChannelConfig) error {
+// MergeUpdateSmsChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateSmsChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateSmsChannelConfig(v UpdateSmsChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13628,22 +16062,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeTeamsChannelConfig(v TeamsChanne
 	return err
 }
 
-// AsTelegramChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a TelegramChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsTelegramChannelConfig() (TelegramChannelConfig, error) {
-	var body TelegramChannelConfig
+// AsUpdateSplunkOnCallChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateSplunkOnCallChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateSplunkOnCallChannelConfig() (UpdateSplunkOnCallChannelConfig, error) {
+	var body UpdateSplunkOnCallChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromTelegramChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided TelegramChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromTelegramChannelConfig(v TelegramChannelConfig) error {
+// FromUpdateSplunkOnCallChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateSplunkOnCallChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateSplunkOnCallChannelConfig(v UpdateSplunkOnCallChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeTelegramChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided TelegramChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeTelegramChannelConfig(v TelegramChannelConfig) error {
+// MergeUpdateSplunkOnCallChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateSplunkOnCallChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateSplunkOnCallChannelConfig(v UpdateSplunkOnCallChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13654,22 +16088,22 @@ func (t *UpdateAlertChannelRequest_Config) MergeTelegramChannelConfig(v Telegram
 	return err
 }
 
-// AsWebhookChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a WebhookChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsWebhookChannelConfig() (WebhookChannelConfig, error) {
-	var body WebhookChannelConfig
+// AsUpdateTeamsChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateTeamsChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateTeamsChannelConfig() (UpdateTeamsChannelConfig, error) {
+	var body UpdateTeamsChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromWebhookChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided WebhookChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromWebhookChannelConfig(v WebhookChannelConfig) error {
+// FromUpdateTeamsChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateTeamsChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateTeamsChannelConfig(v UpdateTeamsChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeWebhookChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided WebhookChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeWebhookChannelConfig(v WebhookChannelConfig) error {
+// MergeUpdateTeamsChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateTeamsChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateTeamsChannelConfig(v UpdateTeamsChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -13680,22 +16114,74 @@ func (t *UpdateAlertChannelRequest_Config) MergeWebhookChannelConfig(v WebhookCh
 	return err
 }
 
-// AsZapierChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a ZapierChannelConfig
-func (t UpdateAlertChannelRequest_Config) AsZapierChannelConfig() (ZapierChannelConfig, error) {
-	var body ZapierChannelConfig
+// AsUpdateTelegramChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateTelegramChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateTelegramChannelConfig() (UpdateTelegramChannelConfig, error) {
+	var body UpdateTelegramChannelConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromZapierChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided ZapierChannelConfig
-func (t *UpdateAlertChannelRequest_Config) FromZapierChannelConfig(v ZapierChannelConfig) error {
+// FromUpdateTelegramChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateTelegramChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateTelegramChannelConfig(v UpdateTelegramChannelConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeZapierChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided ZapierChannelConfig
-func (t *UpdateAlertChannelRequest_Config) MergeZapierChannelConfig(v ZapierChannelConfig) error {
+// MergeUpdateTelegramChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateTelegramChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateTelegramChannelConfig(v UpdateTelegramChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUpdateWebhookChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateWebhookChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateWebhookChannelConfig() (UpdateWebhookChannelConfig, error) {
+	var body UpdateWebhookChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUpdateWebhookChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateWebhookChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateWebhookChannelConfig(v UpdateWebhookChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUpdateWebhookChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateWebhookChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateWebhookChannelConfig(v UpdateWebhookChannelConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsUpdateZapierChannelConfig returns the union data inside the UpdateAlertChannelRequest_Config as a UpdateZapierChannelConfig
+func (t UpdateAlertChannelRequest_Config) AsUpdateZapierChannelConfig() (UpdateZapierChannelConfig, error) {
+	var body UpdateZapierChannelConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromUpdateZapierChannelConfig overwrites any union data inside the UpdateAlertChannelRequest_Config as the provided UpdateZapierChannelConfig
+func (t *UpdateAlertChannelRequest_Config) FromUpdateZapierChannelConfig(v UpdateZapierChannelConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeUpdateZapierChannelConfig performs a merge with any union data inside the UpdateAlertChannelRequest_Config, using the provided UpdateZapierChannelConfig
+func (t *UpdateAlertChannelRequest_Config) MergeUpdateZapierChannelConfig(v UpdateZapierChannelConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -15052,6 +17538,32 @@ func (t *UpdateMonitorRequest_Config) FromMcpServerMonitorConfig(v McpServerMoni
 
 // MergeMcpServerMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided McpServerMonitorConfig
 func (t *UpdateMonitorRequest_Config) MergeMcpServerMonitorConfig(v McpServerMonitorConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsScriptMonitorConfig returns the union data inside the UpdateMonitorRequest_Config as a ScriptMonitorConfig
+func (t UpdateMonitorRequest_Config) AsScriptMonitorConfig() (ScriptMonitorConfig, error) {
+	var body ScriptMonitorConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromScriptMonitorConfig overwrites any union data inside the UpdateMonitorRequest_Config as the provided ScriptMonitorConfig
+func (t *UpdateMonitorRequest_Config) FromScriptMonitorConfig(v ScriptMonitorConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeScriptMonitorConfig performs a merge with any union data inside the UpdateMonitorRequest_Config, using the provided ScriptMonitorConfig
+func (t *UpdateMonitorRequest_Config) MergeScriptMonitorConfig(v ScriptMonitorConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
