@@ -69,6 +69,7 @@ resource "devhelm_notification_policy" "tiered" {
 
 ### Optional
 
+- `description` (String) Optional note for this policy. Omit to clear an existing description; empty string is rejected.
 - `enabled` (Boolean) Whether this policy is active (default: true)
 - `escalation_step` (Block List) Ordered escalation steps. Each step defines channels and delays. (see [below for nested schema](#nestedblock--escalation_step))
 - `match_rule` (Block List) Rules to match which incidents trigger this policy. (see [below for nested schema](#nestedblock--match_rule))

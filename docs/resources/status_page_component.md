@@ -116,7 +116,7 @@ resource "devhelm_status_page_component" "checkout" {
 
 - `name` (String) Component display name shown on the status page
 - `status_page_id` (String) ID of the parent status page. Changing this forces a new resource.
-- `type` (String) Component type: STATIC (text-only), MONITOR (driven by a monitor's check status), or GROUP (rolls up a resource group). Changing forces replacement.
+- `type` (String) Component type: STATIC (text-only), MONITOR (driven by a monitor's check status), GROUP (rolls up a resource group), or DEPENDENCY (catalog service). Changing forces replacement.
 
 ### Optional
 
@@ -126,6 +126,7 @@ resource "devhelm_status_page_component" "checkout" {
 - `group_id` (String) ID of the `devhelm_status_page_component_group` to place this component under; omit to leave ungrouped
 - `monitor_id` (String) Monitor UUID (required when type=MONITOR). Changing forces replacement.
 - `resource_group_id` (String) Resource group UUID (required when type=GROUP). Changing forces replacement.
+- `service_subscription_id` (String) Service subscription UUID (required when type=DEPENDENCY). Changing forces replacement.
 - `show_uptime` (Boolean) Whether the uptime bar is shown for this component (default: true)
 - `start_date` (String) Date (ISO 8601, YYYY-MM-DD) from which uptime data should be displayed. Useful when migrating an existing service onto a status page so historical uptime is not shown back to the component's creation. Server-assigned if omitted.
 

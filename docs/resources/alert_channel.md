@@ -96,12 +96,15 @@ resource "devhelm_alert_channel" "internal_webhook" {
 - `device_iden` (String) Target device identifier (broadcasts to all if empty)
 - `domain` (String) Atlassian instance domain (e.g. yourteam.atlassian.net)
 - `email` (String) Atlassian account email for API authentication
+- `enabled` (Boolean) Whether this channel is enabled and will receive alerts (default: true)
 - `endpoint_url` (String) GitLab alert integration endpoint URL
 - `icon_url` (String) Custom bot icon URL for Mattermost
 - `issue_type` (String) Issue type name (e.g. Bug, Task, Incident)
 - `label_id` (String) Linear label ID to attach to created issues
 - `mention_role_id` (String) Role ID to mention for Discord notifications
 - `mention_text` (String) Mention text for Slack notifications
+- `phone_number` (String) Recipient phone number in E.164 format (e.g. +14155550123)
+- `preferred_language` (String) Preferred language for SMS/TTS (BCP-47, e.g. en-US)
 - `priority` (String) Notification priority override (-2 to 2)
 - `project_key` (String) Jira project key where issues are created (e.g. OPS)
 - `recipients` (List of String) Email recipients (required for email type)
@@ -117,7 +120,9 @@ resource "devhelm_alert_channel" "internal_webhook" {
 - `team_id` (String) Linear team ID to create issues in
 - `url` (String) Webhook endpoint URL (required for webhook type)
 - `user_key` (String, Sensitive) Pushover user or group key
+- `verified_phone_number_id` (Number) Id of an org verified phone number; alternative to phone_number
 - `visibility` (String) Incident visibility: public or private
+- `voice_language` (String) TTS voice language for phone_call (BCP-47, e.g. en-US)
 - `webhook_url` (String) Incoming webhook URL
 
 ### Read-Only
