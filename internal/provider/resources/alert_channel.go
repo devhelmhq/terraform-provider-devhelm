@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -30,6 +31,7 @@ type AlertChannelResource struct {
 type AlertChannelResourceModel struct {
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
+	Enabled     types.Bool   `tfsdk:"enabled"`
 	ChannelType types.String `tfsdk:"channel_type"`
 	ConfigHash  types.String `tfsdk:"config_hash"`
 
@@ -97,6 +99,12 @@ type AlertChannelResourceModel struct {
 	// GitLab
 	EndpointURL      types.String `tfsdk:"endpoint_url"`
 	AuthorizationKey types.String `tfsdk:"authorization_key"`
+
+	// SMS / phone_call
+	PhoneNumber           types.String `tfsdk:"phone_number"`
+	VerifiedPhoneNumberID types.Int64  `tfsdk:"verified_phone_number_id"`
+	PreferredLanguage     types.String `tfsdk:"preferred_language"`
+	VoiceLanguage         types.String `tfsdk:"voice_language"`
 }
 
 func NewAlertChannelResource() resource.Resource {
@@ -118,6 +126,10 @@ func (r *AlertChannelResource) Schema(_ context.Context, _ resource.SchemaReques
 			},
 			"name": schema.StringAttribute{
 				Required: true, Description: "Human-readable name for this alert channel",
+			},
+			"enabled": schema.BoolAttribute{
+				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
+				Description: "Whether this channel is enabled and will receive alerts (default: true)",
 			},
 			"channel_type": schema.StringAttribute{
 				Required: true,
@@ -269,6 +281,21 @@ func (r *AlertChannelResource) Schema(_ context.Context, _ resource.SchemaReques
 			},
 			"authorization_key": schema.StringAttribute{
 				Optional: true, Sensitive: true, Description: "GitLab alert integration authorization key",
+			},
+
+			// SMS / phone_call
+			"phone_number": schema.StringAttribute{
+				Optional: true, Description: "Recipient phone number in E.164 format (e.g. +14155550123)",
+			},
+			"verified_phone_number_id": schema.Int64Attribute{
+				Optional:    true,
+				Description: "Id of an org verified phone number; alternative to phone_number",
+			},
+			"preferred_language": schema.StringAttribute{
+				Optional: true, Description: "Preferred language for SMS/TTS (BCP-47, e.g. en-US)",
+			},
+			"voice_language": schema.StringAttribute{
+				Optional: true, Description: "TTS voice language for phone_call (BCP-47, e.g. en-US)",
 			},
 		},
 	}
@@ -429,6 +456,21 @@ func (r *AlertChannelResource) buildConfig(model *AlertChannelResourceModel) (js
 			EndpointUrl:      model.EndpointURL.ValueString(),
 			AuthorizationKey: model.AuthorizationKey.ValueString(),
 		}
+	case string(generated.SmsChannelConfigChannelTypeSms):
+		cfg = generated.SmsChannelConfig{
+			ChannelType:           generated.SmsChannelConfigChannelTypeSms,
+			PhoneNumber:           stringPtrOrNil(model.PhoneNumber),
+			VerifiedPhoneNumberId: int64PtrOrNil(model.VerifiedPhoneNumberID),
+			PreferredLanguage:     stringPtrOrNil(model.PreferredLanguage),
+		}
+	case string(generated.PhoneCallChannelConfigChannelTypePhoneCall):
+		cfg = generated.PhoneCallChannelConfig{
+			ChannelType:           generated.PhoneCallChannelConfigChannelTypePhoneCall,
+			PhoneNumber:           stringPtrOrNil(model.PhoneNumber),
+			VerifiedPhoneNumberId: int64PtrOrNil(model.VerifiedPhoneNumberID),
+			PreferredLanguage:     stringPtrOrNil(model.PreferredLanguage),
+			VoiceLanguage:         stringPtrOrNil(model.VoiceLanguage),
+		}
 	default:
 		return nil, fmt.Errorf("unsupported channel type: %s", channelType)
 	}
@@ -468,8 +510,33 @@ func (r *AlertChannelResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
+	wantDisabled := !plan.Enabled.IsNull() && !plan.Enabled.IsUnknown() && !plan.Enabled.ValueBool()
 	plan.ID = types.StringValue(ch.Id.String())
 	plan.ConfigHash = stringValue(ch.ConfigHash)
+	plan.Enabled = types.BoolValue(ch.Enabled)
+
+	if wantDisabled {
+		var configUnion generated.UpdateAlertChannelRequest_Config
+		if err := configUnion.UnmarshalJSON(config); err != nil {
+			resp.Diagnostics.AddError("Error marshaling channel config", err.Error())
+			return
+		}
+		managedByUpdate := generated.UpdateAlertChannelRequestManagedByTERRAFORM
+		enabled := false
+		updated, err := api.Update[generated.AlertChannelDto](ctx, r.client, api.AlertChannelPath(plan.ID.ValueString()), generated.UpdateAlertChannelRequest{
+			Name:      plan.Name.ValueString(),
+			Config:    configUnion,
+			ManagedBy: &managedByUpdate,
+			Enabled:   &enabled,
+		})
+		if err != nil {
+			api.AddAPIError(&resp.Diagnostics, "disable alert channel after create", err, path.Root("enabled"))
+			return
+		}
+		plan.Enabled = types.BoolValue(updated.Enabled)
+		plan.ConfigHash = stringValue(updated.ConfigHash)
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
@@ -500,6 +567,7 @@ func (r *AlertChannelResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	state.Name = types.StringValue(found.Name)
+	state.Enabled = types.BoolValue(found.Enabled)
 	state.ChannelType = types.StringValue(string(found.ChannelType))
 
 	// Config fields are write-only (secrets). The API only returns a display
@@ -596,6 +664,12 @@ func clearAlertChannelConfigAttrs(m *AlertChannelResourceModel) {
 	// GitLab
 	m.EndpointURL = types.StringNull()
 	m.AuthorizationKey = types.StringNull()
+
+	// SMS / phone_call
+	m.PhoneNumber = types.StringNull()
+	m.VerifiedPhoneNumberID = types.Int64Null()
+	m.PreferredLanguage = types.StringNull()
+	m.VoiceLanguage = types.StringNull()
 }
 
 func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -628,6 +702,7 @@ func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRe
 		Name:      plan.Name.ValueString(),
 		Config:    configUnion,
 		ManagedBy: &managedByTF,
+		Enabled:   boolPtrOrNil(plan.Enabled),
 	}
 
 	ch, err := api.Update[generated.AlertChannelDto](ctx, r.client, api.AlertChannelPath(state.ID.ValueString()), body)
@@ -638,6 +713,7 @@ func (r *AlertChannelResource) Update(ctx context.Context, req resource.UpdateRe
 
 	plan.ID = state.ID
 	plan.ConfigHash = stringValue(ch.ConfigHash)
+	plan.Enabled = types.BoolValue(ch.Enabled)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 

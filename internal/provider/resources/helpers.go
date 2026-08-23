@@ -78,6 +78,14 @@ func int32PtrOrNil(v types.Int64) *int32 {
 	return &i
 }
 
+func int64PtrOrNil(v types.Int64) *int64 {
+	if v.IsNull() || v.IsUnknown() {
+		return nil
+	}
+	i := v.ValueInt64()
+	return &i
+}
+
 func int32OrZero(v types.Int64) int32 {
 	if v.IsNull() || v.IsUnknown() {
 		return 0

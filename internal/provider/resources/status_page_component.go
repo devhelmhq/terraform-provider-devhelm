@@ -41,18 +41,19 @@ type StatusPageComponentResource struct {
 }
 
 type StatusPageComponentResourceModel struct {
-	ID                 types.String `tfsdk:"id"`
-	StatusPageID       types.String `tfsdk:"status_page_id"`
-	Name               types.String `tfsdk:"name"`
-	Description        types.String `tfsdk:"description"`
-	Type               types.String `tfsdk:"type"`
-	GroupID            types.String `tfsdk:"group_id"`
-	MonitorID          types.String `tfsdk:"monitor_id"`
-	ResourceGroupID    types.String `tfsdk:"resource_group_id"`
-	DisplayOrder       types.Int64  `tfsdk:"display_order"`
-	ExcludeFromOverall types.Bool   `tfsdk:"exclude_from_overall"`
-	ShowUptime         types.Bool   `tfsdk:"show_uptime"`
-	StartDate          types.String `tfsdk:"start_date"`
+	ID                    types.String `tfsdk:"id"`
+	StatusPageID          types.String `tfsdk:"status_page_id"`
+	Name                  types.String `tfsdk:"name"`
+	Description           types.String `tfsdk:"description"`
+	Type                  types.String `tfsdk:"type"`
+	GroupID               types.String `tfsdk:"group_id"`
+	MonitorID             types.String `tfsdk:"monitor_id"`
+	ResourceGroupID       types.String `tfsdk:"resource_group_id"`
+	ServiceSubscriptionID types.String `tfsdk:"service_subscription_id"`
+	DisplayOrder          types.Int64  `tfsdk:"display_order"`
+	ExcludeFromOverall    types.Bool   `tfsdk:"exclude_from_overall"`
+	ShowUptime            types.Bool   `tfsdk:"show_uptime"`
+	StartDate             types.String `tfsdk:"start_date"`
 }
 
 func NewStatusPageComponentResource() resource.Resource {
@@ -141,6 +142,7 @@ func (r *StatusPageComponentResource) Schema(_ context.Context, _ resource.Schem
 						string(generated.CreateStatusPageComponentRequestTypeSTATIC),
 						string(generated.CreateStatusPageComponentRequestTypeMONITOR),
 						string(generated.CreateStatusPageComponentRequestTypeGROUP),
+						string(generated.CreateStatusPageComponentRequestTypeDEPENDENCY),
 					),
 				},
 				PlanModifiers: []planmodifier.String{
@@ -161,6 +163,13 @@ func (r *StatusPageComponentResource) Schema(_ context.Context, _ resource.Schem
 			"resource_group_id": schema.StringAttribute{
 				Optional:    true,
 				Description: "Resource group UUID (required when type=GROUP). Changing forces replacement.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+			},
+			"service_subscription_id": schema.StringAttribute{
+				Optional:    true,
+				Description: "Service subscription UUID (required when type=DEPENDENCY). Changing forces replacement.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -254,6 +263,14 @@ func (r *StatusPageComponentResource) ValidateConfig(ctx context.Context, req re
 				"resource_group_id is required when component type is GROUP",
 			)
 		}
+	case generated.CreateStatusPageComponentRequestTypeDEPENDENCY:
+		if model.ServiceSubscriptionID.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("service_subscription_id"),
+				"Missing required attribute",
+				"service_subscription_id is required when component type is DEPENDENCY",
+			)
+		}
 	}
 
 	if compType != generated.CreateStatusPageComponentRequestTypeMONITOR && !model.MonitorID.IsNull() && !model.MonitorID.IsUnknown() {
@@ -269,6 +286,14 @@ func (r *StatusPageComponentResource) ValidateConfig(ctx context.Context, req re
 			path.Root("resource_group_id"),
 			"Conflicting attribute",
 			fmt.Sprintf("resource_group_id should not be set when component type is %s", string(compType)),
+		)
+	}
+
+	if compType != generated.CreateStatusPageComponentRequestTypeDEPENDENCY && !model.ServiceSubscriptionID.IsNull() && !model.ServiceSubscriptionID.IsUnknown() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("service_subscription_id"),
+			"Conflicting attribute",
+			fmt.Sprintf("service_subscription_id should not be set when component type is %s", string(compType)),
 		)
 	}
 }
@@ -299,6 +324,9 @@ func (r *StatusPageComponentResource) validateTypeRefs(plan *StatusPageComponent
 		if !plan.ResourceGroupID.IsNull() && plan.ResourceGroupID.ValueString() != "" {
 			*diags = append(*diags, "type=MONITOR forbids resource_group_id; remove it or change type to GROUP")
 		}
+		if !plan.ServiceSubscriptionID.IsNull() && plan.ServiceSubscriptionID.ValueString() != "" {
+			*diags = append(*diags, "type=MONITOR forbids service_subscription_id")
+		}
 	case generated.CreateStatusPageComponentRequestTypeGROUP:
 		if plan.ResourceGroupID.IsNull() || plan.ResourceGroupID.ValueString() == "" {
 			*diags = append(*diags, "type=GROUP requires resource_group_id to be set")
@@ -306,12 +334,28 @@ func (r *StatusPageComponentResource) validateTypeRefs(plan *StatusPageComponent
 		if !plan.MonitorID.IsNull() && plan.MonitorID.ValueString() != "" {
 			*diags = append(*diags, "type=GROUP forbids monitor_id; remove it or change type to MONITOR")
 		}
+		if !plan.ServiceSubscriptionID.IsNull() && plan.ServiceSubscriptionID.ValueString() != "" {
+			*diags = append(*diags, "type=GROUP forbids service_subscription_id")
+		}
 	case generated.CreateStatusPageComponentRequestTypeSTATIC:
 		if !plan.MonitorID.IsNull() && plan.MonitorID.ValueString() != "" {
 			*diags = append(*diags, "type=STATIC forbids monitor_id")
 		}
 		if !plan.ResourceGroupID.IsNull() && plan.ResourceGroupID.ValueString() != "" {
 			*diags = append(*diags, "type=STATIC forbids resource_group_id")
+		}
+		if !plan.ServiceSubscriptionID.IsNull() && plan.ServiceSubscriptionID.ValueString() != "" {
+			*diags = append(*diags, "type=STATIC forbids service_subscription_id")
+		}
+	case generated.CreateStatusPageComponentRequestTypeDEPENDENCY:
+		if plan.ServiceSubscriptionID.IsNull() || plan.ServiceSubscriptionID.ValueString() == "" {
+			*diags = append(*diags, "type=DEPENDENCY requires service_subscription_id to be set")
+		}
+		if !plan.MonitorID.IsNull() && plan.MonitorID.ValueString() != "" {
+			*diags = append(*diags, "type=DEPENDENCY forbids monitor_id")
+		}
+		if !plan.ResourceGroupID.IsNull() && plan.ResourceGroupID.ValueString() != "" {
+			*diags = append(*diags, "type=DEPENDENCY forbids resource_group_id")
 		}
 	}
 }
@@ -368,6 +412,13 @@ func (r *StatusPageComponentResource) Create(ctx context.Context, req resource.C
 		return
 	}
 	body.ResourceGroupId = resourceGroupID
+
+	serviceSubscriptionID, err := parseUUIDPtrChecked(plan.ServiceSubscriptionID, "service_subscription_id")
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid service_subscription_id", err.Error())
+		return
+	}
+	body.ServiceSubscriptionId = serviceSubscriptionID
 
 	created, err := api.Create[generated.StatusPageComponentDto](
 		ctx, r.client,
@@ -568,6 +619,11 @@ func (r *StatusPageComponentResource) mapToState(model *StatusPageComponentResou
 		model.ResourceGroupID = types.StringValue(dto.ResourceGroupId.String())
 	} else {
 		model.ResourceGroupID = types.StringNull()
+	}
+	if dto.ServiceSubscriptionId != nil {
+		model.ServiceSubscriptionID = types.StringValue(dto.ServiceSubscriptionId.String())
+	} else {
+		model.ServiceSubscriptionID = types.StringNull()
 	}
 	if dto.StartDate != nil {
 		model.StartDate = types.StringValue(dto.StartDate.Format(componentStartDateLayout))
