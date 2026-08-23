@@ -4784,6 +4784,18 @@ type CursorPageIncidentActivityEventDto struct {
 	NextCursor *string `json:"nextCursor,omitempty"`
 }
 
+// CursorPageNotificationDispatchDto Cursor-paginated response for time-series and append-only data
+type CursorPageNotificationDispatchDto struct {
+	// Data Items on this page
+	Data []NotificationDispatchDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
 // CursorPageServiceCatalogDto Cursor-paginated response for time-series and append-only data
 type CursorPageServiceCatalogDto struct {
 	// Data Items on this page
@@ -8810,7 +8822,6 @@ type TableValueResultAlertChannelDto struct {
 	Data          []AlertChannelDto `json:"data"`
 	HasNext       bool              `json:"hasNext"`
 	HasPrev       bool              `json:"hasPrev"`
-	NextCursor    *string           `json:"nextCursor,omitempty"`
 	TotalElements *int64            `json:"totalElements,omitempty"`
 	TotalPages    *int32            `json:"totalPages,omitempty"`
 }
@@ -8820,7 +8831,6 @@ type TableValueResultAlertDeliveryDto struct {
 	Data          []AlertDeliveryDto `json:"data"`
 	HasNext       bool               `json:"hasNext"`
 	HasPrev       bool               `json:"hasPrev"`
-	NextCursor    *string            `json:"nextCursor,omitempty"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
 }
@@ -8830,7 +8840,6 @@ type TableValueResultApiKeyDto struct {
 	Data          []ApiKeyDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
-	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -8840,7 +8849,6 @@ type TableValueResultAuditEventDto struct {
 	Data          []AuditEventDto `json:"data"`
 	HasNext       bool            `json:"hasNext"`
 	HasPrev       bool            `json:"hasPrev"`
-	NextCursor    *string         `json:"nextCursor,omitempty"`
 	TotalElements *int64          `json:"totalElements,omitempty"`
 	TotalPages    *int32          `json:"totalPages,omitempty"`
 }
@@ -8850,7 +8858,6 @@ type TableValueResultCategoryDto struct {
 	Data          []CategoryDto `json:"data"`
 	HasNext       bool          `json:"hasNext"`
 	HasPrev       bool          `json:"hasPrev"`
-	NextCursor    *string       `json:"nextCursor,omitempty"`
 	TotalElements *int64        `json:"totalElements,omitempty"`
 	TotalPages    *int32        `json:"totalPages,omitempty"`
 }
@@ -8860,7 +8867,6 @@ type TableValueResultComponentUptimeDayDto struct {
 	Data          []ComponentUptimeDayDto `json:"data"`
 	HasNext       bool                    `json:"hasNext"`
 	HasPrev       bool                    `json:"hasPrev"`
-	NextCursor    *string                 `json:"nextCursor,omitempty"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
@@ -8870,7 +8876,6 @@ type TableValueResultDeliveryAttemptDto struct {
 	Data          []DeliveryAttemptDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
-	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -8880,7 +8885,6 @@ type TableValueResultEnvironmentDto struct {
 	Data          []EnvironmentDto `json:"data"`
 	HasNext       bool             `json:"hasNext"`
 	HasPrev       bool             `json:"hasPrev"`
-	NextCursor    *string          `json:"nextCursor,omitempty"`
 	TotalElements *int64           `json:"totalElements,omitempty"`
 	TotalPages    *int32           `json:"totalPages,omitempty"`
 }
@@ -8890,7 +8894,6 @@ type TableValueResultIncidentDto struct {
 	Data          []IncidentDto `json:"data"`
 	HasNext       bool          `json:"hasNext"`
 	HasPrev       bool          `json:"hasPrev"`
-	NextCursor    *string       `json:"nextCursor,omitempty"`
 	TotalElements *int64        `json:"totalElements,omitempty"`
 	TotalPages    *int32        `json:"totalPages,omitempty"`
 }
@@ -8900,7 +8903,6 @@ type TableValueResultIncidentStateTransitionDto struct {
 	Data          []IncidentStateTransitionDto `json:"data"`
 	HasNext       bool                         `json:"hasNext"`
 	HasPrev       bool                         `json:"hasPrev"`
-	NextCursor    *string                      `json:"nextCursor,omitempty"`
 	TotalElements *int64                       `json:"totalElements,omitempty"`
 	TotalPages    *int32                       `json:"totalPages,omitempty"`
 }
@@ -8910,7 +8912,6 @@ type TableValueResultIntegrationDto struct {
 	Data          []IntegrationDto `json:"data"`
 	HasNext       bool             `json:"hasNext"`
 	HasPrev       bool             `json:"hasPrev"`
-	NextCursor    *string          `json:"nextCursor,omitempty"`
 	TotalElements *int64           `json:"totalElements,omitempty"`
 	TotalPages    *int32           `json:"totalPages,omitempty"`
 }
@@ -8920,7 +8921,6 @@ type TableValueResultInviteDto struct {
 	Data          []InviteDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
-	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -8930,7 +8930,6 @@ type TableValueResultMaintenanceWindowDto struct {
 	Data          []MaintenanceWindowDto `json:"data"`
 	HasNext       bool                   `json:"hasNext"`
 	HasPrev       bool                   `json:"hasPrev"`
-	NextCursor    *string                `json:"nextCursor,omitempty"`
 	TotalElements *int64                 `json:"totalElements,omitempty"`
 	TotalPages    *int32                 `json:"totalPages,omitempty"`
 }
@@ -8940,7 +8939,6 @@ type TableValueResultMemberDto struct {
 	Data          []MemberDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
-	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -8950,7 +8948,6 @@ type TableValueResultMonitorDto struct {
 	Data          []MonitorDto `json:"data"`
 	HasNext       bool         `json:"hasNext"`
 	HasPrev       bool         `json:"hasPrev"`
-	NextCursor    *string      `json:"nextCursor,omitempty"`
 	TotalElements *int64       `json:"totalElements,omitempty"`
 	TotalPages    *int32       `json:"totalPages,omitempty"`
 }
@@ -8960,7 +8957,6 @@ type TableValueResultMonitorVersionDto struct {
 	Data          []MonitorVersionDto `json:"data"`
 	HasNext       bool                `json:"hasNext"`
 	HasPrev       bool                `json:"hasPrev"`
-	NextCursor    *string             `json:"nextCursor,omitempty"`
 	TotalElements *int64              `json:"totalElements,omitempty"`
 	TotalPages    *int32              `json:"totalPages,omitempty"`
 }
@@ -8970,7 +8966,6 @@ type TableValueResultNotificationDispatchDto struct {
 	Data          []NotificationDispatchDto `json:"data"`
 	HasNext       bool                      `json:"hasNext"`
 	HasPrev       bool                      `json:"hasPrev"`
-	NextCursor    *string                   `json:"nextCursor,omitempty"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -8980,7 +8975,6 @@ type TableValueResultNotificationDto struct {
 	Data          []NotificationDto `json:"data"`
 	HasNext       bool              `json:"hasNext"`
 	HasPrev       bool              `json:"hasPrev"`
-	NextCursor    *string           `json:"nextCursor,omitempty"`
 	TotalElements *int64            `json:"totalElements,omitempty"`
 	TotalPages    *int32            `json:"totalPages,omitempty"`
 }
@@ -8990,7 +8984,6 @@ type TableValueResultNotificationPolicyDto struct {
 	Data          []NotificationPolicyDto `json:"data"`
 	HasNext       bool                    `json:"hasNext"`
 	HasPrev       bool                    `json:"hasPrev"`
-	NextCursor    *string                 `json:"nextCursor,omitempty"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
@@ -9000,7 +8993,6 @@ type TableValueResultResourceGroupDto struct {
 	Data          []ResourceGroupDto `json:"data"`
 	HasNext       bool               `json:"hasNext"`
 	HasPrev       bool               `json:"hasPrev"`
-	NextCursor    *string            `json:"nextCursor,omitempty"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
 }
@@ -9010,7 +9002,6 @@ type TableValueResultRuleEvaluationDto struct {
 	Data          []RuleEvaluationDto `json:"data"`
 	HasNext       bool                `json:"hasNext"`
 	HasPrev       bool                `json:"hasPrev"`
-	NextCursor    *string             `json:"nextCursor,omitempty"`
 	TotalElements *int64              `json:"totalElements,omitempty"`
 	TotalPages    *int32              `json:"totalPages,omitempty"`
 }
@@ -9020,7 +9011,6 @@ type TableValueResultScheduledMaintenanceDto struct {
 	Data          []ScheduledMaintenanceDto `json:"data"`
 	HasNext       bool                      `json:"hasNext"`
 	HasPrev       bool                      `json:"hasPrev"`
-	NextCursor    *string                   `json:"nextCursor,omitempty"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -9030,7 +9020,6 @@ type TableValueResultSecretDto struct {
 	Data          []SecretDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
-	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -9040,7 +9029,6 @@ type TableValueResultServiceComponentDto struct {
 	Data          []ServiceComponentDto `json:"data"`
 	HasNext       bool                  `json:"hasNext"`
 	HasPrev       bool                  `json:"hasPrev"`
-	NextCursor    *string               `json:"nextCursor,omitempty"`
 	TotalElements *int64                `json:"totalElements,omitempty"`
 	TotalPages    *int32                `json:"totalPages,omitempty"`
 }
@@ -9050,7 +9038,6 @@ type TableValueResultServiceIncidentDto struct {
 	Data          []ServiceIncidentDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
-	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -9060,7 +9047,6 @@ type TableValueResultServiceSubscriptionDto struct {
 	Data          []ServiceSubscriptionDto `json:"data"`
 	HasNext       bool                     `json:"hasNext"`
 	HasPrev       bool                     `json:"hasPrev"`
-	NextCursor    *string                  `json:"nextCursor,omitempty"`
 	TotalElements *int64                   `json:"totalElements,omitempty"`
 	TotalPages    *int32                   `json:"totalPages,omitempty"`
 }
@@ -9070,7 +9056,6 @@ type TableValueResultStatusPageComponentDto struct {
 	Data          []StatusPageComponentDto `json:"data"`
 	HasNext       bool                     `json:"hasNext"`
 	HasPrev       bool                     `json:"hasPrev"`
-	NextCursor    *string                  `json:"nextCursor,omitempty"`
 	TotalElements *int64                   `json:"totalElements,omitempty"`
 	TotalPages    *int32                   `json:"totalPages,omitempty"`
 }
@@ -9080,7 +9065,6 @@ type TableValueResultStatusPageComponentGroupDto struct {
 	Data          []StatusPageComponentGroupDto `json:"data"`
 	HasNext       bool                          `json:"hasNext"`
 	HasPrev       bool                          `json:"hasPrev"`
-	NextCursor    *string                       `json:"nextCursor,omitempty"`
 	TotalElements *int64                        `json:"totalElements,omitempty"`
 	TotalPages    *int32                        `json:"totalPages,omitempty"`
 }
@@ -9090,7 +9074,6 @@ type TableValueResultStatusPageCustomDomainDto struct {
 	Data          []StatusPageCustomDomainDto `json:"data"`
 	HasNext       bool                        `json:"hasNext"`
 	HasPrev       bool                        `json:"hasPrev"`
-	NextCursor    *string                     `json:"nextCursor,omitempty"`
 	TotalElements *int64                      `json:"totalElements,omitempty"`
 	TotalPages    *int32                      `json:"totalPages,omitempty"`
 }
@@ -9100,7 +9083,6 @@ type TableValueResultStatusPageDto struct {
 	Data          []StatusPageDto `json:"data"`
 	HasNext       bool            `json:"hasNext"`
 	HasPrev       bool            `json:"hasPrev"`
-	NextCursor    *string         `json:"nextCursor,omitempty"`
 	TotalElements *int64          `json:"totalElements,omitempty"`
 	TotalPages    *int32          `json:"totalPages,omitempty"`
 }
@@ -9110,7 +9092,6 @@ type TableValueResultStatusPageIncidentDto struct {
 	Data          []StatusPageIncidentDto `json:"data"`
 	HasNext       bool                    `json:"hasNext"`
 	HasPrev       bool                    `json:"hasPrev"`
-	NextCursor    *string                 `json:"nextCursor,omitempty"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
@@ -9120,7 +9101,6 @@ type TableValueResultStatusPageNotificationDeliveryDto struct {
 	Data          []StatusPageNotificationDeliveryDto `json:"data"`
 	HasNext       bool                                `json:"hasNext"`
 	HasPrev       bool                                `json:"hasPrev"`
-	NextCursor    *string                             `json:"nextCursor,omitempty"`
 	TotalElements *int64                              `json:"totalElements,omitempty"`
 	TotalPages    *int32                              `json:"totalPages,omitempty"`
 }
@@ -9130,7 +9110,6 @@ type TableValueResultStatusPageSubscriberDto struct {
 	Data          []StatusPageSubscriberDto `json:"data"`
 	HasNext       bool                      `json:"hasNext"`
 	HasPrev       bool                      `json:"hasPrev"`
-	NextCursor    *string                   `json:"nextCursor,omitempty"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -9140,7 +9119,6 @@ type TableValueResultTagDto struct {
 	Data          []TagDto `json:"data"`
 	HasNext       bool     `json:"hasNext"`
 	HasPrev       bool     `json:"hasPrev"`
-	NextCursor    *string  `json:"nextCursor,omitempty"`
 	TotalElements *int64   `json:"totalElements,omitempty"`
 	TotalPages    *int32   `json:"totalPages,omitempty"`
 }
@@ -9150,7 +9128,6 @@ type TableValueResultTestChannelResult struct {
 	Data          []TestChannelResult `json:"data"`
 	HasNext       bool                `json:"hasNext"`
 	HasPrev       bool                `json:"hasPrev"`
-	NextCursor    *string             `json:"nextCursor,omitempty"`
 	TotalElements *int64              `json:"totalElements,omitempty"`
 	TotalPages    *int32              `json:"totalPages,omitempty"`
 }
@@ -9160,7 +9137,6 @@ type TableValueResultVoiceLanguageDto struct {
 	Data          []VoiceLanguageDto `json:"data"`
 	HasNext       bool               `json:"hasNext"`
 	HasPrev       bool               `json:"hasPrev"`
-	NextCursor    *string            `json:"nextCursor,omitempty"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
 }
@@ -9170,7 +9146,6 @@ type TableValueResultWebhookDeliveryDto struct {
 	Data          []WebhookDeliveryDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
-	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -9180,7 +9155,6 @@ type TableValueResultWebhookEndpointDto struct {
 	Data          []WebhookEndpointDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
-	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -9190,7 +9164,6 @@ type TableValueResultWorkspaceDto struct {
 	Data          []WorkspaceDto `json:"data"`
 	HasNext       bool           `json:"hasNext"`
 	HasPrev       bool           `json:"hasPrev"`
-	NextCursor    *string        `json:"nextCursor,omitempty"`
 	TotalElements *int64         `json:"totalElements,omitempty"`
 	TotalPages    *int32         `json:"totalPages,omitempty"`
 }
