@@ -63,8 +63,12 @@ func (r *NotificationPolicyResource) Schema(_ context.Context, _ resource.Schema
 				Required: true, Description: "Human-readable name for this notification policy",
 			},
 			"description": schema.StringAttribute{
-				Optional:    true,
-				Description: "Optional note for this policy",
+				Optional: true,
+				Description: "Optional note for this policy. Omit to clear an existing " +
+					"description; empty string is rejected.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"enabled": schema.BoolAttribute{
 				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
@@ -289,7 +293,7 @@ func (r *NotificationPolicyResource) buildUpdateRequest(ctx context.Context, pla
 
 	return &generated.UpdateNotificationPolicyRequest{
 		Name:        stringPtrOrNil(plan.Name),
-		Description: stringPtrOrNil(plan.Description),
+		Description: descriptionPtrForClear(plan.Description),
 		Enabled:     &enabled,
 		Priority:    &priority,
 		Escalation: &generated.EscalationChain{
@@ -358,7 +362,7 @@ func (r *NotificationPolicyResource) mapToState(ctx context.Context, model *Noti
 
 	model.ID = types.StringValue(dto.Id.String())
 	model.Name = types.StringValue(dto.Name)
-	model.Description = stringValue(dto.Description)
+	model.Description = stringValueClearable(dto.Description)
 	model.Enabled = types.BoolValue(dto.Enabled)
 	model.Priority = types.Int64Value(int64(dto.Priority))
 	model.OnResolve = stringValue(dto.Escalation.OnResolve)

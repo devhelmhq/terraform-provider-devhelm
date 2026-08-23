@@ -136,7 +136,8 @@ func (r *StatusPageComponentResource) Schema(_ context.Context, _ resource.Schem
 			"type": schema.StringAttribute{
 				Required: true,
 				Description: "Component type: STATIC (text-only), MONITOR (driven by a monitor's " +
-					"check status), or GROUP (rolls up a resource group). Changing forces replacement.",
+					"check status), GROUP (rolls up a resource group), or DEPENDENCY (catalog service). " +
+					"Changing forces replacement.",
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						string(generated.CreateStatusPageComponentRequestTypeSTATIC),
