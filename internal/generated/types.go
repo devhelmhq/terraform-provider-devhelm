@@ -175,6 +175,84 @@ func (e BulkMonitorActionRequestAction) Valid() bool {
 	}
 }
 
+// Defines values for CaptureCompareDtoBaselineKind.
+const (
+	CaptureCompareDtoBaselineKindLastPassThisStepThisRegion CaptureCompareDtoBaselineKind = "last_pass_this_step_this_region"
+)
+
+// Valid indicates whether the value is a known member of the CaptureCompareDtoBaselineKind enum.
+func (e CaptureCompareDtoBaselineKind) Valid() bool {
+	switch e {
+	case CaptureCompareDtoBaselineKindLastPassThisStepThisRegion:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CapturePolicyScreenshots.
+const (
+	CapturePolicyScreenshotsAlways    CapturePolicyScreenshots = "always"
+	CapturePolicyScreenshotsOff       CapturePolicyScreenshots = "off"
+	CapturePolicyScreenshotsOnFailure CapturePolicyScreenshots = "on_failure"
+)
+
+// Valid indicates whether the value is a known member of the CapturePolicyScreenshots enum.
+func (e CapturePolicyScreenshots) Valid() bool {
+	switch e {
+	case CapturePolicyScreenshotsAlways:
+		return true
+	case CapturePolicyScreenshotsOff:
+		return true
+	case CapturePolicyScreenshotsOnFailure:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CapturePolicyTrace.
+const (
+	CapturePolicyTraceAlways    CapturePolicyTrace = "always"
+	CapturePolicyTraceOff       CapturePolicyTrace = "off"
+	CapturePolicyTraceOnFailure CapturePolicyTrace = "on_failure"
+)
+
+// Valid indicates whether the value is a known member of the CapturePolicyTrace enum.
+func (e CapturePolicyTrace) Valid() bool {
+	switch e {
+	case CapturePolicyTraceAlways:
+		return true
+	case CapturePolicyTraceOff:
+		return true
+	case CapturePolicyTraceOnFailure:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CapturePolicyVideo.
+const (
+	CapturePolicyVideoAlways    CapturePolicyVideo = "always"
+	CapturePolicyVideoOff       CapturePolicyVideo = "off"
+	CapturePolicyVideoOnFailure CapturePolicyVideo = "on_failure"
+)
+
+// Valid indicates whether the value is a known member of the CapturePolicyVideo enum.
+func (e CapturePolicyVideo) Valid() bool {
+	switch e {
+	case CapturePolicyVideoAlways:
+		return true
+	case CapturePolicyVideoOff:
+		return true
+	case CapturePolicyVideoOnFailure:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ChangeRoleRequestOrgRole.
 const (
 	ChangeRoleRequestOrgRoleADMIN  ChangeRoleRequestOrgRole = "ADMIN"
@@ -295,6 +373,24 @@ func (e CreateAssertionRequestSeverity) Valid() bool {
 	case CreateAssertionRequestSeverityFail:
 		return true
 	case CreateAssertionRequestSeverityWarn:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateEmailDomainRequestKind.
+const (
+	CreateEmailDomainRequestKindAssigned CreateEmailDomainRequestKind = "assigned"
+	CreateEmailDomainRequestKindCustom   CreateEmailDomainRequestKind = "custom"
+)
+
+// Valid indicates whether the value is a known member of the CreateEmailDomainRequestKind enum.
+func (e CreateEmailDomainRequestKind) Valid() bool {
+	switch e {
+	case CreateEmailDomainRequestKindAssigned:
+		return true
+	case CreateEmailDomainRequestKindCustom:
 		return true
 	default:
 		return false
@@ -703,6 +799,24 @@ func (e CreateWebhookEndpointRequestSubscribedEvents) Valid() bool {
 	case CreateWebhookEndpointRequestSubscribedEventsServiceIncidentUpdated:
 		return true
 	case CreateWebhookEndpointRequestSubscribedEventsServiceStatusChanged:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateWebhookInboxRequestStatus.
+const (
+	CreateWebhookInboxRequestStatusActive   CreateWebhookInboxRequestStatus = "active"
+	CreateWebhookInboxRequestStatusDisabled CreateWebhookInboxRequestStatus = "disabled"
+)
+
+// Valid indicates whether the value is a known member of the CreateWebhookInboxRequestStatus enum.
+func (e CreateWebhookInboxRequestStatus) Valid() bool {
+	switch e {
+	case CreateWebhookInboxRequestStatusActive:
+		return true
+	case CreateWebhookInboxRequestStatusDisabled:
 		return true
 	default:
 		return false
@@ -1303,6 +1417,24 @@ const (
 func (e IcmpResponseTimeWarnAssertionType) Valid() bool {
 	switch e {
 	case IcmpResponseTimeWarnAssertionTypeIcmpResponseTimeWarn:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for InboundOtpCodeSource.
+const (
+	InboundOtpCodeSourceHtml InboundOtpCodeSource = "html"
+	InboundOtpCodeSourceText InboundOtpCodeSource = "text"
+)
+
+// Valid indicates whether the value is a known member of the InboundOtpCodeSource enum.
+func (e InboundOtpCodeSource) Valid() bool {
+	switch e {
+	case InboundOtpCodeSourceHtml:
+		return true
+	case InboundOtpCodeSourceText:
 		return true
 	default:
 		return false
@@ -2041,6 +2173,30 @@ func (e RootlyChannelConfigChannelType) Valid() bool {
 	}
 }
 
+// Defines values for RowVerdict.
+const (
+	RowVerdictMuchSlower RowVerdict = "much_slower"
+	RowVerdictNotReached RowVerdict = "not_reached"
+	RowVerdictNowFailing RowVerdict = "now_failing"
+	RowVerdictUnchanged  RowVerdict = "unchanged"
+)
+
+// Valid indicates whether the value is a known member of the RowVerdict enum.
+func (e RowVerdict) Valid() bool {
+	switch e {
+	case RowVerdictMuchSlower:
+		return true
+	case RowVerdictNotReached:
+		return true
+	case RowVerdictNowFailing:
+		return true
+	case RowVerdictUnchanged:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SetStatusPageComponentOverrideRequestStatus.
 const (
 	SetStatusPageComponentOverrideRequestStatusDEGRADEDPERFORMANCE SetStatusPageComponentOverrideRequestStatus = "DEGRADED_PERFORMANCE"
@@ -2311,6 +2467,30 @@ func (e TelegramChannelConfigChannelType) Valid() bool {
 	}
 }
 
+// Defines values for TraceEntryPointId.
+const (
+	TraceEntryPointIdCaseStart          TraceEntryPointId = "case_start"
+	TraceEntryPointIdFailingAction      TraceEntryPointId = "failing_action"
+	TraceEntryPointIdFailingStep        TraceEntryPointId = "failing_step"
+	TraceEntryPointIdFirstFailedRequest TraceEntryPointId = "first_failed_request"
+)
+
+// Valid indicates whether the value is a known member of the TraceEntryPointId enum.
+func (e TraceEntryPointId) Valid() bool {
+	switch e {
+	case TraceEntryPointIdCaseStart:
+		return true
+	case TraceEntryPointIdFailingAction:
+		return true
+	case TraceEntryPointIdFailingStep:
+		return true
+	case TraceEntryPointIdFirstFailedRequest:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TriggerRuleAggregationType.
 const (
 	TriggerRuleAggregationTypeAllExceed TriggerRuleAggregationType = "all_exceed"
@@ -2476,6 +2656,30 @@ const (
 func (e UpdateEmailChannelConfigChannelType) Valid() bool {
 	switch e {
 	case UpdateEmailChannelConfigChannelTypeEmail:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateEmailDomainRequestStatus.
+const (
+	UpdateEmailDomainRequestStatusActive             UpdateEmailDomainRequestStatus = "active"
+	UpdateEmailDomainRequestStatusDisabled           UpdateEmailDomainRequestStatus = "disabled"
+	UpdateEmailDomainRequestStatusPendingDns         UpdateEmailDomainRequestStatus = "pending_dns"
+	UpdateEmailDomainRequestStatusVerificationFailed UpdateEmailDomainRequestStatus = "verification_failed"
+)
+
+// Valid indicates whether the value is a known member of the UpdateEmailDomainRequestStatus enum.
+func (e UpdateEmailDomainRequestStatus) Valid() bool {
+	switch e {
+	case UpdateEmailDomainRequestStatusActive:
+		return true
+	case UpdateEmailDomainRequestStatusDisabled:
+		return true
+	case UpdateEmailDomainRequestStatusPendingDns:
+		return true
+	case UpdateEmailDomainRequestStatusVerificationFailed:
 		return true
 	default:
 		return false
@@ -3031,6 +3235,24 @@ func (e UpdateWebhookEndpointRequestSubscribedEvents) Valid() bool {
 	}
 }
 
+// Defines values for UpdateWebhookInboxRequestStatus.
+const (
+	UpdateWebhookInboxRequestStatusActive   UpdateWebhookInboxRequestStatus = "active"
+	UpdateWebhookInboxRequestStatusDisabled UpdateWebhookInboxRequestStatus = "disabled"
+)
+
+// Valid indicates whether the value is a known member of the UpdateWebhookInboxRequestStatus enum.
+func (e UpdateWebhookInboxRequestStatus) Valid() bool {
+	switch e {
+	case UpdateWebhookInboxRequestStatusActive:
+		return true
+	case UpdateWebhookInboxRequestStatusDisabled:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UpdateZapierChannelConfigChannelType.
 const (
 	UpdateZapierChannelConfigChannelTypeZapier UpdateZapierChannelConfigChannelType = "zapier"
@@ -3040,6 +3262,27 @@ const (
 func (e UpdateZapierChannelConfigChannelType) Valid() bool {
 	switch e {
 	case UpdateZapierChannelConfigChannelTypeZapier:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpsertMonitorSessionRequestReusePolicy.
+const (
+	UpsertMonitorSessionRequestReusePolicyEveryRun  UpsertMonitorSessionRequestReusePolicy = "every_run"
+	UpsertMonitorSessionRequestReusePolicyOnFailure UpsertMonitorSessionRequestReusePolicy = "on_failure"
+	UpsertMonitorSessionRequestReusePolicyReuse     UpsertMonitorSessionRequestReusePolicy = "reuse"
+)
+
+// Valid indicates whether the value is a known member of the UpsertMonitorSessionRequestReusePolicy enum.
+func (e UpsertMonitorSessionRequestReusePolicy) Valid() bool {
+	switch e {
+	case UpsertMonitorSessionRequestReusePolicyEveryRun:
+		return true
+	case UpsertMonitorSessionRequestReusePolicyOnFailure:
+		return true
+	case UpsertMonitorSessionRequestReusePolicyReuse:
 		return true
 	default:
 		return false
@@ -3238,6 +3481,30 @@ func (e List8ParamsManagedBy) Valid() bool {
 	case List8ParamsManagedByMCP:
 		return true
 	case List8ParamsManagedByTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for GetMonitorOverviewStepsParamsWindow.
+const (
+	GetMonitorOverviewStepsParamsWindowN24h GetMonitorOverviewStepsParamsWindow = "24h"
+	GetMonitorOverviewStepsParamsWindowN30d GetMonitorOverviewStepsParamsWindow = "30d"
+	GetMonitorOverviewStepsParamsWindowN7d  GetMonitorOverviewStepsParamsWindow = "7d"
+	GetMonitorOverviewStepsParamsWindowN90d GetMonitorOverviewStepsParamsWindow = "90d"
+)
+
+// Valid indicates whether the value is a known member of the GetMonitorOverviewStepsParamsWindow enum.
+func (e GetMonitorOverviewStepsParamsWindow) Valid() bool {
+	switch e {
+	case GetMonitorOverviewStepsParamsWindowN24h:
+		return true
+	case GetMonitorOverviewStepsParamsWindowN30d:
+		return true
+	case GetMonitorOverviewStepsParamsWindowN7d:
+		return true
+	case GetMonitorOverviewStepsParamsWindowN90d:
 		return true
 	default:
 		return false
@@ -3836,6 +4103,33 @@ type ApiKeyDto struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+// ArtifactTraceMeta Packed trace doorway; do not unpack the zip
+type ArtifactTraceMeta struct {
+	// ActionCount Action count in the trace
+	ActionCount *int32 `json:"actionCount,omitempty"`
+
+	// EntryPoints Four doorways into the downloaded file
+	EntryPoints *[]TraceEntryPoint `json:"entryPoints,omitempty"`
+
+	// NearbyActions Actions around the failure, teardown labelled
+	NearbyActions *[]TraceNearbyAction `json:"nearbyActions,omitempty"`
+
+	// SnapshotCount Snapshot count in the trace
+	SnapshotCount *int32 `json:"snapshotCount,omitempty"`
+}
+
+// ArtifactViewport Screenshot viewport
+type ArtifactViewport struct {
+	// Dpr Device pixel ratio at capture
+	Dpr int32 `json:"dpr"`
+
+	// Height Viewport height in CSS pixels
+	Height int32 `json:"height"`
+
+	// Width Viewport width in CSS pixels
+	Width int32 `json:"width"`
+}
+
 // AssertionResultDto Result of evaluating a single assertion against a check result
 type AssertionResultDto struct {
 	// Actual Actual value observed
@@ -3990,6 +4284,49 @@ type BulkMonitorActionResult struct {
 	// Succeeded IDs of monitors on which the action succeeded
 	Succeeded []openapi_types.UUID `json:"succeeded"`
 }
+
+// CaptureCompareDto Screenshot compare against the last pass of this step
+type CaptureCompareDto struct {
+	// BaselineArtifactId Matching screenshot on the prior pass; null when none
+	BaselineArtifactId *openapi_types.UUID `json:"baselineArtifactId,omitempty"`
+
+	// BaselineKind Always last_pass_this_step_this_region
+	BaselineKind CaptureCompareDtoBaselineKind `json:"baselineKind"`
+
+	// BaselineRunId Run that owns the baseline screenshot
+	BaselineRunId *openapi_types.UUID `json:"baselineRunId,omitempty"`
+
+	// EmptyReason Why the baseline is empty; null when a baseline exists
+	EmptyReason        *string             `json:"emptyReason,omitempty"`
+	NearestOtherRegion *NearestOtherRegion `json:"nearestOtherRegion,omitempty"`
+
+	// ThisArtifactId Screenshot on this run
+	ThisArtifactId openapi_types.UUID `json:"thisArtifactId"`
+}
+
+// CaptureCompareDtoBaselineKind Always last_pass_this_step_this_region
+type CaptureCompareDtoBaselineKind string
+
+// CapturePolicy When to capture screenshots, traces, and video during a code run
+type CapturePolicy struct {
+	// Screenshots When to capture screenshots
+	Screenshots *CapturePolicyScreenshots `json:"screenshots,omitempty"`
+
+	// Trace When to capture a Playwright trace
+	Trace *CapturePolicyTrace `json:"trace,omitempty"`
+
+	// Video When to capture video
+	Video *CapturePolicyVideo `json:"video,omitempty"`
+}
+
+// CapturePolicyScreenshots When to capture screenshots
+type CapturePolicyScreenshots string
+
+// CapturePolicyTrace When to capture a Playwright trace
+type CapturePolicyTrace string
+
+// CapturePolicyVideo When to capture video
+type CapturePolicyVideo string
 
 // CategoryDto Service category with its count of catalog entries
 type CategoryDto struct {
@@ -4284,6 +4621,54 @@ type ConfirmationPolicy struct {
 // ConfirmationPolicyType How incident confirmation is coordinated across regions
 type ConfirmationPolicyType string
 
+// ConsoleGroupDto Grouped console messages
+type ConsoleGroupDto struct {
+	// Count How many times this message occurred
+	Count int32 `json:"count"`
+
+	// Level UI bucket: error, warning, or info
+	Level string `json:"level"`
+
+	// SourceUrl Source URL of the first occurrence
+	SourceUrl string `json:"sourceUrl"`
+
+	// StepIdFirst First step that logged this message
+	StepIdFirst *string `json:"stepIdFirst,omitempty"`
+
+	// StepIdLast Last step that logged this message
+	StepIdLast *string `json:"stepIdLast,omitempty"`
+
+	// Text Repeated message text
+	Text string `json:"text"`
+}
+
+// ConsoleLineDto One console line
+type ConsoleLineDto struct {
+	// ColumnNumber Source column number
+	ColumnNumber int32 `json:"columnNumber"`
+
+	// Id Stable line id from capture
+	Id string `json:"id"`
+
+	// Level UI bucket: error, warning, or info
+	Level string `json:"level"`
+
+	// LineNumber Source line number
+	LineNumber int32 `json:"lineNumber"`
+
+	// SourceUrl Script URL that logged this line
+	SourceUrl string `json:"sourceUrl"`
+
+	// StepId Step this line belonged to
+	StepId *string `json:"stepId,omitempty"`
+
+	// Text Console message text
+	Text string `json:"text"`
+
+	// Ts When the line was captured
+	Ts string `json:"ts"`
+}
+
 // CreateAlertChannelRequest defines model for CreateAlertChannelRequest.
 type CreateAlertChannelRequest struct {
 	Config CreateAlertChannelRequest_Config `json:"config"`
@@ -4312,7 +4697,7 @@ type CreateApiKeyRequest struct {
 	Name string `json:"name"`
 }
 
-// CreateAssertionRequest Replace all assertions; null preserves current
+// CreateAssertionRequest Replace all assertions. Null preserves current
 type CreateAssertionRequest struct {
 	Config CreateAssertionRequest_Config `json:"config"`
 
@@ -4327,6 +4712,18 @@ type CreateAssertionRequest_Config struct {
 
 // CreateAssertionRequestSeverity Outcome severity: FAIL (fails the check) or WARN (warns without failing, default: FAIL)
 type CreateAssertionRequestSeverity string
+
+// CreateEmailDomainRequest Create an email testing receive domain
+type CreateEmailDomainRequest struct {
+	// Kind assigned allocates a host under the DevHelm mail zone. custom uses name
+	Kind *CreateEmailDomainRequestKind `json:"kind,omitempty"`
+
+	// Name Custom FQDN. Required when kind is custom
+	Name *string `json:"name,omitempty"`
+}
+
+// CreateEmailDomainRequestKind assigned allocates a host under the DevHelm mail zone. custom uses name
+type CreateEmailDomainRequestKind string
 
 // CreateEnvironmentRequest defines model for CreateEnvironmentRequest.
 type CreateEnvironmentRequest struct {
@@ -4406,29 +4803,40 @@ type CreateMonitorRequest struct {
 	AlertChannelIds *[]openapi_types.UUID `json:"alertChannelIds,omitempty"`
 
 	// Assertions Assertions to evaluate against each check result
-	Assertions *[]CreateAssertionRequest   `json:"assertions,omitempty"`
-	Auth       *MonitorAuthConfig          `json:"auth,omitempty"`
-	Config     CreateMonitorRequest_Config `json:"config"`
+	Assertions    *[]CreateAssertionRequest    `json:"assertions,omitempty"`
+	Auth          *MonitorAuthConfig           `json:"auth,omitempty"`
+	CapturePolicy *CapturePolicy               `json:"capturePolicy,omitempty"`
+	Config        *CreateMonitorRequest_Config `json:"config,omitempty"`
+
+	// DefinitionId Existing definition to reuse for a sibling monitor
+	DefinitionId *openapi_types.UUID `json:"definitionId,omitempty"`
 
 	// Enabled Whether the monitor is active (default: true)
 	Enabled *bool `json:"enabled,omitempty"`
 
-	// EnvironmentId Environment to associate with this monitor
+	// EnvironmentId Environment to associate with this monitor. Required for browser and multi-step monitors
 	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
 
-	// FrequencySeconds Check frequency in seconds (10–86400); null defaults to plan minimum (60s on most paid plans)
+	// FastRetryMaxAttempts Fast-retry attempts after failure. Null or 0 disables
+	FastRetryMaxAttempts *int32 `json:"fastRetryMaxAttempts,omitempty"`
+
+	// FrequencySeconds Check frequency in seconds (10–86400). Null defaults to the plan minimum
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
-	// ManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted; set to your surface so audit logs, drift detection, and analytics attribute correctly.
+	// ManagedBy Source that created this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API
 	ManagedBy *CreateMonitorRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this monitor
-	Name string `json:"name"`
+	Name    string              `json:"name"`
+	Package *MonitorPackageSpec `json:"package,omitempty"`
 
-	// Regions Probe regions to run checks from. Allowed values are deployment-dependent; production: us-east, us-west, eu-west, ap-south.
-	Regions *[]string              `json:"regions,omitempty"`
-	Tags    *AddMonitorTagsRequest `json:"tags,omitempty"`
+	// Regions Probe regions to run checks from. Allowed values are deployment-dependent. Production: us-east, us-west, eu-west, ap-south
+	Regions *[]string `json:"regions,omitempty"`
+
+	// RunParallel When multiple locations are set, run all of them each interval (default: true). false rotates one location per interval
+	RunParallel *bool                  `json:"runParallel,omitempty"`
+	Tags        *AddMonitorTagsRequest `json:"tags,omitempty"`
 
 	// Type Monitor protocol type
 	Type CreateMonitorRequestType `json:"type"`
@@ -4439,7 +4847,7 @@ type CreateMonitorRequest_Config struct {
 	union json.RawMessage
 }
 
-// CreateMonitorRequestManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted; set to your surface so audit logs, drift detection, and analytics attribute correctly.
+// CreateMonitorRequestManagedBy Source that created this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API
 type CreateMonitorRequestManagedBy string
 
 // CreateMonitorRequestType Monitor protocol type
@@ -4464,6 +4872,12 @@ type CreateNotificationPolicyRequest struct {
 
 	// Priority Evaluation priority; higher value = evaluated first (default 0)
 	Priority *int32 `json:"priority,omitempty"`
+}
+
+// CreatePackageUploadRequest defines model for CreatePackageUploadRequest.
+type CreatePackageUploadRequest struct {
+	// Digest SHA-256 hex digest of the package zip to upload (64 chars)
+	Digest string `json:"digest"`
 }
 
 // CreateResourceGroupRequest Request body for creating a resource group
@@ -4721,6 +5135,28 @@ type CreateWebhookEndpointRequest struct {
 // CreateWebhookEndpointRequestSubscribedEvents defines model for CreateWebhookEndpointRequest.SubscribedEvents.
 type CreateWebhookEndpointRequestSubscribedEvents string
 
+// CreateWebhookInboxRequest Create a webhook testing inbox
+type CreateWebhookInboxRequest struct {
+	// Cors Allow browser callers on other origins to hit the ingest URL (default: true)
+	Cors         *bool                            `json:"cors,omitempty"`
+	HttpResponse *InboundWebhookHttpResponsePatch `json:"httpResponse,omitempty"`
+
+	// MaxEvents Max stored events before ingest drops the oldest (default: 10000)
+	MaxEvents *int32 `json:"maxEvents,omitempty"`
+
+	// Name Human-readable name for this inbox
+	Name string `json:"name"`
+
+	// RetentionDays Days events are kept. Omitted uses the testing plan. Cannot exceed the plan
+	RetentionDays *int32 `json:"retentionDays,omitempty"`
+
+	// Status Inbox lifecycle (default: active)
+	Status *CreateWebhookInboxRequestStatus `json:"status,omitempty"`
+}
+
+// CreateWebhookInboxRequestStatus Inbox lifecycle (default: active)
+type CreateWebhookInboxRequestStatus string
+
 // CreateWorkspaceRequest Create a new workspace within the organization
 type CreateWorkspaceRequest struct {
 	// Name Workspace name
@@ -4772,10 +5208,46 @@ type CursorPageCheckResultDto struct {
 	NextCursor *string `json:"nextCursor,omitempty"`
 }
 
+// CursorPageEmailMessageDto Cursor-paginated response for time-series and append-only data
+type CursorPageEmailMessageDto struct {
+	// Data Items on this page
+	Data []EmailMessageDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
 // CursorPageIncidentActivityEventDto Cursor-paginated response for time-series and append-only data
 type CursorPageIncidentActivityEventDto struct {
 	// Data Items on this page
 	Data []IncidentActivityEventDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
+// CursorPageNotificationDispatchDto Cursor-paginated response for time-series and append-only data
+type CursorPageNotificationDispatchDto struct {
+	// Data Items on this page
+	Data []NotificationDispatchDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
+// CursorPageRunDto Cursor-paginated response for time-series and append-only data
+type CursorPageRunDto struct {
+	// Data Items on this page
+	Data []RunDto `json:"data"`
 
 	// HasMore Whether more results exist beyond this page
 	HasMore bool `json:"hasMore"`
@@ -4812,6 +5284,18 @@ type CursorPageServicePollResultDto struct {
 type CursorPageStatusEventDto struct {
 	// Data Items on this page
 	Data []StatusEventDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
+// CursorPageWebhookEventDto Cursor-paginated response for time-series and append-only data
+type CursorPageWebhookEventDto struct {
+	// Data Items on this page
+	Data []WebhookEventDto `json:"data"`
 
 	// HasMore Whether more results exist beyond this page
 	HasMore bool `json:"hasMore"`
@@ -4881,6 +5365,57 @@ type DayIncidentImpact string
 // DayIncidentStatus Lifecycle status (investigating, identified, monitoring, resolved, …)
 type DayIncidentStatus string
 
+// DefinitionDetailDto Definition with Heads for each environment
+type DefinitionDetailDto struct {
+	// Definition Code-monitor definition
+	Definition DefinitionDto `json:"definition"`
+
+	// Heads Active Heads per environment
+	Heads []DefinitionHeadDto `json:"heads"`
+}
+
+// DefinitionDto Code-monitor definition
+type DefinitionDto struct {
+	// CreatedAt When the definition was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Id Definition identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Name Human-readable name
+	Name string `json:"name"`
+
+	// OrganizationId Organization this definition belongs to
+	OrganizationId int32 `json:"organizationId"`
+
+	// Slug URL-safe slug unique within the organization
+	Slug string `json:"slug"`
+
+	// UpdatedAt When the definition was last updated
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// DefinitionHeadDto Active Head for a definition in one environment
+type DefinitionHeadDto struct {
+	// ActivatedAt When this Head last activated
+	ActivatedAt time.Time `json:"activatedAt"`
+
+	// ActivatedBy Who last activated this Head
+	ActivatedBy *string `json:"activatedBy,omitempty"`
+
+	// DefinitionId Definition this Head belongs to
+	DefinitionId openapi_types.UUID `json:"definitionId"`
+
+	// Environment Environment with variable substitutions for monitor configs
+	Environment EnvironmentDto `json:"environment"`
+
+	// Reason Rollback reason when this Head was restored
+	Reason *string `json:"reason,omitempty"`
+
+	// Revision Definition revision package
+	Revision RevisionDto `json:"revision"`
+}
+
 // DekRotationResultDto Result of a data encryption key rotation operation
 type DekRotationResultDto struct {
 	// ChannelsReEncrypted Number of alert channels re-encrypted with the new DEK
@@ -4939,6 +5474,18 @@ type DeliveryAttemptDto struct {
 
 	// Status Outcome: SUCCESS, FAILED, TIMEOUT, ERROR
 	Status string `json:"status"`
+}
+
+// DemandedKeyLocation Per-key declaring file and location from package scan
+type DemandedKeyLocation struct {
+	// DeclaringFile Declaring file path inside the zip
+	DeclaringFile *string `json:"declaringFile,omitempty"`
+
+	// DeclaringLocation Call site from package scan, e.g. signIn(…) · line 6
+	DeclaringLocation *string `json:"declaringLocation,omitempty"`
+
+	// Key Secret name the code reads
+	Key string `json:"key"`
 }
 
 // DeployLockDto Represents an active deploy lock for a workspace
@@ -5158,6 +5705,162 @@ type EmailChannelConfig struct {
 
 // EmailChannelConfigChannelType defines model for EmailChannelConfig.ChannelType.
 type EmailChannelConfigChannelType string
+
+// EmailDnsRecordDto Derived DNS record for an email testing domain
+type EmailDnsRecordDto struct {
+	// Found Whether the last check saw this record. Null before the first check
+	Found *bool `json:"found,omitempty"`
+
+	// Label Record purpose label
+	Label string `json:"label"`
+
+	// LastCheckedAt When this record was last checked
+	LastCheckedAt *time.Time `json:"lastCheckedAt,omitempty"`
+
+	// Name DNS owner name
+	Name string `json:"name"`
+
+	// Priority MX priority when type is MX
+	Priority *int32 `json:"priority,omitempty"`
+
+	// Required Whether this record is required for verification
+	Required bool `json:"required"`
+
+	// Type DNS record type
+	Type string `json:"type"`
+
+	// Value Record value
+	Value string `json:"value"`
+}
+
+// EmailDomainActivityBucketDto Received-message count for one UTC hour
+type EmailDomainActivityBucketDto struct {
+	// Hour Start of the UTC hour (ISO 8601)
+	Hour time.Time `json:"hour"`
+
+	// MessageCount Messages received in this hour
+	MessageCount int32 `json:"messageCount"`
+}
+
+// EmailDomainActivityDto 24-hour received-message activity for one email domain
+type EmailDomainActivityDto struct {
+	// Buckets Exactly 24 UTC-hour buckets, oldest first, zero-filled
+	Buckets []EmailDomainActivityBucketDto `json:"buckets"`
+
+	// DomainId Domain id
+	DomainId openapi_types.UUID `json:"domainId"`
+}
+
+// EmailDomainDto Email testing receive domain
+type EmailDomainDto struct {
+	// CreatedAt When the domain was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// DnsRecords DNS records to publish for this domain
+	DnsRecords []EmailDnsRecordDto `json:"dnsRecords"`
+
+	// Id Domain id
+	Id openapi_types.UUID `json:"id"`
+
+	// Kind How the domain was obtained
+	Kind string `json:"kind"`
+
+	// LastMessageAt When the domain last received a message
+	LastMessageAt *time.Time `json:"lastMessageAt,omitempty"`
+
+	// MxVerified Whether MX currently matches the published exchange
+	MxVerified bool `json:"mxVerified"`
+
+	// Name FQDN mail is sent to
+	Name string `json:"name"`
+
+	// RetentionDays Days messages are kept on the current plan
+	RetentionDays int32 `json:"retentionDays"`
+
+	// Status Domain lifecycle
+	Status string `json:"status"`
+
+	// UpdatedAt When the domain was last updated
+	UpdatedAt time.Time `json:"updatedAt"`
+
+	// VerificationError Last verification error
+	VerificationError *string `json:"verificationError,omitempty"`
+
+	// VerificationToken Custom-domain verification token
+	VerificationToken *openapi_types.UUID `json:"verificationToken,omitempty"`
+
+	// VerifiedAt When MX+TXT last passed
+	VerifiedAt *time.Time `json:"verifiedAt,omitempty"`
+
+	// WorkspaceId Workspace this domain belongs to
+	WorkspaceId int32 `json:"workspaceId"`
+}
+
+// EmailMessageDto Captured inbound email (preview, not RFC822 bytes)
+type EmailMessageDto struct {
+	// Attachments Attachment metadata
+	Attachments *[]InboundEmailAttachment `json:"attachments,omitempty"`
+
+	// BodyPreview Truncated body excerpt; full MIME lives in Spaces
+	BodyPreview *string `json:"bodyPreview,omitempty"`
+
+	// BodyTruncated True when the returned text or HTML was cut off or could not be read
+	BodyTruncated *bool `json:"bodyTruncated,omitempty"`
+
+	// DomainId Parent domain id
+	DomainId openapi_types.UUID `json:"domainId"`
+
+	// From Sender mailbox
+	From *string `json:"from,omitempty"`
+
+	// Headers Captured MIME headers as received
+	Headers map[string][]string `json:"headers"`
+
+	// Html HTML body, at most 256 KB
+	Html *string `json:"html,omitempty"`
+
+	// Id Message id
+	Id openapi_types.UUID `json:"id"`
+
+	// Inbox Local-part the message was addressed to
+	Inbox *string `json:"inbox,omitempty"`
+
+	// Links Extracted links
+	Links *[]InboundEmailLink `json:"links,omitempty"`
+
+	// Otp Extracted one-time codes
+	Otp *[]InboundOtpCode `json:"otp,omitempty"`
+
+	// RawUrl Download link for the full message when the body was cut off
+	RawUrl *string `json:"rawUrl,omitempty"`
+
+	// ReceivedAt When the message was received
+	ReceivedAt time.Time `json:"receivedAt"`
+
+	// Sha256 SHA-256 of the raw object
+	Sha256 string `json:"sha256"`
+
+	// SizeBytes Captured size in bytes
+	SizeBytes int32 `json:"sizeBytes"`
+
+	// Subject Subject
+	Subject *string `json:"subject,omitempty"`
+
+	// Text Plain-text body, at most 256 KB
+	Text *string `json:"text,omitempty"`
+
+	// To Recipient mailboxes
+	To *[]string `json:"to,omitempty"`
+}
+
+// EmailMessageSourceDto Original message source as received (RFC 822)
+type EmailMessageSourceDto struct {
+	// Source Headers and MIME body as text, up to 256 KB
+	Source string `json:"source"`
+
+	// Truncated Whether the source was cut at 256 KB; download the raw object for all of it
+	Truncated bool `json:"truncated"`
+}
 
 // EntitlementDto A single resolved entitlement for the organization
 type EntitlementDto struct {
@@ -5541,6 +6244,81 @@ type IcmpResponseTimeWarnAssertion struct {
 // IcmpResponseTimeWarnAssertionType defines model for IcmpResponseTimeWarnAssertion.Type.
 type IcmpResponseTimeWarnAssertionType string
 
+// InboundEmailAttachment Attachment metadata
+type InboundEmailAttachment struct {
+	// ContentType MIME type of the attachment
+	ContentType string `json:"contentType"`
+
+	// Filename Original filename from the MIME part
+	Filename string `json:"filename"`
+
+	// Id Attachment id used on the download path
+	Id openapi_types.UUID `json:"id"`
+
+	// ObjectKey Spaces key for the attachment bytes
+	ObjectKey string `json:"objectKey"`
+
+	// SizeBytes Attachment size in bytes
+	SizeBytes int32 `json:"sizeBytes"`
+}
+
+// InboundEmailLink Extracted links
+type InboundEmailLink struct {
+	// Href Link URL extracted from the message
+	Href string `json:"href"`
+
+	// Text Visible link text when present
+	Text *string `json:"text,omitempty"`
+}
+
+// InboundOtpCode Extracted one-time codes
+type InboundOtpCode struct {
+	// Source MIME part the code was found in (text or html)
+	Source InboundOtpCodeSource `json:"source"`
+
+	// Value Extracted one-time code digits
+	Value string `json:"value"`
+}
+
+// InboundOtpCodeSource MIME part the code was found in (text or html)
+type InboundOtpCodeSource string
+
+// InboundWebhookHttpResponse Mock reply returned to the sender after ingest is stored
+type InboundWebhookHttpResponse struct {
+	// Body Mock reply body (at most 65536 characters). Captured requests live in object storage
+	Body string `json:"body"`
+
+	// ContentType Content-Type of the mock reply (default text/plain)
+	ContentType string `json:"contentType"`
+
+	// DelayMs Milliseconds to wait before sending the mock reply (0–30000)
+	DelayMs int32 `json:"delayMs"`
+
+	// Headers Headers on the mock reply
+	Headers map[string]string `json:"headers"`
+
+	// Status HTTP status of the mock reply (200–599, default 200)
+	Status int32 `json:"status"`
+}
+
+// InboundWebhookHttpResponsePatch Partial mock reply returned to the sender after ingest
+type InboundWebhookHttpResponsePatch struct {
+	// Body Mock reply body (at most 65536 characters). Not the captured request
+	Body *string `json:"body,omitempty"`
+
+	// ContentType Content-Type of the mock reply
+	ContentType *string `json:"contentType,omitempty"`
+
+	// DelayMs Milliseconds to wait before sending the mock reply (0–30000)
+	DelayMs *int32 `json:"delayMs,omitempty"`
+
+	// Headers Headers on the mock reply
+	Headers *map[string]*string `json:"headers,omitempty"`
+
+	// Status HTTP status returned to the sender (200–599)
+	Status *int32 `json:"status,omitempty"`
+}
+
 // IncidentActivityEventDto Merged incident activity event (updates, dispatches, deliveries, forensics, SP updates)
 type IncidentActivityEventDto struct {
 	// Actor Actor label when known (user email, system, etc.)
@@ -5844,6 +6622,9 @@ type IncidentFilterParams struct {
 	// ResourceGroupId Only return incidents owned by this resource group (incidents.resource_group_id)
 	ResourceGroupId *openapi_types.UUID `json:"resourceGroupId,omitempty"`
 
+	// Search Case-insensitive substring match on title or incident ID
+	Search *string `json:"search,omitempty"`
+
 	// ServiceId Only return incidents tied to this service ID (third-party services)
 	ServiceId *openapi_types.UUID `json:"serviceId,omitempty"`
 
@@ -6030,6 +6811,39 @@ type IncidentsSummaryDto struct {
 	Active        int64    `json:"active"`
 	Mttr30d       *float64 `json:"mttr30d,omitempty"`
 	ResolvedToday int64    `json:"resolvedToday"`
+}
+
+// InjectEmailMessageRequest Inject a test email without SMTP
+type InjectEmailMessageRequest struct {
+	// From Sender mailbox
+	From string `json:"from"`
+
+	// Headers Extra MIME headers as received
+	Headers *map[string]*[]*string `json:"headers,omitempty"`
+
+	// Html HTML body
+	Html *string `json:"html,omitempty"`
+
+	// Subject Subject line
+	Subject *string `json:"subject,omitempty"`
+
+	// Text Plain-text body
+	Text *string `json:"text,omitempty"`
+
+	// To Recipient local-part or full mailbox
+	To string `json:"to"`
+}
+
+// InjectEmailMessageResponse Accepted inject; wait or get after persist
+type InjectEmailMessageResponse struct {
+	// EventId Ingest event id on the NATS pointer
+	EventId openapi_types.UUID `json:"eventId"`
+
+	// Inbox Inbox local-part parsed from to
+	Inbox string `json:"inbox"`
+
+	// ReceivedAt When the inject was accepted
+	ReceivedAt time.Time `json:"receivedAt"`
 }
 
 // IntegrationConfigSchemaDto defines model for IntegrationConfigSchemaDto.
@@ -6523,6 +7337,24 @@ type MonitorAuthDto_Config struct {
 	union json.RawMessage
 }
 
+// MonitorDriftDto Live overlay drift against the implied declared baseline
+type MonitorDriftDto struct {
+	// Fields Fields whose live overlay differs from the declared baseline
+	Fields []MonitorDriftFieldDto `json:"fields"`
+}
+
+// MonitorDriftFieldDto One field where live state differs from declared
+type MonitorDriftFieldDto struct {
+	// Declared Implied declared / IaC baseline
+	Declared string `json:"declared"`
+
+	// Field Field name: enabled, muted, quarantine, or managedBy
+	Field string `json:"field"`
+
+	// Live Live value on the monitor
+	Live string `json:"live"`
+}
+
 // MonitorDto Full monitor representation
 type MonitorDto struct {
 	// AlertChannelIds Alert channel IDs linked to this monitor; populated on single-monitor responses
@@ -6531,17 +7363,33 @@ type MonitorDto struct {
 	// Assertions Assertions evaluated against each check result; null on list responses
 	Assertions *[]MonitorAssertionDto `json:"assertions,omitempty"`
 	Auth       *MonitorAuthConfig     `json:"auth,omitempty"`
-	Config     MonitorDto_Config      `json:"config"`
+
+	// BindingReadiness Secret binding state: ready, blocked, or not_applicable
+	BindingReadiness *string `json:"bindingReadiness,omitempty"`
+
+	// BoundStatusPageComponents Status-page components that represent this monitor; omitted when none
+	BoundStatusPageComponents *[]StatusPageBoundComponentDto `json:"boundStatusPageComponents,omitempty"`
+	CapturePolicy             *CapturePolicy                 `json:"capturePolicy,omitempty"`
+	Config                    MonitorDto_Config              `json:"config"`
 
 	// CreatedAt Timestamp when the monitor was created
 	CreatedAt time.Time `json:"createdAt"`
 
-	// CurrentStatus Current operational state — UP, DOWN, DEGRADED, PAUSED, or UNKNOWN if no probe data yet
+	// CurrentStatus Current operational state. One of UP, DOWN, DEGRADED, PAUSED, or UNKNOWN
 	CurrentStatus *string `json:"currentStatus,omitempty"`
+
+	// DefinitionId Definition id for a browser or multi-step monitor. Null on probe monitors
+	DefinitionId *openapi_types.UUID `json:"definitionId,omitempty"`
+
+	// DisplayHealth List and header chip health; not currentStatus and not evaluation state
+	DisplayHealth *string `json:"displayHealth,omitempty"`
 
 	// Enabled Whether the monitor is active
 	Enabled     bool     `json:"enabled"`
 	Environment *Summary `json:"environment,omitempty"`
+
+	// FastRetryMaxAttempts Fast-retry max attempts; null/0 = off
+	FastRetryMaxAttempts *int32 `json:"fastRetryMaxAttempts,omitempty"`
 
 	// FrequencySeconds Check frequency in seconds (30–86400)
 	FrequencySeconds int32 `json:"frequencySeconds"`
@@ -6550,27 +7398,70 @@ type MonitorDto struct {
 	Id             openapi_types.UUID `json:"id"`
 	IncidentPolicy *IncidentPolicyDto `json:"incidentPolicy,omitempty"`
 
+	// LastRunAt When the latest code run was enqueued
+	LastRunAt *time.Time `json:"lastRunAt,omitempty"`
+
+	// LastRunId Latest code run id
+	LastRunId *openapi_types.UUID `json:"lastRunId,omitempty"`
+
 	// ManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API
 	ManagedBy string `json:"managedBy"`
+
+	// MuteReason Optional mute reason
+	MuteReason *string `json:"muteReason,omitempty"`
+
+	// Muted Whether alert delivery is muted
+	Muted bool `json:"muted"`
+
+	// MutedUntil Mute expiry; null means indefinite while muted
+	MutedUntil *time.Time `json:"mutedUntil,omitempty"`
 
 	// Name Human-readable name for this monitor
 	Name string `json:"name"`
 
+	// NeedsAttention True when the monitor needs operator attention
+	NeedsAttention *bool `json:"needsAttention,omitempty"`
+
+	// OpenIncident Open confirmed incident id
+	OpenIncident *openapi_types.UUID `json:"openIncident,omitempty"`
+
 	// OrganizationId Organization this monitor belongs to
 	OrganizationId int32 `json:"organizationId"`
+
+	// PauseExpiresAt Pause expiry
+	PauseExpiresAt *time.Time `json:"pauseExpiresAt,omitempty"`
+
+	// PauseReason Optional pause reason
+	PauseReason *string `json:"pauseReason,omitempty"`
+
+	// PausedAt When the monitor was paused
+	PausedAt *time.Time `json:"pausedAt,omitempty"`
 
 	// PingUrl Heartbeat ping URL; populated for HEARTBEAT monitors only
 	PingUrl *string `json:"pingUrl,omitempty"`
 
+	// QuarantineOwnerId Quarantine person owner id
+	QuarantineOwnerId *string `json:"quarantineOwnerId,omitempty"`
+
+	// QuarantineReason Quarantine reason
+	QuarantineReason *string `json:"quarantineReason,omitempty"`
+
+	// QuarantineUntil Quarantine expiry; non-null means quarantined
+	QuarantineUntil *time.Time `json:"quarantineUntil,omitempty"`
+
 	// Regions Probe regions where checks are executed
 	Regions []string `json:"regions"`
+
+	// RunParallel When multiple locations are set, run all of them each interval. False rotates one location per interval
+	RunParallel *bool `json:"runParallel,omitempty"`
 
 	// Tags Tags applied to this monitor
 	Tags *[]TagDto `json:"tags,omitempty"`
 	Type string    `json:"type"`
 
 	// UpdatedAt Timestamp when the monitor was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time         `json:"updatedAt"`
+	Upload    *PackageUploadDto `json:"upload,omitempty"`
 }
 
 // MonitorDto_Config defines model for MonitorDto.Config.
@@ -6578,13 +7469,142 @@ type MonitorDto_Config struct {
 	union json.RawMessage
 }
 
-// MonitorReference Monitors that reference this secret; null on create/update responses
+// MonitorOverlayRequest defines model for MonitorOverlayRequest.
+type MonitorOverlayRequest struct {
+	// ExpiresAt When this overlay expires
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+
+	// Reason Optional human-readable reason (max 280)
+	Reason *string `json:"reason,omitempty"`
+}
+
+// MonitorPackageSpec New package zip metadata for this environment
+type MonitorPackageSpec struct {
+	// AuthoredBy Author attribution supplied with the package
+	AuthoredBy *string `json:"authoredBy,omitempty"`
+
+	// Digest SHA-256 hex digest of the package zip (64 characters)
+	Digest string `json:"digest"`
+
+	// Entrypoint Entrypoint path inside the zip, e.g. tests/login.spec.ts
+	Entrypoint string `json:"entrypoint"`
+
+	// Files Relative file paths included in the zip
+	Files []string `json:"files"`
+
+	// GitFile Path of the declaring file in that repo
+	GitFile *string `json:"gitFile,omitempty"`
+
+	// GitMessage Commit message from the repo that produced this zip
+	GitMessage *string `json:"gitMessage,omitempty"`
+
+	// GitSha Commit SHA from the repo that produced this zip. Client-supplied provenance only
+	GitSha *string `json:"gitSha,omitempty"`
+
+	// KeyLocations Per-key declaring file and location from package scan
+	KeyLocations *[]DemandedKeyLocation `json:"keyLocations,omitempty"`
+
+	// Keys Secret names the zip demanded. PUT: null preserves, [] clears
+	Keys *[]string `json:"keys,omitempty"`
+}
+
+// MonitorReference Monitors that reference this secret for authentication
 type MonitorReference struct {
 	// Id Monitor identifier
 	Id openapi_types.UUID `json:"id"`
 
 	// Name Monitor name
 	Name string `json:"name"`
+}
+
+// MonitorRunListParams defines model for MonitorRunListParams.
+type MonitorRunListParams struct {
+	// Cursor Opaque cursor from the previous page; results cover the last 90 days
+	Cursor *string `json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 25)
+	Limit int32 `json:"limit"`
+
+	// Outcome Filter by outcome; passed is first-try only; passed_on_retry is a pass after retry
+	Outcome *string `json:"outcome,omitempty"`
+
+	// Phase Filter by run phase; omit to return every phase
+	Phase *string `json:"phase,omitempty"`
+
+	// Q Substring match on headline
+	Q *string `json:"q,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `json:"region,omitempty"`
+
+	// RevisionId Only runs for this published revision
+	RevisionId *openapi_types.UUID `json:"revisionId,omitempty"`
+
+	// Source Filter by what triggered the run
+	Source *string `json:"source,omitempty"`
+}
+
+// MonitorSecretRequestsDto Environment and secret keys this monitor requires
+type MonitorSecretRequestsDto struct {
+	// Environment Environment with variable substitutions for monitor configs
+	Environment EnvironmentDto `json:"environment"`
+
+	// Requests Secret keys this monitor requires and their resolve state
+	Requests []SecretRequestDto `json:"requests"`
+}
+
+// MonitorSessionDto Cached sign-in session for a monitor
+type MonitorSessionDto struct {
+	// CookieNames Cookie names in the cached session
+	CookieNames []string `json:"cookieNames"`
+
+	// ExpiresAt When the cached session expires
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+
+	// LastRejectedRunId Run that last rejected this cache
+	LastRejectedRunId *openapi_types.UUID `json:"lastRejectedRunId,omitempty"`
+
+	// Lifecycle Current session cache state
+	Lifecycle string `json:"lifecycle"`
+
+	// ReusePolicy When the cached session is reused across runs
+	ReusePolicy string `json:"reusePolicy"`
+
+	// SetupFile Setup file path inside the package zip
+	SetupFile string `json:"setupFile"`
+
+	// SignsInAs Account this cache signed in as
+	SignsInAs *string `json:"signsInAs,omitempty"`
+
+	// SizeBytes Cached session size in bytes
+	SizeBytes *int32 `json:"sizeBytes,omitempty"`
+
+	// StorageKeys Storage key names in the cached session
+	StorageKeys []string `json:"storageKeys"`
+
+	// UpdatedAt When this session row was last written
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+}
+
+// MonitorSettingsPreviewDto Projected run volume and meter headroom for this monitor
+type MonitorSettingsPreviewDto struct {
+	// Capped True when the next run of this monitor would be refused
+	Capped bool `json:"capped"`
+
+	// EstimatedRunsPerMonth Estimated runs this month from frequency × regions
+	EstimatedRunsPerMonth int64 `json:"estimatedRunsPerMonth"`
+
+	// Included Included runs this period; null when the pool is unlimited
+	Included *int64 `json:"included,omitempty"`
+
+	// Meter Usage meter this monitor bills: browser_runs or api_runs
+	Meter *string `json:"meter,omitempty"`
+
+	// Remaining Included runs still left; null when the pool is unlimited
+	Remaining *int64 `json:"remaining,omitempty"`
+
+	// Used Runs already counted this period
+	Used int64 `json:"used"`
 }
 
 // MonitorTestRequest defines model for MonitorTestRequest.
@@ -6669,6 +7689,103 @@ type MonitorsSummaryDto struct {
 
 	// Up Number of monitors currently passing
 	Up int64 `json:"up"`
+}
+
+// NearestOtherRegion Prior pass of this step in another region
+type NearestOtherRegion struct {
+	// ArtifactId Screenshot on that run
+	ArtifactId openapi_types.UUID `json:"artifactId"`
+
+	// Region Region of that run
+	Region string `json:"region"`
+
+	// RunId Run that holds the other-region shot
+	RunId openapi_types.UUID `json:"runId"`
+}
+
+// NetworkRowDto One waterfall request row
+type NetworkRowDto struct {
+	// Curl Copy-as-cURL from the redacted record
+	Curl string `json:"curl"`
+
+	// DurationMs Request duration in milliseconds
+	DurationMs *int32 `json:"durationMs,omitempty"`
+
+	// EncodedBodySize Encoded response body size in bytes
+	EncodedBodySize *int32 `json:"encodedBodySize,omitempty"`
+
+	// Failure Transport or protocol failure
+	Failure *string `json:"failure,omitempty"`
+
+	// Id Stable row id from capture
+	Id string `json:"id"`
+
+	// IsNavigation Whether this request started a navigation
+	IsNavigation bool `json:"isNavigation"`
+
+	// Method HTTP method
+	Method string `json:"method"`
+
+	// RedirectedFromUrl URL this request redirected from
+	RedirectedFromUrl *string `json:"redirectedFromUrl,omitempty"`
+
+	// RequestBody Request body preview, truncated at 256 KiB
+	RequestBody string `json:"requestBody"`
+
+	// RequestBodyTruncated Whether requestBody was truncated
+	RequestBodyTruncated bool `json:"requestBodyTruncated"`
+
+	// RequestHeaders Redacted request headers
+	RequestHeaders map[string]string `json:"requestHeaders"`
+
+	// ResourceType Chromium type, or api for the request fixture
+	ResourceType string `json:"resourceType"`
+
+	// ResponseBody Response body preview, truncated at 256 KiB
+	ResponseBody string `json:"responseBody"`
+
+	// ResponseBodyTruncated Whether responseBody was truncated
+	ResponseBodyTruncated bool `json:"responseBodyTruncated"`
+
+	// ResponseHeaders Redacted response headers
+	ResponseHeaders map[string]string `json:"responseHeaders"`
+
+	// Source page for browser, request for API_CHECK
+	Source string `json:"source"`
+
+	// StartedOffsetMs Offset from case start for the waterfall bar
+	StartedOffsetMs *int32 `json:"startedOffsetMs,omitempty"`
+
+	// Status HTTP status; null while pending
+	Status *int32 `json:"status,omitempty"`
+
+	// StepId Step this request belonged to
+	StepId *string           `json:"stepId,omitempty"`
+	Timing *NetworkTimingDto `json:"timing,omitempty"`
+
+	// TraceActionIndex Playwright trace action index; null on API_CHECK
+	TraceActionIndex *int32 `json:"traceActionIndex,omitempty"`
+
+	// Url Request URL
+	Url string `json:"url"`
+}
+
+// NetworkTimingDto Request timing phases in milliseconds
+type NetworkTimingDto struct {
+	// ConnectMs TCP connect time in milliseconds
+	ConnectMs *int32 `json:"connectMs,omitempty"`
+
+	// DnsMs DNS lookup time in milliseconds
+	DnsMs *int32 `json:"dnsMs,omitempty"`
+
+	// TlsMs TLS handshake time in milliseconds
+	TlsMs *int32 `json:"tlsMs,omitempty"`
+
+	// TransferMs Response transfer time in milliseconds
+	TransferMs *int32 `json:"transferMs,omitempty"`
+
+	// WaitingMs Time to first byte in milliseconds
+	WaitingMs *int32 `json:"waitingMs,omitempty"`
 }
 
 // NewTagRequest Inline tag creation — creates the tag if it does not already exist
@@ -6938,6 +8055,81 @@ type OrganizationDto struct {
 	WebsiteUrl *string `json:"websiteUrl,omitempty"`
 }
 
+// OverviewStepCellDto One cell on the overview step last-30 strip
+type OverviewStepCellDto struct {
+	// At When that step settled
+	At *string `json:"at,omitempty"`
+
+	// Id Stable cell id
+	Id string `json:"id"`
+
+	// Outcome Step outcome for that run
+	Outcome string `json:"outcome"`
+}
+
+// OverviewStepDto One catalog step on the monitor overview table
+type OverviewStepDto struct {
+	// Cells Last 30 outcomes for this step, oldest first
+	Cells []OverviewStepCellDto `json:"cells"`
+
+	// Error Error text from the latest failure
+	Error *string `json:"error,omitempty"`
+
+	// Expected Assertion expected from the latest failure
+	Expected *string `json:"expected,omitempty"`
+
+	// Failed Failed first-attempt count in the window
+	Failed int64 `json:"failed"`
+
+	// FailedAt When the latest failure settled
+	FailedAt *string `json:"failedAt,omitempty"`
+
+	// FirstTryPercent First-try pass percent for this step; null when no settled attempts
+	FirstTryPercent *float64 `json:"firstTryPercent,omitempty"`
+
+	// FlakeRetries Retry attempts on this step; null when none
+	FlakeRetries *int32 `json:"flakeRetries,omitempty"`
+
+	// Index 0-based step index from the Head revision catalog
+	Index int32 `json:"index"`
+
+	// LatestFailedRunId Run that produced the latest failure
+	LatestFailedRunId *openapi_types.UUID `json:"latestFailedRunId,omitempty"`
+
+	// Name Step title from the Head revision catalog
+	Name string `json:"name"`
+
+	// P50Ms Median duration in ms; null until the step has settled timings
+	P50Ms *float64 `json:"p50Ms,omitempty"`
+
+	// P95Ms p95 duration in ms; null until the step has settled timings
+	P95Ms *float64 `json:"p95Ms,omitempty"`
+
+	// Received Assertion received from the latest failure
+	Received *string `json:"received,omitempty"`
+
+	// Region Region of the latest failure
+	Region *string `json:"region,omitempty"`
+}
+
+// OverviewStepsDto Overview step catalog joined to run-step aggregates
+type OverviewStepsDto struct {
+	// Steps Rows in revision order; empty when the monitor has no step catalog
+	Steps []OverviewStepDto `json:"steps"`
+}
+
+// PackageUploadDto Signed package upload target
+type PackageUploadDto struct {
+	// ExpiresAt When the signed URL expires
+	ExpiresAt time.Time `json:"expiresAt"`
+
+	// PutUrl Presigned PUT URL for the zip bytes
+	PutUrl string `json:"putUrl"`
+
+	// RequiredHeaders Must send Content-Type: application/zip and If-None-Match: *
+	RequiredHeaders map[string]string `json:"requiredHeaders"`
+}
+
 // PageSection A top-level page section (either a group or an ungrouped component)
 type PageSection struct {
 	// ComponentId Component ID when this section is an ungrouped component
@@ -6993,6 +8185,18 @@ type PhoneCallChannelConfig struct {
 
 // PhoneCallChannelConfigChannelType defines model for PhoneCallChannelConfig.ChannelType.
 type PhoneCallChannelConfigChannelType string
+
+// PickerItem Finished run offered as an alternate baseline
+type PickerItem struct {
+	// FinishedAt When that run finished
+	FinishedAt time.Time `json:"finishedAt"`
+
+	// RevisionId Revision that run executed
+	RevisionId openapi_types.UUID `json:"revisionId"`
+
+	// RunId Finished run identifier
+	RunId openapi_types.UUID `json:"runId"`
+}
 
 // PlanInfo Billing plan and entitlement state
 type PlanInfo struct {
@@ -7063,6 +8267,12 @@ type PricingTier struct {
 	SlaPercentage *string `json:"slaPercentage,omitempty"`
 }
 
+// PublishRevisionRequest defines model for PublishRevisionRequest.
+type PublishRevisionRequest struct {
+	// RevisionId Existing revision to activate as Head for this monitor's environment
+	RevisionId openapi_types.UUID `json:"revisionId"`
+}
+
 // PublishStatusPageIncidentRequest defines model for PublishStatusPageIncidentRequest.
 type PublishStatusPageIncidentRequest struct {
 	// AffectedComponents Affected components; null keeps draft value
@@ -7121,6 +8331,18 @@ type PushoverChannelConfig struct {
 
 // PushoverChannelConfigChannelType defines model for PushoverChannelConfig.ChannelType.
 type PushoverChannelConfigChannelType string
+
+// QuarantineMonitorRequest defines model for QuarantineMonitorRequest.
+type QuarantineMonitorRequest struct {
+	// ExpiresAt When the hold expires
+	ExpiresAt time.Time `json:"expiresAt"`
+
+	// FromRunId Run that prompted this hold
+	FromRunId *openapi_types.UUID `json:"fromRunId,omitempty"`
+
+	// Reason Reason for this hold (max 280)
+	Reason string `json:"reason"`
+}
 
 // RateLimitInfo Rate-limit quota for the current sliding window
 type RateLimitInfo struct {
@@ -7184,6 +8406,9 @@ type RegexBodyAssertionType string
 
 // RegionStatusDto Latest check result for a single region
 type RegionStatusDto struct {
+	// FailureReason Why the last check failed; null when it passed
+	FailureReason *string `json:"failureReason,omitempty"`
+
 	// Passed Whether the last check in this region passed
 	Passed bool `json:"passed"`
 
@@ -7207,6 +8432,12 @@ type RelatedIncidentsResponse struct {
 
 	// Total Total matching incidents in the window, excluding the current incident
 	Total int64 `json:"total"`
+}
+
+// RemapSecretRequest Attach or clear a remapped secret
+type RemapSecretRequest struct {
+	// SecretId Secret to attach; null restores name-match
+	SecretId *openapi_types.UUID `json:"secretId,omitempty"`
 }
 
 // RemoveMonitorTagsRequest Request body for removing tags from a monitor
@@ -7236,18 +8467,18 @@ type ResolveIncidentRequest struct {
 	Body *string `json:"body,omitempty"`
 }
 
-// ResourceGroupDeleteBlockerDto Status-page component that references this resource group (blocks delete; public exposure)
+// ResourceGroupDeleteBlockerDto Status-page component that represents this resource group
 type ResourceGroupDeleteBlockerDto struct {
-	// ComponentId Blocking GROUP-typed status page component ID
+	// ComponentId GROUP-typed status page component ID
 	ComponentId openapi_types.UUID `json:"componentId"`
 
-	// ComponentName Blocking component display name
+	// ComponentName Component display name
 	ComponentName string `json:"componentName"`
 
 	// Hostname Public hostname when a custom domain is configured; null otherwise
 	Hostname *string `json:"hostname,omitempty"`
 
-	// StatusPageId Status page that owns the blocking component
+	// StatusPageId Status page that owns the component
 	StatusPageId openapi_types.UUID `json:"statusPageId"`
 
 	// StatusPageName Human-readable status page name
@@ -7281,7 +8512,7 @@ type ResourceGroupDto struct {
 	DefaultRegions       *[]string      `json:"defaultRegions,omitempty"`
 	DefaultRetryStrategy *RetryStrategy `json:"defaultRetryStrategy,omitempty"`
 
-	// DeleteBlockedBy Status-page GROUP components that reference this group (delete blockers / public exposure); populated on detail GET only — omitted on list
+	// DeleteBlockedBy Status-page GROUP components that represent this group (removed with the group on delete); populated on detail GET only — omitted on list
 	DeleteBlockedBy *[]ResourceGroupDeleteBlockerDto `json:"deleteBlockedBy,omitempty"`
 
 	// Description Optional group description
@@ -7472,6 +8703,9 @@ type ResultSummaryDto struct {
 	// CurrentStatus Derived current status across all regions
 	CurrentStatus string `json:"currentStatus"`
 
+	// LastPingAt Last heartbeat receipt on the current origin row; null after a miss
+	LastPingAt *time.Time `json:"lastPingAt,omitempty"`
+
 	// LatestPerRegion Latest check result per region
 	LatestPerRegion []RegionStatusDto `json:"latestPerRegion"`
 
@@ -7494,6 +8728,94 @@ type RetryStrategy struct {
 	Type string `json:"type"`
 }
 
+// RevisionDiffDto Bounded comparison of two revisions
+type RevisionDiffDto struct {
+	// Hunks File and field-level hunks (bounded)
+	Hunks []RevisionDiffHunkDto `json:"hunks"`
+
+	// Left Definition revision package
+	Left RevisionDto `json:"left"`
+
+	// Right Definition revision package
+	Right RevisionDto `json:"right"`
+}
+
+// RevisionDiffHunkDto One bounded diff hunk between revisions
+type RevisionDiffHunkDto struct {
+	// Change Whether this path was added, removed, or changed
+	Change string `json:"change"`
+
+	// Left Left value when present
+	Left *string `json:"left,omitempty"`
+
+	// Path Path or field name (entrypoint, keys, or file path)
+	Path string `json:"path"`
+
+	// Right Right value when present
+	Right *string `json:"right,omitempty"`
+}
+
+// RevisionDto Definition revision package
+type RevisionDto struct {
+	// AuthoredBy Who authored this package
+	AuthoredBy *string `json:"authoredBy,omitempty"`
+
+	// CreatedAt When the revision was minted
+	CreatedAt time.Time `json:"createdAt"`
+
+	// DefinitionId Parent definition
+	DefinitionId openapi_types.UUID `json:"definitionId"`
+
+	// Digest SHA-256 hex digest of the zip
+	Digest string `json:"digest"`
+
+	// DownloadUntil When package bytes expire for download
+	DownloadUntil *time.Time `json:"downloadUntil,omitempty"`
+
+	// Entrypoint Entrypoint file that runs
+	Entrypoint string `json:"entrypoint"`
+
+	// Files Paths present in the zip
+	Files []string `json:"files"`
+
+	// GitFile Declaring Git file path
+	GitFile *string `json:"gitFile,omitempty"`
+
+	// GitMessage Git commit message
+	GitMessage *string `json:"gitMessage,omitempty"`
+
+	// GitSha Git commit SHA when sourced from Git
+	GitSha *string `json:"gitSha,omitempty"`
+
+	// Id Revision identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Keys Secret key names the code demands
+	Keys []string `json:"keys"`
+
+	// Number Monotonic revision number within the definition
+	Number int32 `json:"number"`
+}
+
+// RollbackPreviewDto Consequence preview for rolling back Head in this environment
+type RollbackPreviewDto struct {
+	// AffectedMonitors Monitors sharing this definition and environment
+	AffectedMonitors []MonitorDto       `json:"affectedMonitors"`
+	Current          *DefinitionHeadDto `json:"current,omitempty"`
+
+	// Target Definition revision package
+	Target RevisionDto `json:"target"`
+}
+
+// RollbackRevisionRequest defines model for RollbackRevisionRequest.
+type RollbackRevisionRequest struct {
+	// Reason Why this rollback was performed (1–280 chars)
+	Reason string `json:"reason"`
+
+	// RevisionId Existing revision to restore as Head for this monitor's environment
+	RevisionId openapi_types.UUID `json:"revisionId"`
+}
+
 // RootlyChannelConfig defines model for RootlyChannelConfig.
 type RootlyChannelConfig struct {
 	// ApiKey Rootly API token with incident creation permission
@@ -7506,6 +8828,30 @@ type RootlyChannelConfig struct {
 
 // RootlyChannelConfigChannelType defines model for RootlyChannelConfig.ChannelType.
 type RootlyChannelConfigChannelType string
+
+// Row One step compared to the baseline
+type Row struct {
+	// BaselineDurationMs Baseline step duration in milliseconds
+	BaselineDurationMs *int32 `json:"baselineDurationMs,omitempty"`
+
+	// DeltaMs thisDurationMs minus baselineDurationMs
+	DeltaMs *int32 `json:"deltaMs,omitempty"`
+
+	// Index Zero-based step index
+	Index int32 `json:"index"`
+
+	// ThisDurationMs This run's step duration in milliseconds
+	ThisDurationMs *int32 `json:"thisDurationMs,omitempty"`
+
+	// Title Step title
+	Title string `json:"title"`
+
+	// Verdict unchanged, much_slower, now_failing, or not_reached
+	Verdict RowVerdict `json:"verdict"`
+}
+
+// RowVerdict unchanged, much_slower, now_failing, or not_reached
+type RowVerdict string
 
 // RuleEvaluationDto All rule evaluations that ran for this check
 type RuleEvaluationDto struct {
@@ -7552,6 +8898,492 @@ type RuleEvaluationDto struct {
 	TriggeringTransitionId *openapi_types.UUID `json:"triggeringTransitionId,omitempty"`
 }
 
+// RunArtifactDto Run evidence file
+type RunArtifactDto struct {
+	// ByteSize Stored size in bytes
+	ByteSize *int64 `json:"byteSize,omitempty"`
+
+	// CaptureReason Why this file was captured
+	CaptureReason *string `json:"captureReason,omitempty"`
+
+	// ContentType MIME type of the stored file
+	ContentType *string `json:"contentType,omitempty"`
+
+	// CreatedAt When this file row was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// DurationMs Video duration in milliseconds
+	DurationMs *int32 `json:"durationMs,omitempty"`
+
+	// EncodeEtaMs Estimated remaining encode time in milliseconds
+	EncodeEtaMs *int32 `json:"encodeEtaMs,omitempty"`
+
+	// ExpectedByteSize Expected size while a video is encoding
+	ExpectedByteSize *int64 `json:"expectedByteSize,omitempty"`
+
+	// ExpiresAt When stored bytes expire
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+
+	// Id Unique artifact identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Kind File kind
+	Kind string `json:"kind"`
+
+	// Lifecycle Whether bytes are available, processing, or gone
+	Lifecycle string `json:"lifecycle"`
+
+	// OrganizationId Organization this artifact belongs to
+	OrganizationId int32 `json:"organizationId"`
+
+	// RunId Run this artifact belongs to
+	RunId openapi_types.UUID `json:"runId"`
+
+	// StepId Step this screenshot belongs to; null for whole-run kinds
+	StepId    *openapi_types.UUID `json:"stepId,omitempty"`
+	TraceMeta *ArtifactTraceMeta  `json:"traceMeta,omitempty"`
+	Viewport  *ArtifactViewport   `json:"viewport,omitempty"`
+}
+
+// RunAttemptDto In-check attempt
+type RunAttemptDto struct {
+	// Attempt 1-based attempt number
+	Attempt int32 `json:"attempt"`
+
+	// FinishedAt When this attempt finished
+	FinishedAt *time.Time `json:"finishedAt,omitempty"`
+
+	// Outcome Attempt outcome; null while the case is open
+	Outcome *string `json:"outcome,omitempty"`
+
+	// StartedAt When this attempt started
+	StartedAt *time.Time `json:"startedAt,omitempty"`
+}
+
+// RunCaseDto Run case with nested steps
+type RunCaseDto struct {
+	// Attempt Playwright in-case attempt number
+	Attempt int32 `json:"attempt"`
+
+	// DurationMs Reporter duration in milliseconds
+	DurationMs *int32 `json:"durationMs,omitempty"`
+
+	// File Spec path inside the package
+	File *string `json:"file,omitempty"`
+
+	// FinishedAt When the case finished
+	FinishedAt *time.Time `json:"finishedAt,omitempty"`
+
+	// Id Case identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Index Zero-based case index within the attempt
+	Index int32 `json:"index"`
+
+	// OrganizationId Organization this case belongs to
+	OrganizationId int32 `json:"organizationId"`
+
+	// RunId Run this case belongs to
+	RunId openapi_types.UUID `json:"runId"`
+
+	// StartedAt When the case started
+	StartedAt *time.Time `json:"startedAt,omitempty"`
+
+	// Status Case status
+	Status string `json:"status"`
+
+	// Steps Steps on this case
+	Steps []RunStepDto `json:"steps"`
+
+	// Title Case title
+	Title string `json:"title"`
+}
+
+// RunCaseListParams defines model for RunCaseListParams.
+type RunCaseListParams struct {
+	// Attempt Only return cases for this Playwright attempt
+	Attempt *int32 `json:"attempt,omitempty"`
+}
+
+// RunConsoleDto Console groups or ungrouped lines
+type RunConsoleDto struct {
+	// Groups Grouped messages; empty when ungrouped or no_browser
+	Groups []ConsoleGroupDto `json:"groups"`
+
+	// Lines Raw lines when ungrouped=true
+	Lines *[]ConsoleLineDto `json:"lines,omitempty"`
+
+	// Reason Absence copy when state is no_browser
+	Reason *string `json:"reason,omitempty"`
+
+	// State on for browser, no_browser for API_CHECK
+	State string `json:"state"`
+}
+
+// RunConsoleParams defines model for RunConsoleParams.
+type RunConsoleParams struct {
+	// Attempt In-check attempt (default selected attempt)
+	Attempt *int32 `json:"attempt,omitempty"`
+
+	// Format raw downloads the ungrouped log as text/plain
+	Format *string `json:"format,omitempty"`
+
+	// Level Filter error, warning, or info
+	Level *string `json:"level,omitempty"`
+
+	// Ungrouped Return chronological lines instead of groups
+	Ungrouped *bool `json:"ungrouped,omitempty"`
+}
+
+// RunDiffDto Step duration diff against a prior pass
+type RunDiffDto struct {
+	// BaselineKind How the baseline was chosen
+	BaselineKind string `json:"baselineKind"`
+
+	// BaselineRunId Baseline run; null when no prior pass
+	BaselineRunId *openapi_types.UUID `json:"baselineRunId,omitempty"`
+
+	// Picker Other finished runs of this monitor for the picker
+	Picker []PickerItem `json:"picker"`
+
+	// ReadsAs Human-readable baseline sentence
+	ReadsAs string `json:"readsAs"`
+
+	// Rows One row per step on this run
+	Rows []Row `json:"rows"`
+}
+
+// RunDto Code-monitor run
+type RunDto struct {
+	// ArtifactsExpiredAt When artifact bytes expired
+	ArtifactsExpiredAt *time.Time `json:"artifactsExpiredAt,omitempty"`
+
+	// Attempt Selected in-check attempt (1-based)
+	Attempt int32 `json:"attempt"`
+
+	// AttemptOf In-check attempt count
+	AttemptOf int32 `json:"attemptOf"`
+
+	// Attempts In-check attempts
+	Attempts []RunAttemptDto `json:"attempts"`
+
+	// BindingVersionSnapshot Resolved secret key names frozen at create
+	BindingVersionSnapshot map[string]map[string]interface{} `json:"bindingVersionSnapshot"`
+
+	// BundleDigest Package digest frozen at create
+	BundleDigest string `json:"bundleDigest"`
+
+	// CancelRequested Whether cancel was requested
+	CancelRequested bool `json:"cancelRequested"`
+
+	// CancelledBy Who requested cancel
+	CancelledBy *string `json:"cancelledBy,omitempty"`
+
+	// CapturePolicySnapshot Capture settings frozen at create
+	CapturePolicySnapshot map[string]map[string]interface{} `json:"capturePolicySnapshot"`
+
+	// DurationMs Wall time from claim to finish
+	DurationMs *int64 `json:"durationMs,omitempty"`
+
+	// EnqueuedAt When this run was enqueued
+	EnqueuedAt time.Time `json:"enqueuedAt"`
+
+	// EnvironmentId Environment this run executed in
+	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
+
+	// EnvironmentName Environment display name
+	EnvironmentName *string `json:"environmentName,omitempty"`
+
+	// EvaluationCycleId Evaluation cycle grouping this run with retries
+	EvaluationCycleId *openapi_types.UUID `json:"evaluationCycleId,omitempty"`
+
+	// Evidence List evidence chips in SHOT → TRACE → VIDEO → NET order
+	Evidence []RunEvidenceDto `json:"evidence"`
+
+	// ExecutionLine Live execution one-liner
+	ExecutionLine *string `json:"executionLine,omitempty"`
+
+	// FinishedAt When the run finished
+	FinishedAt *time.Time `json:"finishedAt,omitempty"`
+
+	// Headline Last control headline
+	Headline *string `json:"headline,omitempty"`
+
+	// HeartbeatAgeMs Milliseconds since the last supervisor heartbeat
+	HeartbeatAgeMs *int64 `json:"heartbeatAgeMs,omitempty"`
+
+	// Host Target host from the environment BASE_URL
+	Host *string `json:"host,omitempty"`
+
+	// Id Unique run identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// IncidentId Open incident for this monitor
+	IncidentId *openapi_types.UUID `json:"incidentId,omitempty"`
+
+	// LastHeartbeatAt Last supervisor heartbeat
+	LastHeartbeatAt *time.Time  `json:"lastHeartbeatAt,omitempty"`
+	Live            *RunLiveDto `json:"live,omitempty"`
+
+	// MetaLine Server-composed header meta line
+	MetaLine *string `json:"metaLine,omitempty"`
+
+	// MonitorId Monitor this run belongs to
+	MonitorId openapi_types.UUID `json:"monitorId"`
+
+	// MonitorName Monitor display name
+	MonitorName *string `json:"monitorName,omitempty"`
+
+	// MonitorType Monitor type
+	MonitorType *string `json:"monitorType,omitempty"`
+
+	// OrganizationId Organization this run belongs to
+	OrganizationId int32 `json:"organizationId"`
+
+	// Outcome Outcome; null until the run is finished
+	Outcome *string `json:"outcome,omitempty"`
+
+	// Phase Current run phase
+	Phase string `json:"phase"`
+
+	// QueuePosition Live queue position; null when not queued
+	QueuePosition *int32 `json:"queuePosition,omitempty"`
+
+	// QueueWaitMs Time spent waiting for a seat
+	QueueWaitMs *int64 `json:"queueWaitMs,omitempty"`
+
+	// Region Probe region for this run
+	Region string `json:"region"`
+
+	// RetriedFromRunId Fast-retry parent run
+	RetriedFromRunId *openapi_types.UUID `json:"retriedFromRunId,omitempty"`
+
+	// RetryOfRunId Parent run when this is a fast retry
+	RetryOfRunId *openapi_types.UUID `json:"retryOfRunId,omitempty"`
+
+	// RevisionId Revision this run executed
+	RevisionId openapi_types.UUID `json:"revisionId"`
+
+	// Source What triggered this run
+	Source string `json:"source"`
+
+	// StartedAt When execution claimed a seat
+	StartedAt *time.Time `json:"startedAt,omitempty"`
+
+	// Stream True while the run is still live and clients may stream
+	Stream bool `json:"stream"`
+
+	// TabCounts Run detail tab counts
+	TabCounts RunTabCountsDto `json:"tabCounts"`
+
+	// UpdatedAt When the run row last changed
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+}
+
+// RunEventDto Run control event
+type RunEventDto struct {
+	// ArtifactId Artifact this event refers to
+	ArtifactId *openapi_types.UUID `json:"artifactId,omitempty"`
+
+	// CaseId Case this event refers to
+	CaseId *openapi_types.UUID `json:"caseId,omitempty"`
+
+	// CreatedAt When the event was persisted
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Id Event identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// OrganizationId Organization this event belongs to
+	OrganizationId int32 `json:"organizationId"`
+
+	// Payload Small typed payload for this event
+	Payload map[string]map[string]interface{} `json:"payload"`
+
+	// RunId Run this event belongs to
+	RunId openapi_types.UUID `json:"runId"`
+
+	// Seq Supervisor-monotonic sequence, starts at 1
+	Seq int64 `json:"seq"`
+
+	// StepId Step this event refers to
+	StepId *openapi_types.UUID `json:"stepId,omitempty"`
+
+	// Type Control event type
+	Type string `json:"type"`
+}
+
+// RunEventParams defines model for RunEventParams.
+type RunEventParams struct {
+	// After Replay events with seq greater than this value
+	After *int64 `json:"after,omitempty"`
+}
+
+// RunEvidenceDto List evidence chip
+type RunEvidenceDto struct {
+	// Kind Evidence kind in SHOT → TRACE → VIDEO → NET order
+	Kind string `json:"kind"`
+
+	// State Whether the artifact is usable
+	State string `json:"state"`
+}
+
+// RunListParams defines model for RunListParams.
+type RunListParams struct {
+	// EnvironmentId Only return runs whose monitor lives in this environment
+	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
+
+	// From Inclusive enqueue lower bound (default last 30 minutes; clamped to 90 days)
+	From *time.Time `json:"from,omitempty"`
+
+	// Outcome Filter by outcome; passed is first-try only; passed_on_retry is a pass after retry
+	Outcome *string `json:"outcome,omitempty"`
+
+	// Page Zero-based page index (default 0)
+	Page int32 `json:"page"`
+
+	// Phase Filter by run phase; omit to return every phase
+	Phase *string `json:"phase,omitempty"`
+
+	// Q Substring match on monitor name or headline
+	Q *string `json:"q,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `json:"region,omitempty"`
+
+	// Size Page size (1–100, default 50)
+	Size int32 `json:"size"`
+
+	// Source Filter by what triggered the run
+	Source *string `json:"source,omitempty"`
+
+	// To Inclusive enqueue upper bound (default now)
+	To *time.Time `json:"to,omitempty"`
+}
+
+// RunLiveDto Live run progress
+type RunLiveDto struct {
+	// ArtifactsExpected Artifacts expected for this run
+	ArtifactsExpected *int32 `json:"artifactsExpected,omitempty"`
+
+	// ArtifactsUploaded Artifacts already available
+	ArtifactsUploaded *int32 `json:"artifactsUploaded,omitempty"`
+
+	// StepCount Known step count for this attempt
+	StepCount int32 `json:"stepCount"`
+
+	// StepIndex Current step index
+	StepIndex *int32 `json:"stepIndex,omitempty"`
+
+	// StepTitle Current step title
+	StepTitle *string `json:"stepTitle,omitempty"`
+}
+
+// RunNetworkDto Network waterfall page
+type RunNetworkDto struct {
+	// CaseDurationMs Case wall time for waterfall bar scale
+	CaseDurationMs *int64 `json:"caseDurationMs,omitempty"`
+
+	// Data Waterfall rows on this page
+	Data []NetworkRowDto `json:"data"`
+
+	// HasMore Whether more rows exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
+// RunNetworkParams defines model for RunNetworkParams.
+type RunNetworkParams struct {
+	// Attempt In-check attempt (default selected attempt)
+	Attempt *int32 `json:"attempt,omitempty"`
+
+	// Cursor Opaque cursor from the previous page
+	Cursor *string `json:"cursor,omitempty"`
+
+	// Failed Only rows with status >= 400 or a failure
+	Failed *bool `json:"failed,omitempty"`
+
+	// Slow Only rows with durationMs >= 1000
+	Slow *bool `json:"slow,omitempty"`
+
+	// Source page or request
+	Source *string `json:"source,omitempty"`
+
+	// StepId Only rows for this step
+	StepId *string `json:"stepId,omitempty"`
+
+	// Xhr Only xhr, fetch, and api resource types
+	Xhr *bool `json:"xhr,omitempty"`
+}
+
+// RunStepDto Run step
+type RunStepDto struct {
+	// Assertion Assertion payload when this step is an assertion
+	Assertion *map[string]*map[string]interface{} `json:"assertion,omitempty"`
+
+	// Attempt Playwright in-case attempt number
+	Attempt int32 `json:"attempt"`
+
+	// CaseId Case this step belongs to
+	CaseId openapi_types.UUID `json:"caseId"`
+
+	// Category Step category
+	Category string `json:"category"`
+
+	// DurationMs Reporter duration in milliseconds
+	DurationMs *int32 `json:"durationMs,omitempty"`
+
+	// Error Error when the step failed
+	Error *string `json:"error,omitempty"`
+
+	// FinishedAt When the step finished
+	FinishedAt *time.Time `json:"finishedAt,omitempty"`
+
+	// Id Step identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Index Zero-based index within the case attempt
+	Index int32 `json:"index"`
+
+	// OrganizationId Organization this step belongs to
+	OrganizationId int32 `json:"organizationId"`
+
+	// RunId Run this step belongs to
+	RunId openapi_types.UUID `json:"runId"`
+
+	// StartedAt When the step started
+	StartedAt *time.Time `json:"startedAt,omitempty"`
+
+	// Status Step status
+	Status string `json:"status"`
+
+	// Title Step title
+	Title string `json:"title"`
+}
+
+// RunTabCountsDto Run detail tab counts
+type RunTabCountsDto struct {
+	// Assets Items across asset kinds, excluding dead no-browser rows
+	Assets int32 `json:"assets"`
+
+	// Diff 1 when a diff baseline exists or this run passed on retry
+	Diff int32 `json:"diff"`
+
+	// Steps Step rows for the selected attempt
+	Steps int32 `json:"steps"`
+}
+
+// RunnerLogLiveEvent Live runner-log line
+type RunnerLogLiveEvent struct {
+	// Line One runner-log line
+	Line string `json:"line"`
+
+	// Ts Loki timestamp in nanoseconds
+	Ts string `json:"ts"`
+}
+
 // ScheduledMaintenanceDto A scheduled maintenance window from a vendor status page
 type ScheduledMaintenanceDto struct {
 	// AffectedComponents Components affected by this maintenance
@@ -7593,14 +9425,24 @@ type ScheduledMaintenanceDto struct {
 
 // ScriptMonitorConfig defines model for ScriptMonitorConfig.
 type ScriptMonitorConfig struct {
-	// Script Playwright test script source code
-	Script string `json:"script"`
+	// RuntimeId Runtime pin YYYY.MM; omit uses workspace default then sole available
+	RuntimeId *string `json:"runtimeId,omitempty"`
 
-	// TimeoutSeconds Maximum execution time in seconds (5–120)
+	// Script Legacy inline script on existing rows
+	Script *string `json:"script,omitempty"`
+
+	// TimeoutSeconds Maximum execution time in seconds (5–240)
 	TimeoutSeconds *int32 `json:"timeoutSeconds,omitempty"`
 }
 
-// SecretDto Secret with change-detection hash; plaintext value is never returned
+// SecretAuditDto Last update time and author for a secret
+type SecretAuditDto struct {
+	// UpdatedAt When this secret was last updated
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy *UserDto   `json:"updatedBy,omitempty"`
+}
+
+// SecretDto Organization secret and its change-detection hash
 type SecretDto struct {
 	// CreatedAt Timestamp when the secret was created
 	CreatedAt time.Time `json:"createdAt"`
@@ -7617,11 +9459,42 @@ type SecretDto struct {
 	// UpdatedAt Timestamp when the secret was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 
-	// UsedByMonitors Monitors that reference this secret; null on create/update responses
+	// UsedByMonitors Monitors that reference this secret for authentication
 	UsedByMonitors *[]MonitorReference `json:"usedByMonitors,omitempty"`
 
 	// ValueHash SHA-256 hex digest of the current plaintext; use for change detection
 	ValueHash string `json:"valueHash"`
+}
+
+// SecretRequestDto Secret key a monitor requires and how it is fulfilled
+type SecretRequestDto struct {
+	// DeclaringFile Declaring file path inside the package zip
+	DeclaringFile *string `json:"declaringFile,omitempty"`
+
+	// DeclaringLocation Call site from package scan, e.g. signIn(…) · line 6
+	DeclaringLocation *string `json:"declaringLocation,omitempty"`
+
+	// FulfilledBy Fulfilled from environment variables or a secret
+	FulfilledBy *string `json:"fulfilledBy,omitempty"`
+
+	// Key Secret key this monitor requires
+	Key string `json:"key"`
+
+	// LastResolvedAt When a run last resolved this key
+	LastResolvedAt *time.Time `json:"lastResolvedAt,omitempty"`
+
+	// LastResolvedRunId Run that last resolved this key
+	LastResolvedRunId *openapi_types.UUID `json:"lastResolvedRunId,omitempty"`
+
+	// Readiness Whether this key is resolved or missing
+	Readiness string     `json:"readiness"`
+	Secret    *SecretDto `json:"secret,omitempty"`
+}
+
+// SecretUsageDto Monitors that reference this secret
+type SecretUsageDto struct {
+	// Monitors Monitors that reference this secret
+	Monitors []MonitorDto `json:"monitors"`
 }
 
 // SeoMetadataDto Admin-editable SEO metadata for pSEO pages
@@ -7905,9 +9778,12 @@ type ServiceSubscriptionDto struct {
 	AdapterType string `json:"adapterType"`
 
 	// AlertSensitivity Alert sensitivity: ALL (synthetic + real incidents, paged), INCIDENTS_ONLY (real vendor incidents, paged), MAJOR_ONLY (real + DOWN severity, paged), AWARENESS (real vendor incidents tracked silently — visible on dashboard, never paged; default for new subscriptions)
-	AlertSensitivity string               `json:"alertSensitivity"`
-	Category         *string              `json:"category,omitempty"`
-	Component        *ServiceComponentDto `json:"component,omitempty"`
+	AlertSensitivity string `json:"alertSensitivity"`
+
+	// BoundStatusPageComponents Status-page components that represent this dependency; omitted when none
+	BoundStatusPageComponents *[]StatusPageBoundComponentDto `json:"boundStatusPageComponents,omitempty"`
+	Category                  *string                        `json:"category,omitempty"`
+	Component                 *ServiceComponentDto           `json:"component,omitempty"`
 
 	// ComponentId Subscribed component id; null for whole-service subscription
 	ComponentId *openapi_types.UUID `json:"componentId,omitempty"`
@@ -7988,6 +9864,24 @@ type SetStatusPageComponentOverrideRequest struct {
 // SetStatusPageComponentOverrideRequestStatus Override status while active; takes precedence over binding until expiry/clear
 type SetStatusPageComponentOverrideRequestStatus string
 
+// SignedDownload Short-lived URL for a stored object
+type SignedDownload struct {
+	// ContentType Media type of the object
+	ContentType string `json:"contentType"`
+
+	// ExpiresAt When the URL stops working
+	ExpiresAt time.Time `json:"expiresAt"`
+
+	// Filename Filename for the download
+	Filename string `json:"filename"`
+
+	// SizeBytes Object size in bytes
+	SizeBytes int64 `json:"sizeBytes"`
+
+	// Url HTTPS URL that returns the object. Valid for 60 seconds
+	Url string `json:"url"`
+}
+
 // SingleValueResponseAcknowledgeAllIncidentsResponse defines model for SingleValueResponseAcknowledgeAllIncidentsResponse.
 type SingleValueResponseAcknowledgeAllIncidentsResponse struct {
 	// Data Result of acknowledging all acknowledgeable dispatches for an incident
@@ -8036,6 +9930,12 @@ type SingleValueResponseBulkMonitorActionResult struct {
 	Data BulkMonitorActionResult `json:"data"`
 }
 
+// SingleValueResponseCaptureCompareDto defines model for SingleValueResponseCaptureCompareDto.
+type SingleValueResponseCaptureCompareDto struct {
+	// Data Screenshot compare against the last pass of this step
+	Data CaptureCompareDto `json:"data"`
+}
+
 // SingleValueResponseCheckTraceDto defines model for SingleValueResponseCheckTraceDto.
 type SingleValueResponseCheckTraceDto struct {
 	Data CheckTraceDto `json:"data"`
@@ -8045,6 +9945,18 @@ type SingleValueResponseCheckTraceDto struct {
 type SingleValueResponseDashboardOverviewDto struct {
 	// Data Combined dashboard overview for monitors and incidents
 	Data DashboardOverviewDto `json:"data"`
+}
+
+// SingleValueResponseDefinitionDetailDto defines model for SingleValueResponseDefinitionDetailDto.
+type SingleValueResponseDefinitionDetailDto struct {
+	// Data Definition with Heads for each environment
+	Data DefinitionDetailDto `json:"data"`
+}
+
+// SingleValueResponseDefinitionHeadDto defines model for SingleValueResponseDefinitionHeadDto.
+type SingleValueResponseDefinitionHeadDto struct {
+	// Data Active Head for a definition in one environment
+	Data DefinitionHeadDto `json:"data"`
 }
 
 // SingleValueResponseDekRotationResultDto defines model for SingleValueResponseDekRotationResultDto.
@@ -8057,6 +9969,24 @@ type SingleValueResponseDekRotationResultDto struct {
 type SingleValueResponseDeployLockDto struct {
 	// Data Represents an active deploy lock for a workspace
 	Data DeployLockDto `json:"data"`
+}
+
+// SingleValueResponseEmailDomainDto defines model for SingleValueResponseEmailDomainDto.
+type SingleValueResponseEmailDomainDto struct {
+	// Data Email testing receive domain
+	Data EmailDomainDto `json:"data"`
+}
+
+// SingleValueResponseEmailMessageDto defines model for SingleValueResponseEmailMessageDto.
+type SingleValueResponseEmailMessageDto struct {
+	// Data Captured inbound email (preview, not RFC822 bytes)
+	Data EmailMessageDto `json:"data"`
+}
+
+// SingleValueResponseEmailMessageSourceDto defines model for SingleValueResponseEmailMessageSourceDto.
+type SingleValueResponseEmailMessageSourceDto struct {
+	// Data Original message source as received (RFC 822)
+	Data EmailMessageSourceDto `json:"data"`
 }
 
 // SingleValueResponseEnvironmentDto defines model for SingleValueResponseEnvironmentDto.
@@ -8093,15 +10023,31 @@ type SingleValueResponseIncidentTriggerDto struct {
 	Data IncidentTriggerDto `json:"data"`
 }
 
+// SingleValueResponseInjectEmailMessageResponse defines model for SingleValueResponseInjectEmailMessageResponse.
+type SingleValueResponseInjectEmailMessageResponse struct {
+	// Data Accepted inject; wait or get after persist
+	Data InjectEmailMessageResponse `json:"data"`
+}
+
 // SingleValueResponseInviteDto defines model for SingleValueResponseInviteDto.
 type SingleValueResponseInviteDto struct {
 	// Data Organization invite sent to an email address
 	Data InviteDto `json:"data"`
 }
 
+// SingleValueResponseListEmailDomainActivityDto defines model for SingleValueResponseListEmailDomainActivityDto.
+type SingleValueResponseListEmailDomainActivityDto struct {
+	Data []EmailDomainActivityDto `json:"data"`
+}
+
 // SingleValueResponseListUUID defines model for SingleValueResponseListUUID.
 type SingleValueResponseListUUID struct {
 	Data []openapi_types.UUID `json:"data"`
+}
+
+// SingleValueResponseListWebhookInboxActivityDto defines model for SingleValueResponseListWebhookInboxActivityDto.
+type SingleValueResponseListWebhookInboxActivityDto struct {
+	Data []WebhookInboxActivityDto `json:"data"`
 }
 
 // SingleValueResponseLong defines model for SingleValueResponseLong.
@@ -8125,10 +10071,34 @@ type SingleValueResponseMonitorAuthDto struct {
 	Data MonitorAuthDto `json:"data"`
 }
 
+// SingleValueResponseMonitorDriftDto defines model for SingleValueResponseMonitorDriftDto.
+type SingleValueResponseMonitorDriftDto struct {
+	// Data Live overlay drift against the implied declared baseline
+	Data MonitorDriftDto `json:"data"`
+}
+
 // SingleValueResponseMonitorDto defines model for SingleValueResponseMonitorDto.
 type SingleValueResponseMonitorDto struct {
 	// Data Full monitor representation
 	Data MonitorDto `json:"data"`
+}
+
+// SingleValueResponseMonitorSecretRequestsDto defines model for SingleValueResponseMonitorSecretRequestsDto.
+type SingleValueResponseMonitorSecretRequestsDto struct {
+	// Data Environment and secret keys this monitor requires
+	Data MonitorSecretRequestsDto `json:"data"`
+}
+
+// SingleValueResponseMonitorSessionDto defines model for SingleValueResponseMonitorSessionDto.
+type SingleValueResponseMonitorSessionDto struct {
+	// Data Cached sign-in session for a monitor
+	Data MonitorSessionDto `json:"data"`
+}
+
+// SingleValueResponseMonitorSettingsPreviewDto defines model for SingleValueResponseMonitorSettingsPreviewDto.
+type SingleValueResponseMonitorSettingsPreviewDto struct {
+	// Data Projected run volume and meter headroom for this monitor
+	Data MonitorSettingsPreviewDto `json:"data"`
 }
 
 // SingleValueResponseMonitorTestResultDto defines model for SingleValueResponseMonitorTestResultDto.
@@ -8140,6 +10110,12 @@ type SingleValueResponseMonitorTestResultDto struct {
 type SingleValueResponseMonitorVersionDto struct {
 	// Data A point-in-time version snapshot of a monitor configuration
 	Data MonitorVersionDto `json:"data"`
+}
+
+// SingleValueResponseNetworkRowDto defines model for SingleValueResponseNetworkRowDto.
+type SingleValueResponseNetworkRowDto struct {
+	// Data One waterfall request row
+	Data NetworkRowDto `json:"data"`
 }
 
 // SingleValueResponseNotificationDispatchDto defines model for SingleValueResponseNotificationDispatchDto.
@@ -8158,6 +10134,18 @@ type SingleValueResponseNotificationPolicyDto struct {
 type SingleValueResponseOrganizationDto struct {
 	// Data Organization account details
 	Data OrganizationDto `json:"data"`
+}
+
+// SingleValueResponseOverviewStepsDto defines model for SingleValueResponseOverviewStepsDto.
+type SingleValueResponseOverviewStepsDto struct {
+	// Data Overview step catalog joined to run-step aggregates
+	Data OverviewStepsDto `json:"data"`
+}
+
+// SingleValueResponsePackageUploadDto defines model for SingleValueResponsePackageUploadDto.
+type SingleValueResponsePackageUploadDto struct {
+	// Data Signed package upload target
+	Data PackageUploadDto `json:"data"`
 }
 
 // SingleValueResponsePolicySnapshotDto defines model for SingleValueResponsePolicySnapshotDto.
@@ -8190,10 +10178,58 @@ type SingleValueResponseResultSummaryDto struct {
 	Data ResultSummaryDto `json:"data"`
 }
 
+// SingleValueResponseRevisionDiffDto defines model for SingleValueResponseRevisionDiffDto.
+type SingleValueResponseRevisionDiffDto struct {
+	// Data Bounded comparison of two revisions
+	Data RevisionDiffDto `json:"data"`
+}
+
+// SingleValueResponseRevisionDto defines model for SingleValueResponseRevisionDto.
+type SingleValueResponseRevisionDto struct {
+	// Data Definition revision package
+	Data RevisionDto `json:"data"`
+}
+
+// SingleValueResponseRollbackPreviewDto defines model for SingleValueResponseRollbackPreviewDto.
+type SingleValueResponseRollbackPreviewDto struct {
+	// Data Consequence preview for rolling back Head in this environment
+	Data RollbackPreviewDto `json:"data"`
+}
+
+// SingleValueResponseRunConsoleDto defines model for SingleValueResponseRunConsoleDto.
+type SingleValueResponseRunConsoleDto struct {
+	// Data Console groups or ungrouped lines
+	Data RunConsoleDto `json:"data"`
+}
+
+// SingleValueResponseRunDiffDto defines model for SingleValueResponseRunDiffDto.
+type SingleValueResponseRunDiffDto struct {
+	// Data Step duration diff against a prior pass
+	Data RunDiffDto `json:"data"`
+}
+
+// SingleValueResponseRunDto defines model for SingleValueResponseRunDto.
+type SingleValueResponseRunDto struct {
+	// Data Code-monitor run
+	Data RunDto `json:"data"`
+}
+
+// SingleValueResponseSecretAuditDto defines model for SingleValueResponseSecretAuditDto.
+type SingleValueResponseSecretAuditDto struct {
+	// Data Last update time and author for a secret
+	Data SecretAuditDto `json:"data"`
+}
+
 // SingleValueResponseSecretDto defines model for SingleValueResponseSecretDto.
 type SingleValueResponseSecretDto struct {
-	// Data Secret with change-detection hash; plaintext value is never returned
+	// Data Organization secret and its change-detection hash
 	Data SecretDto `json:"data"`
+}
+
+// SingleValueResponseSecretUsageDto defines model for SingleValueResponseSecretUsageDto.
+type SingleValueResponseSecretUsageDto struct {
+	// Data Monitors that reference this secret
+	Data SecretUsageDto `json:"data"`
 }
 
 // SingleValueResponseServiceDayDetailDto defines model for SingleValueResponseServiceDayDetailDto.
@@ -8233,6 +10269,12 @@ type SingleValueResponseServiceSubscriptionDto struct {
 type SingleValueResponseServiceUptimeResponse struct {
 	// Data Uptime response with per-bucket breakdown and overall percentage for the period
 	Data ServiceUptimeResponse `json:"data"`
+}
+
+// SingleValueResponseSignedDownload defines model for SingleValueResponseSignedDownload.
+type SingleValueResponseSignedDownload struct {
+	// Data Short-lived URL for a stored object
+	Data SignedDownload `json:"data"`
 }
 
 // SingleValueResponseStatusPageComponentDto defines model for SingleValueResponseStatusPageComponentDto.
@@ -8314,6 +10356,18 @@ type SingleValueResponseUptimeDto struct {
 type SingleValueResponseWebhookEndpointDto struct {
 	// Data Webhook endpoint that receives event delivery payloads
 	Data WebhookEndpointDto `json:"data"`
+}
+
+// SingleValueResponseWebhookEventDto defines model for SingleValueResponseWebhookEventDto.
+type SingleValueResponseWebhookEventDto struct {
+	// Data Captured HTTP ingest event (preview, not raw bytes)
+	Data WebhookEventDto `json:"data"`
+}
+
+// SingleValueResponseWebhookInboxDto defines model for SingleValueResponseWebhookInboxDto.
+type SingleValueResponseWebhookInboxDto struct {
+	// Data Webhook testing inbox
+	Data WebhookInboxDto `json:"data"`
 }
 
 // SingleValueResponseWebhookSigningSecretDto defines model for SingleValueResponseWebhookSigningSecretDto.
@@ -8484,6 +10538,21 @@ type StatusEventDto struct {
 
 	// Type Status event row type on the Dependencies Detail rail
 	Type string `json:"type"`
+}
+
+// StatusPageBoundComponentDto Status-page component that represents a monitor, group, or dependency
+type StatusPageBoundComponentDto struct {
+	// ComponentId Component identifier
+	ComponentId openapi_types.UUID `json:"componentId"`
+
+	// ComponentName Component display name
+	ComponentName string `json:"componentName"`
+
+	// StatusPageId Status page that owns this component
+	StatusPageId openapi_types.UUID `json:"statusPageId"`
+
+	// StatusPageName Human-readable status page name
+	StatusPageName string `json:"statusPageName"`
 }
 
 // StatusPageBranding Updated branding configuration; null preserves current
@@ -8810,7 +10879,6 @@ type TableValueResultAlertChannelDto struct {
 	Data          []AlertChannelDto `json:"data"`
 	HasNext       bool              `json:"hasNext"`
 	HasPrev       bool              `json:"hasPrev"`
-	NextCursor    *string           `json:"nextCursor,omitempty"`
 	TotalElements *int64            `json:"totalElements,omitempty"`
 	TotalPages    *int32            `json:"totalPages,omitempty"`
 }
@@ -8820,7 +10888,6 @@ type TableValueResultAlertDeliveryDto struct {
 	Data          []AlertDeliveryDto `json:"data"`
 	HasNext       bool               `json:"hasNext"`
 	HasPrev       bool               `json:"hasPrev"`
-	NextCursor    *string            `json:"nextCursor,omitempty"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
 }
@@ -8830,7 +10897,6 @@ type TableValueResultApiKeyDto struct {
 	Data          []ApiKeyDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
-	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -8840,7 +10906,6 @@ type TableValueResultAuditEventDto struct {
 	Data          []AuditEventDto `json:"data"`
 	HasNext       bool            `json:"hasNext"`
 	HasPrev       bool            `json:"hasPrev"`
-	NextCursor    *string         `json:"nextCursor,omitempty"`
 	TotalElements *int64          `json:"totalElements,omitempty"`
 	TotalPages    *int32          `json:"totalPages,omitempty"`
 }
@@ -8850,7 +10915,6 @@ type TableValueResultCategoryDto struct {
 	Data          []CategoryDto `json:"data"`
 	HasNext       bool          `json:"hasNext"`
 	HasPrev       bool          `json:"hasPrev"`
-	NextCursor    *string       `json:"nextCursor,omitempty"`
 	TotalElements *int64        `json:"totalElements,omitempty"`
 	TotalPages    *int32        `json:"totalPages,omitempty"`
 }
@@ -8860,9 +10924,17 @@ type TableValueResultComponentUptimeDayDto struct {
 	Data          []ComponentUptimeDayDto `json:"data"`
 	HasNext       bool                    `json:"hasNext"`
 	HasPrev       bool                    `json:"hasPrev"`
-	NextCursor    *string                 `json:"nextCursor,omitempty"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
+}
+
+// TableValueResultDefinitionDto defines model for TableValueResultDefinitionDto.
+type TableValueResultDefinitionDto struct {
+	Data          []DefinitionDto `json:"data"`
+	HasNext       bool            `json:"hasNext"`
+	HasPrev       bool            `json:"hasPrev"`
+	TotalElements *int64          `json:"totalElements,omitempty"`
+	TotalPages    *int32          `json:"totalPages,omitempty"`
 }
 
 // TableValueResultDeliveryAttemptDto defines model for TableValueResultDeliveryAttemptDto.
@@ -8870,9 +10942,17 @@ type TableValueResultDeliveryAttemptDto struct {
 	Data          []DeliveryAttemptDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
-	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
+}
+
+// TableValueResultEmailDomainDto defines model for TableValueResultEmailDomainDto.
+type TableValueResultEmailDomainDto struct {
+	Data          []EmailDomainDto `json:"data"`
+	HasNext       bool             `json:"hasNext"`
+	HasPrev       bool             `json:"hasPrev"`
+	TotalElements *int64           `json:"totalElements,omitempty"`
+	TotalPages    *int32           `json:"totalPages,omitempty"`
 }
 
 // TableValueResultEnvironmentDto defines model for TableValueResultEnvironmentDto.
@@ -8880,7 +10960,24 @@ type TableValueResultEnvironmentDto struct {
 	Data          []EnvironmentDto `json:"data"`
 	HasNext       bool             `json:"hasNext"`
 	HasPrev       bool             `json:"hasPrev"`
-	NextCursor    *string          `json:"nextCursor,omitempty"`
+	TotalElements *int64           `json:"totalElements,omitempty"`
+	TotalPages    *int32           `json:"totalPages,omitempty"`
+}
+
+// TableValueResultInboundEmailLink defines model for TableValueResultInboundEmailLink.
+type TableValueResultInboundEmailLink struct {
+	Data          []InboundEmailLink `json:"data"`
+	HasNext       bool               `json:"hasNext"`
+	HasPrev       bool               `json:"hasPrev"`
+	TotalElements *int64             `json:"totalElements,omitempty"`
+	TotalPages    *int32             `json:"totalPages,omitempty"`
+}
+
+// TableValueResultInboundOtpCode defines model for TableValueResultInboundOtpCode.
+type TableValueResultInboundOtpCode struct {
+	Data          []InboundOtpCode `json:"data"`
+	HasNext       bool             `json:"hasNext"`
+	HasPrev       bool             `json:"hasPrev"`
 	TotalElements *int64           `json:"totalElements,omitempty"`
 	TotalPages    *int32           `json:"totalPages,omitempty"`
 }
@@ -8890,7 +10987,6 @@ type TableValueResultIncidentDto struct {
 	Data          []IncidentDto `json:"data"`
 	HasNext       bool          `json:"hasNext"`
 	HasPrev       bool          `json:"hasPrev"`
-	NextCursor    *string       `json:"nextCursor,omitempty"`
 	TotalElements *int64        `json:"totalElements,omitempty"`
 	TotalPages    *int32        `json:"totalPages,omitempty"`
 }
@@ -8900,7 +10996,6 @@ type TableValueResultIncidentStateTransitionDto struct {
 	Data          []IncidentStateTransitionDto `json:"data"`
 	HasNext       bool                         `json:"hasNext"`
 	HasPrev       bool                         `json:"hasPrev"`
-	NextCursor    *string                      `json:"nextCursor,omitempty"`
 	TotalElements *int64                       `json:"totalElements,omitempty"`
 	TotalPages    *int32                       `json:"totalPages,omitempty"`
 }
@@ -8910,7 +11005,6 @@ type TableValueResultIntegrationDto struct {
 	Data          []IntegrationDto `json:"data"`
 	HasNext       bool             `json:"hasNext"`
 	HasPrev       bool             `json:"hasPrev"`
-	NextCursor    *string          `json:"nextCursor,omitempty"`
 	TotalElements *int64           `json:"totalElements,omitempty"`
 	TotalPages    *int32           `json:"totalPages,omitempty"`
 }
@@ -8920,7 +11014,6 @@ type TableValueResultInviteDto struct {
 	Data          []InviteDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
-	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -8930,7 +11023,6 @@ type TableValueResultMaintenanceWindowDto struct {
 	Data          []MaintenanceWindowDto `json:"data"`
 	HasNext       bool                   `json:"hasNext"`
 	HasPrev       bool                   `json:"hasPrev"`
-	NextCursor    *string                `json:"nextCursor,omitempty"`
 	TotalElements *int64                 `json:"totalElements,omitempty"`
 	TotalPages    *int32                 `json:"totalPages,omitempty"`
 }
@@ -8940,7 +11032,6 @@ type TableValueResultMemberDto struct {
 	Data          []MemberDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
-	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -8950,7 +11041,6 @@ type TableValueResultMonitorDto struct {
 	Data          []MonitorDto `json:"data"`
 	HasNext       bool         `json:"hasNext"`
 	HasPrev       bool         `json:"hasPrev"`
-	NextCursor    *string      `json:"nextCursor,omitempty"`
 	TotalElements *int64       `json:"totalElements,omitempty"`
 	TotalPages    *int32       `json:"totalPages,omitempty"`
 }
@@ -8960,7 +11050,6 @@ type TableValueResultMonitorVersionDto struct {
 	Data          []MonitorVersionDto `json:"data"`
 	HasNext       bool                `json:"hasNext"`
 	HasPrev       bool                `json:"hasPrev"`
-	NextCursor    *string             `json:"nextCursor,omitempty"`
 	TotalElements *int64              `json:"totalElements,omitempty"`
 	TotalPages    *int32              `json:"totalPages,omitempty"`
 }
@@ -8970,7 +11059,6 @@ type TableValueResultNotificationDispatchDto struct {
 	Data          []NotificationDispatchDto `json:"data"`
 	HasNext       bool                      `json:"hasNext"`
 	HasPrev       bool                      `json:"hasPrev"`
-	NextCursor    *string                   `json:"nextCursor,omitempty"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -8980,7 +11068,6 @@ type TableValueResultNotificationDto struct {
 	Data          []NotificationDto `json:"data"`
 	HasNext       bool              `json:"hasNext"`
 	HasPrev       bool              `json:"hasPrev"`
-	NextCursor    *string           `json:"nextCursor,omitempty"`
 	TotalElements *int64            `json:"totalElements,omitempty"`
 	TotalPages    *int32            `json:"totalPages,omitempty"`
 }
@@ -8990,7 +11077,6 @@ type TableValueResultNotificationPolicyDto struct {
 	Data          []NotificationPolicyDto `json:"data"`
 	HasNext       bool                    `json:"hasNext"`
 	HasPrev       bool                    `json:"hasPrev"`
-	NextCursor    *string                 `json:"nextCursor,omitempty"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
@@ -9000,9 +11086,17 @@ type TableValueResultResourceGroupDto struct {
 	Data          []ResourceGroupDto `json:"data"`
 	HasNext       bool               `json:"hasNext"`
 	HasPrev       bool               `json:"hasPrev"`
-	NextCursor    *string            `json:"nextCursor,omitempty"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
+}
+
+// TableValueResultRevisionDto defines model for TableValueResultRevisionDto.
+type TableValueResultRevisionDto struct {
+	Data          []RevisionDto `json:"data"`
+	HasNext       bool          `json:"hasNext"`
+	HasPrev       bool          `json:"hasPrev"`
+	TotalElements *int64        `json:"totalElements,omitempty"`
+	TotalPages    *int32        `json:"totalPages,omitempty"`
 }
 
 // TableValueResultRuleEvaluationDto defines model for TableValueResultRuleEvaluationDto.
@@ -9010,9 +11104,35 @@ type TableValueResultRuleEvaluationDto struct {
 	Data          []RuleEvaluationDto `json:"data"`
 	HasNext       bool                `json:"hasNext"`
 	HasPrev       bool                `json:"hasPrev"`
-	NextCursor    *string             `json:"nextCursor,omitempty"`
 	TotalElements *int64              `json:"totalElements,omitempty"`
 	TotalPages    *int32              `json:"totalPages,omitempty"`
+}
+
+// TableValueResultRunArtifactDto defines model for TableValueResultRunArtifactDto.
+type TableValueResultRunArtifactDto struct {
+	Data          []RunArtifactDto `json:"data"`
+	HasNext       bool             `json:"hasNext"`
+	HasPrev       bool             `json:"hasPrev"`
+	TotalElements *int64           `json:"totalElements,omitempty"`
+	TotalPages    *int32           `json:"totalPages,omitempty"`
+}
+
+// TableValueResultRunCaseDto defines model for TableValueResultRunCaseDto.
+type TableValueResultRunCaseDto struct {
+	Data          []RunCaseDto `json:"data"`
+	HasNext       bool         `json:"hasNext"`
+	HasPrev       bool         `json:"hasPrev"`
+	TotalElements *int64       `json:"totalElements,omitempty"`
+	TotalPages    *int32       `json:"totalPages,omitempty"`
+}
+
+// TableValueResultRunDto defines model for TableValueResultRunDto.
+type TableValueResultRunDto struct {
+	Data          []RunDto `json:"data"`
+	HasNext       bool     `json:"hasNext"`
+	HasPrev       bool     `json:"hasPrev"`
+	TotalElements *int64   `json:"totalElements,omitempty"`
+	TotalPages    *int32   `json:"totalPages,omitempty"`
 }
 
 // TableValueResultScheduledMaintenanceDto defines model for TableValueResultScheduledMaintenanceDto.
@@ -9020,7 +11140,6 @@ type TableValueResultScheduledMaintenanceDto struct {
 	Data          []ScheduledMaintenanceDto `json:"data"`
 	HasNext       bool                      `json:"hasNext"`
 	HasPrev       bool                      `json:"hasPrev"`
-	NextCursor    *string                   `json:"nextCursor,omitempty"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -9030,7 +11149,6 @@ type TableValueResultSecretDto struct {
 	Data          []SecretDto `json:"data"`
 	HasNext       bool        `json:"hasNext"`
 	HasPrev       bool        `json:"hasPrev"`
-	NextCursor    *string     `json:"nextCursor,omitempty"`
 	TotalElements *int64      `json:"totalElements,omitempty"`
 	TotalPages    *int32      `json:"totalPages,omitempty"`
 }
@@ -9040,7 +11158,6 @@ type TableValueResultServiceComponentDto struct {
 	Data          []ServiceComponentDto `json:"data"`
 	HasNext       bool                  `json:"hasNext"`
 	HasPrev       bool                  `json:"hasPrev"`
-	NextCursor    *string               `json:"nextCursor,omitempty"`
 	TotalElements *int64                `json:"totalElements,omitempty"`
 	TotalPages    *int32                `json:"totalPages,omitempty"`
 }
@@ -9050,7 +11167,6 @@ type TableValueResultServiceIncidentDto struct {
 	Data          []ServiceIncidentDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
-	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -9060,7 +11176,6 @@ type TableValueResultServiceSubscriptionDto struct {
 	Data          []ServiceSubscriptionDto `json:"data"`
 	HasNext       bool                     `json:"hasNext"`
 	HasPrev       bool                     `json:"hasPrev"`
-	NextCursor    *string                  `json:"nextCursor,omitempty"`
 	TotalElements *int64                   `json:"totalElements,omitempty"`
 	TotalPages    *int32                   `json:"totalPages,omitempty"`
 }
@@ -9070,7 +11185,6 @@ type TableValueResultStatusPageComponentDto struct {
 	Data          []StatusPageComponentDto `json:"data"`
 	HasNext       bool                     `json:"hasNext"`
 	HasPrev       bool                     `json:"hasPrev"`
-	NextCursor    *string                  `json:"nextCursor,omitempty"`
 	TotalElements *int64                   `json:"totalElements,omitempty"`
 	TotalPages    *int32                   `json:"totalPages,omitempty"`
 }
@@ -9080,7 +11194,6 @@ type TableValueResultStatusPageComponentGroupDto struct {
 	Data          []StatusPageComponentGroupDto `json:"data"`
 	HasNext       bool                          `json:"hasNext"`
 	HasPrev       bool                          `json:"hasPrev"`
-	NextCursor    *string                       `json:"nextCursor,omitempty"`
 	TotalElements *int64                        `json:"totalElements,omitempty"`
 	TotalPages    *int32                        `json:"totalPages,omitempty"`
 }
@@ -9090,7 +11203,6 @@ type TableValueResultStatusPageCustomDomainDto struct {
 	Data          []StatusPageCustomDomainDto `json:"data"`
 	HasNext       bool                        `json:"hasNext"`
 	HasPrev       bool                        `json:"hasPrev"`
-	NextCursor    *string                     `json:"nextCursor,omitempty"`
 	TotalElements *int64                      `json:"totalElements,omitempty"`
 	TotalPages    *int32                      `json:"totalPages,omitempty"`
 }
@@ -9100,7 +11212,6 @@ type TableValueResultStatusPageDto struct {
 	Data          []StatusPageDto `json:"data"`
 	HasNext       bool            `json:"hasNext"`
 	HasPrev       bool            `json:"hasPrev"`
-	NextCursor    *string         `json:"nextCursor,omitempty"`
 	TotalElements *int64          `json:"totalElements,omitempty"`
 	TotalPages    *int32          `json:"totalPages,omitempty"`
 }
@@ -9110,7 +11221,6 @@ type TableValueResultStatusPageIncidentDto struct {
 	Data          []StatusPageIncidentDto `json:"data"`
 	HasNext       bool                    `json:"hasNext"`
 	HasPrev       bool                    `json:"hasPrev"`
-	NextCursor    *string                 `json:"nextCursor,omitempty"`
 	TotalElements *int64                  `json:"totalElements,omitempty"`
 	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
@@ -9120,7 +11230,6 @@ type TableValueResultStatusPageNotificationDeliveryDto struct {
 	Data          []StatusPageNotificationDeliveryDto `json:"data"`
 	HasNext       bool                                `json:"hasNext"`
 	HasPrev       bool                                `json:"hasPrev"`
-	NextCursor    *string                             `json:"nextCursor,omitempty"`
 	TotalElements *int64                              `json:"totalElements,omitempty"`
 	TotalPages    *int32                              `json:"totalPages,omitempty"`
 }
@@ -9130,7 +11239,6 @@ type TableValueResultStatusPageSubscriberDto struct {
 	Data          []StatusPageSubscriberDto `json:"data"`
 	HasNext       bool                      `json:"hasNext"`
 	HasPrev       bool                      `json:"hasPrev"`
-	NextCursor    *string                   `json:"nextCursor,omitempty"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
 }
@@ -9140,7 +11248,6 @@ type TableValueResultTagDto struct {
 	Data          []TagDto `json:"data"`
 	HasNext       bool     `json:"hasNext"`
 	HasPrev       bool     `json:"hasPrev"`
-	NextCursor    *string  `json:"nextCursor,omitempty"`
 	TotalElements *int64   `json:"totalElements,omitempty"`
 	TotalPages    *int32   `json:"totalPages,omitempty"`
 }
@@ -9150,7 +11257,6 @@ type TableValueResultTestChannelResult struct {
 	Data          []TestChannelResult `json:"data"`
 	HasNext       bool                `json:"hasNext"`
 	HasPrev       bool                `json:"hasPrev"`
-	NextCursor    *string             `json:"nextCursor,omitempty"`
 	TotalElements *int64              `json:"totalElements,omitempty"`
 	TotalPages    *int32              `json:"totalPages,omitempty"`
 }
@@ -9160,7 +11266,6 @@ type TableValueResultVoiceLanguageDto struct {
 	Data          []VoiceLanguageDto `json:"data"`
 	HasNext       bool               `json:"hasNext"`
 	HasPrev       bool               `json:"hasPrev"`
-	NextCursor    *string            `json:"nextCursor,omitempty"`
 	TotalElements *int64             `json:"totalElements,omitempty"`
 	TotalPages    *int32             `json:"totalPages,omitempty"`
 }
@@ -9170,7 +11275,6 @@ type TableValueResultWebhookDeliveryDto struct {
 	Data          []WebhookDeliveryDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
-	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
 }
@@ -9180,9 +11284,17 @@ type TableValueResultWebhookEndpointDto struct {
 	Data          []WebhookEndpointDto `json:"data"`
 	HasNext       bool                 `json:"hasNext"`
 	HasPrev       bool                 `json:"hasPrev"`
-	NextCursor    *string              `json:"nextCursor,omitempty"`
 	TotalElements *int64               `json:"totalElements,omitempty"`
 	TotalPages    *int32               `json:"totalPages,omitempty"`
+}
+
+// TableValueResultWebhookInboxDto defines model for TableValueResultWebhookInboxDto.
+type TableValueResultWebhookInboxDto struct {
+	Data          []WebhookInboxDto `json:"data"`
+	HasNext       bool              `json:"hasNext"`
+	HasPrev       bool              `json:"hasPrev"`
+	TotalElements *int64            `json:"totalElements,omitempty"`
+	TotalPages    *int32            `json:"totalPages,omitempty"`
 }
 
 // TableValueResultWorkspaceDto defines model for TableValueResultWorkspaceDto.
@@ -9190,7 +11302,6 @@ type TableValueResultWorkspaceDto struct {
 	Data          []WorkspaceDto `json:"data"`
 	HasNext       bool           `json:"hasNext"`
 	HasPrev       bool           `json:"hasPrev"`
-	NextCursor    *string        `json:"nextCursor,omitempty"`
 	TotalElements *int64         `json:"totalElements,omitempty"`
 	TotalPages    *int32         `json:"totalPages,omitempty"`
 }
@@ -9214,6 +11325,12 @@ type TagDto struct {
 
 	// UpdatedAt Timestamp when the tag was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// TakeoverMonitorRequest defines model for TakeoverMonitorRequest.
+type TakeoverMonitorRequest struct {
+	// Field Overlay to clear: managedBy, enabled, muted, or quarantine
+	Field string `json:"field"`
 }
 
 // Tcp TCP check-type-specific details
@@ -9422,6 +11539,42 @@ type TlsInfoDto struct {
 	TlsVersion *string `json:"tlsVersion,omitempty"`
 }
 
+// TraceEntryPoint Four doorways into the downloaded file
+type TraceEntryPoint struct {
+	// ActionIndex Action index this doorway opens
+	ActionIndex int32 `json:"actionIndex"`
+
+	// Id Doorway id
+	Id TraceEntryPointId `json:"id"`
+
+	// Label Label shown on the doorway
+	Label string `json:"label"`
+
+	// Note Short note for why this doorway exists
+	Note string `json:"note"`
+}
+
+// TraceEntryPointId Doorway id
+type TraceEntryPointId string
+
+// TraceNearbyAction Actions around the failure, teardown labelled
+type TraceNearbyAction struct {
+	// ActionIndex Action index in the Playwright trace
+	ActionIndex int32 `json:"actionIndex"`
+
+	// DurationMs Action duration in milliseconds
+	DurationMs *int32 `json:"durationMs,omitempty"`
+
+	// IsTeardown Whether this action is teardown
+	IsTeardown bool `json:"isTeardown"`
+
+	// Kind Playwright action kind
+	Kind string `json:"kind"`
+
+	// Title Human title for this action
+	Title string `json:"title"`
+}
+
 // TriggerRule Array of trigger rules defining when an incident should be raised
 type TriggerRule struct {
 	// AggregationType How response times are aggregated for response-time rules
@@ -9548,6 +11701,15 @@ type UpdateEmailChannelConfig struct {
 
 // UpdateEmailChannelConfigChannelType defines model for UpdateEmailChannelConfig.ChannelType.
 type UpdateEmailChannelConfigChannelType string
+
+// UpdateEmailDomainRequest Patch an email testing domain. Omitted fields stay unchanged
+type UpdateEmailDomainRequest struct {
+	// Status Domain lifecycle. Custom domains become active only via POST /verify
+	Status *UpdateEmailDomainRequestStatus `json:"status,omitempty"`
+}
+
+// UpdateEmailDomainRequestStatus Domain lifecycle. Custom domains become active only via POST /verify
+type UpdateEmailDomainRequestStatus string
 
 // UpdateEnvironmentRequest defines model for UpdateEnvironmentRequest.
 type UpdateEnvironmentRequest struct {
@@ -9712,12 +11874,13 @@ type UpdateMonitorAuthRequest_Config struct {
 
 // UpdateMonitorRequest defines model for UpdateMonitorRequest.
 type UpdateMonitorRequest struct {
-	// AlertChannelIds Replace alert channel list; null preserves current
+	// AlertChannelIds Replace alert channel list. Null preserves current
 	AlertChannelIds *[]openapi_types.UUID `json:"alertChannelIds,omitempty"`
 
-	// Assertions Replace all assertions; null preserves current
-	Assertions *[]CreateAssertionRequest `json:"assertions,omitempty"`
-	Auth       *MonitorAuthConfig        `json:"auth,omitempty"`
+	// Assertions Replace all assertions. Null preserves current
+	Assertions    *[]CreateAssertionRequest `json:"assertions,omitempty"`
+	Auth          *MonitorAuthConfig        `json:"auth,omitempty"`
+	CapturePolicy *CapturePolicy            `json:"capturePolicy,omitempty"`
 
 	// ClearAuth Set to true to remove authentication
 	ClearAuth *bool `json:"clearAuth,omitempty"`
@@ -9726,25 +11889,35 @@ type UpdateMonitorRequest struct {
 	ClearEnvironmentId *bool                        `json:"clearEnvironmentId,omitempty"`
 	Config             *UpdateMonitorRequest_Config `json:"config,omitempty"`
 
-	// Enabled Enable or disable the monitor; null preserves current
+	// Enabled Enable or disable the monitor (pause or resume). Null preserves current
 	Enabled *bool `json:"enabled,omitempty"`
 
-	// EnvironmentId New environment ID; null preserves current (use clearEnvironmentId to unset)
+	// EnvironmentId New environment; null preserves current
 	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
 
-	// FrequencySeconds New check frequency in seconds (10–86400); null preserves current
+	// FastRetryMaxAttempts Fast-retry attempts after failure. Null preserves current. 0 disables
+	FastRetryMaxAttempts *int32 `json:"fastRetryMaxAttempts,omitempty"`
+
+	// FrequencySeconds New check frequency in seconds (10–86400). Null preserves current
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
-	// ManagedBy New ownership source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value
+	// ManagedBy New ownership source for probe monitors. Null preserves current. Code monitors use takeover
 	ManagedBy *UpdateMonitorRequestManagedBy `json:"managedBy,omitempty"`
 
-	// Name New monitor name; null preserves current
-	Name *string `json:"name,omitempty"`
+	// Name New monitor name. Null preserves current
+	Name    *string             `json:"name,omitempty"`
+	Package *MonitorPackageSpec `json:"package,omitempty"`
 
-	// Regions New probe regions; null preserves current. Allowed values are deployment-dependent.
-	Regions *[]string              `json:"regions,omitempty"`
-	Tags    *AddMonitorTagsRequest `json:"tags,omitempty"`
+	// Regions New probe regions. Null preserves current. Allowed values are deployment-dependent
+	Regions *[]string `json:"regions,omitempty"`
+
+	// RunParallel Run every location each interval; false rotates one. Null preserves current
+	RunParallel *bool `json:"runParallel,omitempty"`
+
+	// Status Not writable; use pause or resume
+	Status *string                `json:"status,omitempty"`
+	Tags   *AddMonitorTagsRequest `json:"tags,omitempty"`
 }
 
 // UpdateMonitorRequest_Config defines model for UpdateMonitorRequest.Config.
@@ -9752,7 +11925,7 @@ type UpdateMonitorRequest_Config struct {
 	union json.RawMessage
 }
 
-// UpdateMonitorRequestManagedBy New ownership source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value
+// UpdateMonitorRequestManagedBy New ownership source for probe monitors. Null preserves current. Code monitors use takeover
 type UpdateMonitorRequestManagedBy string
 
 // UpdateNotificationPolicyRequest Request body for updating a notification policy (null fields are preserved)
@@ -10182,6 +12355,28 @@ type UpdateWebhookEndpointRequest struct {
 // UpdateWebhookEndpointRequestSubscribedEvents defines model for UpdateWebhookEndpointRequest.SubscribedEvents.
 type UpdateWebhookEndpointRequestSubscribedEvents string
 
+// UpdateWebhookInboxRequest Patch a webhook testing inbox. Omitted fields stay unchanged
+type UpdateWebhookInboxRequest struct {
+	// Cors Allow browser callers on other origins to hit the ingest URL
+	Cors         *bool                            `json:"cors,omitempty"`
+	HttpResponse *InboundWebhookHttpResponsePatch `json:"httpResponse,omitempty"`
+
+	// MaxEvents Max stored events before ingest drops the oldest
+	MaxEvents *int32 `json:"maxEvents,omitempty"`
+
+	// Name Human-readable name for this inbox
+	Name *string `json:"name,omitempty"`
+
+	// RetentionDays Days events are kept. Cannot exceed the testing plan
+	RetentionDays *int32 `json:"retentionDays,omitempty"`
+
+	// Status Inbox lifecycle
+	Status *UpdateWebhookInboxRequestStatus `json:"status,omitempty"`
+}
+
+// UpdateWebhookInboxRequestStatus Inbox lifecycle
+type UpdateWebhookInboxRequestStatus string
+
 // UpdateWorkspaceRequest Update workspace details
 type UpdateWorkspaceRequest struct {
 	// Name New workspace name
@@ -10198,6 +12393,21 @@ type UpdateZapierChannelConfig struct {
 
 // UpdateZapierChannelConfigChannelType defines model for UpdateZapierChannelConfig.ChannelType.
 type UpdateZapierChannelConfigChannelType string
+
+// UpsertMonitorSessionRequest defines model for UpsertMonitorSessionRequest.
+type UpsertMonitorSessionRequest struct {
+	// ExpiresAt When the cached session expires; null preserves current
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+
+	// ReusePolicy When to reuse the cached session across runs
+	ReusePolicy UpsertMonitorSessionRequestReusePolicy `json:"reusePolicy"`
+
+	// SetupFile Setup file path inside the package zip
+	SetupFile string `json:"setupFile"`
+}
+
+// UpsertMonitorSessionRequestReusePolicy When to reuse the cached session across runs
+type UpsertMonitorSessionRequestReusePolicy string
 
 // UptimeBucketDto Uptime statistics for a single time bucket
 type UptimeBucketDto struct {
@@ -10216,6 +12426,9 @@ type UptimeDto struct {
 	// AvgLatencyMs Weighted average latency in milliseconds; null when no data
 	AvgLatencyMs *float64 `json:"avgLatencyMs,omitempty"`
 
+	// FirstTryPercent First-try pass percent for settled parent runs in the window; null when the monitor has no run history
+	FirstTryPercent *float64 `json:"firstTryPercent,omitempty"`
+
 	// IncidentCount Number of incidents that started within the requested window
 	IncidentCount int64 `json:"incidentCount"`
 
@@ -10228,11 +12441,44 @@ type UptimeDto struct {
 	// PassedChecks Number of checks that passed
 	PassedChecks int64 `json:"passedChecks"`
 
+	// RetryCount Settled retry runs in the window; null when the monitor has no run history
+	RetryCount *int64 `json:"retryCount,omitempty"`
+
 	// TotalChecks Total number of checks executed
 	TotalChecks int64 `json:"totalChecks"`
 
 	// UptimePercentage Uptime percentage over the requested window; null when no data
 	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
+}
+
+// UserDto User account details
+type UserDto struct {
+	// CreatedAt Timestamp when the account was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Email User email address
+	Email string `json:"email"`
+
+	// EmailVerified Whether the email address has been verified
+	EmailVerified bool `json:"emailVerified"`
+
+	// Id Unique user identifier
+	Id int32 `json:"id"`
+
+	// ImageUrl Profile image URL; null if not set
+	ImageUrl *string `json:"imageUrl,omitempty"`
+
+	// Name Display name; null if not set
+	Name *string `json:"name,omitempty"`
+
+	// OnboardingStage Current onboarding progress stage; null when completed
+	OnboardingStage *string `json:"onboardingStage,omitempty"`
+
+	// UpdatedAt Timestamp when the account was last updated
+	UpdatedAt time.Time `json:"updatedAt"`
+
+	// UserRole Platform role: USER or SUPERADMIN
+	UserRole string `json:"userRole"`
 }
 
 // VoiceLanguageDto Supported TTS voice language for phone call alerts
@@ -10242,6 +12488,56 @@ type VoiceLanguageDto struct {
 
 	// Label Human-readable label, e.g. English (US)
 	Label string `json:"label"`
+}
+
+// WaitEmailMessageRequest Wait for the oldest matching captured email message
+type WaitEmailMessageRequest struct {
+	// Domain Domain FQDN; required on POST /email/{localpart}/wait
+	Domain *string `json:"domain,omitempty"`
+
+	// ReceivedAfter Oldest eligible receivedAt; default now minus 60 seconds
+	ReceivedAfter *time.Time `json:"receivedAfter,omitempty"`
+
+	// SubjectContains Subject must contain this substring
+	SubjectContains *string `json:"subjectContains,omitempty"`
+
+	// TimeoutMs How long to block in milliseconds (default: 30000, max: 120000)
+	TimeoutMs *int32 `json:"timeoutMs,omitempty"`
+
+	// To Full address on POST /email/wait
+	To *string `json:"to,omitempty"`
+}
+
+// WaitEmailMessageResponse Successful email message wait
+type WaitEmailMessageResponse struct {
+	// Message Captured inbound email (preview, not RFC822 bytes)
+	Message EmailMessageDto `json:"message"`
+}
+
+// WaitHttpMatchers HTTP matchers for webhook event wait
+type WaitHttpMatchers struct {
+	// Method HTTP method to match; omit matches any except OPTIONS
+	Method *string `json:"method,omitempty"`
+
+	// PathPrefix Captured path must start with this prefix
+	PathPrefix *string `json:"pathPrefix,omitempty"`
+}
+
+// WaitWebhookEventRequest Wait for the oldest matching captured HTTP event
+type WaitWebhookEventRequest struct {
+	Http *WaitHttpMatchers `json:"http,omitempty"`
+
+	// ReceivedAfter Oldest eligible receivedAt; default now minus 60 seconds
+	ReceivedAfter *time.Time `json:"receivedAfter,omitempty"`
+
+	// TimeoutMs How long to block in milliseconds (default: 30000, max: 120000)
+	TimeoutMs *int32 `json:"timeoutMs,omitempty"`
+}
+
+// WaitWebhookEventResponse Successful webhook event wait
+type WaitWebhookEventResponse struct {
+	// Event Captured HTTP ingest event (preview, not raw bytes)
+	Event WebhookEventDto `json:"event"`
 }
 
 // WebhookChannelConfig defines model for WebhookChannelConfig.
@@ -10330,6 +12626,117 @@ type WebhookEventCatalogResponse struct {
 	Data []WebhookEventCatalogEntry `json:"data"`
 }
 
+// WebhookEventDto Captured HTTP ingest event (preview, not raw bytes)
+type WebhookEventDto struct {
+	// Body Request body as text, at most 256 KB
+	Body *string `json:"body,omitempty"`
+
+	// BodyPreview Body preview at most 2048 characters
+	BodyPreview *string `json:"bodyPreview,omitempty"`
+
+	// BodyTruncated True when the returned body was cut off at 256 KB
+	BodyTruncated *bool `json:"bodyTruncated,omitempty"`
+
+	// Headers Captured request headers as received
+	Headers map[string][]string `json:"headers"`
+
+	// Host Host header
+	Host *string `json:"host,omitempty"`
+
+	// Id Event id
+	Id openapi_types.UUID `json:"id"`
+
+	// InboxId Parent inbox id
+	InboxId openapi_types.UUID `json:"inboxId"`
+
+	// Method HTTP method
+	Method string `json:"method"`
+
+	// Path Request path after the token
+	Path string `json:"path"`
+
+	// Query Query parameters
+	Query *map[string]*[]*string `json:"query,omitempty"`
+
+	// RawUrl Download link for the full request when the body was cut off
+	RawUrl *string `json:"rawUrl,omitempty"`
+
+	// ReceivedAt When the request was received
+	ReceivedAt time.Time `json:"receivedAt"`
+
+	// Sha256 SHA-256 of the raw object
+	Sha256 string `json:"sha256"`
+
+	// SizeBytes Captured body size in bytes
+	SizeBytes int32 `json:"sizeBytes"`
+
+	// SourceIp Sender IP when known
+	SourceIp *string `json:"sourceIp,omitempty"`
+
+	// Url Full request URL when captured
+	Url *string `json:"url,omitempty"`
+}
+
+// WebhookInboxActivityBucketDto Received-request count for one UTC hour
+type WebhookInboxActivityBucketDto struct {
+	// EventCount Requests received in this hour
+	EventCount int32 `json:"eventCount"`
+
+	// Hour Start of the UTC hour (ISO 8601)
+	Hour time.Time `json:"hour"`
+}
+
+// WebhookInboxActivityDto 24-hour received-request activity for one webhook inbox
+type WebhookInboxActivityDto struct {
+	// Buckets Exactly 24 UTC-hour buckets, oldest first, zero-filled
+	Buckets []WebhookInboxActivityBucketDto `json:"buckets"`
+
+	// InboxId Inbox id
+	InboxId openapi_types.UUID `json:"inboxId"`
+}
+
+// WebhookInboxDto Webhook testing inbox
+type WebhookInboxDto struct {
+	// Cors Allow browser callers on other origins to hit the ingest URL
+	Cors bool `json:"cors"`
+
+	// CreatedAt When the inbox was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// HttpResponse Mock reply returned to the sender after ingest is stored
+	HttpResponse InboundWebhookHttpResponse `json:"httpResponse"`
+
+	// HttpUrl URL senders POST or PUT to. Any HTTP method is captured
+	HttpUrl string `json:"httpUrl"`
+
+	// Id Inbox id
+	Id openapi_types.UUID `json:"id"`
+
+	// LastEventAt When the inbox last received a request; null until the first one
+	LastEventAt *time.Time `json:"lastEventAt,omitempty"`
+
+	// MaxEvents Max stored events. Ingest drops the oldest when this is exceeded
+	MaxEvents int32 `json:"maxEvents"`
+
+	// Name Human-readable name for this inbox
+	Name string `json:"name"`
+
+	// PublicToken Opaque public token embedded in the ingest URL
+	PublicToken string `json:"publicToken"`
+
+	// RetentionDays How many days captured events are kept
+	RetentionDays int32 `json:"retentionDays"`
+
+	// Status Inbox lifecycle
+	Status string `json:"status"`
+
+	// UpdatedAt When the inbox was last updated
+	UpdatedAt time.Time `json:"updatedAt"`
+
+	// WorkspaceId Workspace this inbox belongs to
+	WorkspaceId int32 `json:"workspaceId"`
+}
+
 // WebhookSigningSecretDto defines model for WebhookSigningSecretDto.
 type WebhookSigningSecretDto struct {
 	Configured   bool    `json:"configured"`
@@ -10362,6 +12769,12 @@ type WorkspaceDto struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+// WriteSecretEnvironmentValueRequest defines model for WriteSecretEnvironmentValueRequest.
+type WriteSecretEnvironmentValueRequest struct {
+	// Value Plaintext value to encrypt for this environment
+	Value string `json:"value"`
+}
+
 // ZapierChannelConfig defines model for ZapierChannelConfig.
 type ZapierChannelConfig struct {
 	ChannelType ZapierChannelConfigChannelType `json:"channelType"`
@@ -10392,8 +12805,8 @@ type List14ParamsType string
 // List14ParamsManagedBy defines parameters for List14.
 type List14ParamsManagedBy string
 
-// List20Params defines parameters for List20.
-type List20Params struct {
+// List22Params defines parameters for List22.
+type List22Params struct {
 	Action       *string    `form:"action,omitempty" json:"action,omitempty"`
 	ActorId      *int32     `form:"actorId,omitempty" json:"actorId,omitempty"`
 	ResourceType *string    `form:"resourceType,omitempty" json:"resourceType,omitempty"`
@@ -10407,6 +12820,31 @@ type List20Params struct {
 type ListCategoriesParams struct {
 	// PublishedOnly Count only published services (curated public pSEO set); default false
 	PublishedOnly *bool `form:"publishedOnly,omitempty" json:"publishedOnly,omitempty"`
+}
+
+// ListEmailDomainsParams defines parameters for ListEmailDomains.
+type ListEmailDomainsParams struct {
+	// Search Case-insensitive name search
+	Search   *string  `form:"search,omitempty" json:"search,omitempty"`
+	Pageable Pageable `form:"pageable" json:"pageable"`
+}
+
+// ListEmailDomainActivityParams defines parameters for ListEmailDomainActivity.
+type ListEmailDomainActivityParams struct {
+	// DomainIds Comma-separated domain ids (1–100)
+	DomainIds *[]openapi_types.UUID `form:"domainIds,omitempty" json:"domainIds,omitempty"`
+}
+
+// ListEmailMessagesParams defines parameters for ListEmailMessages.
+type ListEmailMessagesParams struct {
+	// Inbox Only messages to this local-part, exact match
+	Inbox *string `form:"inbox,omitempty" json:"inbox,omitempty"`
+
+	// Q Case-insensitive match on subject, sender, or recipient local-part
+	Q      *string             `form:"q,omitempty" json:"q,omitempty"`
+	Cursor *string             `form:"cursor,omitempty" json:"cursor,omitempty"`
+	After  *openapi_types.UUID `form:"after,omitempty" json:"after,omitempty"`
+	Limit  *int32              `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // ListMonitorRuleEvaluationsParams defines parameters for ListMonitorRuleEvaluations.
@@ -10458,8 +12896,8 @@ type List9Params struct {
 	Filter *string `form:"filter,omitempty" json:"filter,omitempty"`
 }
 
-// List18Params defines parameters for List18.
-type List18Params struct {
+// List19Params defines parameters for List19.
+type List19Params struct {
 	Pageable Pageable `form:"pageable" json:"pageable"`
 }
 
@@ -10488,7 +12926,16 @@ type List8Params struct {
 
 	// EnvironmentId Filter by environment ID
 	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
-	Pageable      Pageable            `form:"pageable" json:"pageable"`
+
+	// DisplayHealth Filter by projected chip health
+	DisplayHealth *string `form:"displayHealth,omitempty" json:"displayHealth,omitempty"`
+
+	// NeedsAttention When true, only monitors that need operator attention
+	NeedsAttention *bool `form:"needsAttention,omitempty" json:"needsAttention,omitempty"`
+
+	// Region Filter by probe region
+	Region   *string  `form:"region,omitempty" json:"region,omitempty"`
+	Pageable Pageable `form:"pageable" json:"pageable"`
 }
 
 // List8ParamsType defines parameters for List8.
@@ -10496,6 +12943,15 @@ type List8ParamsType string
 
 // List8ParamsManagedBy defines parameters for List8.
 type List8ParamsManagedBy string
+
+// GetMonitorOverviewStepsParams defines parameters for GetMonitorOverviewSteps.
+type GetMonitorOverviewStepsParams struct {
+	// Window Time window for step aggregates
+	Window *GetMonitorOverviewStepsParamsWindow `form:"window,omitempty" json:"window,omitempty"`
+}
+
+// GetMonitorOverviewStepsParamsWindow defines parameters for GetMonitorOverviewSteps.
+type GetMonitorOverviewStepsParamsWindow string
 
 // GetResultsParams defines parameters for GetResults.
 type GetResultsParams struct {
@@ -10526,6 +12982,21 @@ type GetSummaryParams struct {
 
 // GetSummaryParamsChartWindow defines parameters for GetSummary.
 type GetSummaryParamsChartWindow string
+
+// ListRevisionsParams defines parameters for ListRevisions.
+type ListRevisionsParams struct {
+	Pageable Pageable `form:"pageable" json:"pageable"`
+}
+
+// RollbackPreviewParams defines parameters for RollbackPreview.
+type RollbackPreviewParams struct {
+	RevisionId openapi_types.UUID `form:"revisionId" json:"revisionId"`
+}
+
+// ListMonitorRunsParams defines parameters for ListMonitorRuns.
+type ListMonitorRunsParams struct {
+	Params MonitorRunListParams `form:"params" json:"params"`
+}
 
 // GetUptimeParams defines parameters for GetUptime.
 type GetUptimeParams struct {
@@ -10572,6 +13043,37 @@ type List17Params struct {
 // Get3Params defines parameters for Get3.
 type Get3Params struct {
 	IncludeMetrics *bool `form:"includeMetrics,omitempty" json:"includeMetrics,omitempty"`
+}
+
+// ListRunsParams defines parameters for ListRuns.
+type ListRunsParams struct {
+	Params RunListParams `form:"params" json:"params"`
+}
+
+// ListRunCasesParams defines parameters for ListRunCases.
+type ListRunCasesParams struct {
+	Params RunCaseListParams `form:"params" json:"params"`
+}
+
+// GetRunConsoleRawParams defines parameters for GetRunConsoleRaw.
+type GetRunConsoleRawParams struct {
+	Params RunConsoleParams `form:"params" json:"params"`
+}
+
+// GetRunDiffParams defines parameters for GetRunDiff.
+type GetRunDiffParams struct {
+	BaselineRunId *openapi_types.UUID `form:"baselineRunId,omitempty" json:"baselineRunId,omitempty"`
+}
+
+// StreamRunEventsParams defines parameters for StreamRunEvents.
+type StreamRunEventsParams struct {
+	Params      RunEventParams `form:"params" json:"params"`
+	LastEventID *string        `json:"Last-Event-ID,omitempty"`
+}
+
+// ListRunNetworkParams defines parameters for ListRunNetwork.
+type ListRunNetworkParams struct {
+	Params RunNetworkParams `form:"params" json:"params"`
 }
 
 // ListServicesParams defines parameters for ListServices.
@@ -10800,6 +13302,28 @@ type List3Params struct {
 	Pageable Pageable `form:"pageable" json:"pageable"`
 }
 
+// ListWebhookInboxesParams defines parameters for ListWebhookInboxes.
+type ListWebhookInboxesParams struct {
+	// Search Case-insensitive name search
+	Search   *string  `form:"search,omitempty" json:"search,omitempty"`
+	Pageable Pageable `form:"pageable" json:"pageable"`
+}
+
+// ListWebhookInboxActivityParams defines parameters for ListWebhookInboxActivity.
+type ListWebhookInboxActivityParams struct {
+	// InboxIds Comma-separated inbox ids (1–100)
+	InboxIds *[]openapi_types.UUID `form:"inboxIds,omitempty" json:"inboxIds,omitempty"`
+}
+
+// ListWebhookEventsParams defines parameters for ListWebhookEvents.
+type ListWebhookEventsParams struct {
+	Cursor *string             `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Method *string             `form:"method,omitempty" json:"method,omitempty"`
+	Path   *string             `form:"path,omitempty" json:"path,omitempty"`
+	After  *openapi_types.UUID `form:"after,omitempty" json:"after,omitempty"`
+	Limit  *int32              `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // List2Params defines parameters for List2.
 type List2Params struct {
 	Pageable Pageable `form:"pageable" json:"pageable"`
@@ -10835,6 +13359,21 @@ type Update16JSONRequestBody = UpdateApiKeyRequest
 
 // AcquireJSONRequestBody defines body for Acquire for application/json ContentType.
 type AcquireJSONRequestBody = AcquireDeployLockRequest
+
+// CreateEmailDomainJSONRequestBody defines body for CreateEmailDomain for application/json ContentType.
+type CreateEmailDomainJSONRequestBody = CreateEmailDomainRequest
+
+// UpdateEmailDomainJSONRequestBody defines body for UpdateEmailDomain for application/json ContentType.
+type UpdateEmailDomainJSONRequestBody = UpdateEmailDomainRequest
+
+// InjectEmailMessageJSONRequestBody defines body for InjectEmailMessage for application/json ContentType.
+type InjectEmailMessageJSONRequestBody = InjectEmailMessageRequest
+
+// WaitForEmailJSONRequestBody defines body for WaitForEmail for application/json ContentType.
+type WaitForEmailJSONRequestBody = WaitEmailMessageRequest
+
+// WaitForEmailByLocalpartJSONRequestBody defines body for WaitForEmailByLocalpart for application/json ContentType.
+type WaitForEmailByLocalpartJSONRequestBody = WaitEmailMessageRequest
 
 // Create13JSONRequestBody defines body for Create13 for application/json ContentType.
 type Create13JSONRequestBody = CreateEnvironmentRequest
@@ -10881,17 +13420,44 @@ type Create9JSONRequestBody = CreateMonitorRequest
 // BulkActionJSONRequestBody defines body for BulkAction for application/json ContentType.
 type BulkActionJSONRequestBody = BulkMonitorActionRequest
 
+// CreatePackageUploadJSONRequestBody defines body for CreatePackageUpload for application/json ContentType.
+type CreatePackageUploadJSONRequestBody = CreatePackageUploadRequest
+
 // TestAdHocJSONRequestBody defines body for TestAdHoc for application/json ContentType.
 type TestAdHocJSONRequestBody = MonitorTestRequest
 
 // Update11JSONRequestBody defines body for Update11 for application/json ContentType.
 type Update11JSONRequestBody = UpdateMonitorRequest
 
+// MuteJSONRequestBody defines body for Mute for application/json ContentType.
+type MuteJSONRequestBody = MonitorOverlayRequest
+
+// PauseJSONRequestBody defines body for Pause for application/json ContentType.
+type PauseJSONRequestBody = MonitorOverlayRequest
+
+// PublishJSONRequestBody defines body for Publish for application/json ContentType.
+type PublishJSONRequestBody = PublishRevisionRequest
+
+// QuarantineJSONRequestBody defines body for Quarantine for application/json ContentType.
+type QuarantineJSONRequestBody = QuarantineMonitorRequest
+
+// RollbackJSONRequestBody defines body for Rollback for application/json ContentType.
+type RollbackJSONRequestBody = RollbackRevisionRequest
+
+// RemapJSONRequestBody defines body for Remap for application/json ContentType.
+type RemapJSONRequestBody = RemapSecretRequest
+
+// PutSessionJSONRequestBody defines body for PutSession for application/json ContentType.
+type PutSessionJSONRequestBody = UpsertMonitorSessionRequest
+
 // RemoveMonitorTagsJSONRequestBody defines body for RemoveMonitorTags for application/json ContentType.
 type RemoveMonitorTagsJSONRequestBody = RemoveMonitorTagsRequest
 
 // AddMonitorTagsJSONRequestBody defines body for AddMonitorTags for application/json ContentType.
 type AddMonitorTagsJSONRequestBody = AddMonitorTagsRequest
+
+// TakeoverJSONRequestBody defines body for Takeover for application/json ContentType.
+type TakeoverJSONRequestBody = TakeoverMonitorRequest
 
 // TestNotificationsJSONRequestBody defines body for TestNotifications for application/json ContentType.
 type TestNotificationsJSONRequestBody = TestMonitorNotificationsRequest
@@ -10940,6 +13506,9 @@ type Create6JSONRequestBody = CreateSecretRequest
 
 // Update4JSONRequestBody defines body for Update4 for application/json ContentType.
 type Update4JSONRequestBody = UpdateSecretRequest
+
+// WriteEnvironmentValueJSONRequestBody defines body for WriteEnvironmentValue for application/json ContentType.
+type WriteEnvironmentValueJSONRequestBody = WriteSecretEnvironmentValueRequest
 
 // UpdateAlertSensitivityJSONRequestBody defines body for UpdateAlertSensitivity for application/json ContentType.
 type UpdateAlertSensitivityJSONRequestBody = UpdateAlertSensitivityRequest
@@ -11015,6 +13584,15 @@ type Create4JSONRequestBody = CreateTagRequest
 
 // Update2JSONRequestBody defines body for Update2 for application/json ContentType.
 type Update2JSONRequestBody = UpdateTagRequest
+
+// CreateWebhookInboxJSONRequestBody defines body for CreateWebhookInbox for application/json ContentType.
+type CreateWebhookInboxJSONRequestBody = CreateWebhookInboxRequest
+
+// UpdateWebhookInboxJSONRequestBody defines body for UpdateWebhookInbox for application/json ContentType.
+type UpdateWebhookInboxJSONRequestBody = UpdateWebhookInboxRequest
+
+// WaitForWebhookEventJSONRequestBody defines body for WaitForWebhookEvent for application/json ContentType.
+type WaitForWebhookEventJSONRequestBody = WaitWebhookEventRequest
 
 // Create3JSONRequestBody defines body for Create3 for application/json ContentType.
 type Create3JSONRequestBody = CreateWebhookEndpointRequest
