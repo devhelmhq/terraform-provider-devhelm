@@ -1061,7 +1061,7 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 	req := &generated.CreateMonitorRequest{
 		Name:             plan.Name.ValueString(),
 		Type:             monitorType,
-		Config:           configUnion,
+		Config:           &configUnion,
 		ManagedBy:        &managedByTF,
 		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
 		Enabled:          boolPtrOrNil(plan.Enabled),

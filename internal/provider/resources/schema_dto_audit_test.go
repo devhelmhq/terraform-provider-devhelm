@@ -124,7 +124,12 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 				"tags": "tag_ids",
 			},
 			allowed: map[string]string{
-				"managed_by": "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+				"managed_by":              "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+				"capture_policy":          "Code-monitor capture settings are not on the Terraform schema yet.",
+				"definition_id":           "Reusing an existing definition is not on the Terraform schema yet.",
+				"fast_retry_max_attempts": "Fast-retry is not on the Terraform schema yet.",
+				"package":                 "Browser and multi-step package upload is not on the Terraform schema yet.",
+				"run_parallel":            "Location rotation is not on the Terraform schema yet.",
 			},
 		},
 		{
@@ -135,9 +140,14 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 				"tags": "tag_ids",
 			},
 			allowed: map[string]string{
-				"managed_by":           "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
-				"clear_auth":           "Internal flag derived from null Auth attribute, not user-facing.",
-				"clear_environment_id": "Internal flag derived from null environment_id attribute.",
+				"managed_by":              "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+				"clear_auth":              "Internal flag derived from null Auth attribute, not user-facing.",
+				"clear_environment_id":    "Internal flag derived from null environment_id attribute.",
+				"capture_policy":          "Code-monitor capture settings are not on the Terraform schema yet.",
+				"fast_retry_max_attempts": "Fast-retry is not on the Terraform schema yet.",
+				"package":                 "Browser and multi-step package upload is not on the Terraform schema yet.",
+				"run_parallel":            "Location rotation is not on the Terraform schema yet.",
+				"status":                  "Not writable on update; pause and resume are separate operations.",
 			},
 		},
 		{
