@@ -27665,6 +27665,12 @@
             "minLength": 0,
             "type": "string",
             "description": "Secret value, stored encrypted (max 32KB)"
+          },
+          "environmentId": {
+            "type": "string",
+            "description": "Environment to receive this value when creating the secret",
+            "format": "uuid",
+            "nullable": true
           }
         }
       },

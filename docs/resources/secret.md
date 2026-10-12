@@ -52,6 +52,10 @@ resource "devhelm_monitor" "api" {
 - `key` (String) Secret key (used to reference this secret in auth configs)
 - `value` (String, Sensitive) Secret value (write-only, never returned by the API)
 
+### Optional
+
+- `environment_id` (String) Environment to receive this value when creating the secret. Changing it replaces the secret
+
 ### Read-Only
 
 - `id` (String) Unique identifier for this secret

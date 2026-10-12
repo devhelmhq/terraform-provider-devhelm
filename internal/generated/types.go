@@ -4517,6 +4517,9 @@ type CreateResourceGroupRequestManagedBy string
 
 // CreateSecretRequest defines model for CreateSecretRequest.
 type CreateSecretRequest struct {
+	// EnvironmentId Environment to receive this value when creating the secret
+	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
+
 	// Key Unique secret key within the workspace (max 255 chars)
 	Key string `json:"key"`
 
