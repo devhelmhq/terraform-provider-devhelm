@@ -25,10 +25,11 @@ type SecretResource struct {
 }
 
 type SecretResourceModel struct {
-	ID        types.String `tfsdk:"id"`
-	Key       types.String `tfsdk:"key"`
-	Value     types.String `tfsdk:"value"`
-	ValueHash types.String `tfsdk:"value_hash"`
+	ID            types.String `tfsdk:"id"`
+	Key           types.String `tfsdk:"key"`
+	Value         types.String `tfsdk:"value"`
+	ValueHash     types.String `tfsdk:"value_hash"`
+	EnvironmentID types.String `tfsdk:"environment_id"`
 }
 
 func NewSecretResource() resource.Resource {
@@ -67,6 +68,14 @@ func (r *SecretResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Computed:    true,
 				Description: "SHA-256 hash of the secret value (used for drift detection)",
 			},
+			"environment_id": schema.StringAttribute{
+				Optional: true,
+				Description: "Environment to receive this value when creating the secret. " +
+					"Changing it replaces the secret",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+			},
 		},
 	}
 }
@@ -90,9 +99,10 @@ func (r *SecretResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	body := generated.CreateSecretRequest{
-		Key:   plan.Key.ValueString(),
-		Value: plan.Value.ValueString(),
+	body, err := secretCreateRequest(plan)
+	if err != nil {
+		resp.Diagnostics.AddAttributeError(path.Root("environment_id"), "Invalid secret environment", err.Error())
+		return
 	}
 
 	secret, err := api.Create[generated.SecretDto](ctx, r.client, api.PathSecrets, body)
@@ -200,6 +210,18 @@ func (r *SecretResource) ImportState(ctx context.Context, req resource.ImportSta
 	// in HCL. The provider will detect drift on the next plan and prompt for a
 	// real value.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("value"), "IMPORTED_PLACEHOLDER")...)
+}
+
+func secretCreateRequest(plan SecretResourceModel) (generated.CreateSecretRequest, error) {
+	envID, err := parseUUIDPtrChecked(plan.EnvironmentID, "environment_id")
+	if err != nil {
+		return generated.CreateSecretRequest{}, err
+	}
+	return generated.CreateSecretRequest{
+		Key:           plan.Key.ValueString(),
+		Value:         plan.Value.ValueString(),
+		EnvironmentId: envID,
+	}, nil
 }
 
 func sha256Hex(input string) string {
