@@ -5778,7 +5778,7 @@ type ErrorResponse struct {
 	Code string `json:"code"`
 
 	// Details Extra fields for this error, such as a missing secret key and environment
-	Details *map[string]interface{} `json:"details,omitempty"`
+	Details *map[string]*map[string]interface{} `json:"details,omitempty"`
 
 	// Errors Structured per-field rejections; populated for validation errors, null otherwise
 	Errors *[]*ErrorEntry `json:"errors,omitempty"`
@@ -5793,10 +5793,8 @@ type ErrorResponse struct {
 	Limit *int64 `json:"limit,omitempty"`
 
 	// Message Human-readable error message; safe to surface to end users
-	Message string `json:"message"`
-
-	// Next Command and docs that fix this error
-	Next *ErrorNext `json:"next,omitempty"`
+	Message string     `json:"message"`
+	Next    *ErrorNext `json:"next,omitempty"`
 
 	// Owner Who owns the resource when a write is refused
 	Owner *string `json:"owner,omitempty"`
@@ -9548,7 +9546,7 @@ type ScheduledMaintenanceDto struct {
 
 // ScriptMonitorConfig defines model for ScriptMonitorConfig.
 type ScriptMonitorConfig struct {
-	// RuntimeId Runtime pin such as 2026.11; omit to pin the current runtime at create
+	// RuntimeId Runtime pin such as 2026.11; omit to pin the newest runtime that can run
 	RuntimeId *string `json:"runtimeId,omitempty"`
 
 	// Script Legacy inline script on existing rows
