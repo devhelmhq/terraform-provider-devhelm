@@ -1153,6 +1153,57 @@ func (e EmailChannelConfigChannelType) Valid() bool {
 	}
 }
 
+// Defines values for ErrorCategory.
+const (
+	ErrorCategoryAuth                 ErrorCategory = "auth"
+	ErrorCategoryBlocked              ErrorCategory = "blocked"
+	ErrorCategoryConfirmationRequired ErrorCategory = "confirmation_required"
+	ErrorCategoryConflict             ErrorCategory = "conflict"
+	ErrorCategoryGone                 ErrorCategory = "gone"
+	ErrorCategoryNotFound             ErrorCategory = "not_found"
+	ErrorCategoryOwnership            ErrorCategory = "ownership"
+	ErrorCategoryPermission           ErrorCategory = "permission"
+	ErrorCategoryPlan                 ErrorCategory = "plan"
+	ErrorCategoryPlatform             ErrorCategory = "platform"
+	ErrorCategoryQuota                ErrorCategory = "quota"
+	ErrorCategoryRateLimit            ErrorCategory = "rate_limit"
+	ErrorCategoryValidation           ErrorCategory = "validation"
+)
+
+// Valid indicates whether the value is a known member of the ErrorCategory enum.
+func (e ErrorCategory) Valid() bool {
+	switch e {
+	case ErrorCategoryAuth:
+		return true
+	case ErrorCategoryBlocked:
+		return true
+	case ErrorCategoryConfirmationRequired:
+		return true
+	case ErrorCategoryConflict:
+		return true
+	case ErrorCategoryGone:
+		return true
+	case ErrorCategoryNotFound:
+		return true
+	case ErrorCategoryOwnership:
+		return true
+	case ErrorCategoryPermission:
+		return true
+	case ErrorCategoryPlan:
+		return true
+	case ErrorCategoryPlatform:
+		return true
+	case ErrorCategoryQuota:
+		return true
+	case ErrorCategoryRateLimit:
+		return true
+	case ErrorCategoryValidation:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GitLabChannelConfigChannelType.
 const (
 	GitLabChannelConfigChannelTypeGitlab GitLabChannelConfigChannelType = "gitlab"
@@ -3460,6 +3511,42 @@ func (e List8ParamsType) Valid() bool {
 	}
 }
 
+// Defines values for List8ParamsTypes.
+const (
+	List8ParamsTypesBROWSER      List8ParamsTypes = "BROWSER"
+	List8ParamsTypesDNS          List8ParamsTypes = "DNS"
+	List8ParamsTypesHEARTBEAT    List8ParamsTypes = "HEARTBEAT"
+	List8ParamsTypesHTTP         List8ParamsTypes = "HTTP"
+	List8ParamsTypesICMP         List8ParamsTypes = "ICMP"
+	List8ParamsTypesMCPSERVER    List8ParamsTypes = "MCP_SERVER"
+	List8ParamsTypesMULTISTEPAPI List8ParamsTypes = "MULTI_STEP_API"
+	List8ParamsTypesTCP          List8ParamsTypes = "TCP"
+)
+
+// Valid indicates whether the value is a known member of the List8ParamsTypes enum.
+func (e List8ParamsTypes) Valid() bool {
+	switch e {
+	case List8ParamsTypesBROWSER:
+		return true
+	case List8ParamsTypesDNS:
+		return true
+	case List8ParamsTypesHEARTBEAT:
+		return true
+	case List8ParamsTypesHTTP:
+		return true
+	case List8ParamsTypesICMP:
+		return true
+	case List8ParamsTypesMCPSERVER:
+		return true
+	case List8ParamsTypesMULTISTEPAPI:
+		return true
+	case List8ParamsTypesTCP:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for List8ParamsManagedBy.
 const (
 	List8ParamsManagedByAPI       List8ParamsManagedBy = "API"
@@ -4257,6 +4344,33 @@ type BodyContainsAssertion struct {
 
 // BodyContainsAssertionType defines model for BodyContainsAssertion.Type.
 type BodyContainsAssertionType string
+
+// BrowserCapabilityEnvelope Browser capability envelope for this runtime
+type BrowserCapabilityEnvelope struct {
+	// Clipboard Clipboard access is enabled
+	Clipboard bool `json:"clipboard"`
+
+	// Downloads File downloads are enabled
+	Downloads bool `json:"downloads"`
+
+	// Geolocation Geolocation emulation is enabled
+	Geolocation bool `json:"geolocation"`
+
+	// Iframes Cross-origin iframes are enabled
+	Iframes bool `json:"iframes"`
+
+	// Popups Popup windows are enabled
+	Popups bool `json:"popups"`
+
+	// StripeElements Stripe Elements iframes are enabled
+	StripeElements bool `json:"stripeElements"`
+
+	// Upload File upload is enabled
+	Upload bool `json:"upload"`
+
+	// Viewport Viewport emulation is enabled
+	Viewport bool `json:"viewport"`
+}
 
 // BulkMonitorActionRequest Request body for performing a bulk action on multiple monitors
 type BulkMonitorActionRequest struct {
@@ -5910,6 +6024,9 @@ type EnvironmentDto struct {
 	Variables map[string]string `json:"variables"`
 }
 
+// ErrorCategory Machine class clients use to choose the next action
+type ErrorCategory string
+
 // ErrorEntry One structured validation rejection
 type ErrorEntry struct {
 	// Code Stable machine-readable code; see ValidationErrorCode for the registry
@@ -5922,25 +6039,88 @@ type ErrorEntry struct {
 	Message string `json:"message"`
 }
 
+// ErrorNext Command and documentation that fix this error
+type ErrorNext struct {
+	// Command Command that fixes this error
+	Command *string `json:"command,omitempty"`
+
+	// Docs Documentation page for this error
+	Docs *string `json:"docs,omitempty"`
+}
+
 // ErrorResponse Uniform error envelope returned for every non-2xx response
 type ErrorResponse struct {
-	// Code Coarse machine-readable error category (e.g. NOT_FOUND, RATE_LIMITED); stable per status
+	// CanRaise Role that can raise this limit
+	CanRaise *string `json:"canRaise,omitempty"`
+
+	// Category Machine class clients use to choose the next action
+	Category ErrorCategory `json:"category"`
+
+	// Code Stable machine code for this error, such as NOT_FOUND or SYNTHETICS_USAGE_CAPPED
 	Code string `json:"code"`
+
+	// Details Extra fields for this error, such as a missing secret key and environment
+	Details *map[string]interface{} `json:"details,omitempty"`
 
 	// Errors Structured per-field rejections; populated for validation errors, null otherwise
 	Errors *[]*ErrorEntry `json:"errors,omitempty"`
 
+	// ExpiredAt When this evidence expired
+	ExpiredAt *time.Time `json:"expiredAt,omitempty"`
+
+	// Have Current amount compared with the plan limit
+	Have *int64 `json:"have,omitempty"`
+
+	// Limit Maximum allowed for this period or plan
+	Limit *int64 `json:"limit,omitempty"`
+
 	// Message Human-readable error message; safe to surface to end users
 	Message string `json:"message"`
 
+	// Next Command and docs that fix this error
+	Next *ErrorNext `json:"next,omitempty"`
+
+	// Owner Who owns the resource when a write is refused
+	Owner *string `json:"owner,omitempty"`
+
+	// Plan Plan this refusal was evaluated against
+	Plan *string `json:"plan,omitempty"`
+
+	// Policy Retention written when the artifact was saved, such as P7D
+	Policy *string `json:"policy,omitempty"`
+
+	// Reason Why permission was refused: scope or role
+	Reason *string `json:"reason,omitempty"`
+
 	// RequestId Opaque per-request id; same value as the X-Request-Id response header. Use in support tickets.
 	RequestId *string `json:"requestId,omitempty"`
+
+	// Required Missing scope, secret key, or other required value
+	Required *string `json:"required,omitempty"`
+
+	// ResetsAt When this quota window resumes (ISO-8601)
+	ResetsAt *string `json:"resetsAt,omitempty"`
+
+	// Resource Meter or resource this limit applies to
+	Resource *string `json:"resource,omitempty"`
+
+	// RetryAfterSeconds Seconds to wait before retrying a rate limit
+	RetryAfterSeconds *int64 `json:"retryAfterSeconds,omitempty"`
+
+	// Retryable Whether a later attempt can succeed without changing the request
+	Retryable bool `json:"retryable"`
 
 	// Status HTTP status code (mirrors the response status line)
 	Status int32 `json:"status"`
 
 	// Timestamp Server time when the error was produced (epoch milliseconds)
 	Timestamp int64 `json:"timestamp"`
+
+	// UpgradeUrl Page where an admin can change the plan
+	UpgradeUrl *string `json:"upgradeUrl,omitempty"`
+
+	// Used Amount used in the current period
+	Used *int64 `json:"used,omitempty"`
 }
 
 // EscalationChain Escalation chain defining which channels to notify; null preserves current
@@ -6040,6 +6220,27 @@ type GroupComponentOrder struct {
 
 	// Positions Ordered component IDs with their within-group display order
 	Positions []ComponentPosition `json:"positions"`
+}
+
+// HarnessReleaseDto Supervisor release used for this attempt
+type HarnessReleaseDto struct {
+	// CompatibilityManifestSha256 Compatibility manifest hash
+	CompatibilityManifestSha256 *string `json:"compatibilityManifestSha256,omitempty"`
+
+	// CreatedAt When the release was registered
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Id Supervisor harness release identifier
+	Id string `json:"id"`
+
+	// ProtocolMajor Harness protocol major version
+	ProtocolMajor int32 `json:"protocolMajor"`
+
+	// Provenance Release provenance
+	Provenance string `json:"provenance"`
+
+	// SourceSha Source commit for this release
+	SourceSha *string `json:"sourceSha,omitempty"`
 }
 
 // HeaderAuthConfig defines model for HeaderAuthConfig.
@@ -7463,8 +7664,9 @@ type MonitorDto struct {
 	Type string    `json:"type"`
 
 	// UpdatedAt Timestamp when the monitor was last updated
-	UpdatedAt time.Time         `json:"updatedAt"`
-	Upload    *PackageUploadDto `json:"upload,omitempty"`
+	UpdatedAt       time.Time                  `json:"updatedAt"`
+	Upload          *PackageUploadDto          `json:"upload,omitempty"`
+	UsageProjection *MonitorUsageProjectionDto `json:"usageProjection,omitempty"`
 }
 
 // MonitorDto_Config defines model for MonitorDto.Config.
@@ -7520,6 +7722,45 @@ type MonitorReference struct {
 	Name string `json:"name"`
 }
 
+// MonitorRunDurationBatchDto Run-duration percentiles for a batch of monitors
+type MonitorRunDurationBatchDto struct {
+	// From Inclusive start of the enqueue-time window
+	From time.Time `json:"from"`
+
+	// Monitors Measured duration results for requested code monitors
+	Monitors []MonitorRunDurationMetricDto `json:"monitors"`
+
+	// To Exclusive end of the enqueue-time window
+	To time.Time `json:"to"`
+}
+
+// MonitorRunDurationMetricDto One monitor's measured run durations
+type MonitorRunDurationMetricDto struct {
+	// MonitorId Monitor identifier
+	MonitorId openapi_types.UUID `json:"monitorId"`
+
+	// P50DurationMs Median execution duration in milliseconds
+	P50DurationMs *float64 `json:"p50DurationMs,omitempty"`
+
+	// SampleCount Finished runs with a measured duration
+	SampleCount int64 `json:"sampleCount"`
+}
+
+// MonitorRunDurationSummaryDto Per-monitor execution duration summary
+type MonitorRunDurationSummaryDto struct {
+	// From Inclusive start of the enqueue-time window
+	From time.Time `json:"from"`
+
+	// P50DurationMs Median execution duration in milliseconds; null when no durations were measured
+	P50DurationMs *float64 `json:"p50DurationMs,omitempty"`
+
+	// SampleCount Number of finished runs with a measured execution duration
+	SampleCount int64 `json:"sampleCount"`
+
+	// To Exclusive end of the enqueue-time window
+	To time.Time `json:"to"`
+}
+
 // MonitorRunListParams defines model for MonitorRunListParams.
 type MonitorRunListParams struct {
 	// Cursor Opaque cursor from the previous page; results cover the last 90 days
@@ -7528,10 +7769,10 @@ type MonitorRunListParams struct {
 	// Limit Page size (1–100, default 25)
 	Limit int32 `json:"limit"`
 
-	// Outcome Filter by outcome; passed is first-try only; passed_on_retry is a pass after retry
+	// Outcome Filter by outcome; not_passed also includes passed-on-retry runs
 	Outcome *string `json:"outcome,omitempty"`
 
-	// Phase Filter by run phase; omit to return every phase
+	// Phase Filter by run phase; not_finished excludes finished runs
 	Phase *string `json:"phase,omitempty"`
 
 	// Q Substring match on headline
@@ -7641,6 +7882,36 @@ type MonitorTestResultDto struct {
 	ResponseTimeMs    *int64                   `json:"responseTimeMs,omitempty"`
 	StatusCode        *int32                   `json:"statusCode,omitempty"`
 	Warnings          *[]string                `json:"warnings,omitempty"`
+}
+
+// MonitorUsageProjectionDto Projected monthly usage for a browser or multi-step API schedule
+type MonitorUsageProjectionDto struct {
+	// IncludedRunsLeft Included runs left this period; null when unlimited
+	IncludedRunsLeft *int64 `json:"includedRunsLeft,omitempty"`
+
+	// Meter Usage meter this schedule bills
+	Meter *string `json:"meter,omitempty"`
+
+	// ProjectedMonthlyRuns Projected runs this month from interval and locations
+	ProjectedMonthlyRuns int64 `json:"projectedMonthlyRuns"`
+
+	// ProjectedOverageCents Projected overage in cents; null when overage is off
+	ProjectedOverageCents *int64 `json:"projectedOverageCents,omitempty"`
+
+	// ProjectedOverageRuns Runs past the included pool if this schedule runs all month
+	ProjectedOverageRuns int64 `json:"projectedOverageRuns"`
+
+	// ReserveRuns Runs held back for validation and triggers
+	ReserveRuns int64 `json:"reserveRuns"`
+
+	// ScheduledUsageEatsReserve True when this schedule would use the validation reserve
+	ScheduledUsageEatsReserve bool `json:"scheduledUsageEatsReserve"`
+
+	// WouldHitHardStop True when this schedule would hit the included-run stop
+	WouldHitHardStop bool `json:"wouldHitHardStop"`
+
+	// WouldHitSpendCap True when this schedule would pass the spend cap
+	WouldHitSpendCap bool `json:"wouldHitSpendCap"`
 }
 
 // MonitorVersionDto A point-in-time version snapshot of a monitor configuration
@@ -9101,7 +9372,11 @@ type RunDto struct {
 	EvaluationCycleId *openapi_types.UUID `json:"evaluationCycleId,omitempty"`
 
 	// Evidence List evidence chips in SHOT → TRACE → VIDEO → NET order
-	Evidence []RunEvidenceDto `json:"evidence"`
+	Evidence  []RunEvidenceDto `json:"evidence"`
+	Execution *RunExecutionDto `json:"execution,omitempty"`
+
+	// ExecutionAttempts Persisted worker execution attempts
+	ExecutionAttempts []RunExecutionAttemptDto `json:"executionAttempts"`
 
 	// ExecutionLine Live execution one-liner
 	ExecutionLine *string `json:"executionLine,omitempty"`
@@ -9231,21 +9506,69 @@ type RunEvidenceDto struct {
 	State string `json:"state"`
 }
 
+// RunExecutionAttemptDto Persisted worker execution attempts
+type RunExecutionAttemptDto struct {
+	// Capabilities Negotiated execution capabilities
+	Capabilities []string `json:"capabilities"`
+
+	// ProtocolMajor Negotiated execution protocol major
+	ProtocolMajor int32 `json:"protocolMajor"`
+
+	// RecordedAt When execution attempt metadata was recorded
+	RecordedAt time.Time `json:"recordedAt"`
+
+	// RunGeneration Claim generation for this execution attempt
+	RunGeneration int32 `json:"runGeneration"`
+
+	// Supervisor Supervisor release used for this attempt
+	Supervisor HarnessReleaseDto `json:"supervisor"`
+}
+
+// RunExecutionDto Frozen execution identity; null when historical identity is unknown
+type RunExecutionDto struct {
+	// BuildManifestSha256 Measured image build manifest hash
+	BuildManifestSha256 *string `json:"buildManifestSha256,omitempty"`
+
+	// CreatedAt When the image identity was registered
+	CreatedAt time.Time `json:"createdAt"`
+
+	// CustomerManifestSha256 Measured customer environment manifest hash
+	CustomerManifestSha256 *string `json:"customerManifestSha256,omitempty"`
+
+	// Harness Supervisor release used for this attempt
+	Harness HarnessReleaseDto `json:"harness"`
+
+	// Id Immutable execution image identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// ImageDigest Immutable image digest
+	ImageDigest string `json:"imageDigest"`
+
+	// MonitorType Monitor type supported by this image
+	MonitorType string `json:"monitorType"`
+
+	// RequiredCapabilities Capabilities required by this image
+	RequiredCapabilities []string `json:"requiredCapabilities"`
+
+	// Runtime Default execution environment; null uses the catalog default
+	Runtime RuntimeProfileDto `json:"runtime"`
+}
+
 // RunListParams defines model for RunListParams.
 type RunListParams struct {
-	// EnvironmentId Only return runs whose monitor lives in this environment
+	// EnvironmentId Only return runs executed in this environment
 	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
 
 	// From Inclusive enqueue lower bound (default last 30 minutes; clamped to 90 days)
 	From *time.Time `json:"from,omitempty"`
 
-	// Outcome Filter by outcome; passed is first-try only; passed_on_retry is a pass after retry
+	// Outcome Filter by outcome; not_passed also includes passed-on-retry runs
 	Outcome *string `json:"outcome,omitempty"`
 
 	// Page Zero-based page index (default 0)
 	Page int32 `json:"page"`
 
-	// Phase Filter by run phase; omit to return every phase
+	// Phase Filter by run phase; not_finished excludes finished runs
 	Phase *string `json:"phase,omitempty"`
 
 	// Q Substring match on monitor name or headline
@@ -9280,6 +9603,60 @@ type RunLiveDto struct {
 
 	// StepTitle Current step title
 	StepTitle *string `json:"stepTitle,omitempty"`
+}
+
+// RunMetricsSummaryDto Duration and evidence metrics for the filtered Runs population
+type RunMetricsSummaryDto struct {
+	// AvailableArtifactCount Required artifact records with an available unexpired object key
+	AvailableArtifactCount *int64 `json:"availableArtifactCount,omitempty"`
+
+	// DurationSampleCount Finished matching runs with a measured execution duration
+	DurationSampleCount int64 `json:"durationSampleCount"`
+
+	// EvidenceCompleteRunCount Eligible runs with all required evidence available
+	EvidenceCompleteRunCount *int64 `json:"evidenceCompleteRunCount,omitempty"`
+
+	// EvidenceEligibleRunCount Runs with a known capture policy
+	EvidenceEligibleRunCount int64 `json:"evidenceEligibleRunCount"`
+
+	// EvidenceIncompleteRunCount Eligible runs with required evidence missing, processing, failed, or expired
+	EvidenceIncompleteRunCount *int64 `json:"evidenceIncompleteRunCount,omitempty"`
+
+	// EvidenceNoEvidencePolicyRunCount Eligible runs with no evidence required by their recorded policy
+	EvidenceNoEvidencePolicyRunCount *int64 `json:"evidenceNoEvidencePolicyRunCount,omitempty"`
+
+	// EvidenceProcessingRunCount Eligible runs with required evidence still processing
+	EvidenceProcessingRunCount *int64 `json:"evidenceProcessingRunCount,omitempty"`
+
+	// EvidenceUnknownPolicyRunCount Runs with a missing or incomplete capture policy
+	EvidenceUnknownPolicyRunCount int64 `json:"evidenceUnknownPolicyRunCount"`
+
+	// ExpiredArtifactCount Required artifact records marked expired or past their expiry
+	ExpiredArtifactCount *int64 `json:"expiredArtifactCount,omitempty"`
+
+	// FailedArtifactCount Required artifact records with a failed upload
+	FailedArtifactCount *int64 `json:"failedArtifactCount,omitempty"`
+
+	// From Inclusive start of the enqueue-time window
+	From time.Time `json:"from"`
+
+	// IntentionalNoEvidenceArtifactCount Required artifact records explicitly suppressed, not reached, or not captured
+	IntentionalNoEvidenceArtifactCount *int64 `json:"intentionalNoEvidenceArtifactCount,omitempty"`
+
+	// MatchingRunCount Runs matching the complete list filter
+	MatchingRunCount int64 `json:"matchingRunCount"`
+
+	// MissingArtifactKindCount Required evidence kinds with no artifact record after the run finished
+	MissingArtifactKindCount *int64 `json:"missingArtifactKindCount,omitempty"`
+
+	// P95DurationMs 95th percentile execution duration in milliseconds; null when no durations were measured
+	P95DurationMs *float64 `json:"p95DurationMs,omitempty"`
+
+	// ProcessingArtifactCount Required artifact records still processing
+	ProcessingArtifactCount *int64 `json:"processingArtifactCount,omitempty"`
+
+	// To Inclusive end of the enqueue-time window
+	To time.Time `json:"to"`
 }
 
 // RunNetworkDto Network waterfall page
@@ -9387,6 +9764,40 @@ type RunnerLogLiveEvent struct {
 	Ts string `json:"ts"`
 }
 
+// RuntimeProfileDto Default execution environment; null uses the catalog default
+type RuntimeProfileDto struct {
+	// AvailableAt When this runtime became available
+	AvailableAt *time.Time                 `json:"availableAt,omitempty"`
+	Browser     *BrowserCapabilityEnvelope `json:"browser,omitempty"`
+
+	// DeprecatedAt When this runtime was deprecated; null while current
+	DeprecatedAt *time.Time `json:"deprecatedAt,omitempty"`
+
+	// EolAt When runtime support ends
+	EolAt *time.Time `json:"eolAt,omitempty"`
+
+	// Id Runtime environment identifier
+	Id string `json:"id"`
+
+	// NodeBuiltins Node built-in modules available to checks
+	NodeBuiltins *[]string `json:"nodeBuiltins,omitempty"`
+
+	// NodeVersion Node version available to checks
+	NodeVersion string `json:"nodeVersion"`
+
+	// Packages Pinned npm packages available to checks
+	Packages *map[string]*string `json:"packages,omitempty"`
+
+	// PlaywrightVersion Playwright version available to checks
+	PlaywrightVersion string `json:"playwrightVersion"`
+
+	// ReservedBindings Environment bindings this runtime reads
+	ReservedBindings *[]string `json:"reservedBindings,omitempty"`
+
+	// Status Runtime support status
+	Status string `json:"status"`
+}
+
 // ScheduledMaintenanceDto A scheduled maintenance window from a vendor status page
 type ScheduledMaintenanceDto struct {
 	// AffectedComponents Components affected by this maintenance
@@ -9428,7 +9839,7 @@ type ScheduledMaintenanceDto struct {
 
 // ScriptMonitorConfig defines model for ScriptMonitorConfig.
 type ScriptMonitorConfig struct {
-	// RuntimeId Runtime pin YYYY.MM; omit uses workspace default then sole available
+	// RuntimeId Runtime pin such as 2026.11; omit to pin the current runtime at create
 	RuntimeId *string `json:"runtimeId,omitempty"`
 
 	// Script Legacy inline script on existing rows
@@ -10086,6 +10497,18 @@ type SingleValueResponseMonitorDto struct {
 	Data MonitorDto `json:"data"`
 }
 
+// SingleValueResponseMonitorRunDurationBatchDto defines model for SingleValueResponseMonitorRunDurationBatchDto.
+type SingleValueResponseMonitorRunDurationBatchDto struct {
+	// Data Run-duration percentiles for a batch of monitors
+	Data MonitorRunDurationBatchDto `json:"data"`
+}
+
+// SingleValueResponseMonitorRunDurationSummaryDto defines model for SingleValueResponseMonitorRunDurationSummaryDto.
+type SingleValueResponseMonitorRunDurationSummaryDto struct {
+	// Data Per-monitor execution duration summary
+	Data MonitorRunDurationSummaryDto `json:"data"`
+}
+
 // SingleValueResponseMonitorSecretRequestsDto defines model for SingleValueResponseMonitorSecretRequestsDto.
 type SingleValueResponseMonitorSecretRequestsDto struct {
 	// Data Environment and secret keys this monitor requires
@@ -10107,6 +10530,12 @@ type SingleValueResponseMonitorSettingsPreviewDto struct {
 // SingleValueResponseMonitorTestResultDto defines model for SingleValueResponseMonitorTestResultDto.
 type SingleValueResponseMonitorTestResultDto struct {
 	Data MonitorTestResultDto `json:"data"`
+}
+
+// SingleValueResponseMonitorUsageProjectionDto defines model for SingleValueResponseMonitorUsageProjectionDto.
+type SingleValueResponseMonitorUsageProjectionDto struct {
+	// Data Projected monthly usage for a browser or multi-step API schedule
+	Data MonitorUsageProjectionDto `json:"data"`
 }
 
 // SingleValueResponseMonitorVersionDto defines model for SingleValueResponseMonitorVersionDto.
@@ -10215,6 +10644,18 @@ type SingleValueResponseRunDiffDto struct {
 type SingleValueResponseRunDto struct {
 	// Data Code-monitor run
 	Data RunDto `json:"data"`
+}
+
+// SingleValueResponseRunMetricsSummaryDto defines model for SingleValueResponseRunMetricsSummaryDto.
+type SingleValueResponseRunMetricsSummaryDto struct {
+	// Data Duration and evidence metrics for the filtered Runs population
+	Data RunMetricsSummaryDto `json:"data"`
+}
+
+// SingleValueResponseRuntimeProfileDto defines model for SingleValueResponseRuntimeProfileDto.
+type SingleValueResponseRuntimeProfileDto struct {
+	// Data Default execution environment; null uses the catalog default
+	Data RuntimeProfileDto `json:"data"`
 }
 
 // SingleValueResponseSecretAuditDto defines model for SingleValueResponseSecretAuditDto.
@@ -10330,6 +10771,12 @@ type SingleValueResponseStatusPageSubscriberDto struct {
 // SingleValueResponseString defines model for SingleValueResponseString.
 type SingleValueResponseString struct {
 	Data string `json:"data"`
+}
+
+// SingleValueResponseSyntheticsFamilyMetricsDto defines model for SingleValueResponseSyntheticsFamilyMetricsDto.
+type SingleValueResponseSyntheticsFamilyMetricsDto struct {
+	// Data Measured availability and recovery metrics for code monitors
+	Data SyntheticsFamilyMetricsDto `json:"data"`
 }
 
 // SingleValueResponseTagDto defines model for SingleValueResponseTagDto.
@@ -10877,6 +11324,39 @@ type Summary struct {
 	Slug string             `json:"slug"`
 }
 
+// SyntheticsFamilyMetricsDto Measured availability and recovery metrics for code monitors
+type SyntheticsFamilyMetricsDto struct {
+	// AvailabilityFrom Inclusive start of the availability window
+	AvailabilityFrom time.Time `json:"availabilityFrom"`
+
+	// AvailabilityPercent Measured passed checks divided by all measured target checks; null when none were measured
+	AvailabilityPercent *float64 `json:"availabilityPercent,omitempty"`
+
+	// AvailabilityTo Exclusive end of the availability window
+	AvailabilityTo time.Time `json:"availabilityTo"`
+
+	// CheckCount Number of measured PASSED or FAILED target checks
+	CheckCount int64 `json:"checkCount"`
+
+	// FlakyFrom Inclusive start of the recovery window
+	FlakyFrom time.Time `json:"flakyFrom"`
+
+	// FlakyMonitorCount Distinct family monitors with a failed target recovered by a retry in the same cycle and region
+	FlakyMonitorCount int64 `json:"flakyMonitorCount"`
+
+	// FlakyTo Exclusive end of the recovery window
+	FlakyTo time.Time `json:"flakyTo"`
+
+	// MeasuredMonitorCount Number of family monitors with measured target checks
+	MeasuredMonitorCount int64 `json:"measuredMonitorCount"`
+
+	// MonitorCount Number of non-deleted BROWSER and MULTI_STEP_API monitors
+	MonitorCount int64 `json:"monitorCount"`
+
+	// PassedCheckCount Number of measured PASSED target checks
+	PassedCheckCount int64 `json:"passedCheckCount"`
+}
+
 // TableValueResultAlertChannelDto defines model for TableValueResultAlertChannelDto.
 type TableValueResultAlertChannelDto struct {
 	Data          []AlertChannelDto `json:"data"`
@@ -11136,6 +11616,15 @@ type TableValueResultRunDto struct {
 	HasPrev       bool     `json:"hasPrev"`
 	TotalElements *int64   `json:"totalElements,omitempty"`
 	TotalPages    *int32   `json:"totalPages,omitempty"`
+}
+
+// TableValueResultRuntimeProfileDto defines model for TableValueResultRuntimeProfileDto.
+type TableValueResultRuntimeProfileDto struct {
+	Data          []RuntimeProfileDto `json:"data"`
+	HasNext       bool                `json:"hasNext"`
+	HasPrev       bool                `json:"hasPrev"`
+	TotalElements *int64              `json:"totalElements,omitempty"`
+	TotalPages    *int32              `json:"totalPages,omitempty"`
 }
 
 // TableValueResultScheduledMaintenanceDto defines model for TableValueResultScheduledMaintenanceDto.
@@ -12386,6 +12875,12 @@ type UpdateWorkspaceRequest struct {
 	Name string `json:"name"`
 }
 
+// UpdateWorkspaceRuntimeRequest Workspace execution environment selection
+type UpdateWorkspaceRuntimeRequest struct {
+	// RuntimeId Runtime environment identifier; null uses the catalog default
+	RuntimeId *string `json:"runtimeId,omitempty"`
+}
+
 // UpdateZapierChannelConfig defines model for UpdateZapierChannelConfig.
 type UpdateZapierChannelConfig struct {
 	ChannelType UpdateZapierChannelConfigChannelType `json:"channelType"`
@@ -12766,7 +13261,8 @@ type WorkspaceDto struct {
 	Name string `json:"name"`
 
 	// OrgId Organization this workspace belongs to
-	OrgId int32 `json:"orgId"`
+	OrgId          int32              `json:"orgId"`
+	RuntimeProfile *RuntimeProfileDto `json:"runtimeProfile,omitempty"`
 
 	// UpdatedAt Timestamp when the workspace was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -12808,8 +13304,8 @@ type List14ParamsType string
 // List14ParamsManagedBy defines parameters for List14.
 type List14ParamsManagedBy string
 
-// List22Params defines parameters for List22.
-type List22Params struct {
+// List23Params defines parameters for List23.
+type List23Params struct {
 	Action       *string    `form:"action,omitempty" json:"action,omitempty"`
 	ActorId      *int32     `form:"actorId,omitempty" json:"actorId,omitempty"`
 	ResourceType *string    `form:"resourceType,omitempty" json:"resourceType,omitempty"`
@@ -12899,8 +13395,8 @@ type List9Params struct {
 	Filter *string `form:"filter,omitempty" json:"filter,omitempty"`
 }
 
-// List19Params defines parameters for List19.
-type List19Params struct {
+// List20Params defines parameters for List20.
+type List20Params struct {
 	Pageable Pageable `form:"pageable" json:"pageable"`
 }
 
@@ -12914,6 +13410,9 @@ type List8Params struct {
 
 	// Type Filter by monitor type
 	Type *List8ParamsType `form:"type,omitempty" json:"type,omitempty"`
+
+	// Types Filter by monitor types, comma-separated; matches any listed type
+	Types *[]List8ParamsTypes `form:"types,omitempty" json:"types,omitempty"`
 
 	// ManagedBy Filter by managed-by source
 	ManagedBy *List8ParamsManagedBy `form:"managedBy,omitempty" json:"managedBy,omitempty"`
@@ -12943,6 +13442,9 @@ type List8Params struct {
 
 // List8ParamsType defines parameters for List8.
 type List8ParamsType string
+
+// List8ParamsTypes defines parameters for List8.
+type List8ParamsTypes string
 
 // List8ParamsManagedBy defines parameters for List8.
 type List8ParamsManagedBy string
@@ -13036,8 +13538,8 @@ type ListDispatchesParams struct {
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-// List17Params defines parameters for List17.
-type List17Params struct {
+// List18Params defines parameters for List18.
+type List18Params struct {
 	UnreadOnly *bool  `form:"unreadOnly,omitempty" json:"unreadOnly,omitempty"`
 	Page       *int32 `form:"page,omitempty" json:"page,omitempty"`
 	Size       *int32 `form:"size,omitempty" json:"size,omitempty"`
@@ -13050,6 +13552,11 @@ type Get3Params struct {
 
 // ListRunsParams defines parameters for ListRuns.
 type ListRunsParams struct {
+	Params RunListParams `form:"params" json:"params"`
+}
+
+// SummarizeRunsParams defines parameters for SummarizeRuns.
+type SummarizeRunsParams struct {
 	Params RunListParams `form:"params" json:"params"`
 }
 
@@ -13162,6 +13669,9 @@ type GetBatchComponentUptimeParams struct {
 
 	// To Explicit window end (ISO date); defaults to today
 	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
+
+	// ComponentIds Component ids to include (max 100); omit for every component
+	ComponentIds *[]openapi_types.UUID `form:"componentIds,omitempty" json:"componentIds,omitempty"`
 }
 
 // GetBatchComponentUptimeParamsPeriod defines parameters for GetBatchComponentUptime.
@@ -13300,6 +13810,11 @@ type ListSubscribersParams struct {
 	Pageable Pageable `form:"pageable" json:"pageable"`
 }
 
+// GetSyntheticsRunDurationsParams defines parameters for GetSyntheticsRunDurations.
+type GetSyntheticsRunDurationsParams struct {
+	MonitorIds []openapi_types.UUID `form:"monitorIds" json:"monitorIds"`
+}
+
 // List3Params defines parameters for List3.
 type List3Params struct {
 	Pageable Pageable `form:"pageable" json:"pageable"`
@@ -13429,6 +13944,9 @@ type CreatePackageUploadJSONRequestBody = CreatePackageUploadRequest
 // TestAdHocJSONRequestBody defines body for TestAdHoc for application/json ContentType.
 type TestAdHocJSONRequestBody = MonitorTestRequest
 
+// PreviewUsage1JSONRequestBody defines body for PreviewUsage1 for application/json ContentType.
+type PreviewUsage1JSONRequestBody = CreateMonitorRequest
+
 // Update11JSONRequestBody defines body for Update11 for application/json ContentType.
 type Update11JSONRequestBody = UpdateMonitorRequest
 
@@ -13464,6 +13982,9 @@ type TakeoverJSONRequestBody = TakeoverMonitorRequest
 
 // TestNotificationsJSONRequestBody defines body for TestNotifications for application/json ContentType.
 type TestNotificationsJSONRequestBody = TestMonitorNotificationsRequest
+
+// PreviewUsageJSONRequestBody defines body for PreviewUsage for application/json ContentType.
+type PreviewUsageJSONRequestBody = UpdateMonitorRequest
 
 // SetChannelsJSONRequestBody defines body for SetChannels for application/json ContentType.
 type SetChannelsJSONRequestBody = SetAlertChannelsRequest
@@ -13611,6 +14132,9 @@ type Create2JSONRequestBody = CreateWorkspaceRequest
 
 // UpdateJSONRequestBody defines body for Update for application/json ContentType.
 type UpdateJSONRequestBody = UpdateWorkspaceRequest
+
+// UpdateRuntimeJSONRequestBody defines body for UpdateRuntime for application/json ContentType.
+type UpdateRuntimeJSONRequestBody = UpdateWorkspaceRuntimeRequest
 
 // AsMemberRoleChangedMetadata returns the union data inside the AuditMetadata as a MemberRoleChangedMetadata
 func (t AuditMetadata) AsMemberRoleChangedMetadata() (MemberRoleChangedMetadata, error) {
