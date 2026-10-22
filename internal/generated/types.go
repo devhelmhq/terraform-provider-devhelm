@@ -3613,6 +3613,60 @@ func (e ListNotificationDeliveriesParamsEventType) Valid() bool {
 	}
 }
 
+// AccountEntitlementsDto Plan, caps, interval floors, environment cap, and retention
+type AccountEntitlementsDto struct {
+	// ApiMonitorCap Multi-step API monitor cap; null when the plan uses one combined cap
+	ApiMonitorCap *int64 `json:"apiMonitorCap,omitempty"`
+
+	// BrowserMonitorCap Browser monitor cap; null when the plan uses one combined cap
+	BrowserMonitorCap *int64 `json:"browserMonitorCap,omitempty"`
+
+	// CodeCheckCap Maximum browser and multi-step API monitors; null when unlimited
+	CodeCheckCap *int64 `json:"codeCheckCap,omitempty"`
+
+	// CodeCheckIntervalFloorSeconds Shortest code-check interval in seconds
+	CodeCheckIntervalFloorSeconds int64 `json:"codeCheckIntervalFloorSeconds"`
+
+	// EnvironmentCap Maximum environments; null when unlimited
+	EnvironmentCap *int64 `json:"environmentCap,omitempty"`
+
+	// MonitorCap Maximum monitors on this plan; null when unlimited
+	MonitorCap *int64 `json:"monitorCap,omitempty"`
+
+	// MonitorIntervalFloorSeconds Shortest probe interval in seconds
+	MonitorIntervalFloorSeconds int64 `json:"monitorIntervalFloorSeconds"`
+
+	// Plan Billing plan, such as FREE or PRO
+	Plan string `json:"plan"`
+
+	// RetentionDays Artifact retention in days; null when unlimited
+	RetentionDays *int64 `json:"retentionDays,omitempty"`
+}
+
+// AccountSettingsDto Validation reserve and spend cap for this organization
+type AccountSettingsDto struct {
+	// SpendCapCents Spend cap in cents; 0 is a hard stop; null when uncapped
+	SpendCapCents *int64 `json:"spendCapCents,omitempty"`
+
+	// ValidationReservePct Percent of included runs held for scheduled monitoring
+	ValidationReservePct int32 `json:"validationReservePct"`
+}
+
+// AccountUsageDto Usage this period for browser runs, API runs, and Testing events
+type AccountUsageDto struct {
+	// Meters Meters for this period
+	Meters []UsageMeterDto `json:"meters"`
+
+	// ResetsAt When this usage window resets
+	ResetsAt time.Time `json:"resetsAt"`
+
+	// SpendCapCents Owner spend cap in cents; 0 is a hard stop; null when uncapped
+	SpendCapCents *int64 `json:"spendCapCents,omitempty"`
+
+	// SpendCapState Spend cap state: open, reached, or hard_stop
+	SpendCapState string `json:"spendCapState"`
+}
+
 // AcknowledgeAllIncidentsResponse Result of acknowledging all acknowledgeable dispatches for an incident
 type AcknowledgeAllIncidentsResponse struct {
 	// Acknowledged Dispatches successfully acknowledged in this request
@@ -5073,6 +5127,18 @@ type CursorPageIncidentActivityEventDto struct {
 	NextCursor *string `json:"nextCursor,omitempty"`
 }
 
+// CursorPageMonitorHistoryEntryDto Cursor-paginated response for time-series and append-only data
+type CursorPageMonitorHistoryEntryDto struct {
+	// Data Items on this page
+	Data []MonitorHistoryEntryDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
 // CursorPageNotificationDispatchDto Cursor-paginated response for time-series and append-only data
 type CursorPageNotificationDispatchDto struct {
 	// Data Items on this page
@@ -5778,7 +5844,7 @@ type ErrorResponse struct {
 	Code string `json:"code"`
 
 	// Details Extra fields for this error, such as a missing secret key and environment
-	Details *map[string]interface{} `json:"details,omitempty"`
+	Details *map[string]*map[string]interface{} `json:"details,omitempty"`
 
 	// Errors Structured per-field rejections; populated for validation errors, null otherwise
 	Errors *[]*ErrorEntry `json:"errors,omitempty"`
@@ -5793,10 +5859,8 @@ type ErrorResponse struct {
 	Limit *int64 `json:"limit,omitempty"`
 
 	// Message Human-readable error message; safe to surface to end users
-	Message string `json:"message"`
-
-	// Next Command and docs that fix this error
-	Next *ErrorNext `json:"next,omitempty"`
+	Message string     `json:"message"`
+	Next    *ErrorNext `json:"next,omitempty"`
 
 	// Owner Who owns the resource when a write is refused
 	Owner *string `json:"owner,omitempty"`
@@ -7280,6 +7344,9 @@ type MonitorDto struct {
 	// BindingReadiness Secret binding state: ready, blocked, or not_applicable
 	BindingReadiness *string `json:"bindingReadiness,omitempty"`
 
+	// BlockedEnvironment Environment missing those keys while the monitor is blocked
+	BlockedEnvironment *string `json:"blockedEnvironment,omitempty"`
+
 	// BoundStatusPageComponents Status-page components that represent this monitor; omitted when none
 	BoundStatusPageComponents *[]StatusPageBoundComponentDto `json:"boundStatusPageComponents,omitempty"`
 	CapturePolicy             *CapturePolicy                 `json:"capturePolicy,omitempty"`
@@ -7319,6 +7386,9 @@ type MonitorDto struct {
 
 	// ManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API
 	ManagedBy string `json:"managedBy"`
+
+	// MissingKeys Secret keys missing while the monitor is blocked
+	MissingKeys *[]string `json:"missingKeys,omitempty"`
 
 	// MuteReason Optional mute reason
 	MuteReason *string `json:"muteReason,omitempty"`
@@ -7365,6 +7435,9 @@ type MonitorDto struct {
 	// Regions Probe regions where checks are executed
 	Regions []string `json:"regions"`
 
+	// ResumesAt When a capped monitor resumes
+	ResumesAt *time.Time `json:"resumesAt,omitempty"`
+
 	// RunParallel When multiple locations are set, run all of them each interval. False rotates one location per interval
 	RunParallel *bool `json:"runParallel,omitempty"`
 
@@ -7381,6 +7454,30 @@ type MonitorDto struct {
 // MonitorDto_Config defines model for MonitorDto.Config.
 type MonitorDto_Config struct {
 	union json.RawMessage
+}
+
+// MonitorHistoryEntryDto Collapsed scheduled ticks that did not run
+type MonitorHistoryEntryDto struct {
+	// Count Skipped ticks collapsed into this row
+	Count int32 `json:"count"`
+
+	// From First skipped tick in this collapsed row
+	From time.Time `json:"from"`
+
+	// Kind Row kind: not_run
+	Kind string `json:"kind"`
+
+	// MonitorId Monitor this row belongs to
+	MonitorId openapi_types.UUID `json:"monitorId"`
+
+	// Reason Why the ticks were skipped: quota, blocked, or plan_limit
+	Reason string `json:"reason"`
+
+	// Region Region of the skipped ticks; null when they span several regions
+	Region *string `json:"region,omitempty"`
+
+	// To Latest skipped tick in this collapsed row
+	To time.Time `json:"to"`
 }
 
 // MonitorOverlayRequest defines model for MonitorOverlayRequest.
@@ -9548,7 +9645,7 @@ type ScheduledMaintenanceDto struct {
 
 // ScriptMonitorConfig defines model for ScriptMonitorConfig.
 type ScriptMonitorConfig struct {
-	// RuntimeId Runtime pin such as 2026.11; omit to pin the current runtime at create
+	// RuntimeId Runtime pin such as 2026.11; omit to pin the newest runtime that can run
 	RuntimeId *string `json:"runtimeId,omitempty"`
 
 	// Script Legacy inline script on existing rows
@@ -10003,6 +10100,24 @@ type SignedDownload struct {
 
 	// Url HTTPS URL that returns the object. Valid for 60 seconds
 	Url string `json:"url"`
+}
+
+// SingleValueResponseAccountEntitlementsDto defines model for SingleValueResponseAccountEntitlementsDto.
+type SingleValueResponseAccountEntitlementsDto struct {
+	// Data Plan, caps, interval floors, environment cap, and retention
+	Data AccountEntitlementsDto `json:"data"`
+}
+
+// SingleValueResponseAccountSettingsDto defines model for SingleValueResponseAccountSettingsDto.
+type SingleValueResponseAccountSettingsDto struct {
+	// Data Validation reserve and spend cap for this organization
+	Data AccountSettingsDto `json:"data"`
+}
+
+// SingleValueResponseAccountUsageDto defines model for SingleValueResponseAccountUsageDto.
+type SingleValueResponseAccountUsageDto struct {
+	// Data Usage this period for browser runs, API runs, and Testing events
+	Data AccountUsageDto `json:"data"`
 }
 
 // SingleValueResponseAcknowledgeAllIncidentsResponse defines model for SingleValueResponseAcknowledgeAllIncidentsResponse.
@@ -11803,6 +11918,15 @@ type TriggerRuleSeverity string
 // TriggerRuleType Condition that opens or escalates an incident from check results
 type TriggerRuleType string
 
+// UpdateAccountSettingsRequest Update the validation reserve and the spend cap
+type UpdateAccountSettingsRequest struct {
+	// SpendCapCents Spend cap in cents; 0 is a hard stop; null preserves current
+	SpendCapCents *int64 `json:"spendCapCents,omitempty"`
+
+	// ValidationReservePct Reserve percent (0–100); null preserves current
+	ValidationReservePct *int32 `json:"validationReservePct,omitempty"`
+}
+
 // UpdateAlertChannelRequest defines model for UpdateAlertChannelRequest.
 type UpdateAlertChannelRequest struct {
 	Config UpdateAlertChannelRequest_Config `json:"config"`
@@ -12649,6 +12773,36 @@ type UptimeDto struct {
 	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
 }
 
+// UsageMeterDto One usage meter for the current period
+type UsageMeterDto struct {
+	// Included Included amount; null when unlimited
+	Included *int64 `json:"included,omitempty"`
+
+	// Meter Meter name, such as browser_runs or testing_events
+	Meter string `json:"meter"`
+
+	// OverageCents Overage charge in cents; null for Testing events
+	OverageCents *int64 `json:"overageCents,omitempty"`
+
+	// OverageRuns Runs or events past the included amount
+	OverageRuns int64 `json:"overageRuns"`
+
+	// Reserved Amount held back for scheduled monitoring
+	Reserved int64 `json:"reserved"`
+
+	// ResetsAt When this meter resets
+	ResetsAt time.Time `json:"resetsAt"`
+
+	// SpendCapCents Spend cap in cents; null when uncapped or not a run meter
+	SpendCapCents *int64 `json:"spendCapCents,omitempty"`
+
+	// SpendCapState Spend cap state: open, reached, or hard_stop
+	SpendCapState *string `json:"spendCapState,omitempty"`
+
+	// Used Amount used this period
+	Used int64 `json:"used"`
+}
+
 // UserDto User account details
 type UserDto struct {
 	// CreatedAt Timestamp when the account was created
@@ -13149,6 +13303,12 @@ type List8ParamsTypes string
 // List8ParamsManagedBy defines parameters for List8.
 type List8ParamsManagedBy string
 
+// ListMonitorHistoryParams defines parameters for ListMonitorHistory.
+type ListMonitorHistoryParams struct {
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // GetMonitorOverviewStepsParams defines parameters for GetMonitorOverviewSteps.
 type GetMonitorOverviewStepsParams struct {
 	// Window Time window for step aggregates
@@ -13193,6 +13353,12 @@ type ListRevisionsParams struct {
 	Pageable Pageable `form:"pageable" json:"pageable"`
 }
 
+// TestRevisionParams defines parameters for TestRevision.
+type TestRevisionParams struct {
+	// UseReserve Spend the validation reserve; needs runs:use_reserve or an org admin
+	UseReserve *bool `form:"useReserve,omitempty" json:"useReserve,omitempty"`
+}
+
 // RollbackPreviewParams defines parameters for RollbackPreview.
 type RollbackPreviewParams struct {
 	RevisionId openapi_types.UUID `form:"revisionId" json:"revisionId"`
@@ -13201,6 +13367,18 @@ type RollbackPreviewParams struct {
 // ListMonitorRunsParams defines parameters for ListMonitorRuns.
 type ListMonitorRunsParams struct {
 	Params MonitorRunListParams `form:"params" json:"params"`
+}
+
+// RunNowParams defines parameters for RunNow.
+type RunNowParams struct {
+	// UseReserve Spend the validation reserve; needs runs:use_reserve or an org admin
+	UseReserve *bool `form:"useReserve,omitempty" json:"useReserve,omitempty"`
+}
+
+// TestExistingParams defines parameters for TestExisting.
+type TestExistingParams struct {
+	// UseReserve Spend the validation reserve; needs runs:use_reserve or an org admin
+	UseReserve *bool `form:"useReserve,omitempty" json:"useReserve,omitempty"`
 }
 
 // GetUptimeParams defines parameters for GetUptime.
@@ -13556,6 +13734,9 @@ type ListDeliveriesParams struct {
 type List1Params struct {
 	Pageable Pageable `form:"pageable" json:"pageable"`
 }
+
+// UpdateAccountSettingsJSONRequestBody defines body for UpdateAccountSettings for application/json ContentType.
+type UpdateAccountSettingsJSONRequestBody = UpdateAccountSettingsRequest
 
 // Create15JSONRequestBody defines body for Create15 for application/json ContentType.
 type Create15JSONRequestBody = CreateAlertChannelRequest
