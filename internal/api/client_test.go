@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -15,6 +16,19 @@ import (
 
 // newTestClient returns a Client pointing at the given test server with a
 // short timeout so any accidental hang fails fast in CI.
+func TestMain(m *testing.M) {
+	// Keep retry back-off out of the unit-test wall clock.
+	retryBaseDelay = time.Millisecond
+	os.Exit(m.Run())
+}
+
+// asAPIError unwraps any category error to the shared *DevhelmAPIError.
+func asAPIError(err error) (*DevhelmAPIError, bool) {
+	var apiErr *DevhelmAPIError
+	ok := errors.As(err, &apiErr)
+	return apiErr, ok
+}
+
 func newTestClient(t *testing.T, srv *httptest.Server) *Client {
 	t.Helper()
 	c := NewClient(srv.URL, "test-token", "1", "1", "test")
@@ -103,30 +117,58 @@ func TestDoRequest_RetriesOn503ForGet(t *testing.T) {
 	}
 }
 
-// TestDoRequest_DoesNotRetryPOST asserts the safety guarantee that POST is
-// never retried, even on retryable statuses, to avoid duplicate creates.
-func TestDoRequest_DoesNotRetryPOST(t *testing.T) {
+// TestDoRequest_RetriesPOSTWithOneIdempotencyKey asserts the D-7 contract:
+// a POST is retried on a retryable status only because every attempt carries
+// the same Idempotency-Key, so the API replays instead of duplicating.
+func TestDoRequest_RetriesPOSTWithOneIdempotencyKey(t *testing.T) {
 	var calls int32
+	keys := make(chan string, 10)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		atomic.AddInt32(&calls, 1)
-		w.WriteHeader(http.StatusServiceUnavailable)
+		n := atomic.AddInt32(&calls, 1)
+		keys <- r.Header.Get("Idempotency-Key")
+		if n < 3 {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		_, _ = w.Write([]byte(`{"data":{}}`))
 	}))
 	defer srv.Close()
 
 	c := newTestClient(t, srv)
 	resp, err := c.doRequest(context.Background(), http.MethodPost, "/things", map[string]string{"x": "y"})
 	if err != nil {
-		t.Fatalf("doRequest returned err for non-network failure: %v", err)
+		t.Fatalf("doRequest: %v", err)
 	}
-	if resp.Status != http.StatusServiceUnavailable {
-		t.Errorf("status = %d, want 503 (no retry)", resp.Status)
+	if resp.Status != http.StatusOK {
+		t.Fatalf("status = %d, want 200", resp.Status)
 	}
-	if got := atomic.LoadInt32(&calls); got != 1 {
-		t.Errorf("calls = %d, want 1 (POST must never retry)", got)
+	close(keys)
+	var seen []string
+	for k := range keys {
+		seen = append(seen, k)
+	}
+	if len(seen) != 3 {
+		t.Fatalf("attempts = %d, want 3", len(seen))
+	}
+	for _, k := range seen {
+		if k == "" || k != seen[0] {
+			t.Fatalf("idempotency keys = %v, want one non-empty key reused on every attempt", seen)
+		}
+	}
+
+	// A second logical call gets a fresh key.
+	srv2 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Idempotency-Key") == seen[0] {
+			t.Errorf("second call reused the first call's key")
+		}
+		_, _ = w.Write([]byte(`{"data":{}}`))
+	}))
+	defer srv2.Close()
+	if _, err := newTestClient(t, srv2).doRequest(context.Background(), http.MethodPost, "/things", map[string]string{}); err != nil {
+		t.Fatal(err)
 	}
 }
 
-// TestDoRequest_DoesNotRetryNonRetryableStatus confirms that 500 is treated
 // as non-transient and surfaces immediately even on idempotent verbs.
 func TestDoRequest_DoesNotRetryNonRetryableStatus(t *testing.T) {
 	var calls int32
@@ -183,6 +225,9 @@ func TestDoRequest_HonorsContextCancel(t *testing.T) {
 	defer srv.Close()
 
 	c := newTestClient(t, srv)
+	prev := retryBaseDelay
+	retryBaseDelay = 200 * time.Millisecond
+	t.Cleanup(func() { retryBaseDelay = prev })
 
 	// Cancel after the first response is in flight; the retry loop should
 	// notice the cancellation on its next iteration and bail out without
@@ -252,7 +297,7 @@ func TestIsNotFound(t *testing.T) {
 func TestCheckResponse_ParsesStructuredError(t *testing.T) {
 	// `message` field wins over `error`.
 	err := checkResponse(httpResponse{Body: []byte(`{"message":"bad slug","error":"validation"}`), Status: 400})
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -266,7 +311,7 @@ func TestCheckResponse_ParsesStructuredError(t *testing.T) {
 
 func TestCheckResponse_FallsBackToBody(t *testing.T) {
 	err := checkResponse(httpResponse{Body: []byte(`<html>oops</html>`), Status: 502})
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}

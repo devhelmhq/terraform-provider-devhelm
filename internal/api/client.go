@@ -13,9 +13,11 @@ import (
 	"os"
 	"reflect"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -39,12 +41,22 @@ const requestIDHeader = "X-Request-Id"
 //     of providers retrying simultaneously does not produce a thundering
 //     herd against a recovering API.
 //
-// Values were chosen to keep the worst-case wait under 10s (1+2+4=7s plus
-// jitter), which is well below the per-request timeout and the typical
-// Terraform CLI patience for an apply step.
+// Five attempts is the doc 42 §5.2 ceiling shared by every surface. Without a
+// Retry-After hint the worst-case back-off stays under ~12s (0.5+1+2+4s plus
+// jitter), well below the per-request timeout.
 const (
-	retryMaxAttempts = 4
-	retryBaseDelay   = 500 * time.Millisecond
+	retryMaxAttempts = 5
+	// maxRetryAfter caps a server-requested wait (Retry-After) per attempt.
+	maxRetryAfter = 60 * time.Second
+)
+
+// retryBaseDelay is a var only so tests can shrink it.
+var retryBaseDelay = 500 * time.Millisecond
+
+// Header names the provider sends on every call (doc 42 §5.2).
+const (
+	clientHeader         = "X-DevHelm-Client"
+	idempotencyKeyHeader = "Idempotency-Key"
 )
 
 type Client struct {
@@ -54,6 +66,9 @@ type Client struct {
 	WorkspaceID string
 	HTTPClient  *http.Client
 	UserAgent   string
+	// ClientID is the `X-DevHelm-Client: terraform/<version>` value. The API
+	// records it as `createdByKind` on drafts and in the audit log.
+	ClientID string
 	// SurfaceHeaders is the X-DevHelm-Surface* set sent on every request so
 	// the API can attribute usage to the Terraform provider for adoption /
 	// version-distribution telemetry. Computed once in NewClient — empty
@@ -71,6 +86,7 @@ func NewClient(baseURL, token, orgID, workspaceID, version string) *Client {
 		WorkspaceID:    workspaceID,
 		HTTPClient:     &http.Client{Timeout: defaultHTTPTimeout},
 		UserAgent:      fmt.Sprintf("terraform-provider-devhelm/%s", version),
+		ClientID:       "terraform/" + version,
 		SurfaceHeaders: buildSurfaceHeaders(version),
 	}
 }
@@ -102,9 +118,10 @@ func buildSurfaceHeaders(version string) map[string]string {
 }
 
 // isIdempotent returns true for HTTP verbs whose retry is safe under the
-// REST contract. POST is excluded because retrying a successful-but-network-
-// dropped POST would create duplicate resources; the caller (or, eventually,
-// an Idempotency-Key header on the API) must handle that case explicitly.
+// REST contract. POST is not in this set: a POST is retried only because it
+// always carries an `Idempotency-Key` (see doRequest), which makes the API
+// replay the original response instead of creating a duplicate. PATCH has no
+// key and is never retried.
 func isIdempotent(method string) bool {
 	switch method {
 	case http.MethodGet, http.MethodPut, http.MethodDelete, http.MethodHead, http.MethodOptions:
@@ -114,12 +131,19 @@ func isIdempotent(method string) bool {
 	}
 }
 
-// shouldRetryStatus identifies HTTP status codes that warrant a retry on
-// idempotent verbs. 408 and 429 are explicit "try again" signals; 502/503/504
-// usually indicate a transient upstream blip (e.g. a rolling pod restart on
-// the API). 500 is intentionally NOT retried because it commonly indicates a
-// deterministic bug that retrying would only mask; 501 and 505 are similarly
-// non-transient.
+// retryableMethod reports whether a request may be retried at all. POST is
+// retryable because doRequest stamps one Idempotency-Key per logical call and
+// reuses it on every transport retry (doc 32 D-7).
+func retryableMethod(method string) bool {
+	return isIdempotent(method) || method == http.MethodPost
+}
+
+// shouldRetryStatus identifies HTTP status codes that warrant a retry.
+// 429 and 503 are the doc 42 §5.2 contract (both honour `Retry-After`);
+// 408, 502 and 504 are transient gateway blips during rolling deploys. 500
+// is intentionally NOT retried because it commonly indicates a deterministic
+// bug that retrying would only mask. Retryable 409s (`DEPLOY_LOCKED`,
+// `IDEMPOTENCY_KEY_IN_PROGRESS`) are decided from the body in shouldRetry.
 func shouldRetryStatus(status int) bool {
 	switch status {
 	case http.StatusRequestTimeout, http.StatusTooManyRequests,
@@ -130,6 +154,22 @@ func shouldRetryStatus(status int) bool {
 	}
 }
 
+// shouldRetry extends shouldRetryStatus with the body-driven rule: a 409
+// whose ErrorResponse says `retryable: true` is a lock or an in-flight
+// idempotent replay, and a later attempt can succeed unchanged.
+func shouldRetry(resp httpResponse) bool {
+	if shouldRetryStatus(resp.Status) {
+		return true
+	}
+	if resp.Status != http.StatusConflict {
+		return false
+	}
+	var probe struct {
+		Retryable bool `json:"retryable"`
+	}
+	return json.Unmarshal(resp.Body, &probe) == nil && probe.Retryable
+}
+
 // retryDelay returns the back-off for the n-th retry (0-indexed). The result
 // is `base * 2^n` with ±50% jitter applied via the package-level rand source,
 // which is sufficient for back-off jitter (we explicitly do not need crypto-
@@ -138,6 +178,36 @@ func retryDelay(attempt int) time.Duration {
 	d := retryBaseDelay << attempt
 	jitter := time.Duration(rand.Int63n(int64(d)))
 	return d/2 + jitter
+}
+
+// retryAfter returns the server-requested wait for a retryable response:
+// the `Retry-After` header (delta-seconds or HTTP date), else the envelope's
+// `retryAfterSeconds`. Zero means "no hint, use back-off". The value is
+// capped so a misconfigured header can't stall an apply indefinitely.
+func retryAfter(resp httpResponse) time.Duration {
+	var d time.Duration
+	if h := strings.TrimSpace(resp.RetryAfter); h != "" {
+		if secs, err := strconv.Atoi(h); err == nil && secs >= 0 {
+			d = time.Duration(secs) * time.Second
+		} else if at, err := http.ParseTime(h); err == nil {
+			d = time.Until(at)
+		}
+	}
+	if d <= 0 {
+		var probe struct {
+			RetryAfterSeconds *int64 `json:"retryAfterSeconds"`
+		}
+		if json.Unmarshal(resp.Body, &probe) == nil && probe.RetryAfterSeconds != nil && *probe.RetryAfterSeconds > 0 {
+			d = time.Duration(*probe.RetryAfterSeconds) * time.Second
+		}
+	}
+	if d > maxRetryAfter {
+		d = maxRetryAfter
+	}
+	if d < 0 {
+		d = 0
+	}
+	return d
 }
 
 // RequestBody is the P5-tracked boundary type for any request payload that
@@ -156,22 +226,46 @@ type RequestBody = any
 // debug/info diagnostic a resource may want to surface alongside a successful
 // reply.
 type httpResponse struct {
-	Body      []byte
-	Status    int
-	RequestID string
+	Body       []byte
+	Status     int
+	RequestID  string
+	RetryAfter string
+}
+
+// rawRequest is one logical API call before retries: the method, the path
+// (with query), the encoded body and its media type, and the idempotency key
+// shared by every attempt.
+type rawRequest struct {
+	Method         string
+	Path           string
+	Body           []byte
+	ContentType    string
+	IdempotencyKey string
 }
 
 func (c *Client) doRequest(ctx context.Context, method, path string, body RequestBody) (httpResponse, error) {
-	u := c.BaseURL + path
-
-	var bodyBytes []byte
+	req := rawRequest{Method: method, Path: path}
 	if body != nil {
-		var err error
-		bodyBytes, err = json.Marshal(body)
+		encoded, err := json.Marshal(body)
 		if err != nil {
 			return httpResponse{}, fmt.Errorf("marshaling request body: %w", err)
 		}
+		req.Body = encoded
+		req.ContentType = "application/json"
 	}
+	return c.do(ctx, req)
+}
+
+// do runs one logical call with the retry policy of doc 42 §5.2: at most
+// retryMaxAttempts attempts with jittered back-off, honouring `Retry-After`.
+// Every POST gets one `Idempotency-Key` (UUIDv4) that is reused on each
+// transport retry, so the API replays rather than duplicates the write. Two
+// separate calls always get two keys (keys are never derived from the body).
+func (c *Client) do(ctx context.Context, req rawRequest) (httpResponse, error) {
+	if req.Method == http.MethodPost && req.IdempotencyKey == "" {
+		req.IdempotencyKey = uuid.NewString()
+	}
+	u := c.BaseURL + req.Path
 
 	var (
 		resp    httpResponse
@@ -185,24 +279,30 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body Reques
 			return httpResponse{}, err
 		}
 
-		resp, lastErr = c.doRequestOnce(ctx, method, u, bodyBytes, body != nil)
+		resp, lastErr = c.doRequestOnce(ctx, req, u)
+		last := attempt == retryMaxAttempts-1
 
-		// Network/transport errors are retryable on idempotent verbs (we
-		// cannot distinguish "request never reached the server" from "we
-		// missed the response", but POST is already excluded above).
+		// Network/transport errors are retryable on idempotent verbs and on
+		// keyed POSTs (we cannot distinguish "request never reached the
+		// server" from "we missed the response"; the key makes both safe).
 		if lastErr != nil {
-			if !isIdempotent(method) || attempt == retryMaxAttempts-1 {
+			if !retryableMethod(req.Method) || last {
 				return httpResponse{}, lastErr
 			}
 			waitFor(ctx, retryDelay(attempt))
 			continue
 		}
 
-		// 5xx / 429 retries: only attempt for idempotent verbs and only on
-		// the small allow-list above. We rely on the next iteration's
-		// checkResponse to surface the final error to the caller.
-		if shouldRetryStatus(resp.Status) && isIdempotent(method) && attempt < retryMaxAttempts-1 {
-			waitFor(ctx, retryDelay(attempt))
+		if !last && retryableMethod(req.Method) && shouldRetry(resp) {
+			wait := retryAfter(resp)
+			if wait == 0 {
+				wait = retryDelay(attempt)
+			}
+			tflog.Debug(ctx, "retrying DevHelm API request", map[string]any{
+				"method": req.Method, "path": req.Path, "status": resp.Status,
+				"attempt": attempt + 1, "wait_ms": wait.Milliseconds(),
+			})
+			waitFor(ctx, wait)
 			continue
 		}
 
@@ -216,38 +316,30 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body Reques
 }
 
 // doRequestOnce performs a single HTTP round trip without retry logic. Split
-// from doRequest so the retry loop can call it cleanly; tests can also reach
-// it directly to exercise no-retry behavior in the future without faking the
-// transport.
+// from do so the retry loop can call it cleanly.
 //
 // Network/transport-level failures (request construction, dial, read) are
 // wrapped in a *DevhelmTransportError so callers can `errors.As` to tell
 // "the API said no" apart from "we never reached the API". Non-2xx responses
 // are not errors at this layer — they flow up as a populated httpResponse and
-// are converted to *DevhelmAPIError by checkResponse.
-func (c *Client) doRequestOnce(ctx context.Context, method, u string, bodyBytes []byte, hasBody bool) (httpResponse, error) {
+// are converted to typed errors by checkResponse.
+func (c *Client) doRequestOnce(ctx context.Context, r rawRequest, u string) (httpResponse, error) {
 	var bodyReader io.Reader
-	if bodyBytes != nil {
-		bodyReader = bytes.NewBuffer(bodyBytes)
+	if r.Body != nil {
+		bodyReader = bytes.NewReader(r.Body)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, u, bodyReader)
+	req, err := http.NewRequestWithContext(ctx, r.Method, u, bodyReader)
 	if err != nil {
 		return httpResponse{}, &DevhelmTransportError{Op: "build request", URL: u, Err: err}
 	}
 
-	req.Header.Set("Authorization", "Bearer "+c.Token)
-	req.Header.Set("x-phelm-org-id", c.OrgID)
-	req.Header.Set("x-phelm-workspace-id", c.WorkspaceID)
-	req.Header.Set("User-Agent", c.UserAgent)
-	if hasBody {
-		req.Header.Set("Content-Type", "application/json")
+	c.setCommonHeaders(req)
+	if r.ContentType != "" {
+		req.Header.Set("Content-Type", r.ContentType)
 	}
-	// Devtool surface telemetry — see buildSurfaceHeaders. Empty map (and
-	// therefore no headers set) when the user has opted out via
-	// DEVHELM_TELEMETRY=0.
-	for k, v := range c.SurfaceHeaders {
-		req.Header.Set(k, v)
+	if r.IdempotencyKey != "" {
+		req.Header.Set(idempotencyKeyHeader, r.IdempotencyKey)
 	}
 
 	resp, err := c.HTTPClient.Do(req)
@@ -262,10 +354,28 @@ func (c *Client) doRequestOnce(ctx context.Context, method, u string, bodyBytes 
 	}
 
 	return httpResponse{
-		Body:      respBody,
-		Status:    resp.StatusCode,
-		RequestID: resp.Header.Get(requestIDHeader),
+		Body:       respBody,
+		Status:     resp.StatusCode,
+		RequestID:  resp.Header.Get(requestIDHeader),
+		RetryAfter: resp.Header.Get("Retry-After"),
 	}, nil
+}
+
+// setCommonHeaders stamps the headers every DevHelm call carries: auth, the
+// org/workspace scope, the client identity (`X-DevHelm-Client`, which sets
+// `createdByKind` on drafts) and the opt-out-able surface telemetry.
+func (c *Client) setCommonHeaders(req *http.Request) {
+	req.Header.Set("Authorization", "Bearer "+c.Token)
+	req.Header.Set("x-phelm-org-id", c.OrgID)
+	req.Header.Set("x-phelm-workspace-id", c.WorkspaceID)
+	req.Header.Set("User-Agent", c.UserAgent)
+	req.Header.Set(clientHeader, c.ClientID)
+	// Devtool surface telemetry — see buildSurfaceHeaders. Empty map (and
+	// therefore no headers set) when the user has opted out via
+	// DEVHELM_TELEMETRY=0.
+	for k, v := range c.SurfaceHeaders {
+		req.Header.Set(k, v)
+	}
 }
 
 // waitFor sleeps for d, returning early when the context is cancelled. We
@@ -280,71 +390,8 @@ func waitFor(ctx context.Context, d time.Duration) {
 	}
 }
 
-// DevhelmAPIError represents a non-2xx response from the DevHelm API. It is
-// the error class every TF resource wraps via `api.AddAPIError` (or branches
-// on via `api.IsNotFound`).
-//
-//   - StatusCode is the HTTP status line (always non-zero for this error type).
-//   - Code mirrors `ErrorResponse.code` from the API — a stable, machine-
-//     readable category like "NOT_FOUND" or "RATE_LIMITED". May be empty for
-//     legacy error bodies that do not include the field.
-//   - Message is the human-readable text from `ErrorResponse.message`, or the
-//     `error` field, or — when neither is present — the raw response body.
-//   - RequestID is the `X-Request-Id` response header. Always include it in
-//     support tickets; when blank, the response did not carry the header
-//     (should not happen against the production API).
-//   - Body is the raw response body, retained for debugging non-conforming
-//     replies.
-type DevhelmAPIError struct {
-	StatusCode int
-	Code       string
-	Message    string
-	RequestID  string
-	Body       string
-}
-
-func (e *DevhelmAPIError) Error() string {
-	parts := []string{fmt.Sprintf("API error %d", e.StatusCode)}
-	if e.Code != "" {
-		parts = append(parts, e.Code)
-	}
-	body := e.Message
-	if body == "" {
-		body = e.Body
-	}
-	if body != "" {
-		parts = append(parts, body)
-	}
-	out := strings.Join(parts, ": ")
-	if e.RequestID != "" {
-		out = fmt.Sprintf("%s (request_id=%s)", out, e.RequestID)
-	}
-	return out
-}
-
-// DevhelmTransportError represents a failure to complete an HTTP exchange:
-// the request never reached the server, the server never returned a complete
-// response, or a TLS/DNS/connection layer surfaced an error. Wraps the
-// underlying error so callers can `errors.As` for the original cause.
-type DevhelmTransportError struct {
-	// Op describes the failing transport step ("build request", "send
-	// request", "read response"). Stable enough to switch on in tests.
-	Op string
-	// URL is the resolved target URL, useful when diagnosing DNS or TLS
-	// issues against a specific endpoint.
-	URL string
-	// Err is the underlying transport-level error.
-	Err error
-}
-
-func (e *DevhelmTransportError) Error() string {
-	return fmt.Sprintf("transport error during %s to %s: %v", e.Op, e.URL, e.Err)
-}
-
-func (e *DevhelmTransportError) Unwrap() error { return e.Err }
-
-// IsNotFound reports whether err is a *DevhelmAPIError with HTTP 404. Used by
-// resources during Read to translate "deleted out-of-band" into the
+// IsNotFound reports whether err carries an HTTP 404 / `not_found` refusal.
+// Used by resources during Read to translate "deleted out-of-band" into the
 // disappear-from-state path Terraform expects.
 func IsNotFound(err error) bool {
 	var apiErr *DevhelmAPIError
@@ -354,49 +401,13 @@ func IsNotFound(err error) bool {
 	return false
 }
 
-// errorResponseBody is the canonical envelope returned by the DevHelm API on
-// every non-2xx response. We intentionally do NOT use DisallowUnknownFields
-// here: error bodies are user-facing, and we'd rather surface a slightly
-// underspecified message than mask a real API failure with a parse failure.
-type errorResponseBody struct {
-	Status    int    `json:"status"`
-	Code      string `json:"code"`
-	Message   string `json:"message"`
-	Error     string `json:"error"`
-	RequestID string `json:"requestId"`
-}
-
+// checkResponse converts a non-2xx reply into the typed error for its
+// `category` (see errors.go). 2xx returns nil.
 func checkResponse(resp httpResponse) error {
 	if resp.Status >= 200 && resp.Status < 300 {
 		return nil
 	}
-
-	apiErr := &DevhelmAPIError{
-		StatusCode: resp.Status,
-		Body:       string(resp.Body),
-		RequestID:  resp.RequestID,
-	}
-
-	var parsed errorResponseBody
-	if json.Unmarshal(resp.Body, &parsed) == nil {
-		if parsed.Code != "" {
-			apiErr.Code = parsed.Code
-		}
-		switch {
-		case parsed.Message != "":
-			apiErr.Message = parsed.Message
-		case parsed.Error != "":
-			apiErr.Message = parsed.Error
-		}
-		// Header always wins (it is set by the server unconditionally),
-		// but fall back to the body field for resilience against
-		// proxies that strip headers.
-		if apiErr.RequestID == "" && parsed.RequestID != "" {
-			apiErr.RequestID = parsed.RequestID
-		}
-	}
-
-	return apiErr
+	return newAPIError(resp)
 }
 
 // decodeResponse unmarshals body into out using a lenient decoder that
@@ -745,4 +756,14 @@ func DeleteWithBody(ctx context.Context, c *Client, path string, body any) error
 
 func PathEscape(s string) string {
 	return url.PathEscape(s)
+}
+
+// PutNoContent issues a PUT whose success response carries no body (204),
+// e.g. writing a secret's per-environment value.
+func PutNoContent(ctx context.Context, c *Client, path string, body any) error {
+	resp, err := c.doRequest(ctx, http.MethodPut, path, body)
+	if err != nil {
+		return err
+	}
+	return checkResponse(resp)
 }

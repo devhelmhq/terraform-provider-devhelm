@@ -104,3 +104,46 @@ resource "devhelm_monitor" "basic_auth" {
     }
   }
 }
+
+# BROWSER code monitor. The provider uploads the include set at plan time
+# (`code_hash` is the server's closure digest) and runs a validation run
+# before new code goes live.
+resource "devhelm_monitor" "checkout" {
+  name              = "Checkout"
+  type              = "BROWSER"
+  environment_id    = devhelm_environment.production.id
+  frequency_seconds = 600
+  regions           = ["us-east", "eu-west"]
+  alert_channel_ids = [devhelm_alert_channel.oncall.id]
+  config            = jsonencode({ timeoutSeconds = 90, runtimeId = data.devhelm_runtime.latest.id })
+
+  code = {
+    entrypoint = "${path.module}/synthetics/checkout.spec.ts"
+    include    = ["${path.module}/synthetics/**"] # optional; default is the entry file's directory
+  }
+
+  capture_policy = {
+    screenshots = "on_failure"
+    trace       = "on_failure"
+    video       = "off"
+    network     = "on_failure"
+  }
+  fast_retry_max_attempts = 1
+  run_parallel            = true
+  secret_keys             = ["CARD_TOKEN"]
+  test_before_publish     = true
+  owner_address           = "devhelm_monitor.checkout"
+}
+
+# MULTI_STEP_API code monitor: Playwright `request` steps, no browser.
+resource "devhelm_monitor" "orders_api" {
+  name              = "Orders API flow"
+  type              = "MULTI_STEP_API"
+  environment_id    = devhelm_environment.production.id
+  frequency_seconds = 300
+  regions           = ["us-east"]
+
+  code = {
+    entrypoint = "${path.module}/synthetics/orders.spec.ts"
+  }
+}

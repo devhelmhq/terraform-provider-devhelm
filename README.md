@@ -94,13 +94,45 @@ Terraform guide](https://devhelm.io/docs/cli/terraform).
 
 | Category               | Resources / Data sources                                                                                                  |
 |------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| **Monitoring**         | `devhelm_monitor`, `devhelm_environment`, `devhelm_secret`, `devhelm_tag`                                                 |
+| **Monitoring**         | `devhelm_monitor` (probes, BROWSER, MULTI_STEP_API), `devhelm_environment`, `devhelm_secret`, `devhelm_secret_value`, `devhelm_tag` |
 | **Alerting**           | `devhelm_alert_channel`, `devhelm_notification_policy`, `devhelm_webhook`                                                 |
 | **Fleet management**   | `devhelm_resource_group`, `devhelm_resource_group_membership`                                                             |
 | **Third-party deps**   | `devhelm_dependency`                                                                                                      |
 | **Status pages**       | `devhelm_status_page`, `devhelm_status_page_component_group`, `devhelm_status_page_component`                             |
 | **Custom domains**     | `devhelm_status_page_custom_domain`, `devhelm_status_page_custom_domain_verification`                                     |
-| **Look-up data sources** | `devhelm_monitor`, `devhelm_alert_channel`, `devhelm_environment`, `devhelm_resource_group`, `devhelm_status_page`, `devhelm_tag` |
+| **Look-up data sources** | `devhelm_monitor`, `devhelm_monitor_revision`, `devhelm_runtime`, `devhelm_alert_channel`, `devhelm_environment`, `devhelm_resource_group`, `devhelm_status_page`, `devhelm_tag` |
+
+### Code monitors (BROWSER, MULTI_STEP_API)
+
+```hcl
+resource "devhelm_monitor" "checkout" {
+  name              = "Checkout"
+  type              = "BROWSER" # or MULTI_STEP_API
+  environment_id    = devhelm_environment.production.id
+  frequency_seconds = 600
+  regions           = ["us-east", "eu-west"]
+  code = {
+    entrypoint = "${path.module}/synthetics/checkout.spec.ts"
+  }
+}
+```
+
+- **Plan** uploads the include set (the entry file's directory, or `code.include`,
+  minus `node_modules/`, `dist/`, `build/`, `coverage/`, `*.map`, dotfiles and
+  `.devhelmignore`) and shows `code_hash` and the changed files in `code_files`.
+- **Apply** runs a validation run before the code goes live: a new monitor is
+  validated before it's created, and changed code goes draft → test → publish.
+  A failed run stops the apply with `[check_failed] <run url>` and the old code
+  stays live. `test_before_publish = false` publishes untested in one call.
+- **Rollbacks** made in the dashboard show as drift; republishing the
+  rolled-back code needs `acknowledge_rollback = "<digest>"`.
+- **Ownership:** monitors are created owned by Terraform with
+  `owner_enforced = true`. Use an API key created with tool `TERRAFORM`.
+  `terraform import` reads the monitor; the next apply transfers it to Terraform.
+- `enabled` was removed: pause and mute are overlays, use
+  `devhelm monitors pause|resume|mute|unmute`.
+- Next to Terraform, `devhelm test --from-terraform .` runs the configured code
+  without applying it, and `devhelm trigger <monitor>` starts a run.
 
 Per-resource documentation, schemas, and copy-paste examples are published
 on the [Terraform Registry](https://registry.terraform.io/providers/devhelmhq/devhelm/latest/docs).

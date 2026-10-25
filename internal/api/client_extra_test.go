@@ -158,7 +158,7 @@ func TestDeleteWithBody_PropagatesAPIError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -292,7 +292,7 @@ func TestCreate_PropagatesStructuredError(t *testing.T) {
 	if err == nil {
 		t.Fatal("Create returned nil error on 422")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}

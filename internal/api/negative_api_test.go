@@ -95,7 +95,7 @@ func TestCreate_400_ReturnsValidationError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for 400")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -147,7 +147,7 @@ func TestCreate_409_ReturnsConflictError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for 409")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -178,7 +178,7 @@ func TestGet_401_ReturnsAuthError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for 401")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -204,7 +204,7 @@ func TestGet_403_ReturnsForbiddenError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for 403")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -232,7 +232,7 @@ func TestGet_500_ReturnsServerError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for 500")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -255,7 +255,7 @@ func TestCreate_500_ReturnsServerError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for 500")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -374,7 +374,7 @@ func TestCheckResponse_Empty500Body(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for 500 with empty body")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -442,7 +442,7 @@ func TestCheckResponse_HTMLBodyFallsBackToBody(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for 502")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -461,7 +461,7 @@ func TestCheckResponse_HTMLBodyFallsBackToBody(t *testing.T) {
 
 func TestCheckResponse_UsesErrorFieldWhenNoMessage(t *testing.T) {
 	err := checkResponse(httpResponse{Body: []byte(`{"error":"validation failed"}`), Status: 422})
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -529,7 +529,7 @@ func TestPatch_400_ReturnsValidationError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for 400 PATCH")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}
@@ -624,7 +624,7 @@ func TestCreateList_400_ReturnsError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error")
 	}
-	apiErr, ok := err.(*DevhelmAPIError)
+	apiErr, ok := asAPIError(err)
 	if !ok {
 		t.Fatalf("err type = %T, want *DevhelmAPIError", err)
 	}

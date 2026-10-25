@@ -42,7 +42,7 @@ jobs:
           go-version: '1.25'
       - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: '1.10.5'
+          terraform_version: '1.13.4'
           terraform_wrapper: false
       - run: make testacc
 
@@ -93,6 +93,6 @@ jobs:
           go-version: '1.25'
       - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: '1.10.5'
+          terraform_version: '1.13.4'
           terraform_wrapper: false
       - run: make docs-check

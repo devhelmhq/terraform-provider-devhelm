@@ -93,6 +93,7 @@ func (p *DevhelmProvider) Resources(_ context.Context) []func() resource.Resourc
 		resources.NewTagResource,
 		resources.NewEnvironmentResource,
 		resources.NewSecretResource,
+		resources.NewSecretValueResource,
 		resources.NewAlertChannelResource,
 		resources.NewNotificationPolicyResource,
 		resources.NewWebhookResource,
@@ -118,6 +119,8 @@ func (p *DevhelmProvider) DataSources(_ context.Context) []func() datasource.Dat
 		datasources.NewResourceGroupDataSource,
 		datasources.NewServiceDataSource,
 		datasources.NewStatusPageDataSource,
+		datasources.NewRuntimeDataSource,
+		datasources.NewMonitorRevisionDataSource,
 	}
 }
 

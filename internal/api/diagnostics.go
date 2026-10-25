@@ -1,7 +1,8 @@
 // Package api — diagnostics helpers for mapping API errors to Terraform diagnostics.
 //
-// The DevHelm API surfaces a uniform `{status, message, timestamp}` envelope
-// for every non-2xx response. The TF provider's job is to translate those
+// The DevHelm API surfaces a uniform `ErrorResponse` envelope (`category`,
+// `code`, `message`, `next`, `requestId`, `errors[]`, …) for every non-2xx
+// response. The TF provider's job is to translate those
 // generic errors into per-attribute diagnostics so practitioners see the
 // failing field highlighted in `terraform plan`/`apply` output instead of a
 // summary message floating at the top of the run.
@@ -14,6 +15,7 @@
 //
 //   - 404 from a Read after import     → AddAttributeError on path.Root("id")
 //   - 409 ("already exists") on Create → AddAttributeError on the name field
+//   - 400 with `errors[].field`         → AddAttributeError on that path
 //   - 400 with a "field <X>" hint      → AddAttributeError on that path
 //   - everything else                  → AddError with the operation context
 //
@@ -25,6 +27,7 @@ package api
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"regexp"
 	"strings"
 
@@ -84,12 +87,16 @@ func looksLikeAlreadyExists(msg string) bool {
 	return false
 }
 
-// AddAPIError translates a generic API error into the most specific
-// diagnostic shape available. `op` is a short imperative verb describing
-// what the resource was attempting (e.g. "create monitor"). `identityAttr`
-// is the path to the attribute that uniquely names the resource within
-// the workspace (typically path.Root("name") or path.Root("slug")); pass
-// path.Empty() when no such anchor applies.
+// AddAPIError translates an API error into the most specific diagnostic
+// shape available. `op` is a short imperative verb describing what the
+// resource was attempting (e.g. "create monitor"). `identityAttr` is the path
+// to the attribute that uniquely names the resource within the workspace
+// (typically path.Root("name") or path.Root("slug")); pass path.Empty() when
+// no such anchor applies.
+//
+// Diagnostic shape (doc 42 §7): the summary is
+// `[<category>] <code>: <message>`, the detail names the operation, then
+// `next.command`, `next.docs` and the request id.
 //
 // The function is a no-op when err is nil so callers can wrap the entire
 // API call site without needing a separate guard.
@@ -100,28 +107,27 @@ func AddAPIError(diagnostics *diag.Diagnostics, op string, err error, identityAt
 
 	var apiErr *DevhelmAPIError
 	if errors.As(err, &apiErr) {
-		summary := fmt.Sprintf("Error during %s (HTTP %d)", op, apiErr.StatusCode)
-		if apiErr.Code != "" {
-			summary = fmt.Sprintf("Error during %s (HTTP %d %s)", op, apiErr.StatusCode, apiErr.Code)
-		}
-		detail := apiErr.Message
-		if detail == "" {
-			detail = apiErr.Body
-		}
-		// Always surface the request id when present so the practitioner
-		// (or our support team) can correlate against server logs.
-		if apiErr.RequestID != "" {
-			detail = fmt.Sprintf("%s\n\n(request_id=%s)", strings.TrimRight(detail, "\n"), apiErr.RequestID)
+		summary, detail := APIErrorText(op, apiErr)
+
+		// Structured per-field rejection → highlight the first mapped field.
+		for _, fe := range apiErr.FieldErrors() {
+			if fe.Field == nil || *fe.Field == "" {
+				continue
+			}
+			if p, ok := attributePathForField(*fe.Field); ok {
+				diagnostics.AddAttributeError(p, summary, detail)
+				return
+			}
 		}
 
 		// 409-style conflict on a known identity attribute → highlight it.
-		if !identityAttr.Equal(path.Empty()) && looksLikeAlreadyExists(detail) {
+		if !identityAttr.Equal(path.Empty()) && looksLikeAlreadyExists(apiErr.Message) {
 			diagnostics.AddAttributeError(identityAttr, summary, detail)
 			return
 		}
 
 		// 400-style validation with an embedded field hint → highlight it.
-		if hint := fieldHint(detail); hint != "" {
+		if hint := fieldHint(apiErr.Message); hint != "" {
 			diagnostics.AddAttributeError(path.Root(hint), summary, detail)
 			return
 		}
@@ -138,21 +144,133 @@ func AddAPIError(diagnostics *diag.Diagnostics, op string, err error, identityAt
 	}
 
 	// Transport-level failures (DNS, dial, TLS, read) carry the original
-	// cause via Unwrap; surface them with a clear operation prefix so the
-	// practitioner sees "Network failure during create monitor" rather than
-	// only the raw `dial tcp: lookup ...: no such host`.
+	// cause via Unwrap; surface them with the `transport` category and the
+	// operation so the practitioner sees what was being attempted rather
+	// than only the raw `dial tcp: lookup ...: no such host`.
 	var transportErr *DevhelmTransportError
 	if errors.As(err, &transportErr) {
 		diagnostics.AddError(
-			fmt.Sprintf("Network failure during %s", op),
-			transportErr.Error(),
+			fmt.Sprintf("[%s] %s", CategoryTransport, transportErr.Op),
+			fmt.Sprintf("Network failure during %s: %s", op, transportErr.Error()),
 		)
+		return
+	}
+
+	var waitErr *WaitTimeoutError
+	if errors.As(err, &waitErr) {
+		diagnostics.AddError(fmt.Sprintf("[timeout] %s", waitErr.Error()),
+			fmt.Sprintf("While trying to %s. The run keeps going on the server; "+
+				"raise the resource `timeouts` or check the run in the dashboard.", op))
 		return
 	}
 
 	// Marshaling, JSON decoding, validation, etc. — no useful structured
 	// context, so just attach the operation label.
 	diagnostics.AddError(fmt.Sprintf("Error during %s", op), err.Error())
+}
+
+// APIErrorText renders the `[category] code: message` summary and the
+// next-action detail for one API error.
+func APIErrorText(op string, apiErr *DevhelmAPIError) (string, string) {
+	message := apiErr.Message
+	if message == "" {
+		message = strings.TrimSpace(apiErr.Body)
+	}
+	if message == "" {
+		message = http.StatusText(apiErr.StatusCode)
+	}
+	summary := fmt.Sprintf("[%s] %s", apiErr.Category, message)
+	if apiErr.Code != "" {
+		summary = fmt.Sprintf("[%s] %s: %s", apiErr.Category, apiErr.Code, message)
+	}
+
+	lines := []string{fmt.Sprintf("While trying to %s.", op)}
+	if hint := ownershipHint(apiErr); hint != "" {
+		lines = append(lines, hint)
+	}
+	for _, fe := range apiErr.FieldErrors() {
+		field := ""
+		if fe.Field != nil && *fe.Field != "" {
+			field = *fe.Field + ": "
+		}
+		lines = append(lines, fmt.Sprintf("  - %s%s (%s)", field, fe.Message, fe.Code))
+	}
+	if next := apiErr.NextCommand(); next != "" {
+		lines = append(lines, "Next: "+next)
+	}
+	if docs := apiErr.NextDocs(); docs != "" {
+		lines = append(lines, "Docs: "+docs)
+	}
+	if apiErr.RequestID != "" {
+		lines = append(lines, "Request ID: "+apiErr.RequestID)
+	}
+	return summary, strings.Join(lines, "\n")
+}
+
+// ownershipHint explains MONITOR_OWNED_BY_OTHER in terms of the provider's
+// API key: owner enforcement compares the monitor's owner with the tool the
+// calling key writes as.
+func ownershipHint(apiErr *DevhelmAPIError) string {
+	if apiErr.Code != "MONITOR_OWNED_BY_OTHER" {
+		return ""
+	}
+	var owner, caller string
+	apiErr.Detail("owner", &owner)
+	apiErr.Detail("caller", &caller)
+	if owner == "" && apiErr.Response != nil && apiErr.Response.Owner != nil {
+		owner = *apiErr.Response.Owner
+	}
+	if owner == "TERRAFORM" && caller != "" && caller != "TERRAFORM" {
+		return fmt.Sprintf("The monitor is owned by TERRAFORM, but this provider's API key writes as %s. "+
+			"Use an API key created with tool TERRAFORM, or set owner_enforced = false.", caller)
+	}
+	if owner != "" {
+		return fmt.Sprintf("The monitor is owned by %s. Change it there, or transfer it to Terraform "+
+			"with `terraform import` (which transfers ownership).", owner)
+	}
+	return ""
+}
+
+// attributePathForField maps an `errors[].field` pointer from the API
+// (camelCase, dotted, e.g. `frequencySeconds` or `code.entrypoint`) onto the
+// matching snake_case attribute path.
+func attributePathForField(field string) (path.Path, bool) {
+	field = strings.TrimPrefix(strings.TrimPrefix(field, "/"), "$.")
+	segments := strings.FieldsFunc(field, func(r rune) bool { return r == '.' || r == '/' })
+	if len(segments) == 0 {
+		return path.Empty(), false
+	}
+	first := camelToSnake(segments[0])
+	if !identifierPattern.MatchString(first) {
+		return path.Empty(), false
+	}
+	p := path.Root(first)
+	for _, seg := range segments[1:] {
+		if strings.IndexFunc(seg, func(r rune) bool { return r < '0' || r > '9' }) == -1 {
+			// Numeric segment → list index; stop here, the parent is a
+			// good enough anchor for the editor.
+			break
+		}
+		p = p.AtName(camelToSnake(seg))
+	}
+	return p, true
+}
+
+var identifierPattern = regexp.MustCompile(`^[a-z][a-z0-9_]*$`)
+
+func camelToSnake(s string) string {
+	var b strings.Builder
+	for i, r := range s {
+		if r >= 'A' && r <= 'Z' {
+			if i > 0 {
+				b.WriteByte('_')
+			}
+			b.WriteRune(r + ('a' - 'A'))
+			continue
+		}
+		b.WriteRune(r)
+	}
+	return b.String()
 }
 
 // AddNotFoundError emits the import-time "resource not found" diagnostic

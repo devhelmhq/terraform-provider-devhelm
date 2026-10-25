@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/google/uuid"
+	"github.com/hashicorp/terraform-plugin-framework-timeouts/resource/timeouts"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -18,6 +20,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
@@ -56,6 +59,26 @@ type MonitorResourceModel struct {
 	Auth           types.Object `tfsdk:"auth"`
 	Assertions     types.List   `tfsdk:"assertions"`
 	IncidentPolicy types.Object `tfsdk:"incident_policy"`
+
+	// Code monitors (BROWSER, MULTI_STEP_API).
+	Code                 types.Object `tfsdk:"code"`
+	CodeHash             types.String `tfsdk:"code_hash"`
+	CodeFiles            types.Map    `tfsdk:"code_files"`
+	LiveRevisionID       types.String `tfsdk:"live_revision_id"`
+	LiveRevisionDigest   types.String `tfsdk:"live_revision_digest"`
+	CapturePolicy        types.Object `tfsdk:"capture_policy"`
+	FastRetryMaxAttempts types.Int64  `tfsdk:"fast_retry_max_attempts"`
+	RunParallel          types.Bool   `tfsdk:"run_parallel"`
+	SecretKeys           types.List   `tfsdk:"secret_keys"`
+	TestBeforePublish    types.Bool   `tfsdk:"test_before_publish"`
+	AcknowledgeRollback  types.String `tfsdk:"acknowledge_rollback"`
+
+	// Ownership.
+	Owner         types.Object `tfsdk:"owner"`
+	OwnerEnforced types.Bool   `tfsdk:"owner_enforced"`
+	OwnerAddress  types.String `tfsdk:"owner_address"`
+
+	Timeouts timeouts.Value `tfsdk:"timeouts"`
 }
 
 // authSecretOnlyVariantModel mirrors the bearer/basic variants: the only
@@ -89,10 +112,15 @@ func (r *MonitorResource) Metadata(_ context.Context, req resource.MetadataReque
 	resp.TypeName = req.ProviderTypeName + "_monitor"
 }
 
-func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *MonitorResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Version:     0,
-		Description: "Manages a DevHelm monitor. Supports HTTP, DNS, TCP, ICMP, Heartbeat, and MCP Server monitor types.",
+		Version: 0,
+		Description: "Manages a DevHelm monitor. Supports HTTP, DNS, TCP, ICMP, Heartbeat, and MCP Server probes, " +
+			"and BROWSER and MULTI_STEP_API code monitors. A code monitor points `code.entrypoint` at a " +
+			"Playwright file; the provider uploads the include set at plan time and, on apply, runs a " +
+			"validation run before the code goes live (`test_before_publish`). Next to Terraform, " +
+			"`devhelm test --from-terraform .` runs the configured code without applying it, and " +
+			"`devhelm trigger <monitor>` starts a run of the live code.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true, Description: "Unique identifier for this monitor",
@@ -102,7 +130,7 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Required: true, Description: "Human-readable name for this monitor",
 			},
 			"type": schema.StringAttribute{
-				Required: true, Description: "Monitor type: HTTP, DNS, TCP, ICMP, HEARTBEAT, or MCP_SERVER",
+				Required: true, Description: "Monitor type: HTTP, DNS, TCP, ICMP, HEARTBEAT, MCP_SERVER, BROWSER, or MULTI_STEP_API",
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						string(generated.CreateMonitorRequestTypeHTTP),
@@ -111,25 +139,30 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						string(generated.CreateMonitorRequestTypeICMP),
 						string(generated.CreateMonitorRequestTypeHEARTBEAT),
 						string(generated.CreateMonitorRequestTypeMCPSERVER),
+						string(generated.CreateMonitorRequestTypeBROWSER),
+						string(generated.CreateMonitorRequestTypeMULTISTEPAPI),
 					),
 				},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"frequency_seconds": schema.Int64Attribute{
 				Optional: true, Computed: true,
-				Description: "Check frequency in seconds (30\u201386400). " +
-					"Server applies its default (60s) when omitted on create. " +
+				Description: "Check frequency in seconds (10\u201386400); the minimum depends on the plan. " +
+					"The server applies the plan minimum when omitted on create. " +
 					"Omit on update to preserve the current value; the API has no way to clear this field.",
 				Validators: []validator.Int64{
-					int64validator.Between(30, 86400),
+					int64validator.Between(10, 86400),
 				},
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},
 			},
 			"enabled": schema.BoolAttribute{
-				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
-				Description: "Whether the monitor is active (default: true)",
+				Optional: true,
+				Description: "Removed. Pause and mute are overlays, not configuration: use " +
+					"`devhelm monitors pause|resume|mute|unmute <monitor>`. Setting it is an error.",
+				DeprecationMessage: "enabled was removed from devhelm_monitor. Use `devhelm monitors pause <monitor>` / " +
+					"`devhelm monitors resume <monitor>` (or mute / unmute) instead.",
 			},
 			"regions": schema.ListAttribute{
 				Optional: true, Computed: true, ElementType: types.StringType,
@@ -140,7 +173,9 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				},
 			},
 			"environment_id": schema.StringAttribute{
-				Optional: true, Description: "Environment ID for variable substitution",
+				Optional: true,
+				Description: "Environment the monitor runs in (variables and secret values). " +
+					"Required for BROWSER and MULTI_STEP_API monitors",
 			},
 			"alert_channel_ids": schema.ListAttribute{
 				Optional: true, Computed: true, ElementType: types.StringType,
@@ -159,9 +194,112 @@ func (r *MonitorResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				PlanModifiers: []planmodifier.String{UseStateForUnknownAlwaysString()},
 			},
 			"config": schema.StringAttribute{
-				Required:    true,
-				Description: "Monitor configuration as JSON. Shape depends on type (HttpMonitorConfig, DnsMonitorConfig, etc.)",
+				Optional: true, Computed: true,
+				Description: "Monitor configuration as JSON. Shape depends on type (HttpMonitorConfig, DnsMonitorConfig, etc.). " +
+					"Required for probes; optional for BROWSER and MULTI_STEP_API (ScriptMonitorConfig: " +
+					"`timeoutSeconds`, `runtimeId`)",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
+			"code": schema.SingleNestedAttribute{
+				Optional: true,
+				Description: "Code for a BROWSER or MULTI_STEP_API monitor. The provider uploads the include set " +
+					"(the entry file's directory, or `include`) at plan time; the server resolves the import closure. " +
+					"Forbidden for probes",
+				Attributes: map[string]schema.Attribute{
+					"entrypoint": schema.StringAttribute{
+						Required:    true,
+						Description: "Path to the file that runs, e.g. `${path.module}/synthetics/checkout.spec.ts`",
+						Validators:  []validator.String{stringvalidator.LengthAtLeast(1)},
+					},
+					"include": schema.ListAttribute{
+						Optional: true, ElementType: types.StringType,
+						Description: "Globs that narrow the include set (default: the entry file's directory, recursively, " +
+							"minus node_modules/, dist/, build/, coverage/, *.map, dotfiles and .devhelmignore matches)",
+					},
+					"root": schema.StringAttribute{
+						Optional: true,
+						Description: "Bundle root; paths are uploaded relative to it (default: the nearest ancestor " +
+							"containing .git, else the entry file's directory)",
+					},
+				},
+			},
+			"code_hash": schema.StringAttribute{
+				Computed:    true,
+				Description: "Closure digest (sha256:<hex>) the server computed for the configured code at plan time",
+			},
+			"code_files": schema.MapAttribute{
+				Computed: true, ElementType: types.StringType,
+				Description: "Files in the import closure, each mapped to its content digest; the plan diff lists " +
+					"added, removed and changed files",
+			},
+			"live_revision_id": schema.StringAttribute{
+				Computed:    true,
+				Description: "Revision that scheduled runs execute",
+			},
+			"live_revision_digest": schema.StringAttribute{
+				Computed:    true,
+				Description: "Closure digest of the live revision; differs from code_hash after a rollback",
+			},
+			"capture_policy": schema.SingleNestedAttribute{
+				Optional: true, Computed: true,
+				Description:   "When to keep screenshots, traces, video and network evidence (code monitors)",
+				PlanModifiers: []planmodifier.Object{objectplanmodifier.UseStateForUnknown()},
+				Attributes: map[string]schema.Attribute{
+					"screenshots": capturePolicyAttribute("When to capture screenshots"),
+					"trace":       capturePolicyAttribute("When to capture a Playwright trace"),
+					"video":       capturePolicyAttribute("When to capture video"),
+					"network":     capturePolicyAttribute("When network rows and HAR are kept"),
+				},
+			},
+			"fast_retry_max_attempts": schema.Int64Attribute{
+				Optional: true, Computed: true,
+				Description:   "Fast-retry attempts after a failure; 0 disables",
+				Validators:    []validator.Int64{int64validator.AtLeast(0)},
+				PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
+			},
+			"run_parallel": schema.BoolAttribute{
+				Optional: true, Computed: true,
+				Description:   "Run every region each interval; false rotates one region per interval (code monitors)",
+				PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
+			},
+			"secret_keys": schema.ListAttribute{
+				Optional: true, Computed: true, ElementType: types.StringType,
+				Description:   "Secret keys the code may read; omit to use the keys the server scanned in the code",
+				PlanModifiers: []planmodifier.List{listplanmodifier.UseStateForUnknown()},
+			},
+			"test_before_publish": schema.BoolAttribute{
+				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
+				Description: "Run a validation run before new code goes live (default: true). A failed run stops " +
+					"the apply and the old code stays live. false publishes the code untested in one call",
+			},
+			"acknowledge_rollback": schema.StringAttribute{
+				Optional: true,
+				Description: "Rolled-back digest to publish again on purpose; needed when the configured code " +
+					"was rolled back in the dashboard",
+			},
+			"owner": schema.SingleNestedAttribute{
+				Computed:      true,
+				Description:   "Tool that owns this monitor and what it declared",
+				PlanModifiers: []planmodifier.Object{objectplanmodifier.UseStateForUnknown()},
+				Attributes: map[string]schema.Attribute{
+					"type":    schema.StringAttribute{Computed: true, Description: "Owning tool: DASHBOARD, GIT, TERRAFORM, MCP, or API"},
+					"project": schema.StringAttribute{Computed: true, Description: "Project the owning tool declares"},
+					"address": schema.StringAttribute{Computed: true, Description: "Resource address the owning tool declares"},
+					"label":   schema.StringAttribute{Computed: true, Description: "Display label the owning tool declares"},
+				},
+			},
+			"owner_enforced": schema.BoolAttribute{
+				Optional: true, Computed: true,
+				Description: "Only Terraform may change this monitor's configuration (default: true on create). " +
+					"Use an API key created with tool TERRAFORM",
+				PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
+			},
+			"owner_address": schema.StringAttribute{
+				Optional: true,
+				Description: "Resource address recorded as the owner declaration, e.g. " +
+					"`module.web.devhelm_monitor.checkout` (Terraform doesn't tell providers the address)",
+			},
+			"timeouts": timeouts.Attributes(ctx, timeouts.Opts{Create: true, Update: true}),
 			"auth": schema.SingleNestedAttribute{
 				Optional: true,
 				Description: "Monitor authentication. Specify exactly one variant " +
@@ -387,6 +525,8 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 		return
 	}
 
+	validateMonitorKind(&resp.Diagnostics, &model)
+
 	// Config validation: parse as JSON, then validate the payload against
 	// the generated monitor-config struct that matches the declared `type`.
 	// We use json.Decoder with DisallowUnknownFields so unknown keys are
@@ -470,6 +610,67 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 				}
 			}
 		}
+	}
+}
+
+// validateMonitorKind enforces the per-kind attribute rules: code monitors
+// need `code` and `environment_id`; probes need `config` and can't carry
+// code-only settings. It also turns the removed `enabled` into an upgrade
+// error that names the CLI verbs.
+func validateMonitorKind(diags *diag.Diagnostics, m *MonitorResourceModel) {
+	if !m.Enabled.IsNull() {
+		diags.AddAttributeError(path.Root("enabled"), "enabled was removed from devhelm_monitor",
+			"Pause and mute are overlays on a monitor, not configuration, so Terraform no longer manages them. "+
+				"Remove `enabled` from this resource and use `devhelm monitors pause <monitor>` / "+
+				"`devhelm monitors resume <monitor>` (or `mute` / `unmute`).")
+	}
+	if m.Type.IsUnknown() || m.Type.IsNull() {
+		return
+	}
+	if isCodeType(m.Type) {
+		if m.Code.IsNull() {
+			diags.AddAttributeError(path.Root("code"), "Missing code",
+				fmt.Sprintf("%s monitors need a `code` block with `entrypoint`.", m.Type.ValueString()))
+		}
+		if m.EnvironmentID.IsNull() {
+			diags.AddAttributeError(path.Root("environment_id"), "Missing environment_id",
+				fmt.Sprintf("%s monitors run in one environment; set environment_id (for example "+
+					"devhelm_environment.production.id).", m.Type.ValueString()))
+		}
+		return
+	}
+	if !m.Code.IsNull() {
+		diags.AddAttributeError(path.Root("code"), "code is only for BROWSER and MULTI_STEP_API monitors",
+			fmt.Sprintf("%s monitors are configured with `config`; remove the `code` block.", m.Type.ValueString()))
+	}
+	if m.Config.IsNull() {
+		diags.AddAttributeError(path.Root("config"), "Missing config",
+			fmt.Sprintf("%s monitors need `config` (JSON).", m.Type.ValueString()))
+	}
+	for name, v := range map[string]attr.Value{
+		"run_parallel":         m.RunParallel,
+		"capture_policy":       m.CapturePolicy,
+		"secret_keys":          m.SecretKeys,
+		"acknowledge_rollback": m.AcknowledgeRollback,
+	} {
+		if !v.IsNull() && !v.IsUnknown() {
+			diags.AddAttributeError(path.Root(name), name+" is only for code monitors",
+				fmt.Sprintf("%s applies to BROWSER and MULTI_STEP_API monitors; remove it from this %s monitor.",
+					name, m.Type.ValueString()))
+		}
+	}
+}
+
+func capturePolicyAttribute(description string) schema.StringAttribute {
+	return schema.StringAttribute{
+		Optional: true, Computed: true,
+		Description: description + ": always, on_failure, or off",
+		Validators: []validator.String{stringvalidator.OneOf(
+			string(generated.CapturePolicyScreenshotsAlways),
+			string(generated.CapturePolicyScreenshotsOnFailure),
+			string(generated.CapturePolicyScreenshotsOff),
+		)},
+		PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 	}
 }
 
@@ -560,6 +761,12 @@ func validateMonitorConfigJSON(diags *diag.Diagnostics, raw string, monitorType 
 	case generated.CreateMonitorRequestTypeMCPSERVER:
 		validateAgainst = func(d *json.Decoder) (any, error) {
 			var v generated.McpServerMonitorConfig
+			err := d.Decode(&v)
+			return &v, err
+		}
+	case generated.CreateMonitorRequestTypeBROWSER, generated.CreateMonitorRequestTypeMULTISTEPAPI:
+		validateAgainst = func(d *json.Decoder) (any, error) {
+			var v generated.ScriptMonitorConfig
 			err := d.Decode(&v)
 			return &v, err
 		}
@@ -874,6 +1081,8 @@ func configSchemaName(t generated.CreateMonitorRequestType) string {
 		return "Heartbeat"
 	case generated.CreateMonitorRequestTypeMCPSERVER:
 		return "McpServer"
+	case generated.CreateMonitorRequestTypeBROWSER, generated.CreateMonitorRequestTypeMULTISTEPAPI:
+		return "Script"
 	default:
 		return "Monitor"
 	}
@@ -1015,7 +1224,10 @@ func buildIncidentPolicy(ctx context.Context, obj types.Object) (*generated.Upda
 	}, nil
 }
 
-func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorResourceModel) (*generated.CreateMonitorRequest, error) {
+// buildCreateRequest maps the plan onto CreateMonitorRequest. rc carries the
+// uploaded bundle for code monitors (nil for probes); enforce sets
+// `ownerEnforced`.
+func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorResourceModel, rc *resolvedCode, enforce bool) (*generated.CreateMonitorRequest, error) {
 	assertions, err := buildAssertions(ctx, plan.Assertions)
 	if err != nil {
 		return nil, err
@@ -1024,18 +1236,6 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 	incidentPolicy, err := buildIncidentPolicy(ctx, plan.IncidentPolicy)
 	if err != nil {
 		return nil, err
-	}
-
-	// oapi-codegen's union UnmarshalJSON accepts raw bytes without
-	// validating JSON structure; pre-flight with json.Valid so we fail
-	// at plan time instead of sending garbage to the API.
-	configBytes := []byte(plan.Config.ValueString())
-	if !json.Valid(configBytes) {
-		return nil, fmt.Errorf("monitor config: invalid JSON")
-	}
-	var configUnion generated.CreateMonitorRequest_Config
-	if err := configUnion.UnmarshalJSON(configBytes); err != nil {
-		return nil, fmt.Errorf("monitor config: %w", err)
 	}
 
 	envID, err := parseUUIDPtrChecked(plan.EnvironmentID, "environment_id")
@@ -1058,19 +1258,52 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 	}
 
 	managedByTF := generated.CreateMonitorRequestManagedByTERRAFORM
+	label := "Terraform"
 	req := &generated.CreateMonitorRequest{
-		Name:             plan.Name.ValueString(),
-		Type:             monitorType,
-		Config:           &configUnion,
-		ManagedBy:        &managedByTF,
-		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
-		Enabled:          boolPtrOrNil(plan.Enabled),
-		Regions:          stringSliceToPtr(plan.Regions),
-		EnvironmentId:    envID,
-		Assertions:       &assertions,
-		AlertChannelIds:  alertChannels,
-		IncidentPolicy:   incidentPolicy,
-		Auth:             authUnion,
+		Name:                 plan.Name.ValueString(),
+		Type:                 monitorType,
+		ManagedBy:            &managedByTF,
+		OwnerEnforced:        &enforce,
+		OwnerDeclaration:     &generated.OwnerDeclaration{Address: stringPtrOrNil(plan.OwnerAddress), Label: &label},
+		FrequencySeconds:     int32PtrOrNil(plan.FrequencySeconds),
+		Regions:              stringSliceToPtr(plan.Regions),
+		EnvironmentId:        envID,
+		AlertChannelIds:      alertChannels,
+		IncidentPolicy:       incidentPolicy,
+		Auth:                 authUnion,
+		FastRetryMaxAttempts: int32PtrOrNil(plan.FastRetryMaxAttempts),
+	}
+	if len(assertions) > 0 || !isCodeType(plan.Type) {
+		req.Assertions = &assertions
+	}
+
+	// oapi-codegen's union UnmarshalJSON accepts raw bytes without
+	// validating JSON structure; pre-flight with json.Valid so we fail
+	// at plan time instead of sending garbage to the API. Code monitors
+	// may omit config (the server pins the newest runtime).
+	if raw := knownString(plan.Config); raw != "" {
+		if !json.Valid([]byte(raw)) {
+			return nil, fmt.Errorf("monitor config: invalid JSON")
+		}
+		var configUnion generated.CreateMonitorRequest_Config
+		if err := configUnion.UnmarshalJSON([]byte(raw)); err != nil {
+			return nil, fmt.Errorf("monitor config: %w", err)
+		}
+		req.Config = &configUnion
+	}
+
+	if isCodeType(plan.Type) {
+		if rc != nil {
+			code := rc.spec()
+			req.Code = &code
+		}
+		req.RunParallel = boolPtrOrNil(plan.RunParallel)
+		req.SecretKeys = stringSliceToPtr(plan.SecretKeys)
+		capture, err := buildCapturePolicy(ctx, plan.CapturePolicy)
+		if err != nil {
+			return nil, err
+		}
+		req.CapturePolicy = capture
 	}
 
 	tagUUIDs, err := uuidSliceFromStringListChecked(plan.TagIds, "tag_ids")
@@ -1086,6 +1319,8 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 	return req, nil
 }
 
+// buildUpdateRequest maps the plan onto UpdateMonitorRequest (settings
+// only; the caller adds `code` when it publishes through the PUT).
 func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorResourceModel) (*generated.UpdateMonitorRequest, error) {
 	assertions, err := buildAssertions(ctx, plan.Assertions)
 	if err != nil {
@@ -1098,24 +1333,7 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 	}
 
 	name := plan.Name.ValueString()
-	managedBy := generated.UpdateMonitorRequestManagedByTERRAFORM
-
-	// The spec now exposes `UpdateMonitorRequest.config` as a proper
-	// polymorphic union (DNS | HTTP | TCP | ICMP | Heartbeat |
-	// McpServer), generated by oapi-codegen as a tagged-union wrapper
-	// around raw JSON. oapi-codegen's UnmarshalJSON on the wrapper
-	// accepts raw bytes without validating them — it just stores them
-	// for the later merge/pick step — so we do a pre-flight json.Valid
-	// check to keep the same "invalid JSON errors out at plan time"
-	// guardrail the old map-based path provided.
-	configBytes := []byte(plan.Config.ValueString())
-	if !json.Valid(configBytes) {
-		return nil, fmt.Errorf("monitor config: invalid JSON")
-	}
-	var configUnion generated.UpdateMonitorRequest_Config
-	if err := configUnion.UnmarshalJSON(configBytes); err != nil {
-		return nil, fmt.Errorf("monitor config: %w", err)
-	}
+	codeType := isCodeType(plan.Type)
 
 	envID, err := parseUUIDPtrChecked(plan.EnvironmentID, "environment_id")
 	if err != nil {
@@ -1132,31 +1350,60 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 	}
 
 	req := &generated.UpdateMonitorRequest{
-		Name:             &name,
-		Config:           &configUnion,
-		ManagedBy:        &managedBy,
-		FrequencySeconds: int32PtrOrNil(plan.FrequencySeconds),
-		Enabled:          boolPtrOrNil(plan.Enabled),
-		Regions:          stringSliceToPtr(plan.Regions),
-		EnvironmentId:    envID,
-		Assertions:       &assertions,
-		AlertChannelIds:  alertChannels,
-		IncidentPolicy:   incidentPolicy,
-		Auth:             authUnion,
+		Name:                 &name,
+		FrequencySeconds:     int32PtrOrNil(plan.FrequencySeconds),
+		Regions:              stringSliceToPtr(plan.Regions),
+		EnvironmentId:        envID,
+		AlertChannelIds:      alertChannels,
+		IncidentPolicy:       incidentPolicy,
+		Auth:                 authUnion,
+		FastRetryMaxAttempts: int32PtrOrNil(plan.FastRetryMaxAttempts),
+	}
+	if len(assertions) > 0 || !codeType {
+		req.Assertions = &assertions
 	}
 
-	if plan.EnvironmentID.IsNull() {
-		clearEnv := true
-		req.ClearEnvironmentId = &clearEnv
+	// The spec now exposes `UpdateMonitorRequest.config` as a proper
+	// polymorphic union, generated by oapi-codegen as a tagged-union wrapper
+	// around raw JSON. oapi-codegen's UnmarshalJSON on the wrapper accepts
+	// raw bytes without validating them, so we do a pre-flight json.Valid
+	// check to keep the "invalid JSON errors out" guardrail.
+	if raw := knownString(plan.Config); raw != "" {
+		if !json.Valid([]byte(raw)) {
+			return nil, fmt.Errorf("monitor config: invalid JSON")
+		}
+		var configUnion generated.UpdateMonitorRequest_Config
+		if err := configUnion.UnmarshalJSON([]byte(raw)); err != nil {
+			return nil, fmt.Errorf("monitor config: %w", err)
+		}
+		req.Config = &configUnion
 	}
 
-	// Auth: when the user removes the entire `auth` block we set
-	// `clearAuth: true` so the server drops any previously-attached
-	// credential. When auth is supplied, ClearAuth stays nil — the typed
-	// `Auth` union above carries the full payload. We never send both.
-	if authUnion == nil {
-		clearAuth := true
-		req.ClearAuth = &clearAuth
+	if codeType {
+		// Ownership of a code monitor moves through transfer, never PUT
+		// (MONITOR_MANAGED_BY_TAKEOVER_REQUIRED).
+		req.RunParallel = boolPtrOrNil(plan.RunParallel)
+		req.SecretKeys = stringSliceToPtr(plan.SecretKeys)
+		capture, err := buildCapturePolicy(ctx, plan.CapturePolicy)
+		if err != nil {
+			return nil, err
+		}
+		req.CapturePolicy = capture
+	} else {
+		managedBy := generated.UpdateMonitorRequestManagedByTERRAFORM
+		req.ManagedBy = &managedBy
+		if plan.EnvironmentID.IsNull() {
+			clearEnv := true
+			req.ClearEnvironmentId = &clearEnv
+		}
+		// Auth: when the user removes the entire `auth` block we set
+		// `clearAuth: true` so the server drops any previously-attached
+		// credential. When auth is supplied, ClearAuth stays nil — the typed
+		// `Auth` union above carries the full payload. We never send both.
+		if authUnion == nil {
+			clearAuth := true
+			req.ClearAuth = &clearAuth
+		}
 	}
 
 	// NOTE: Tag add/remove reconciliation is handled outside the PUT body
@@ -1165,6 +1412,30 @@ func (r *MonitorResource) buildUpdateRequest(ctx context.Context, plan *MonitorR
 	// clearing the list entirely) requires a separate DELETE call.
 
 	return req, nil
+}
+
+// knownString returns the value of a known, non-null string, else "".
+func knownString(v types.String) string {
+	if v.IsNull() || v.IsUnknown() {
+		return ""
+	}
+	return v.ValueString()
+}
+
+func buildCapturePolicy(ctx context.Context, obj types.Object) (*generated.CapturePolicy, error) {
+	if obj.IsNull() || obj.IsUnknown() {
+		return nil, nil
+	}
+	var m capturePolicyModel
+	if d := obj.As(ctx, &m, objectAsOptions); d.HasError() {
+		return nil, fmt.Errorf("parsing capture_policy: %v", d.Errors())
+	}
+	return &generated.CapturePolicy{
+		Screenshots: typedStringPtrOrNil[generated.CapturePolicyScreenshots](m.Screenshots),
+		Trace:       typedStringPtrOrNil[generated.CapturePolicyTrace](m.Trace),
+		Video:       typedStringPtrOrNil[generated.CapturePolicyVideo](m.Video),
+		Network:     typedStringPtrOrNil[generated.CapturePolicyNetwork](m.Network),
+	}, nil
 }
 
 // ── Object type helpers for nested blocks ───────────────────────────────
@@ -1227,10 +1498,15 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 	model.Name = types.StringValue(dto.Name)
 	model.Type = types.StringValue(string(dto.Type))
 	model.FrequencySeconds = types.Int64Value(int64(dto.FrequencySeconds))
-	model.Enabled = types.BoolValue(dto.Enabled)
+	// `enabled` was removed (pause/mute are overlays); refresh clears any
+	// value an older provider version left in state.
+	model.Enabled = types.BoolNull()
 	model.PingUrl = stringValue(dto.PingUrl)
+	diags.Append(mapCodeMonitorFields(ctx, model, dto)...)
 
-	if configBytes, err := dto.Config.MarshalJSON(); err == nil && unionHasData(configBytes) {
+	if configBytes, err := dto.Config.MarshalJSON(); err == nil && unionHasData(configBytes) && codeMonitorTypes[dto.Type] {
+		model.Config = types.StringValue(preserveConfig(model.Config, configBytes))
+	} else if err == nil && unionHasData(configBytes) {
 		// The API strips the `type` discriminator from the config object
 		// in its response (it's already represented at the top level via
 		// dto.Type). Users frequently include it in their HCL config,
@@ -1244,6 +1520,8 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 			normalized = injectConfigType(normalized, string(dto.Type))
 		}
 		model.Config = types.StringValue(normalized)
+	} else if model.Config.IsUnknown() {
+		model.Config = types.StringNull()
 	}
 
 	if dto.Environment != nil && dto.Environment.Id.String() != "00000000-0000-0000-0000-000000000000" {
@@ -1441,6 +1719,77 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 	return diags
 }
 
+// preserveConfig keeps the configured JSON when every key it sets has the
+// same value in the server's answer (the server adds defaults such as the
+// pinned runtimeId); otherwise the server's normalized JSON wins so drift
+// shows.
+func preserveConfig(prior types.String, server []byte) string {
+	normalized := normalizeJSON(server)
+	raw := knownString(prior)
+	if raw == "" {
+		return normalized
+	}
+	var want, got map[string]json.RawMessage
+	if json.Unmarshal([]byte(normalizeJSON([]byte(raw))), &want) != nil || json.Unmarshal([]byte(normalized), &got) != nil {
+		return normalized
+	}
+	for k, v := range want {
+		if g, ok := got[k]; !ok || normalizeJSON(g) != normalizeJSON(v) {
+			return normalized
+		}
+	}
+	return raw
+}
+
+// mapCodeMonitorFields copies the ownership and code-monitor fields.
+func mapCodeMonitorFields(ctx context.Context, model *MonitorResourceModel, dto *generated.MonitorDto) diag.Diagnostics {
+	var diags diag.Diagnostics
+	model.OwnerEnforced = types.BoolValue(dto.OwnerEnforced)
+	model.LiveRevisionID = uuidPtrValue(dto.LiveRevisionId)
+	model.LiveRevisionDigest = stringValue(dto.LiveRevisionDigest)
+	if dto.FastRetryMaxAttempts != nil {
+		model.FastRetryMaxAttempts = types.Int64Value(int64(*dto.FastRetryMaxAttempts))
+	} else {
+		model.FastRetryMaxAttempts = types.Int64Null()
+	}
+	model.RunParallel = boolValue(dto.RunParallel)
+	if dto.SecretKeys != nil {
+		model.SecretKeys = ptrStringSliceToList(ctx, dto.SecretKeys)
+	} else {
+		model.SecretKeys = types.ListNull(types.StringType)
+	}
+
+	ownerType := dto.ManagedBy
+	var project, address, label *string
+	if dto.Owner != nil {
+		ownerType = dto.Owner.Type
+		project, address, label = dto.Owner.Project, dto.Owner.Address, dto.Owner.Label
+	}
+	owner, d := types.ObjectValue(ownerObjectType().AttrTypes, map[string]attr.Value{
+		"type":    types.StringValue(ownerType),
+		"project": stringValue(project),
+		"address": stringValue(address),
+		"label":   stringValue(label),
+	})
+	diags.Append(d...)
+	model.Owner = owner
+
+	if dto.CapturePolicy != nil {
+		cp := dto.CapturePolicy
+		obj, d := types.ObjectValue(capturePolicyObjectType().AttrTypes, map[string]attr.Value{
+			"screenshots": typedStringPtrValue(cp.Screenshots),
+			"trace":       typedStringPtrValue(cp.Trace),
+			"video":       typedStringPtrValue(cp.Video),
+			"network":     typedStringPtrValue(cp.Network),
+		})
+		diags.Append(d...)
+		model.CapturePolicy = obj
+	} else {
+		model.CapturePolicy = types.ObjectNull(capturePolicyObjectType().AttrTypes)
+	}
+	return diags
+}
+
 // ── CRUD ────────────────────────────────────────────────────────────────
 
 func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -1450,7 +1799,45 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	body, err := r.buildCreateRequest(ctx, &plan)
+	createTimeout, d := plan.Timeouts.Create(ctx, defaultCodeApplyTimeout)
+	resp.Diagnostics.Append(d...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	ctx, cancel := context.WithTimeout(ctx, createTimeout)
+	defer cancel()
+
+	// Code monitors: upload the include set, and validate it before the
+	// monitor exists (doc 42 R3) unless test_before_publish = false.
+	var rc *resolvedCode
+	if isCodeType(plan.Type) {
+		var err error
+		rc, err = r.resolveCode(ctx, plan.Code, plan.Config)
+		if err != nil {
+			api.AddAPIError(&resp.Diagnostics, "upload the monitor's code bundle", err, path.Root("code"))
+			return
+		}
+		if !plan.CodeHash.IsUnknown() && plan.CodeHash.ValueString() != rc.bundle.Digest {
+			resp.Diagnostics.AddAttributeError(path.Root("code"), "[validation] Code changed since the plan",
+				fmt.Sprintf("The plan was made for %s but the files now hash to %s. Run `terraform plan` again.",
+					plan.CodeHash.ValueString(), rc.bundle.Digest))
+			return
+		}
+		if plan.TestBeforePublish.ValueBool() {
+			run, err := r.validateNewCode(ctx, &plan, rc, waitBudget(ctx))
+			if err != nil {
+				api.AddAPIError(&resp.Diagnostics, "validate the new monitor's code", err, path.Root("code"))
+				return
+			}
+			if !api.RunPassed(run) {
+				addRunDiagnostic(&resp.Diagnostics, "validate the new monitor's code", run, "")
+				return
+			}
+		}
+	}
+
+	enforce := ownerEnforcedOnCreate(plan.OwnerEnforced)
+	body, err := r.buildCreateRequest(ctx, &plan, rc, enforce)
 	if err != nil {
 		resp.Diagnostics.AddError("Error building monitor request", err.Error())
 		return
@@ -1460,6 +1847,23 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 	if err != nil {
 		api.AddAPIError(&resp.Diagnostics, "create monitor", err, path.Root("name"))
 		return
+	}
+	// The create response omits fields resolved after the write (the live
+	// revision digest of a code monitor); read the monitor back so state
+	// matches what GET returns on the next refresh.
+	if isCodeType(plan.Type) {
+		if fresh, err := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(monitor.Id.String())); err == nil {
+			monitor = fresh
+		}
+	}
+	if rc != nil {
+		plan.CodeHash = types.StringValue(rc.bundle.Digest)
+		files, d := rc.files(ctx)
+		resp.Diagnostics.Append(d...)
+		plan.CodeFiles = files
+	} else {
+		plan.CodeHash = types.StringNull()
+		plan.CodeFiles = types.MapNull(types.StringType)
 	}
 
 	// Orphan-cleanup safety net: from this point on, the monitor exists
@@ -1521,6 +1925,10 @@ func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, re
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	if !codeMonitorTypes[monitor.Type] {
+		state.CodeHash = types.StringNull()
+		state.CodeFiles = types.MapNull(types.StringType)
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -1537,10 +1945,72 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
+	updateTimeout, d := plan.Timeouts.Update(ctx, defaultCodeApplyTimeout)
+	resp.Diagnostics.Append(d...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	ctx, cancel := context.WithTimeout(ctx, updateTimeout)
+	defer cancel()
+
 	body, err := r.buildUpdateRequest(ctx, &plan)
 	if err != nil {
 		resp.Diagnostics.AddError("Error building monitor request", err.Error())
 		return
+	}
+	// A monitor that another tool owns (an import) is transferred to
+	// Terraform first; the transfer is audited and owner-guarded.
+	if ownerType(state.Owner) != api.ToolTerraform {
+		if err := r.transferToTerraform(ctx, state.ID.ValueString(), "terraform import", plan.OwnerAddress); err != nil {
+			api.AddAPIError(&resp.Diagnostics, "transfer the monitor to Terraform", err, path.Root("owner"))
+			return
+		}
+		tflog.Info(ctx, "transferred monitor to Terraform", map[string]any{
+			"id": state.ID.ValueString(), "owner_before": ownerType(state.Owner), "owner_after": api.ToolTerraform,
+		})
+	}
+
+	// owner_enforced is sent only when the configuration sets it, so an
+	// upgrade never flips enforcement on monitors created before it existed.
+	var configured types.Bool
+	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("owner_enforced"), &configured)...)
+	if !configured.IsNull() && !configured.IsUnknown() {
+		v := configured.ValueBool()
+		body.OwnerEnforced = &v
+	}
+
+	// Code change: the configured closure differs from the live revision.
+	// With test_before_publish: draft → test → wait → publish
+	// {requireTested, expectedLiveRevisionId}; a failed test stops here, the
+	// old code stays live, the draft is kept and state isn't touched.
+	// Without it: the PUT below carries the code (one call, live, untested).
+	if isCodeType(plan.Type) {
+		rc, err := r.resolveCode(ctx, plan.Code, plan.Config)
+		if err != nil {
+			api.AddAPIError(&resp.Diagnostics, "upload the monitor's code bundle", err, path.Root("code"))
+			return
+		}
+		if !plan.CodeHash.IsUnknown() && plan.CodeHash.ValueString() != rc.bundle.Digest {
+			resp.Diagnostics.AddAttributeError(path.Root("code"), "[validation] Code changed since the plan",
+				fmt.Sprintf("The plan was made for %s but the files now hash to %s. Run `terraform plan` again.",
+					plan.CodeHash.ValueString(), rc.bundle.Digest))
+			return
+		}
+		if rc.bundle.Digest != state.LiveRevisionDigest.ValueString() {
+			if plan.TestBeforePublish.ValueBool() {
+				if !r.publishCode(ctx, state.ID.ValueString(), &plan, &state, rc, waitBudget(ctx), &resp.Diagnostics) {
+					return
+				}
+			} else {
+				code := rc.spec()
+				body.Code = &code
+				body.AcknowledgeRollback = stringPtrOrNil(plan.AcknowledgeRollback)
+			}
+		}
+		plan.CodeHash = types.StringValue(rc.bundle.Digest)
+		files, d := rc.files(ctx)
+		resp.Diagnostics.Append(d...)
+		plan.CodeFiles = files
 	}
 
 	// IMPORTANT: use `state.ID` (not `plan.ID`) for the URL — `plan.ID` is
@@ -1554,8 +2024,21 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// list entirely (so `monitor.Tags` would be misleading), and we re-GET
 	// below to capture the post-reconciliation state authoritatively.
 	if _, err := api.Update[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()), body); err != nil {
+		if body.Code != nil {
+			addPublishError(&resp.Diagnostics, err)
+			return
+		}
 		api.AddAPIError(&resp.Diagnostics, "update monitor", err, path.Root("name"))
 		return
+	}
+
+	// A changed owner_address is a new owner declaration, which moves
+	// through transfer (to the same owner, Terraform).
+	if !plan.OwnerAddress.Equal(state.OwnerAddress) && !plan.OwnerAddress.IsUnknown() {
+		if err := r.transferToTerraform(ctx, state.ID.ValueString(), "terraform: owner address changed", plan.OwnerAddress); err != nil {
+			api.AddAPIError(&resp.Diagnostics, "record the owner address", err, path.Root("owner_address"))
+			return
+		}
 	}
 
 	// Reconcile tags out-of-band. The PUT above has already mutated the
@@ -1691,6 +2174,58 @@ func (r *MonitorResource) reconcileTags(ctx context.Context, monitorID string, p
 	return nil
 }
 
+// defaultCodeApplyTimeout bounds a create or update, including the wait for
+// a validation run (doc 42 §5.4's 5-minute wait plus the calls around it).
+const defaultCodeApplyTimeout = 10 * time.Minute
+
+// waitBudget is how long a validation-run wait may take: what's left of the
+// apply timeout, minus a margin for the calls that follow it.
+func waitBudget(ctx context.Context) time.Duration {
+	deadline, ok := ctx.Deadline()
+	if !ok {
+		return api.DefaultRunWait
+	}
+	left := time.Until(deadline) - 30*time.Second
+	if left < 10*time.Second {
+		left = 10 * time.Second
+	}
+	return left
+}
+
+// ownerEnforcedOnCreate decides `ownerEnforced` for a new monitor: the
+// configured value when set, otherwise true (doc 42 §7). A key that writes
+// as another tool gets a 409 MONITOR_OWNED_BY_OTHER on later writes, which
+// surfaces as an `[ownership]` diagnostic naming the fix.
+func ownerEnforcedOnCreate(configured types.Bool) bool {
+	if !configured.IsNull() && !configured.IsUnknown() {
+		return configured.ValueBool()
+	}
+	return true
+}
+
+// ownerType reads owner.type from state ("" when unset).
+func ownerType(owner types.Object) string {
+	if owner.IsNull() || owner.IsUnknown() {
+		return ""
+	}
+	if v, ok := owner.Attributes()["type"].(types.String); ok {
+		return v.ValueString()
+	}
+	return ""
+}
+
+// transferToTerraform moves ownership to TERRAFORM (`POST /transfer`).
+func (r *MonitorResource) transferToTerraform(ctx context.Context, id, reason string, address types.String) error {
+	label := "Terraform"
+	body := generated.TransferMonitorRequest{
+		To:               generated.TransferMonitorRequestToTERRAFORM,
+		Reason:           reason,
+		OwnerDeclaration: &generated.OwnerDeclaration{Address: stringPtrOrNil(address), Label: &label},
+	}
+	_, err := api.Create[generated.MonitorDto](ctx, r.client, api.MonitorTransferPath(id), body)
+	return err
+}
+
 func (r *MonitorResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var state MonitorResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -1750,6 +2285,10 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 		return
 	}
 
+	// Import only reads. Ownership moves to Terraform on the next apply
+	// (ModifyPlan shows `owner` changing): `import` blocks run ImportState
+	// during `terraform plan`, and a plan must not change the monitor.
+
 	var model MonitorResourceModel
 	// All collection-valued attributes start as typed-null. mapToState
 	// will populate them from the API response when present. Pre-seeding
@@ -1766,9 +2305,19 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 	model.Regions = types.ListNull(types.StringType)
 	model.TagIds = types.ListNull(types.StringType)
 	model.AlertChannelIds = types.ListNull(types.StringType)
+	model.Code = types.ObjectNull(codeObjectType().AttrTypes)
+	model.CodeHash = types.StringNull()
+	model.CodeFiles = types.MapNull(types.StringType)
+	model.TestBeforePublish = types.BoolValue(true)
+	model.Timeouts = timeouts.Value{Object: types.ObjectNull(map[string]attr.Type{
+		"create": types.StringType, "update": types.StringType,
+	})}
 	resp.Diagnostics.Append(r.mapToState(ctx, &model, monitor)...)
 	if resp.Diagnostics.HasError() {
 		return
+	}
+	if codeMonitorTypes[monitor.Type] {
+		resp.Diagnostics.Append(r.importCodeFiles(ctx, &model)...)
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }
