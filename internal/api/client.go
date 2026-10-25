@@ -615,19 +615,33 @@ func List[T any](ctx context.Context, c *Client, basePath string) ([]T, error) {
 }
 
 func Create[T any](ctx context.Context, c *Client, path string, body any) (*T, error) {
-	resp, err := c.doRequest(ctx, http.MethodPost, path, body)
+	req := rawRequest{Method: http.MethodPost, Path: path}
+	if body != nil {
+		encoded, err := json.Marshal(body)
+		if err != nil {
+			return nil, fmt.Errorf("marshaling request body: %w", err)
+		}
+		req.Body, req.ContentType = encoded, "application/json"
+	}
+	return send[T](ctx, c, req)
+}
+
+// send runs one request and decodes its SingleValueResponse[T]. Create and
+// non-JSON uploads (the bundle zip) share it.
+func send[T any](ctx context.Context, c *Client, req rawRequest) (*T, error) {
+	resp, err := c.do(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	if err := checkResponse(resp); err != nil {
 		return nil, err
 	}
-
+	label := req.Method + " " + req.Path
 	var envelope SingleValueResponse[T]
-	if err := decodeResponse(ctx, resp.Body, &envelope, "POST "+path); err != nil {
+	if err := decodeResponse(ctx, resp.Body, &envelope, label); err != nil {
 		return nil, err
 	}
-	if err := ValidateDTO(&envelope.Data, "POST "+path); err != nil {
+	if err := ValidateDTO(&envelope.Data, label); err != nil {
 		return nil, err
 	}
 	return &envelope.Data, nil

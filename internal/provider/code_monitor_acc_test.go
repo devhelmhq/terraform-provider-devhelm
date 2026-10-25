@@ -553,3 +553,84 @@ func TestAccCodeMonitor_ImportReadsThenApplyTransfersToTerraform(t *testing.T) {
 		},
 	})
 }
+
+func TestAccCodeMonitor_PublishThenFailedPutKeepsLiveCodeInState(t *testing.T) {
+	requireAcc(t)
+	m := newMockAPI(t)
+	f := newFakeCodeAPI(t, m)
+	dir := t.TempDir()
+	writeSpec(t, dir, "v1\n")
+	var failPut bool
+	put := m.handlers["PUT /api/v1/monitors/"+codeMonitorID]
+	m.Handle(http.MethodPut, "/api/v1/monitors/"+codeMonitorID, func(w http.ResponseWriter, r *http.Request) {
+		if failPut {
+			httpError(w, http.StatusBadRequest, "settings refused")
+			return
+		}
+		put(w, r)
+	})
+	v2 := bundle.Digest(map[string][]byte{"checkout.spec.ts": []byte("v2\n")})
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: newProviderFactories(),
+		Steps: []resource.TestStep{
+			{Config: codeMonitorHCL(m.URL(), dir, "")},
+			{
+				PreConfig: func() {
+					failPut = true
+					writeSpec(t, dir, "v2\n")
+				},
+				Config:      codeMonitorHCL(m.URL(), dir, ""),
+				ExpectError: regexp.MustCompile(`settings refused`),
+			},
+			{
+				// The publish landed: state already records v2 live, so the
+				// next plan has no code change and doesn't re-test it.
+				PreConfig: func() { failPut = false },
+				Config:    codeMonitorHCL(m.URL(), dir, ""),
+				PlanOnly:  true,
+				Check:     resource.TestCheckResourceAttr("devhelm_monitor.checkout", "live_revision_digest", v2),
+			},
+		},
+	})
+	if len(f.published) != 1 {
+		t.Errorf("publishes = %d, want 1", len(f.published))
+	}
+}
+
+func TestAccCodeMonitor_FailedTestAfterImportDoesNotTransfer(t *testing.T) {
+	requireAcc(t)
+	m := newMockAPI(t)
+	f := newFakeCodeAPI(t, m)
+	dir := t.TempDir()
+	writeSpec(t, dir, "new code\n")
+	f.monitor = codeMonitorFixture("Checkout", "DASHBOARD", false)
+	f.publishDigest("sha256:"+strings.Repeat("b", 64), "checkout.spec.ts")
+	f.nextRunPass = false
+	m.Handle(http.MethodGet, "/api/v1/monitors", func(w http.ResponseWriter, _ *http.Request) {
+		jsonListResponse(w, []any{f.monitor})
+	})
+	liveID := f.monitor["liveRevisionId"].(string)
+	m.Handle(http.MethodGet, "/api/v1/revisions/"+liveID+"/files", func(w http.ResponseWriter, _ *http.Request) {
+		jsonResponse(w, map[string]any{"entrypoint": "checkout.spec.ts", "files": map[string]string{"checkout.spec.ts": "old"}})
+	})
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: newProviderFactories(),
+		Steps: []resource.TestStep{
+			{
+				Config: codeMonitorHCL(m.URL(), dir, ""), ResourceName: "devhelm_monitor.checkout",
+				ImportState: true, ImportStateId: codeMonitorID, ImportStatePersist: true,
+				ImportStateCheck: func([]*terraform.InstanceState) error { return nil },
+			},
+			{
+				Config:      codeMonitorHCL(m.URL(), dir, ""),
+				ExpectError: regexp.MustCompile(`\[check_failed\]`),
+				Check: func(*terraform.State) error {
+					return nil
+				},
+			},
+		},
+	})
+	if len(f.transfers) != 0 {
+		t.Errorf("a failed test must leave ownership alone; transfers = %v", f.transfers)
+	}
+}

@@ -102,13 +102,20 @@ func (rc *resolvedCode) spec() generated.MonitorCodeSpec {
 
 // files maps each closure file the server returned to its per-file digest.
 func (rc *resolvedCode) files(ctx context.Context) (types.Map, diag.Diagnostics) {
+	var diags diag.Diagnostics
 	out := make(map[string]string, len(rc.bundle.Files))
 	for _, p := range rc.bundle.Files {
-		if content, ok := rc.set.Files[p]; ok {
-			out[p] = bundle.FileDigest(p, content)
+		content, ok := rc.set.Files[p]
+		if !ok {
+			diags.AddError("[validation] Closure file not in the upload",
+				fmt.Sprintf("The API's closure lists %s, which the provider didn't send.", p))
+			continue
 		}
+		out[p] = bundle.FileDigest(p, content)
 	}
-	return types.MapValueFrom(ctx, types.StringType, out)
+	m, d := types.MapValueFrom(ctx, types.StringType, out)
+	diags.Append(d...)
+	return m, diags
 }
 
 // resolveCode builds the include set for the `code` block and uploads it
@@ -264,7 +271,7 @@ func (r *MonitorResource) ModifyPlan(ctx context.Context, req resource.ModifyPla
 		plan.LiveRevisionID = types.StringUnknown()
 		if state.CodeHash.ValueString() == rc.bundle.Digest && !state.LiveRevisionDigest.IsNull() {
 			resp.Diagnostics.AddWarning("Live code differs from the configuration",
-				r.liveCodeDriftDetail(ctx, state, rc.bundle.Digest))
+				r.liveCodeDriftDetail(ctx, state, rc.bundle.Digest, knownString(plan.AcknowledgeRollback)))
 		}
 	}
 	resp.Diagnostics.Append(resp.Plan.Set(ctx, &plan)...)
@@ -290,15 +297,19 @@ func codeInputsKnown(ctx context.Context, code types.Object) bool {
 
 // liveCodeDriftDetail describes why the live code differs, naming the
 // rollback when the definition head carries one.
-func (r *MonitorResource) liveCodeDriftDetail(ctx context.Context, state *MonitorResourceModel, digest string) string {
+func (r *MonitorResource) liveCodeDriftDetail(ctx context.Context, state *MonitorResourceModel, digest, acknowledged string) string {
 	base := fmt.Sprintf("The live revision runs %s, but these files hash to %s. Apply publishes them again.",
 		state.LiveRevisionDigest.ValueString(), digest)
 	monitor, err := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
 	if err != nil || monitor.DefinitionId == nil {
+		if err != nil {
+			tflog.Warn(ctx, "reading the monitor for rollback context failed", map[string]any{"error": err.Error()})
+		}
 		return base
 	}
 	def, err := api.Get[generated.DefinitionDetailDto](ctx, r.client, api.DefinitionPath(monitor.DefinitionId.String()))
 	if err != nil {
+		tflog.Warn(ctx, "reading the definition for rollback context failed", map[string]any{"error": err.Error()})
 		return base
 	}
 	for _, head := range def.Heads {
@@ -314,7 +325,7 @@ func (r *MonitorResource) liveCodeDriftDetail(ctx context.Context, state *Monito
 			msg += fmt.Sprintf(" Reason: %s.", *head.Reason)
 		}
 		if head.RolledBackDigest != nil && *head.RolledBackDigest == digest &&
-			knownString(state.AcknowledgeRollback) != digest {
+			acknowledged != digest {
 			return msg + fmt.Sprintf(" These files are the rolled-back code, so apply will be refused. To publish "+
 				"them again on purpose set acknowledge_rollback = %q, or change the code.", digest)
 		}
@@ -325,6 +336,48 @@ func (r *MonitorResource) liveCodeDriftDetail(ctx context.Context, state *Monito
 
 // ── Apply ───────────────────────────────────────────────────────────────
 
+// prepareCode uploads a code monitor's include set at apply time (so the
+// bundle exists within its TTL) and refuses when the files changed since the
+// plan. Probes return (nil, true).
+func (r *MonitorResource) prepareCode(ctx context.Context, plan *MonitorResourceModel, diags *diag.Diagnostics) (*resolvedCode, bool) {
+	if !isCodeType(plan.Type) {
+		return nil, true
+	}
+	rc, err := r.resolveCode(ctx, plan.Code, plan.Config)
+	if err != nil {
+		api.AddAPIError(diags, "upload the monitor's code bundle", err, path.Root("code"))
+		return nil, false
+	}
+	if !plan.CodeHash.IsUnknown() && plan.CodeHash.ValueString() != rc.bundle.Digest {
+		diags.AddAttributeError(path.Root("code"), "[validation] Code changed since the plan",
+			fmt.Sprintf("The plan was made for %s but the files now hash to %s. Run `terraform plan` again.",
+				plan.CodeHash.ValueString(), rc.bundle.Digest))
+		return nil, false
+	}
+	return rc, true
+}
+
+// applyCodeToPlan records the uploaded code in code_hash / code_files
+// (null for probes).
+func applyCodeToPlan(ctx context.Context, model *MonitorResourceModel, rc *resolvedCode) diag.Diagnostics {
+	if rc == nil {
+		model.CodeHash = types.StringNull()
+		model.CodeFiles = types.MapNull(types.StringType)
+		return nil
+	}
+	model.CodeHash = types.StringValue(rc.bundle.Digest)
+	files, d := rc.files(ctx)
+	model.CodeFiles = files
+	return d
+}
+
+// causedByPlatform reports whether a run's non-pass was the platform's doing
+// (RunDto.cause is set only for platform causes: no seat, runtime
+// unavailable, lease lost, …), not the code's.
+func causedByPlatform(run *generated.RunDto) bool {
+	return run.Cause != nil && *run.Cause != ""
+}
+
 // addRunDiagnostic reports a finished, non-passing validation run:
 // `[check_failed] <run.url>`, or `[platform]` when the platform caused it
 // (the code wasn't at fault and a retry may pass).
@@ -333,17 +386,14 @@ func addRunDiagnostic(diags *diag.Diagnostics, op string, run *generated.RunDto,
 	if run.Outcome != nil {
 		outcome = *run.Outcome
 	}
-	url := run.Url
-	link := run.Id.String()
-	if url != nil && *url != "" {
-		link = *url
+	ref := run.Id.String()
+	if run.Url != nil && *run.Url != "" {
+		ref = *run.Url
 	}
 	category := "check_failed"
-	if run.Cause != nil && *run.Cause != "" {
-		category = api.CategoryPlatform
-	}
 	lines := []string{fmt.Sprintf("While trying to %s, the validation run finished %s.", op, outcome)}
-	if run.Cause != nil && *run.Cause != "" {
+	if causedByPlatform(run) {
+		category = api.CategoryPlatform
 		lines = append(lines, fmt.Sprintf("Cause: %s (the platform, not the code). Run apply again.", *run.Cause))
 	}
 	if run.Failure != nil {
@@ -357,23 +407,27 @@ func addRunDiagnostic(diags *diag.Diagnostics, op string, run *generated.RunDto,
 		lines = append(lines, "Nothing was created.")
 	}
 	lines = append(lines, "Next: devhelm runs get "+run.Id.String())
-	diags.AddError(fmt.Sprintf("[%s] %s", category, link), strings.Join(lines, "\n"))
+	diags.AddError(fmt.Sprintf("[%s] %s", category, ref), strings.Join(lines, "\n"))
 }
 
 // validateNewCode runs the ad-hoc validation run for a new code monitor
-// (`POST /monitors/test` with the uploaded bundle) and waits for it.
-func (r *MonitorResource) validateNewCode(ctx context.Context, plan *MonitorResourceModel, rc *resolvedCode, wait time.Duration) (*generated.RunDto, error) {
+// (`POST /monitors/test` with the uploaded bundle), waits, and reports a
+// non-pass. It returns true when the code may be created.
+func (r *MonitorResource) validateNewCode(ctx context.Context, plan *MonitorResourceModel, rc *resolvedCode, diags *diag.Diagnostics) bool {
+	const op = "validate the new monitor's code"
 	envID, err := parseUUIDPtrChecked(plan.EnvironmentID, "environment_id")
 	if err != nil {
-		return nil, err
+		diags.AddAttributeError(path.Root("environment_id"), "Invalid environment_id", err.Error())
+		return false
 	}
-	cfg := "{}"
-	if !plan.Config.IsNull() && !plan.Config.IsUnknown() && plan.Config.ValueString() != "" {
-		cfg = plan.Config.ValueString()
+	cfg := knownString(plan.Config)
+	if cfg == "" {
+		cfg = "{}"
 	}
 	var config generated.MonitorTestRequest_Config
 	if err := config.UnmarshalJSON([]byte(cfg)); err != nil {
-		return nil, fmt.Errorf("monitor config: %w", err)
+		diags.AddAttributeError(path.Root("config"), "Invalid config", err.Error())
+		return false
 	}
 	code := rc.spec()
 	body := generated.MonitorTestRequest{
@@ -383,54 +437,63 @@ func (r *MonitorResource) validateNewCode(ctx context.Context, plan *MonitorReso
 		Code:          &code,
 	}
 	run, err := api.Create[generated.RunDto](ctx, r.client, api.PathMonitorAdHocTest, body)
-	if err != nil {
-		return nil, err
+	if err == nil {
+		run, err = api.WaitForRun(ctx, r.client, run.Id.String(), waitBudget(ctx))
 	}
-	return api.WaitForRun(ctx, r.client, run.Id.String(), wait)
+	if err != nil {
+		api.AddAPIError(diags, op, err, path.Root("code"))
+		return false
+	}
+	if !api.RunPassed(run) {
+		addRunDiagnostic(diags, op, run, "")
+		return false
+	}
+	return true
 }
 
-// publishCode makes rc live on an existing monitor. With test_before_publish
-// it creates (or reuses) a draft, tests it, waits, and publishes with
-// `requireTested: true` and the live revision as the compare-and-swap
-// guard. Without it, the caller sends the code on the PUT instead.
-func (r *MonitorResource) publishCode(ctx context.Context, id string, plan, state *MonitorResourceModel, rc *resolvedCode, wait time.Duration, diags *diag.Diagnostics) bool {
+// testDraft creates (or reuses) a draft for rc, runs its validation run and
+// waits. It returns the draft when the run passed.
+func (r *MonitorResource) testDraft(ctx context.Context, id string, rc *resolvedCode, diags *diag.Diagnostics) (*generated.RevisionDto, bool) {
 	draft, err := api.Create[generated.CreateDraftRevisionResponse](ctx, r.client, api.MonitorRevisionsPath(id),
 		generated.CreateDraftRevisionRequest{Code: rc.spec()})
 	if err != nil {
 		api.AddAPIError(diags, "create a draft revision", err, path.Root("code"))
-		return false
+		return nil, false
 	}
 	revisionID := draft.Revision.Id.String()
-
 	run, err := api.Create[generated.RunDto](ctx, r.client, api.MonitorRevisionTestPath(id, revisionID), generated.CodeTestTargetRequest{})
+	if err == nil {
+		run, err = api.WaitForRun(ctx, r.client, run.Id.String(), waitBudget(ctx))
+	}
 	if err != nil {
 		api.AddAPIError(diags, "test the draft revision", err, path.Root("code"))
-		return false
-	}
-	run, err = api.WaitForRun(ctx, r.client, run.Id.String(), wait)
-	if err != nil {
-		api.AddAPIError(diags, "wait for the draft's validation run", err, path.Root("code"))
-		return false
+		return nil, false
 	}
 	if !api.RunPassed(run) {
 		addRunDiagnostic(diags, "test the new code", run, revisionID)
-		return false
+		return nil, false
 	}
+	return &draft.Revision, true
+}
 
+// publishDraft makes a tested draft live with `requireTested: true` and the
+// live revision as the compare-and-swap guard.
+func (r *MonitorResource) publishDraft(ctx context.Context, id string, revisionID uuid.UUID, acknowledge, liveRevisionID types.String) error {
 	requireTested := true
 	body := generated.PublishRevisionRequest{
-		RevisionId:          draft.Revision.Id,
+		RevisionId:          revisionID,
 		RequireTested:       &requireTested,
-		AcknowledgeRollback: stringPtrOrNil(plan.AcknowledgeRollback),
+		AcknowledgeRollback: stringPtrOrNil(acknowledge),
 	}
-	if live, err := uuid.Parse(state.LiveRevisionID.ValueString()); err == nil {
-		body.ExpectedLiveRevisionId = &live
+	if live := knownString(liveRevisionID); live != "" {
+		parsed, err := uuid.Parse(live)
+		if err != nil {
+			return fmt.Errorf("live_revision_id in state is not a UUID (%q): %w", live, err)
+		}
+		body.ExpectedLiveRevisionId = &parsed
 	}
-	if _, err := api.Create[generated.DefinitionHeadDto](ctx, r.client, api.MonitorPublishPath(id), body); err != nil {
-		addPublishError(diags, err)
-		return false
-	}
-	return true
+	_, err := api.Create[generated.DefinitionHeadDto](ctx, r.client, api.MonitorPublishPath(id), body)
+	return err
 }
 
 // addPublishError adds the fix for the publish refusals Terraform can act on.
@@ -465,7 +528,8 @@ func (r *MonitorResource) importCodeFiles(ctx context.Context, model *MonitorRes
 	model.CodeHash = model.LiveRevisionDigest
 	files, err := api.Get[generated.RevisionFilesDto](ctx, r.client, api.RevisionFilesPath(model.LiveRevisionID.ValueString()))
 	if err != nil {
-		tflog.Warn(ctx, "could not read the live revision's files for import", map[string]any{"error": err.Error()})
+		diags.AddWarning("Live revision files not read",
+			fmt.Sprintf("code_files stays empty until the next apply: %s", err))
 		return diags
 	}
 	out := make(map[string]string, len(files.Files))

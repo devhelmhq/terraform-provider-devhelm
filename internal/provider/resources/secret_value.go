@@ -229,11 +229,12 @@ func (r *SecretValueResource) Update(ctx context.Context, req resource.UpdateReq
 		api.AddAPIError(&resp.Diagnostics, "read the secret value stamp", err, path.Root("key"))
 		return
 	}
-	if found {
-		applyStamp(&plan, st)
-	} else {
-		plan.UpdatedAt, plan.UpdatedBy = state.UpdatedAt, state.UpdatedBy
+	if !found {
+		resp.Diagnostics.AddError("Secret value not found after write",
+			"The environment no longer lists a value for this key. Run `terraform apply` again to write it.")
+		return
 	}
+	applyStamp(&plan, st)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 

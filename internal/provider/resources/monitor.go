@@ -1809,81 +1809,64 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 
 	// Code monitors: upload the include set, and validate it before the
 	// monitor exists (doc 42 R3) unless test_before_publish = false.
-	var rc *resolvedCode
-	if isCodeType(plan.Type) {
-		var err error
-		rc, err = r.resolveCode(ctx, plan.Code, plan.Config)
-		if err != nil {
-			api.AddAPIError(&resp.Diagnostics, "upload the monitor's code bundle", err, path.Root("code"))
-			return
-		}
-		if !plan.CodeHash.IsUnknown() && plan.CodeHash.ValueString() != rc.bundle.Digest {
-			resp.Diagnostics.AddAttributeError(path.Root("code"), "[validation] Code changed since the plan",
-				fmt.Sprintf("The plan was made for %s but the files now hash to %s. Run `terraform plan` again.",
-					plan.CodeHash.ValueString(), rc.bundle.Digest))
-			return
-		}
-		if plan.TestBeforePublish.ValueBool() {
-			run, err := r.validateNewCode(ctx, &plan, rc, waitBudget(ctx))
-			if err != nil {
-				api.AddAPIError(&resp.Diagnostics, "validate the new monitor's code", err, path.Root("code"))
-				return
-			}
-			if !api.RunPassed(run) {
-				addRunDiagnostic(&resp.Diagnostics, "validate the new monitor's code", run, "")
-				return
-			}
-		}
+	rc, ok := r.prepareCode(ctx, &plan, &resp.Diagnostics)
+	if !ok {
+		return
 	}
-
-	enforce := ownerEnforcedOnCreate(plan.OwnerEnforced)
-	body, err := r.buildCreateRequest(ctx, &plan, rc, enforce)
-	if err != nil {
-		resp.Diagnostics.AddError("Error building monitor request", err.Error())
+	if rc != nil && plan.TestBeforePublish.ValueBool() && !r.validateNewCode(ctx, &plan, rc, &resp.Diagnostics) {
 		return
 	}
 
+	monitor, ok := r.createMonitor(ctx, &plan, rc, &resp.Diagnostics)
+	if !ok {
+		return
+	}
+	resp.Diagnostics.Append(applyCodeToPlan(ctx, &plan, rc)...)
+	r.saveCreated(ctx, &plan, monitor, resp)
+}
+
+// createMonitor POSTs the monitor and reads it back. The create response
+// omits fields resolved after the write (a code monitor's live revision
+// digest), so the GET is what state is built from; if the read-back fails,
+// the digest the monitor was just created with stands in.
+func (r *MonitorResource) createMonitor(ctx context.Context, plan *MonitorResourceModel, rc *resolvedCode, diags *diag.Diagnostics) (*generated.MonitorDto, bool) {
+	body, err := r.buildCreateRequest(ctx, plan, rc, ownerEnforcedOnCreate(plan.OwnerEnforced))
+	if err != nil {
+		diags.AddError("Error building monitor request", err.Error())
+		return nil, false
+	}
 	monitor, err := api.Create[generated.MonitorDto](ctx, r.client, api.PathMonitors, body)
 	if err != nil {
-		api.AddAPIError(&resp.Diagnostics, "create monitor", err, path.Root("name"))
-		return
+		api.AddAPIError(diags, "create monitor", err, path.Root("name"))
+		return nil, false
 	}
-	// The create response omits fields resolved after the write (the live
-	// revision digest of a code monitor); read the monitor back so state
-	// matches what GET returns on the next refresh.
-	if isCodeType(plan.Type) {
-		if fresh, err := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(monitor.Id.String())); err == nil {
-			monitor = fresh
+	if rc == nil {
+		return monitor, true
+	}
+	fresh, err := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(monitor.Id.String()))
+	if err != nil {
+		tflog.Warn(ctx, "re-reading the new monitor failed; using the create response", map[string]any{"error": err.Error()})
+		if monitor.LiveRevisionDigest == nil {
+			digest := rc.bundle.Digest
+			monitor.LiveRevisionDigest = &digest
 		}
+		return monitor, true
 	}
-	if rc != nil {
-		plan.CodeHash = types.StringValue(rc.bundle.Digest)
-		files, d := rc.files(ctx)
-		resp.Diagnostics.Append(d...)
-		plan.CodeFiles = files
-	} else {
-		plan.CodeHash = types.StringNull()
-		plan.CodeFiles = types.MapNull(types.StringType)
-	}
+	return fresh, true
+}
 
-	// Orphan-cleanup safety net: from this point on, the monitor exists
-	// server-side. If anything below fails (state mapping or state-set), the
-	// resource will not enter Terraform state — and Terraform has no hook for
-	// "delete what you just created" in that case. We DELETE the orphan
-	// ourselves so future plans don't show silent server-side drift.
-	//
-	// NOTE: this does NOT catch the framework's post-Create consistency check
-	// ("Provider produced inconsistent result after apply") — that runs after
-	// this function returns and is what produced the original orphan reports
-	// in DevEx round 2. The fix for that path is to keep state in sync with
-	// the plan inside `mapToState`, plus the doc/example fix that prevents
-	// the value-type drift in the first place.
+// saveCreated maps the new monitor into state. From here the monitor exists
+// server-side; if mapping or State.Set fails the resource never enters state
+// and Terraform has no hook to delete it, so the provider deletes the orphan
+// itself. (The framework's post-Create consistency check runs after this and
+// isn't covered; mapToState keeps state aligned with the plan for that.)
+func (r *MonitorResource) saveCreated(ctx context.Context, plan *MonitorResourceModel, monitor *generated.MonitorDto, resp *resource.CreateResponse) {
 	cleanupOrphan := func(reason string) {
-		if monitor == nil {
-			return
-		}
 		id := monitor.Id.String()
-		if err := api.Delete(ctx, r.client, api.MonitorPath(id)); err != nil {
+		// The apply context may already be past its deadline.
+		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 30*time.Second)
+		defer cancel()
+		if err := api.Delete(cleanupCtx, r.client, api.MonitorPath(id)); err != nil {
 			tflog.Warn(ctx, "orphan monitor cleanup failed; resource may be leaked",
 				map[string]any{"id": id, "reason": reason, "delete_error": err.Error()})
 			return
@@ -1892,15 +1875,14 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 			map[string]any{"id": id, "reason": reason})
 	}
 
-	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor)...)
+	resp.Diagnostics.Append(r.mapToState(ctx, plan, monitor)...)
 	if resp.Diagnostics.HasError() {
 		cleanupOrphan("mapToState returned errors")
 		return
 	}
-	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 	if resp.Diagnostics.HasError() {
 		cleanupOrphan("State.Set returned errors")
-		return
 	}
 }
 
@@ -1933,18 +1915,12 @@ func (r *MonitorResource) Read(ctx context.Context, req resource.ReadRequest, re
 }
 
 func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan MonitorResourceModel
+	var plan, state MonitorResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	var state MonitorResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
 	updateTimeout, d := plan.Timeouts.Update(ctx, defaultCodeApplyTimeout)
 	resp.Diagnostics.Append(d...)
 	if resp.Diagnostics.HasError() {
@@ -1952,118 +1928,141 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 	ctx, cancel := context.WithTimeout(ctx, updateTimeout)
 	defer cancel()
+	id := state.ID.ValueString()
 
-	body, err := r.buildUpdateRequest(ctx, &plan)
-	if err != nil {
-		resp.Diagnostics.AddError("Error building monitor request", err.Error())
+	body, ok := r.updateBody(ctx, req, &plan, &resp.Diagnostics)
+	if !ok {
 		return
 	}
-	// A monitor that another tool owns (an import) is transferred to
-	// Terraform first; the transfer is audited and owner-guarded.
-	if ownerType(state.Owner) != api.ToolTerraform {
-		if err := r.transferToTerraform(ctx, state.ID.ValueString(), "terraform import", plan.OwnerAddress); err != nil {
-			api.AddAPIError(&resp.Diagnostics, "transfer the monitor to Terraform", err, path.Root("owner"))
-			return
-		}
-		tflog.Info(ctx, "transferred monitor to Terraform", map[string]any{
-			"id": state.ID.ValueString(), "owner_before": ownerType(state.Owner), "owner_after": api.ToolTerraform,
-		})
+	rc, ok := r.prepareCode(ctx, &plan, &resp.Diagnostics)
+	if !ok {
+		return
 	}
 
-	// owner_enforced is sent only when the configuration sets it, so an
-	// upgrade never flips enforcement on monitors created before it existed.
+	// Code change: the configured closure differs from the live revision.
+	// With test_before_publish the draft is tested first; a failed test
+	// stops here (old code live, draft kept, nothing else changed, state
+	// untouched). Without it, the PUT carries the code (live, untested).
+	codeChanged := rc != nil && rc.bundle.Digest != state.LiveRevisionDigest.ValueString()
+	var testedDraft *generated.RevisionDto
+	if codeChanged && plan.TestBeforePublish.ValueBool() {
+		if testedDraft, ok = r.testDraft(ctx, id, rc, &resp.Diagnostics); !ok {
+			return
+		}
+	} else if codeChanged {
+		code := rc.spec()
+		body.Code = &code
+		body.AcknowledgeRollback = stringPtrOrNil(plan.AcknowledgeRollback)
+	}
+
+	// Ownership moves before any owner-guarded write: an imported monitor
+	// is transferred to Terraform, and a changed owner_address is a new
+	// declaration (a transfer to the same owner).
+	if !r.ensureTerraformOwner(ctx, id, &plan, &state, &resp.Diagnostics) {
+		return
+	}
+
+	if testedDraft != nil {
+		if err := r.publishDraft(ctx, id, testedDraft.Id, plan.AcknowledgeRollback, state.LiveRevisionID); err != nil {
+			addPublishError(&resp.Diagnostics, err)
+			return
+		}
+	}
+
+	// `state.ID` is the only authoritative id (plan.ID is unknown during
+	// Update). The PUT response omits tags, so it's discarded and the
+	// monitor is re-read after the tag reconcile.
+	if _, err := api.Update[generated.MonitorDto](ctx, r.client, api.MonitorPath(id), body); err != nil {
+		if body.Code != nil {
+			addPublishError(&resp.Diagnostics, err)
+		} else {
+			api.AddAPIError(&resp.Diagnostics, "update monitor", err, path.Root("name"))
+		}
+		if testedDraft != nil {
+			// The new code is live; keep state honest about it so the next
+			// plan doesn't test and publish it again.
+			r.saveLiveCode(ctx, &state, rc, resp)
+		}
+		return
+	}
+
+	resp.Diagnostics.Append(applyCodeToPlan(ctx, &plan, rc)...)
+	r.refreshAfterUpdate(ctx, id, &plan, &state, resp)
+}
+
+// updateBody builds the settings PUT. owner_enforced is sent only when the
+// configuration sets it, so an upgrade never flips enforcement on monitors
+// created before the attribute existed.
+func (r *MonitorResource) updateBody(ctx context.Context, req resource.UpdateRequest, plan *MonitorResourceModel, diags *diag.Diagnostics) (*generated.UpdateMonitorRequest, bool) {
+	body, err := r.buildUpdateRequest(ctx, plan)
+	if err != nil {
+		diags.AddError("Error building monitor request", err.Error())
+		return nil, false
+	}
 	var configured types.Bool
-	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("owner_enforced"), &configured)...)
+	diags.Append(req.Config.GetAttribute(ctx, path.Root("owner_enforced"), &configured)...)
 	if !configured.IsNull() && !configured.IsUnknown() {
 		v := configured.ValueBool()
 		body.OwnerEnforced = &v
 	}
+	return body, !diags.HasError()
+}
 
-	// Code change: the configured closure differs from the live revision.
-	// With test_before_publish: draft → test → wait → publish
-	// {requireTested, expectedLiveRevisionId}; a failed test stops here, the
-	// old code stays live, the draft is kept and state isn't touched.
-	// Without it: the PUT below carries the code (one call, live, untested).
-	if isCodeType(plan.Type) {
-		rc, err := r.resolveCode(ctx, plan.Code, plan.Config)
-		if err != nil {
-			api.AddAPIError(&resp.Diagnostics, "upload the monitor's code bundle", err, path.Root("code"))
-			return
-		}
-		if !plan.CodeHash.IsUnknown() && plan.CodeHash.ValueString() != rc.bundle.Digest {
-			resp.Diagnostics.AddAttributeError(path.Root("code"), "[validation] Code changed since the plan",
-				fmt.Sprintf("The plan was made for %s but the files now hash to %s. Run `terraform plan` again.",
-					plan.CodeHash.ValueString(), rc.bundle.Digest))
-			return
-		}
-		if rc.bundle.Digest != state.LiveRevisionDigest.ValueString() {
-			if plan.TestBeforePublish.ValueBool() {
-				if !r.publishCode(ctx, state.ID.ValueString(), &plan, &state, rc, waitBudget(ctx), &resp.Diagnostics) {
-					return
-				}
-			} else {
-				code := rc.spec()
-				body.Code = &code
-				body.AcknowledgeRollback = stringPtrOrNil(plan.AcknowledgeRollback)
-			}
-		}
-		plan.CodeHash = types.StringValue(rc.bundle.Digest)
-		files, d := rc.files(ctx)
-		resp.Diagnostics.Append(d...)
-		plan.CodeFiles = files
+// ensureTerraformOwner transfers the monitor to Terraform when another tool
+// owns it (the first apply after an import) or when owner_address changed.
+// One transfer covers both.
+func (r *MonitorResource) ensureTerraformOwner(ctx context.Context, id string, plan, state *MonitorResourceModel, diags *diag.Diagnostics) bool {
+	before := ownerType(state.Owner)
+	adopt := before != "" && before != api.ToolTerraform
+	addressChanged := !plan.OwnerAddress.IsUnknown() && !plan.OwnerAddress.Equal(state.OwnerAddress)
+	if !adopt && !addressChanged {
+		return true
 	}
+	reason := "terraform: owner address changed"
+	if adopt {
+		reason = "terraform import"
+	}
+	if err := r.transferToTerraform(ctx, id, reason, plan.OwnerAddress); err != nil {
+		api.AddAPIError(diags, "transfer the monitor to Terraform", err, path.Root("owner"))
+		return false
+	}
+	tflog.Info(ctx, "transferred monitor to Terraform", map[string]any{
+		"id": id, "owner_before": before, "owner_after": api.ToolTerraform, "reason": reason,
+	})
+	return true
+}
 
-	// IMPORTANT: use `state.ID` (not `plan.ID`) for the URL — `plan.ID` is
-	// `Unknown` during Update because the schema marks `id` as Computed; the
-	// only authoritative source for the existing monitor's identifier is the
-	// prior state. `mapToState` at the end of this function will overwrite
-	// `plan.ID` with the value returned by the API, which keeps state stable
-	// even if the backend ever decides to issue a new ID (currently it does
-	// not, but the contract makes the read path resilient either way).
-	// We deliberately discard the PUT response body: its DTO omits the tag
-	// list entirely (so `monitor.Tags` would be misleading), and we re-GET
-	// below to capture the post-reconciliation state authoritatively.
-	if _, err := api.Update[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()), body); err != nil {
-		if body.Code != nil {
-			addPublishError(&resp.Diagnostics, err)
-			return
-		}
-		api.AddAPIError(&resp.Diagnostics, "update monitor", err, path.Root("name"))
+// saveLiveCode records a publish that landed when the settings PUT after it
+// failed: prior state, refreshed from the server, with the new code fields.
+func (r *MonitorResource) saveLiveCode(ctx context.Context, state *MonitorResourceModel, rc *resolvedCode, resp *resource.UpdateResponse) {
+	monitor, err := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
+	if err != nil {
+		resp.Diagnostics.AddError("The new code is live, but the monitor could not be re-read",
+			fmt.Sprintf("%s. Run `terraform refresh` once the API is healthy.", err))
 		return
 	}
-
-	// A changed owner_address is a new owner declaration, which moves
-	// through transfer (to the same owner, Terraform).
-	if !plan.OwnerAddress.Equal(state.OwnerAddress) && !plan.OwnerAddress.IsUnknown() {
-		if err := r.transferToTerraform(ctx, state.ID.ValueString(), "terraform: owner address changed", plan.OwnerAddress); err != nil {
-			api.AddAPIError(&resp.Diagnostics, "record the owner address", err, path.Root("owner_address"))
-			return
-		}
+	// resp already carries the PUT error; check only this step's diagnostics.
+	var diags diag.Diagnostics
+	diags.Append(r.mapToState(ctx, state, monitor)...)
+	diags.Append(applyCodeToPlan(ctx, state, rc)...)
+	if !diags.HasError() {
+		diags.Append(resp.State.Set(ctx, state)...)
 	}
+	resp.Diagnostics.Append(diags...)
+}
 
-	// Reconcile tags out-of-band. The PUT above has already mutated the
-	// monitor body server-side; from this point on we MUST refresh state
-	// from the server before returning, even if the tag reconcile fails.
-	// Otherwise the user would see a "before-PUT" snapshot in state while
-	// the API holds the post-PUT body — a half-applied invisible drift
-	// that confuses the next plan and never self-heals.
-	//
-	// `state.TagIds` is used as the authoritative "before" set because
-	// the PUT response DTO omits the tag list entirely; computing the
-	// add/remove delta from it would always look like "remove all".
-	tagErr := r.reconcileTags(ctx, state.ID.ValueString(), plan.TagIds, state.TagIds)
+// refreshAfterUpdate reconciles tags and re-reads the monitor into state.
+//
+// Tags are reconciled out-of-band (the PUT can only add them). The PUT has
+// already mutated the monitor, so state is refreshed from the server even if
+// the tag reconcile fails: the half-applied result is persisted and the next
+// apply retries only the missing tag delta. `state.TagIds` is the "before"
+// set because the PUT response omits tags.
+func (r *MonitorResource) refreshAfterUpdate(ctx context.Context, id string, plan, state *MonitorResourceModel, resp *resource.UpdateResponse) {
+	tagErr := r.reconcileTags(ctx, id, plan.TagIds, state.TagIds)
 
-	// Re-GET unconditionally so persisted state always reflects what the
-	// server actually has, including any tag mutations that DID land
-	// before the failing call. This is the partial-state guarantee:
-	// if reconcileTags managed to add tag-A before failing on tag-B,
-	// state will show [tag-A, ...prior] and the next `terraform apply`
-	// will retry only the still-missing operations.
-	monitor, getErr := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(state.ID.ValueString()))
+	monitor, getErr := api.Get[generated.MonitorDto](ctx, r.client, api.MonitorPath(id))
 	if getErr != nil {
-		// Worst case: server mutated, can't refresh. Tell the user to
-		// `terraform refresh` once the API is healthy; we cannot save
-		// honest state from here.
 		if tagErr != nil {
 			resp.Diagnostics.AddError(
 				"Error reconciling monitor tags AND re-reading monitor",
@@ -2078,16 +2077,11 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	resp.Diagnostics.Append(r.mapToState(ctx, &plan, monitor)...)
+	resp.Diagnostics.Append(r.mapToState(ctx, plan, monitor)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	// Persist state BEFORE surfacing the tag error: the framework keeps
-	// state changes even when diagnostics carry an error, so this gives
-	// the user an honest, up-to-date snapshot of the half-applied result.
-	// The subsequent AddError below makes the partial outcome loud and
-	// the diff on the next plan will show only the still-missing tags.
-	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 
 	if tagErr != nil {
 		resp.Diagnostics.AddError(

@@ -2,8 +2,9 @@ package api
 
 // Synthetics (code monitor) calls: bundle upload, runs and waiting.
 //
-// Every function here maps to exactly one route, except WaitForRun, which is
-// the documented doc 42 §5.4 composition (SSE first, then polling).
+// UploadBundle maps to `POST /bundles`; WaitForRun is the documented doc 42
+// §5.4 composition (SSE first, then polling) and the only wait loop in the
+// provider.
 
 import (
 	"archive/zip"
@@ -27,10 +28,13 @@ import (
 // as plain strings (Postel); unknown future values are treated as
 // "not finished" / "not passed".
 const (
-	RunPhaseFinished     = "finished"
-	RunOutcomePassed     = "passed"
-	RunOutcomeRetryPass  = "passed_on_retry"
-	RunCausePlatform     = "platform"
+	RunPhaseFinished    = "finished"
+	RunOutcomePassed    = "passed"
+	RunOutcomeRetryPass = "passed_on_retry"
+)
+
+// Wait timing (doc 42 §5.4: 5-minute default wait).
+const (
 	DefaultRunWait       = 5 * time.Minute
 	runPollInitialDelay  = 2 * time.Second
 	runPollMaxDelay      = 10 * time.Second
@@ -81,21 +85,7 @@ func UploadBundle(ctx context.Context, c *Client, files map[string][]byte, entry
 	if len(q) > 0 {
 		p += "?" + q.Encode()
 	}
-	resp, err := c.do(ctx, rawRequest{Method: http.MethodPost, Path: p, Body: zipped, ContentType: "application/zip"})
-	if err != nil {
-		return nil, err
-	}
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-	var envelope SingleValueResponse[generated.BundleDto]
-	if err := decodeResponse(ctx, resp.Body, &envelope, "POST "+PathBundles); err != nil {
-		return nil, err
-	}
-	if err := ValidateDTO(&envelope.Data, "POST "+PathBundles); err != nil {
-		return nil, err
-	}
-	return &envelope.Data, nil
+	return send[generated.BundleDto](ctx, c, rawRequest{Method: http.MethodPost, Path: p, Body: zipped, ContentType: "application/zip"})
 }
 
 func zipFiles(files map[string][]byte) ([]byte, error) {
@@ -224,7 +214,8 @@ func (c *Client) streamRunEvents(ctx context.Context, runID string) error {
 	req.Header.Set("Accept", "text/event-stream")
 	// The per-request timeout on c.HTTPClient would cut a healthy stream;
 	// the stream is bounded by streamCtx instead.
-	streamClient := &http.Client{Transport: c.HTTPClient.Transport}
+	streamClient := *c.HTTPClient
+	streamClient.Timeout = 0
 	resp, err := streamClient.Do(req)
 	if err != nil {
 		return err
