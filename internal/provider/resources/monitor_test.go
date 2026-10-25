@@ -51,7 +51,6 @@ func TestBuildCreateRequest_PopulatesEveryRequiredField(t *testing.T) {
 		Name:             types.StringValue("acme-api"),
 		Type:             types.StringValue("HTTP"),
 		FrequencySeconds: types.Int64Value(60),
-		Enabled:          types.BoolValue(true),
 		Regions: types.ListValueMust(types.StringType, []attr.Value{
 			types.StringValue("us-east"), types.StringValue("eu-west"),
 		}),
@@ -68,7 +67,7 @@ func TestBuildCreateRequest_PopulatesEveryRequiredField(t *testing.T) {
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
 
-	body, err := r.buildCreateRequest(ctx, plan)
+	body, err := r.buildCreateRequest(ctx, plan, nil, true)
 	if err != nil {
 		t.Fatalf("buildCreateRequest: %v", err)
 	}
@@ -85,8 +84,14 @@ func TestBuildCreateRequest_PopulatesEveryRequiredField(t *testing.T) {
 	if body.FrequencySeconds == nil || *body.FrequencySeconds != 60 {
 		t.Errorf("FrequencySeconds = %v, want 60", body.FrequencySeconds)
 	}
-	if body.Enabled == nil || !*body.Enabled {
-		t.Errorf("Enabled = %v, want true", body.Enabled)
+	if body.Enabled != nil {
+		t.Errorf("Enabled = %v, want nil (enabled was removed; pause/mute are overlays)", body.Enabled)
+	}
+	if body.OwnerEnforced == nil || !*body.OwnerEnforced {
+		t.Errorf("OwnerEnforced = %v, want true on create", body.OwnerEnforced)
+	}
+	if body.OwnerDeclaration == nil || body.OwnerDeclaration.Label == nil {
+		t.Errorf("OwnerDeclaration = %v, want a Terraform label", body.OwnerDeclaration)
 	}
 	if body.Regions == nil || len(*body.Regions) != 2 {
 		t.Errorf("Regions = %v, want 2", body.Regions)
@@ -131,7 +136,7 @@ func TestBuildCreateRequest_AuthOmittedReachesAPIAsNil(t *testing.T) {
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
-	body, err := r.buildCreateRequest(ctx, plan)
+	body, err := r.buildCreateRequest(ctx, plan, nil, true)
 	if err != nil {
 		t.Fatalf("buildCreateRequest: %v", err)
 	}
@@ -155,7 +160,7 @@ func TestBuildCreateRequest_InvalidUUIDInChannelIdsErrors(t *testing.T) {
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
-	if _, err := r.buildCreateRequest(ctx, plan); err == nil || !strings.Contains(err.Error(), "alert_channel_ids") {
+	if _, err := r.buildCreateRequest(ctx, plan, nil, true); err == nil || !strings.Contains(err.Error(), "alert_channel_ids") {
 		t.Errorf("expected alert_channel_ids parse error, got %v", err)
 	}
 }
@@ -436,8 +441,8 @@ func TestMonitor_MapToState_PopulatesEveryFieldFromDto(t *testing.T) {
 	if got := model.FrequencySeconds.ValueInt64(); got != 60 {
 		t.Errorf("FrequencySeconds = %d", got)
 	}
-	if !model.Enabled.ValueBool() {
-		t.Error("Enabled = false, want true")
+	if !model.Enabled.IsNull() {
+		t.Error("Enabled must refresh to null (attribute removed)")
 	}
 	if got := len(model.Regions.Elements()); got != 2 {
 		t.Errorf("Regions len = %d", got)

@@ -5,7 +5,6 @@ package generated
 
 import (
 	"encoding/json"
-	"errors"
 	"time"
 
 	"github.com/oapi-codegen/runtime"
@@ -150,25 +149,40 @@ func (e BodyContainsAssertionType) Valid() bool {
 
 // Defines values for BulkMonitorActionRequestAction.
 const (
-	BulkMonitorActionRequestActionADDTAG    BulkMonitorActionRequestAction = "ADD_TAG"
-	BulkMonitorActionRequestActionDELETE    BulkMonitorActionRequestAction = "DELETE"
-	BulkMonitorActionRequestActionPAUSE     BulkMonitorActionRequestAction = "PAUSE"
-	BulkMonitorActionRequestActionREMOVETAG BulkMonitorActionRequestAction = "REMOVE_TAG"
-	BulkMonitorActionRequestActionRESUME    BulkMonitorActionRequestAction = "RESUME"
+	BulkMonitorActionRequestActionACKNOWLEDGE    BulkMonitorActionRequestAction = "ACKNOWLEDGE"
+	BulkMonitorActionRequestActionADDTAG         BulkMonitorActionRequestAction = "ADD_TAG"
+	BulkMonitorActionRequestActionDELETE         BulkMonitorActionRequestAction = "DELETE"
+	BulkMonitorActionRequestActionMUTE           BulkMonitorActionRequestAction = "MUTE"
+	BulkMonitorActionRequestActionPAUSE          BulkMonitorActionRequestAction = "PAUSE"
+	BulkMonitorActionRequestActionREMOVETAG      BulkMonitorActionRequestAction = "REMOVE_TAG"
+	BulkMonitorActionRequestActionRESUME         BulkMonitorActionRequestAction = "RESUME"
+	BulkMonitorActionRequestActionRUN            BulkMonitorActionRequestAction = "RUN"
+	BulkMonitorActionRequestActionUNMUTE         BulkMonitorActionRequestAction = "UNMUTE"
+	BulkMonitorActionRequestActionUPDATESCHEDULE BulkMonitorActionRequestAction = "UPDATE_SCHEDULE"
 )
 
 // Valid indicates whether the value is a known member of the BulkMonitorActionRequestAction enum.
 func (e BulkMonitorActionRequestAction) Valid() bool {
 	switch e {
+	case BulkMonitorActionRequestActionACKNOWLEDGE:
+		return true
 	case BulkMonitorActionRequestActionADDTAG:
 		return true
 	case BulkMonitorActionRequestActionDELETE:
+		return true
+	case BulkMonitorActionRequestActionMUTE:
 		return true
 	case BulkMonitorActionRequestActionPAUSE:
 		return true
 	case BulkMonitorActionRequestActionREMOVETAG:
 		return true
 	case BulkMonitorActionRequestActionRESUME:
+		return true
+	case BulkMonitorActionRequestActionRUN:
+		return true
+	case BulkMonitorActionRequestActionUNMUTE:
+		return true
+	case BulkMonitorActionRequestActionUPDATESCHEDULE:
 		return true
 	default:
 		return false
@@ -184,6 +198,27 @@ const (
 func (e CaptureCompareDtoBaselineKind) Valid() bool {
 	switch e {
 	case CaptureCompareDtoBaselineKindLastPassThisStepThisRegion:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CapturePolicyNetwork.
+const (
+	CapturePolicyNetworkAlways    CapturePolicyNetwork = "always"
+	CapturePolicyNetworkOff       CapturePolicyNetwork = "off"
+	CapturePolicyNetworkOnFailure CapturePolicyNetwork = "on_failure"
+)
+
+// Valid indicates whether the value is a known member of the CapturePolicyNetwork enum.
+func (e CapturePolicyNetwork) Valid() bool {
+	switch e {
+	case CapturePolicyNetworkAlways:
+		return true
+	case CapturePolicyNetworkOff:
+		return true
+	case CapturePolicyNetworkOnFailure:
 		return true
 	default:
 		return false
@@ -339,6 +374,7 @@ const (
 	CreateAlertChannelRequestManagedByAPI       CreateAlertChannelRequestManagedBy = "API"
 	CreateAlertChannelRequestManagedByCLI       CreateAlertChannelRequestManagedBy = "CLI"
 	CreateAlertChannelRequestManagedByDASHBOARD CreateAlertChannelRequestManagedBy = "DASHBOARD"
+	CreateAlertChannelRequestManagedByGIT       CreateAlertChannelRequestManagedBy = "GIT"
 	CreateAlertChannelRequestManagedByMCP       CreateAlertChannelRequestManagedBy = "MCP"
 	CreateAlertChannelRequestManagedByTERRAFORM CreateAlertChannelRequestManagedBy = "TERRAFORM"
 )
@@ -352,9 +388,41 @@ func (e CreateAlertChannelRequestManagedBy) Valid() bool {
 		return true
 	case CreateAlertChannelRequestManagedByDASHBOARD:
 		return true
+	case CreateAlertChannelRequestManagedByGIT:
+		return true
 	case CreateAlertChannelRequestManagedByMCP:
 		return true
 	case CreateAlertChannelRequestManagedByTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateApiKeyRequestTool.
+const (
+	CreateApiKeyRequestToolAPI       CreateApiKeyRequestTool = "API"
+	CreateApiKeyRequestToolCLI       CreateApiKeyRequestTool = "CLI"
+	CreateApiKeyRequestToolDASHBOARD CreateApiKeyRequestTool = "DASHBOARD"
+	CreateApiKeyRequestToolGIT       CreateApiKeyRequestTool = "GIT"
+	CreateApiKeyRequestToolMCP       CreateApiKeyRequestTool = "MCP"
+	CreateApiKeyRequestToolTERRAFORM CreateApiKeyRequestTool = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the CreateApiKeyRequestTool enum.
+func (e CreateApiKeyRequestTool) Valid() bool {
+	switch e {
+	case CreateApiKeyRequestToolAPI:
+		return true
+	case CreateApiKeyRequestToolCLI:
+		return true
+	case CreateApiKeyRequestToolDASHBOARD:
+		return true
+	case CreateApiKeyRequestToolGIT:
+		return true
+	case CreateApiKeyRequestToolMCP:
+		return true
+	case CreateApiKeyRequestToolTERRAFORM:
 		return true
 	default:
 		return false
@@ -444,6 +512,7 @@ const (
 	CreateMonitorRequestManagedByAPI       CreateMonitorRequestManagedBy = "API"
 	CreateMonitorRequestManagedByCLI       CreateMonitorRequestManagedBy = "CLI"
 	CreateMonitorRequestManagedByDASHBOARD CreateMonitorRequestManagedBy = "DASHBOARD"
+	CreateMonitorRequestManagedByGIT       CreateMonitorRequestManagedBy = "GIT"
 	CreateMonitorRequestManagedByMCP       CreateMonitorRequestManagedBy = "MCP"
 	CreateMonitorRequestManagedByTERRAFORM CreateMonitorRequestManagedBy = "TERRAFORM"
 )
@@ -456,6 +525,8 @@ func (e CreateMonitorRequestManagedBy) Valid() bool {
 	case CreateMonitorRequestManagedByCLI:
 		return true
 	case CreateMonitorRequestManagedByDASHBOARD:
+		return true
+	case CreateMonitorRequestManagedByGIT:
 		return true
 	case CreateMonitorRequestManagedByMCP:
 		return true
@@ -525,6 +596,7 @@ const (
 	CreateResourceGroupRequestManagedByAPI       CreateResourceGroupRequestManagedBy = "API"
 	CreateResourceGroupRequestManagedByCLI       CreateResourceGroupRequestManagedBy = "CLI"
 	CreateResourceGroupRequestManagedByDASHBOARD CreateResourceGroupRequestManagedBy = "DASHBOARD"
+	CreateResourceGroupRequestManagedByGIT       CreateResourceGroupRequestManagedBy = "GIT"
 	CreateResourceGroupRequestManagedByMCP       CreateResourceGroupRequestManagedBy = "MCP"
 	CreateResourceGroupRequestManagedByTERRAFORM CreateResourceGroupRequestManagedBy = "TERRAFORM"
 )
@@ -537,6 +609,8 @@ func (e CreateResourceGroupRequestManagedBy) Valid() bool {
 	case CreateResourceGroupRequestManagedByCLI:
 		return true
 	case CreateResourceGroupRequestManagedByDASHBOARD:
+		return true
+	case CreateResourceGroupRequestManagedByGIT:
 		return true
 	case CreateResourceGroupRequestManagedByMCP:
 		return true
@@ -717,6 +791,7 @@ const (
 	CreateStatusPageRequestManagedByAPI       CreateStatusPageRequestManagedBy = "API"
 	CreateStatusPageRequestManagedByCLI       CreateStatusPageRequestManagedBy = "CLI"
 	CreateStatusPageRequestManagedByDASHBOARD CreateStatusPageRequestManagedBy = "DASHBOARD"
+	CreateStatusPageRequestManagedByGIT       CreateStatusPageRequestManagedBy = "GIT"
 	CreateStatusPageRequestManagedByMCP       CreateStatusPageRequestManagedBy = "MCP"
 	CreateStatusPageRequestManagedByTERRAFORM CreateStatusPageRequestManagedBy = "TERRAFORM"
 )
@@ -729,6 +804,8 @@ func (e CreateStatusPageRequestManagedBy) Valid() bool {
 	case CreateStatusPageRequestManagedByCLI:
 		return true
 	case CreateStatusPageRequestManagedByDASHBOARD:
+		return true
+	case CreateStatusPageRequestManagedByGIT:
 		return true
 	case CreateStatusPageRequestManagedByMCP:
 		return true
@@ -1105,6 +1182,21 @@ func (e EmailChannelConfigChannelType) Valid() bool {
 	}
 }
 
+// Defines values for EvidencePurgedMetadataKind.
+const (
+	EvidencePurgedMetadataKindEvidencePurged EvidencePurgedMetadataKind = "evidence_purged"
+)
+
+// Valid indicates whether the value is a known member of the EvidencePurgedMetadataKind enum.
+func (e EvidencePurgedMetadataKind) Valid() bool {
+	switch e {
+	case EvidencePurgedMetadataKindEvidencePurged:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GitLabChannelConfigChannelType.
 const (
 	GitLabChannelConfigChannelTypeGitlab GitLabChannelConfigChannelType = "gitlab"
@@ -1369,78 +1461,6 @@ const (
 func (e IcmpResponseTimeWarnAssertionType) Valid() bool {
 	switch e {
 	case IcmpResponseTimeWarnAssertionTypeIcmpResponseTimeWarn:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentFilterParamsSeverity.
-const (
-	IncidentFilterParamsSeverityDEGRADED    IncidentFilterParamsSeverity = "DEGRADED"
-	IncidentFilterParamsSeverityDOWN        IncidentFilterParamsSeverity = "DOWN"
-	IncidentFilterParamsSeverityMAINTENANCE IncidentFilterParamsSeverity = "MAINTENANCE"
-)
-
-// Valid indicates whether the value is a known member of the IncidentFilterParamsSeverity enum.
-func (e IncidentFilterParamsSeverity) Valid() bool {
-	switch e {
-	case IncidentFilterParamsSeverityDEGRADED:
-		return true
-	case IncidentFilterParamsSeverityDOWN:
-		return true
-	case IncidentFilterParamsSeverityMAINTENANCE:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentFilterParamsSource.
-const (
-	IncidentFilterParamsSourceAUTOMATIC     IncidentFilterParamsSource = "AUTOMATIC"
-	IncidentFilterParamsSourceMANUAL        IncidentFilterParamsSource = "MANUAL"
-	IncidentFilterParamsSourceMONITORS      IncidentFilterParamsSource = "MONITORS"
-	IncidentFilterParamsSourceRESOURCEGROUP IncidentFilterParamsSource = "RESOURCE_GROUP"
-	IncidentFilterParamsSourceSTATUSDATA    IncidentFilterParamsSource = "STATUS_DATA"
-)
-
-// Valid indicates whether the value is a known member of the IncidentFilterParamsSource enum.
-func (e IncidentFilterParamsSource) Valid() bool {
-	switch e {
-	case IncidentFilterParamsSourceAUTOMATIC:
-		return true
-	case IncidentFilterParamsSourceMANUAL:
-		return true
-	case IncidentFilterParamsSourceMONITORS:
-		return true
-	case IncidentFilterParamsSourceRESOURCEGROUP:
-		return true
-	case IncidentFilterParamsSourceSTATUSDATA:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentFilterParamsStatus.
-const (
-	IncidentFilterParamsStatusCONFIRMED IncidentFilterParamsStatus = "CONFIRMED"
-	IncidentFilterParamsStatusRESOLVED  IncidentFilterParamsStatus = "RESOLVED"
-	IncidentFilterParamsStatusTRIGGERED IncidentFilterParamsStatus = "TRIGGERED"
-	IncidentFilterParamsStatusWATCHING  IncidentFilterParamsStatus = "WATCHING"
-)
-
-// Valid indicates whether the value is a known member of the IncidentFilterParamsStatus enum.
-func (e IncidentFilterParamsStatus) Valid() bool {
-	switch e {
-	case IncidentFilterParamsStatusCONFIRMED:
-		return true
-	case IncidentFilterParamsStatusRESOLVED:
-		return true
-	case IncidentFilterParamsStatusTRIGGERED:
-		return true
-	case IncidentFilterParamsStatusWATCHING:
 		return true
 	default:
 		return false
@@ -1735,6 +1755,21 @@ const (
 func (e MemberRoleChangedMetadataKind) Valid() bool {
 	switch e {
 	case MemberRoleChangedMetadataKindMemberRoleChanged:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorOwnershipMetadataKind.
+const (
+	MonitorOwnershipMetadataKindMonitorOwnership MonitorOwnershipMetadataKind = "monitor_ownership"
+)
+
+// Valid indicates whether the value is a known member of the MonitorOwnershipMetadataKind enum.
+func (e MonitorOwnershipMetadataKind) Valid() bool {
+	switch e {
+	case MonitorOwnershipMetadataKindMonitorOwnership:
 		return true
 	default:
 		return false
@@ -2257,6 +2292,36 @@ func (e TelegramChannelConfigChannelType) Valid() bool {
 	}
 }
 
+// Defines values for TransferMonitorRequestTo.
+const (
+	TransferMonitorRequestToAPI       TransferMonitorRequestTo = "API"
+	TransferMonitorRequestToCLI       TransferMonitorRequestTo = "CLI"
+	TransferMonitorRequestToDASHBOARD TransferMonitorRequestTo = "DASHBOARD"
+	TransferMonitorRequestToGIT       TransferMonitorRequestTo = "GIT"
+	TransferMonitorRequestToMCP       TransferMonitorRequestTo = "MCP"
+	TransferMonitorRequestToTERRAFORM TransferMonitorRequestTo = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the TransferMonitorRequestTo enum.
+func (e TransferMonitorRequestTo) Valid() bool {
+	switch e {
+	case TransferMonitorRequestToAPI:
+		return true
+	case TransferMonitorRequestToCLI:
+		return true
+	case TransferMonitorRequestToDASHBOARD:
+		return true
+	case TransferMonitorRequestToGIT:
+		return true
+	case TransferMonitorRequestToMCP:
+		return true
+	case TransferMonitorRequestToTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TriggerRuleAggregationType.
 const (
 	TriggerRuleAggregationTypeAllExceed TriggerRuleAggregationType = "all_exceed"
@@ -2343,6 +2408,7 @@ const (
 	UpdateAlertChannelRequestManagedByAPI       UpdateAlertChannelRequestManagedBy = "API"
 	UpdateAlertChannelRequestManagedByCLI       UpdateAlertChannelRequestManagedBy = "CLI"
 	UpdateAlertChannelRequestManagedByDASHBOARD UpdateAlertChannelRequestManagedBy = "DASHBOARD"
+	UpdateAlertChannelRequestManagedByGIT       UpdateAlertChannelRequestManagedBy = "GIT"
 	UpdateAlertChannelRequestManagedByMCP       UpdateAlertChannelRequestManagedBy = "MCP"
 	UpdateAlertChannelRequestManagedByTERRAFORM UpdateAlertChannelRequestManagedBy = "TERRAFORM"
 )
@@ -2355,6 +2421,8 @@ func (e UpdateAlertChannelRequestManagedBy) Valid() bool {
 	case UpdateAlertChannelRequestManagedByCLI:
 		return true
 	case UpdateAlertChannelRequestManagedByDASHBOARD:
+		return true
+	case UpdateAlertChannelRequestManagedByGIT:
 		return true
 	case UpdateAlertChannelRequestManagedByMCP:
 		return true
@@ -2568,6 +2636,7 @@ const (
 	UpdateMonitorRequestManagedByAPI       UpdateMonitorRequestManagedBy = "API"
 	UpdateMonitorRequestManagedByCLI       UpdateMonitorRequestManagedBy = "CLI"
 	UpdateMonitorRequestManagedByDASHBOARD UpdateMonitorRequestManagedBy = "DASHBOARD"
+	UpdateMonitorRequestManagedByGIT       UpdateMonitorRequestManagedBy = "GIT"
 	UpdateMonitorRequestManagedByMCP       UpdateMonitorRequestManagedBy = "MCP"
 	UpdateMonitorRequestManagedByTERRAFORM UpdateMonitorRequestManagedBy = "TERRAFORM"
 )
@@ -2580,6 +2649,8 @@ func (e UpdateMonitorRequestManagedBy) Valid() bool {
 	case UpdateMonitorRequestManagedByCLI:
 		return true
 	case UpdateMonitorRequestManagedByDASHBOARD:
+		return true
+	case UpdateMonitorRequestManagedByGIT:
 		return true
 	case UpdateMonitorRequestManagedByMCP:
 		return true
@@ -2688,6 +2759,7 @@ const (
 	UpdateResourceGroupRequestManagedByAPI       UpdateResourceGroupRequestManagedBy = "API"
 	UpdateResourceGroupRequestManagedByCLI       UpdateResourceGroupRequestManagedBy = "CLI"
 	UpdateResourceGroupRequestManagedByDASHBOARD UpdateResourceGroupRequestManagedBy = "DASHBOARD"
+	UpdateResourceGroupRequestManagedByGIT       UpdateResourceGroupRequestManagedBy = "GIT"
 	UpdateResourceGroupRequestManagedByMCP       UpdateResourceGroupRequestManagedBy = "MCP"
 	UpdateResourceGroupRequestManagedByTERRAFORM UpdateResourceGroupRequestManagedBy = "TERRAFORM"
 )
@@ -2700,6 +2772,8 @@ func (e UpdateResourceGroupRequestManagedBy) Valid() bool {
 	case UpdateResourceGroupRequestManagedByCLI:
 		return true
 	case UpdateResourceGroupRequestManagedByDASHBOARD:
+		return true
+	case UpdateResourceGroupRequestManagedByGIT:
 		return true
 	case UpdateResourceGroupRequestManagedByMCP:
 		return true
@@ -2868,6 +2942,7 @@ const (
 	UpdateStatusPageRequestManagedByAPI       UpdateStatusPageRequestManagedBy = "API"
 	UpdateStatusPageRequestManagedByCLI       UpdateStatusPageRequestManagedBy = "CLI"
 	UpdateStatusPageRequestManagedByDASHBOARD UpdateStatusPageRequestManagedBy = "DASHBOARD"
+	UpdateStatusPageRequestManagedByGIT       UpdateStatusPageRequestManagedBy = "GIT"
 	UpdateStatusPageRequestManagedByMCP       UpdateStatusPageRequestManagedBy = "MCP"
 	UpdateStatusPageRequestManagedByTERRAFORM UpdateStatusPageRequestManagedBy = "TERRAFORM"
 )
@@ -2880,6 +2955,8 @@ func (e UpdateStatusPageRequestManagedBy) Valid() bool {
 	case UpdateStatusPageRequestManagedByCLI:
 		return true
 	case UpdateStatusPageRequestManagedByDASHBOARD:
+		return true
+	case UpdateStatusPageRequestManagedByGIT:
 		return true
 	case UpdateStatusPageRequestManagedByMCP:
 		return true
@@ -3085,204 +3162,384 @@ func (e ZapierChannelConfigChannelType) Valid() bool {
 	}
 }
 
-// Defines values for List14ParamsType.
+// Defines values for List15ParamsType.
 const (
-	List14ParamsTypeDatadog      List14ParamsType = "datadog"
-	List14ParamsTypeDiscord      List14ParamsType = "discord"
-	List14ParamsTypeEmail        List14ParamsType = "email"
-	List14ParamsTypeGitlab       List14ParamsType = "gitlab"
-	List14ParamsTypeGoogleChat   List14ParamsType = "google_chat"
-	List14ParamsTypeIncidentIo   List14ParamsType = "incident_io"
-	List14ParamsTypeJira         List14ParamsType = "jira"
-	List14ParamsTypeLinear       List14ParamsType = "linear"
-	List14ParamsTypeMattermost   List14ParamsType = "mattermost"
-	List14ParamsTypeOpsgenie     List14ParamsType = "opsgenie"
-	List14ParamsTypePagerduty    List14ParamsType = "pagerduty"
-	List14ParamsTypePhoneCall    List14ParamsType = "phone_call"
-	List14ParamsTypePushbullet   List14ParamsType = "pushbullet"
-	List14ParamsTypePushover     List14ParamsType = "pushover"
-	List14ParamsTypeRootly       List14ParamsType = "rootly"
-	List14ParamsTypeSlack        List14ParamsType = "slack"
-	List14ParamsTypeSms          List14ParamsType = "sms"
-	List14ParamsTypeSplunkOncall List14ParamsType = "splunk_oncall"
-	List14ParamsTypeTeams        List14ParamsType = "teams"
-	List14ParamsTypeTelegram     List14ParamsType = "telegram"
-	List14ParamsTypeWebhook      List14ParamsType = "webhook"
-	List14ParamsTypeZapier       List14ParamsType = "zapier"
+	List15ParamsTypeDatadog      List15ParamsType = "datadog"
+	List15ParamsTypeDiscord      List15ParamsType = "discord"
+	List15ParamsTypeEmail        List15ParamsType = "email"
+	List15ParamsTypeGitlab       List15ParamsType = "gitlab"
+	List15ParamsTypeGoogleChat   List15ParamsType = "google_chat"
+	List15ParamsTypeIncidentIo   List15ParamsType = "incident_io"
+	List15ParamsTypeJira         List15ParamsType = "jira"
+	List15ParamsTypeLinear       List15ParamsType = "linear"
+	List15ParamsTypeMattermost   List15ParamsType = "mattermost"
+	List15ParamsTypeOpsgenie     List15ParamsType = "opsgenie"
+	List15ParamsTypePagerduty    List15ParamsType = "pagerduty"
+	List15ParamsTypePhoneCall    List15ParamsType = "phone_call"
+	List15ParamsTypePushbullet   List15ParamsType = "pushbullet"
+	List15ParamsTypePushover     List15ParamsType = "pushover"
+	List15ParamsTypeRootly       List15ParamsType = "rootly"
+	List15ParamsTypeSlack        List15ParamsType = "slack"
+	List15ParamsTypeSms          List15ParamsType = "sms"
+	List15ParamsTypeSplunkOncall List15ParamsType = "splunk_oncall"
+	List15ParamsTypeTeams        List15ParamsType = "teams"
+	List15ParamsTypeTelegram     List15ParamsType = "telegram"
+	List15ParamsTypeWebhook      List15ParamsType = "webhook"
+	List15ParamsTypeZapier       List15ParamsType = "zapier"
 )
 
-// Valid indicates whether the value is a known member of the List14ParamsType enum.
-func (e List14ParamsType) Valid() bool {
+// Valid indicates whether the value is a known member of the List15ParamsType enum.
+func (e List15ParamsType) Valid() bool {
 	switch e {
-	case List14ParamsTypeDatadog:
+	case List15ParamsTypeDatadog:
 		return true
-	case List14ParamsTypeDiscord:
+	case List15ParamsTypeDiscord:
 		return true
-	case List14ParamsTypeEmail:
+	case List15ParamsTypeEmail:
 		return true
-	case List14ParamsTypeGitlab:
+	case List15ParamsTypeGitlab:
 		return true
-	case List14ParamsTypeGoogleChat:
+	case List15ParamsTypeGoogleChat:
 		return true
-	case List14ParamsTypeIncidentIo:
+	case List15ParamsTypeIncidentIo:
 		return true
-	case List14ParamsTypeJira:
+	case List15ParamsTypeJira:
 		return true
-	case List14ParamsTypeLinear:
+	case List15ParamsTypeLinear:
 		return true
-	case List14ParamsTypeMattermost:
+	case List15ParamsTypeMattermost:
 		return true
-	case List14ParamsTypeOpsgenie:
+	case List15ParamsTypeOpsgenie:
 		return true
-	case List14ParamsTypePagerduty:
+	case List15ParamsTypePagerduty:
 		return true
-	case List14ParamsTypePhoneCall:
+	case List15ParamsTypePhoneCall:
 		return true
-	case List14ParamsTypePushbullet:
+	case List15ParamsTypePushbullet:
 		return true
-	case List14ParamsTypePushover:
+	case List15ParamsTypePushover:
 		return true
-	case List14ParamsTypeRootly:
+	case List15ParamsTypeRootly:
 		return true
-	case List14ParamsTypeSlack:
+	case List15ParamsTypeSlack:
 		return true
-	case List14ParamsTypeSms:
+	case List15ParamsTypeSms:
 		return true
-	case List14ParamsTypeSplunkOncall:
+	case List15ParamsTypeSplunkOncall:
 		return true
-	case List14ParamsTypeTeams:
+	case List15ParamsTypeTeams:
 		return true
-	case List14ParamsTypeTelegram:
+	case List15ParamsTypeTelegram:
 		return true
-	case List14ParamsTypeWebhook:
+	case List15ParamsTypeWebhook:
 		return true
-	case List14ParamsTypeZapier:
+	case List15ParamsTypeZapier:
 		return true
 	default:
 		return false
 	}
 }
 
-// Defines values for List14ParamsManagedBy.
+// Defines values for List15ParamsManagedBy.
 const (
-	List14ParamsManagedByAPI       List14ParamsManagedBy = "API"
-	List14ParamsManagedByCLI       List14ParamsManagedBy = "CLI"
-	List14ParamsManagedByDASHBOARD List14ParamsManagedBy = "DASHBOARD"
-	List14ParamsManagedByMCP       List14ParamsManagedBy = "MCP"
-	List14ParamsManagedByTERRAFORM List14ParamsManagedBy = "TERRAFORM"
+	List15ParamsManagedByAPI       List15ParamsManagedBy = "API"
+	List15ParamsManagedByCLI       List15ParamsManagedBy = "CLI"
+	List15ParamsManagedByDASHBOARD List15ParamsManagedBy = "DASHBOARD"
+	List15ParamsManagedByGIT       List15ParamsManagedBy = "GIT"
+	List15ParamsManagedByMCP       List15ParamsManagedBy = "MCP"
+	List15ParamsManagedByTERRAFORM List15ParamsManagedBy = "TERRAFORM"
 )
 
-// Valid indicates whether the value is a known member of the List14ParamsManagedBy enum.
-func (e List14ParamsManagedBy) Valid() bool {
+// Valid indicates whether the value is a known member of the List15ParamsManagedBy enum.
+func (e List15ParamsManagedBy) Valid() bool {
 	switch e {
-	case List14ParamsManagedByAPI:
+	case List15ParamsManagedByAPI:
 		return true
-	case List14ParamsManagedByCLI:
+	case List15ParamsManagedByCLI:
 		return true
-	case List14ParamsManagedByDASHBOARD:
+	case List15ParamsManagedByDASHBOARD:
 		return true
-	case List14ParamsManagedByMCP:
+	case List15ParamsManagedByGIT:
 		return true
-	case List14ParamsManagedByTERRAFORM:
+	case List15ParamsManagedByMCP:
+		return true
+	case List15ParamsManagedByTERRAFORM:
 		return true
 	default:
 		return false
 	}
 }
 
-// Defines values for List8ParamsType.
+// Defines values for List12ParamsStatus.
 const (
-	List8ParamsTypeBROWSER      List8ParamsType = "BROWSER"
-	List8ParamsTypeDNS          List8ParamsType = "DNS"
-	List8ParamsTypeHEARTBEAT    List8ParamsType = "HEARTBEAT"
-	List8ParamsTypeHTTP         List8ParamsType = "HTTP"
-	List8ParamsTypeICMP         List8ParamsType = "ICMP"
-	List8ParamsTypeMCPSERVER    List8ParamsType = "MCP_SERVER"
-	List8ParamsTypeMULTISTEPAPI List8ParamsType = "MULTI_STEP_API"
-	List8ParamsTypeTCP          List8ParamsType = "TCP"
+	List12ParamsStatusCONFIRMED List12ParamsStatus = "CONFIRMED"
+	List12ParamsStatusRESOLVED  List12ParamsStatus = "RESOLVED"
+	List12ParamsStatusTRIGGERED List12ParamsStatus = "TRIGGERED"
+	List12ParamsStatusWATCHING  List12ParamsStatus = "WATCHING"
 )
 
-// Valid indicates whether the value is a known member of the List8ParamsType enum.
-func (e List8ParamsType) Valid() bool {
+// Valid indicates whether the value is a known member of the List12ParamsStatus enum.
+func (e List12ParamsStatus) Valid() bool {
 	switch e {
-	case List8ParamsTypeBROWSER:
+	case List12ParamsStatusCONFIRMED:
 		return true
-	case List8ParamsTypeDNS:
+	case List12ParamsStatusRESOLVED:
 		return true
-	case List8ParamsTypeHEARTBEAT:
+	case List12ParamsStatusTRIGGERED:
 		return true
-	case List8ParamsTypeHTTP:
-		return true
-	case List8ParamsTypeICMP:
-		return true
-	case List8ParamsTypeMCPSERVER:
-		return true
-	case List8ParamsTypeMULTISTEPAPI:
-		return true
-	case List8ParamsTypeTCP:
+	case List12ParamsStatusWATCHING:
 		return true
 	default:
 		return false
 	}
 }
 
-// Defines values for List8ParamsTypes.
+// Defines values for List12ParamsSeverity.
 const (
-	List8ParamsTypesBROWSER      List8ParamsTypes = "BROWSER"
-	List8ParamsTypesDNS          List8ParamsTypes = "DNS"
-	List8ParamsTypesHEARTBEAT    List8ParamsTypes = "HEARTBEAT"
-	List8ParamsTypesHTTP         List8ParamsTypes = "HTTP"
-	List8ParamsTypesICMP         List8ParamsTypes = "ICMP"
-	List8ParamsTypesMCPSERVER    List8ParamsTypes = "MCP_SERVER"
-	List8ParamsTypesMULTISTEPAPI List8ParamsTypes = "MULTI_STEP_API"
-	List8ParamsTypesTCP          List8ParamsTypes = "TCP"
+	List12ParamsSeverityDEGRADED    List12ParamsSeverity = "DEGRADED"
+	List12ParamsSeverityDOWN        List12ParamsSeverity = "DOWN"
+	List12ParamsSeverityMAINTENANCE List12ParamsSeverity = "MAINTENANCE"
 )
 
-// Valid indicates whether the value is a known member of the List8ParamsTypes enum.
-func (e List8ParamsTypes) Valid() bool {
+// Valid indicates whether the value is a known member of the List12ParamsSeverity enum.
+func (e List12ParamsSeverity) Valid() bool {
 	switch e {
-	case List8ParamsTypesBROWSER:
+	case List12ParamsSeverityDEGRADED:
 		return true
-	case List8ParamsTypesDNS:
+	case List12ParamsSeverityDOWN:
 		return true
-	case List8ParamsTypesHEARTBEAT:
-		return true
-	case List8ParamsTypesHTTP:
-		return true
-	case List8ParamsTypesICMP:
-		return true
-	case List8ParamsTypesMCPSERVER:
-		return true
-	case List8ParamsTypesMULTISTEPAPI:
-		return true
-	case List8ParamsTypesTCP:
+	case List12ParamsSeverityMAINTENANCE:
 		return true
 	default:
 		return false
 	}
 }
 
-// Defines values for List8ParamsManagedBy.
+// Defines values for List12ParamsSource.
 const (
-	List8ParamsManagedByAPI       List8ParamsManagedBy = "API"
-	List8ParamsManagedByCLI       List8ParamsManagedBy = "CLI"
-	List8ParamsManagedByDASHBOARD List8ParamsManagedBy = "DASHBOARD"
-	List8ParamsManagedByMCP       List8ParamsManagedBy = "MCP"
-	List8ParamsManagedByTERRAFORM List8ParamsManagedBy = "TERRAFORM"
+	List12ParamsSourceAUTOMATIC     List12ParamsSource = "AUTOMATIC"
+	List12ParamsSourceMANUAL        List12ParamsSource = "MANUAL"
+	List12ParamsSourceMONITORS      List12ParamsSource = "MONITORS"
+	List12ParamsSourceRESOURCEGROUP List12ParamsSource = "RESOURCE_GROUP"
+	List12ParamsSourceSTATUSDATA    List12ParamsSource = "STATUS_DATA"
 )
 
-// Valid indicates whether the value is a known member of the List8ParamsManagedBy enum.
-func (e List8ParamsManagedBy) Valid() bool {
+// Valid indicates whether the value is a known member of the List12ParamsSource enum.
+func (e List12ParamsSource) Valid() bool {
 	switch e {
-	case List8ParamsManagedByAPI:
+	case List12ParamsSourceAUTOMATIC:
 		return true
-	case List8ParamsManagedByCLI:
+	case List12ParamsSourceMANUAL:
 		return true
-	case List8ParamsManagedByDASHBOARD:
+	case List12ParamsSourceMONITORS:
 		return true
-	case List8ParamsManagedByMCP:
+	case List12ParamsSourceRESOURCEGROUP:
 		return true
-	case List8ParamsManagedByTERRAFORM:
+	case List12ParamsSourceSTATUSDATA:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for List9ParamsType.
+const (
+	List9ParamsTypeBROWSER      List9ParamsType = "BROWSER"
+	List9ParamsTypeDNS          List9ParamsType = "DNS"
+	List9ParamsTypeHEARTBEAT    List9ParamsType = "HEARTBEAT"
+	List9ParamsTypeHTTP         List9ParamsType = "HTTP"
+	List9ParamsTypeICMP         List9ParamsType = "ICMP"
+	List9ParamsTypeMCPSERVER    List9ParamsType = "MCP_SERVER"
+	List9ParamsTypeMULTISTEPAPI List9ParamsType = "MULTI_STEP_API"
+	List9ParamsTypeTCP          List9ParamsType = "TCP"
+)
+
+// Valid indicates whether the value is a known member of the List9ParamsType enum.
+func (e List9ParamsType) Valid() bool {
+	switch e {
+	case List9ParamsTypeBROWSER:
+		return true
+	case List9ParamsTypeDNS:
+		return true
+	case List9ParamsTypeHEARTBEAT:
+		return true
+	case List9ParamsTypeHTTP:
+		return true
+	case List9ParamsTypeICMP:
+		return true
+	case List9ParamsTypeMCPSERVER:
+		return true
+	case List9ParamsTypeMULTISTEPAPI:
+		return true
+	case List9ParamsTypeTCP:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for List9ParamsTypes.
+const (
+	List9ParamsTypesBROWSER      List9ParamsTypes = "BROWSER"
+	List9ParamsTypesDNS          List9ParamsTypes = "DNS"
+	List9ParamsTypesHEARTBEAT    List9ParamsTypes = "HEARTBEAT"
+	List9ParamsTypesHTTP         List9ParamsTypes = "HTTP"
+	List9ParamsTypesICMP         List9ParamsTypes = "ICMP"
+	List9ParamsTypesMCPSERVER    List9ParamsTypes = "MCP_SERVER"
+	List9ParamsTypesMULTISTEPAPI List9ParamsTypes = "MULTI_STEP_API"
+	List9ParamsTypesTCP          List9ParamsTypes = "TCP"
+)
+
+// Valid indicates whether the value is a known member of the List9ParamsTypes enum.
+func (e List9ParamsTypes) Valid() bool {
+	switch e {
+	case List9ParamsTypesBROWSER:
+		return true
+	case List9ParamsTypesDNS:
+		return true
+	case List9ParamsTypesHEARTBEAT:
+		return true
+	case List9ParamsTypesHTTP:
+		return true
+	case List9ParamsTypesICMP:
+		return true
+	case List9ParamsTypesMCPSERVER:
+		return true
+	case List9ParamsTypesMULTISTEPAPI:
+		return true
+	case List9ParamsTypesTCP:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for List9ParamsManagedBy.
+const (
+	List9ParamsManagedByAPI       List9ParamsManagedBy = "API"
+	List9ParamsManagedByCLI       List9ParamsManagedBy = "CLI"
+	List9ParamsManagedByDASHBOARD List9ParamsManagedBy = "DASHBOARD"
+	List9ParamsManagedByGIT       List9ParamsManagedBy = "GIT"
+	List9ParamsManagedByMCP       List9ParamsManagedBy = "MCP"
+	List9ParamsManagedByTERRAFORM List9ParamsManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the List9ParamsManagedBy enum.
+func (e List9ParamsManagedBy) Valid() bool {
+	switch e {
+	case List9ParamsManagedByAPI:
+		return true
+	case List9ParamsManagedByCLI:
+		return true
+	case List9ParamsManagedByDASHBOARD:
+		return true
+	case List9ParamsManagedByGIT:
+		return true
+	case List9ParamsManagedByMCP:
+		return true
+	case List9ParamsManagedByTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FacetsParamsType.
+const (
+	FacetsParamsTypeBROWSER      FacetsParamsType = "BROWSER"
+	FacetsParamsTypeDNS          FacetsParamsType = "DNS"
+	FacetsParamsTypeHEARTBEAT    FacetsParamsType = "HEARTBEAT"
+	FacetsParamsTypeHTTP         FacetsParamsType = "HTTP"
+	FacetsParamsTypeICMP         FacetsParamsType = "ICMP"
+	FacetsParamsTypeMCPSERVER    FacetsParamsType = "MCP_SERVER"
+	FacetsParamsTypeMULTISTEPAPI FacetsParamsType = "MULTI_STEP_API"
+	FacetsParamsTypeTCP          FacetsParamsType = "TCP"
+)
+
+// Valid indicates whether the value is a known member of the FacetsParamsType enum.
+func (e FacetsParamsType) Valid() bool {
+	switch e {
+	case FacetsParamsTypeBROWSER:
+		return true
+	case FacetsParamsTypeDNS:
+		return true
+	case FacetsParamsTypeHEARTBEAT:
+		return true
+	case FacetsParamsTypeHTTP:
+		return true
+	case FacetsParamsTypeICMP:
+		return true
+	case FacetsParamsTypeMCPSERVER:
+		return true
+	case FacetsParamsTypeMULTISTEPAPI:
+		return true
+	case FacetsParamsTypeTCP:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FacetsParamsTypes.
+const (
+	FacetsParamsTypesBROWSER      FacetsParamsTypes = "BROWSER"
+	FacetsParamsTypesDNS          FacetsParamsTypes = "DNS"
+	FacetsParamsTypesHEARTBEAT    FacetsParamsTypes = "HEARTBEAT"
+	FacetsParamsTypesHTTP         FacetsParamsTypes = "HTTP"
+	FacetsParamsTypesICMP         FacetsParamsTypes = "ICMP"
+	FacetsParamsTypesMCPSERVER    FacetsParamsTypes = "MCP_SERVER"
+	FacetsParamsTypesMULTISTEPAPI FacetsParamsTypes = "MULTI_STEP_API"
+	FacetsParamsTypesTCP          FacetsParamsTypes = "TCP"
+)
+
+// Valid indicates whether the value is a known member of the FacetsParamsTypes enum.
+func (e FacetsParamsTypes) Valid() bool {
+	switch e {
+	case FacetsParamsTypesBROWSER:
+		return true
+	case FacetsParamsTypesDNS:
+		return true
+	case FacetsParamsTypesHEARTBEAT:
+		return true
+	case FacetsParamsTypesHTTP:
+		return true
+	case FacetsParamsTypesICMP:
+		return true
+	case FacetsParamsTypesMCPSERVER:
+		return true
+	case FacetsParamsTypesMULTISTEPAPI:
+		return true
+	case FacetsParamsTypesTCP:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FacetsParamsManagedBy.
+const (
+	FacetsParamsManagedByAPI       FacetsParamsManagedBy = "API"
+	FacetsParamsManagedByCLI       FacetsParamsManagedBy = "CLI"
+	FacetsParamsManagedByDASHBOARD FacetsParamsManagedBy = "DASHBOARD"
+	FacetsParamsManagedByGIT       FacetsParamsManagedBy = "GIT"
+	FacetsParamsManagedByMCP       FacetsParamsManagedBy = "MCP"
+	FacetsParamsManagedByTERRAFORM FacetsParamsManagedBy = "TERRAFORM"
+)
+
+// Valid indicates whether the value is a known member of the FacetsParamsManagedBy enum.
+func (e FacetsParamsManagedBy) Valid() bool {
+	switch e {
+	case FacetsParamsManagedByAPI:
+		return true
+	case FacetsParamsManagedByCLI:
+		return true
+	case FacetsParamsManagedByDASHBOARD:
+		return true
+	case FacetsParamsManagedByGIT:
+		return true
+	case FacetsParamsManagedByMCP:
+		return true
+	case FacetsParamsManagedByTERRAFORM:
 		return true
 	default:
 		return false
@@ -3307,6 +3564,27 @@ func (e GetMonitorOverviewStepsParamsWindow) Valid() bool {
 	case GetMonitorOverviewStepsParamsWindowN7d:
 		return true
 	case GetMonitorOverviewStepsParamsWindowN90d:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for GetMonitorResultsByRegionParamsWindow.
+const (
+	GetMonitorResultsByRegionParamsWindowN24h GetMonitorResultsByRegionParamsWindow = "24h"
+	GetMonitorResultsByRegionParamsWindowN30d GetMonitorResultsByRegionParamsWindow = "30d"
+	GetMonitorResultsByRegionParamsWindowN7d  GetMonitorResultsByRegionParamsWindow = "7d"
+)
+
+// Valid indicates whether the value is a known member of the GetMonitorResultsByRegionParamsWindow enum.
+func (e GetMonitorResultsByRegionParamsWindow) Valid() bool {
+	switch e {
+	case GetMonitorResultsByRegionParamsWindowN24h:
+		return true
+	case GetMonitorResultsByRegionParamsWindowN30d:
+		return true
+	case GetMonitorResultsByRegionParamsWindowN7d:
 		return true
 	default:
 		return false
@@ -3631,6 +3909,16 @@ type AcquireDeployLockRequest struct {
 	TtlMinutes *int32 `json:"ttlMinutes,omitempty"`
 }
 
+// ActorDisplayDto Actor that last wrote this environment value
+type ActorDisplayDto struct {
+	// Identity Stable actor identity
+	Identity string `json:"identity"`
+
+	// KeyName API key display name; never the key value
+	KeyName *string  `json:"keyName,omitempty"`
+	User    *UserDto `json:"user,omitempty"`
+}
+
 // AddCustomDomainRequest defines model for AddCustomDomainRequest.
 type AddCustomDomainRequest struct {
 	// Hostname Custom hostname, e.g. status.acme.com
@@ -3790,7 +4078,7 @@ type AlertChannelDto struct {
 	// LastDeliveryStatus Outcome of the most recent delivery (SUCCESS, FAILED, etc.)
 	LastDeliveryStatus *string `json:"lastDeliveryStatus,omitempty"`
 
-	// ManagedBy Source that created/owns this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on channels created before this attribution column existed.
+	// ManagedBy Source that created/owns this channel: DASHBOARD, GIT, TERRAFORM, MCP or API. Null on channels created before this attribution column existed.
 	ManagedBy *string `json:"managedBy,omitempty"`
 
 	// Name Human-readable channel name
@@ -3876,6 +4164,12 @@ type ApiKeyCreateResponse struct {
 
 	// Name Human-readable name for this API key
 	Name string `json:"name"`
+
+	// Scopes Scopes this key is allowed to call; full grants everything
+	Scopes []string `json:"scopes"`
+
+	// Tool Tool this key writes as on owner-enforced monitors; null means API
+	Tool *string `json:"tool,omitempty"`
 }
 
 // ApiKeyDto API key for programmatic access to the DevHelm API
@@ -3901,8 +4195,23 @@ type ApiKeyDto struct {
 	// RevokedAt Timestamp when the key was revoked; null if active
 	RevokedAt *time.Time `json:"revokedAt,omitempty"`
 
+	// Scopes Scopes this key is allowed to call; full grants everything
+	Scopes []string `json:"scopes"`
+
+	// Tool Tool this key writes as on owner-enforced monitors; null means API
+	Tool *string `json:"tool,omitempty"`
+
 	// UpdatedAt Timestamp when the key was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// ArtifactDownloadDto Signed, short-lived download link for one run artifact
+type ArtifactDownloadDto struct {
+	// ExpiresAt When the signed URL stops working
+	ExpiresAt time.Time `json:"expiresAt"`
+
+	// Url Signed GET URL for the artifact bytes
+	Url string `json:"url"`
 }
 
 // ArtifactTraceMeta Packed trace doorway; do not unpack the zip
@@ -3979,11 +4288,14 @@ type AuditEventDto struct {
 	// Action Audit action type (e.g. monitor.created, api_key.revoked)
 	Action string `json:"action"`
 
-	// ActorEmail Email of the actor; null for system actions
+	// ActorEmail User email, api-key:{id} for API keys, or system for automated actions
 	ActorEmail *string `json:"actorEmail,omitempty"`
 
 	// ActorId User ID who performed the action; null for system actions
 	ActorId *int32 `json:"actorId,omitempty"`
+
+	// Changes Non-secret settings changed by this action
+	Changes *[]MonitorFieldChange `json:"changes,omitempty"`
 
 	// CreatedAt Timestamp when the action was performed
 	CreatedAt time.Time `json:"createdAt"`
@@ -4087,16 +4399,50 @@ type BrowserCapabilityEnvelope struct {
 	Viewport bool `json:"viewport"`
 }
 
+// Bucket Clock-aligned chart buckets
+type Bucket struct {
+	// CouldntRun Region cycles with a final non-target outcome
+	CouldntRun int64 `json:"couldntRun"`
+
+	// DurationSamples Executions with a completed duration in this bucket
+	DurationSamples int64 `json:"durationSamples"`
+
+	// Failed Health-voting region cycles whose final attempt failed
+	Failed int64 `json:"failed"`
+
+	// P50Ms Median duration of completed executions in milliseconds
+	P50Ms *float64 `json:"p50Ms,omitempty"`
+
+	// P95Ms p95 duration of completed executions in milliseconds
+	P95Ms *float64 `json:"p95Ms,omitempty"`
+
+	// Passed Health-voting region cycles whose final attempt passed
+	Passed int64 `json:"passed"`
+
+	// PassedOnRetry Passed cycles that had an earlier failed attempt
+	PassedOnRetry int64 `json:"passedOnRetry"`
+
+	// Start Inclusive clock-aligned bucket start
+	Start time.Time `json:"start"`
+
+	// TimedOut Region cycles whose final attempt timed out
+	TimedOut int64 `json:"timedOut"`
+}
+
 // BulkMonitorActionRequest Request body for performing a bulk action on multiple monitors
 type BulkMonitorActionRequest struct {
 	// Action Action to apply to every monitor in the bulk request
 	Action BulkMonitorActionRequestAction `json:"action"`
 
+	// FrequencySeconds Check frequency in seconds for UPDATE_SCHEDULE; minimum depends on plan
+	FrequencySeconds *int32 `json:"frequencySeconds,omitempty"`
+
 	// MonitorIds IDs of monitors to act on (max 200)
 	MonitorIds []openapi_types.UUID `json:"monitorIds"`
 
 	// NewTags New tags to create and attach (only for ADD_TAG)
-	NewTags *[]NewTagRequest `json:"newTags,omitempty"`
+	NewTags *[]NewTagRequest       `json:"newTags,omitempty"`
+	Overlay *MonitorOverlayRequest `json:"overlay,omitempty"`
 
 	// TagIds Tag IDs to attach or detach (required for ADD_TAG and REMOVE_TAG)
 	TagIds *[]openapi_types.UUID `json:"tagIds,omitempty"`
@@ -4112,6 +4458,30 @@ type BulkMonitorActionResult struct {
 
 	// Succeeded IDs of monitors on which the action succeeded
 	Succeeded []openapi_types.UUID `json:"succeeded"`
+}
+
+// BundleCheckResultDto defines model for BundleCheckResultDto.
+type BundleCheckResultDto struct {
+	// Findings Problems found in the supplied source files
+	Findings []Finding `json:"findings"`
+}
+
+// BundleDto defines model for BundleDto.
+type BundleDto struct {
+	// Digest Closure digest, sha256:<hex>. Same files always return this value
+	Digest string `json:"digest"`
+
+	// Files Files in the import closure
+	Files []string `json:"files"`
+
+	// Keys Secret names detected in the closure
+	Keys []string `json:"keys"`
+
+	// Size Uncompressed closure size in bytes
+	Size int64 `json:"size"`
+
+	// UploadDigest Digest of every file that was sent, before import closure
+	UploadDigest string `json:"uploadDigest"`
 }
 
 // CaptureCompareDto Screenshot compare against the last pass of this step
@@ -4136,8 +4506,11 @@ type CaptureCompareDto struct {
 // CaptureCompareDtoBaselineKind Always last_pass_this_step_this_region
 type CaptureCompareDtoBaselineKind string
 
-// CapturePolicy When to capture screenshots, traces, and video during a code run
+// CapturePolicy When to retain screenshots, traces, video, and network evidence
 type CapturePolicy struct {
+	// Network When network rows and HAR are retained; null uses always
+	Network *CapturePolicyNetwork `json:"network,omitempty"`
+
 	// Screenshots When to capture screenshots
 	Screenshots *CapturePolicyScreenshots `json:"screenshots,omitempty"`
 
@@ -4147,6 +4520,9 @@ type CapturePolicy struct {
 	// Video When to capture video
 	Video *CapturePolicyVideo `json:"video,omitempty"`
 }
+
+// CapturePolicyNetwork When network rows and HAR are retained; null uses always
+type CapturePolicyNetwork string
 
 // CapturePolicyScreenshots When to capture screenshots
 type CapturePolicyScreenshots string
@@ -4315,13 +4691,31 @@ type CodeCheckStep struct {
 	Status string `json:"status"`
 }
 
+// CodeSource Advisory source location. Untrusted, and unknown when omitted
+type CodeSource struct {
+	// Branch Branch that produced this code
+	Branch *string `json:"branch,omitempty"`
+
+	// Commit Commit that produced this code
+	Commit *string `json:"commit,omitempty"`
+
+	// File Declaring file in that repository
+	File *string `json:"file,omitempty"`
+
+	// Repo Repository that produced this code
+	Repo *string `json:"repo,omitempty"`
+}
+
 // CodeTestTargetRequest defines model for CodeTestTargetRequest.
 type CodeTestTargetRequest struct {
+	Code *MonitorCodeSpec `json:"code,omitempty"`
+
 	// EnvironmentId Environment to test against; null uses the monitor's environment
 	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
 
 	// Region Region for this test; null uses the monitor's first region
-	Region *string `json:"region,omitempty"`
+	Region  *string            `json:"region,omitempty"`
+	Session *RunSessionContext `json:"session,omitempty"`
 }
 
 // ComponentImpact One component's uptime contribution for the day
@@ -4511,7 +4905,7 @@ type ConsoleLineDto struct {
 type CreateAlertChannelRequest struct {
 	Config CreateAlertChannelRequest_Config `json:"config"`
 
-	// ManagedBy Source creating this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+	// ManagedBy Source creating this channel: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 	ManagedBy *CreateAlertChannelRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this alert channel
@@ -4523,7 +4917,7 @@ type CreateAlertChannelRequest_Config struct {
 	union json.RawMessage
 }
 
-// CreateAlertChannelRequestManagedBy Source creating this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+// CreateAlertChannelRequestManagedBy Source creating this channel: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 type CreateAlertChannelRequestManagedBy string
 
 // CreateApiKeyRequest defines model for CreateApiKeyRequest.
@@ -4533,7 +4927,19 @@ type CreateApiKeyRequest struct {
 
 	// Name Human-readable name to identify this API key
 	Name string `json:"name"`
+
+	// Preset Preset expanded into scopes: ci-pr, ci-deploy, agent-responder, agent-author
+	Preset *string `json:"preset,omitempty"`
+
+	// Scopes Scopes to grant (default: full)
+	Scopes *[]string `json:"scopes,omitempty"`
+
+	// Tool Tool this key writes as on owner-enforced monitors (default: API; CLI = GIT until 2027-01-31)
+	Tool *CreateApiKeyRequestTool `json:"tool,omitempty"`
 }
+
+// CreateApiKeyRequestTool Tool this key writes as on owner-enforced monitors (default: API; CLI = GIT until 2027-01-31)
+type CreateApiKeyRequestTool string
 
 // CreateAssertionRequest Replace all assertions. Null preserves current
 type CreateAssertionRequest struct {
@@ -4550,6 +4956,74 @@ type CreateAssertionRequest_Config struct {
 
 // CreateAssertionRequestSeverity Outcome severity: FAIL (fails the check) or WARN (warns without failing, default: FAIL)
 type CreateAssertionRequestSeverity string
+
+// CreateBundleRequest defines model for CreateBundleRequest.
+type CreateBundleRequest struct {
+	// Entrypoint File that runs. Omit when the map is already the import closure
+	Entrypoint *string `json:"entrypoint,omitempty"`
+
+	// Files Path to UTF-8 text. Paths are relative to the bundle root
+	Files map[string]string `json:"files"`
+
+	// RuntimeId Runtime used to refuse imports. Omit for the newest runtime that can run
+	RuntimeId *string `json:"runtimeId,omitempty"`
+}
+
+// CreateDemoBookingRequest defines model for CreateDemoBookingRequest.
+type CreateDemoBookingRequest struct {
+	// AttemptId Booking identifier reused when retrying the same time
+	AttemptId openapi_types.UUID `json:"attemptId"`
+
+	// Attribution Marketing attribution captured with this request
+	Attribution map[string]string `json:"attribution"`
+
+	// CompanyUrl Optional company website URL
+	CompanyUrl string `json:"companyUrl"`
+
+	// Email Email address for the calendar invitation
+	Email openapi_types.Email `json:"email"`
+
+	// FullName Your full name
+	FullName string `json:"fullName"`
+
+	// LeadId Lead identifier reused for this form submission
+	LeadId openapi_types.UUID `json:"leadId"`
+
+	// Message Optional context for your demo
+	Message string `json:"message"`
+
+	// Product Product you would like to explore
+	Product string `json:"product"`
+
+	// SlotToken Availability token for the selected time
+	SlotToken string `json:"slotToken"`
+
+	// StartTime Selected demo start time in UTC
+	StartTime time.Time `json:"startTime"`
+
+	// Timezone IANA timezone for your calendar invitation
+	Timezone string `json:"timezone"`
+}
+
+// CreateDeviceAuthorizationRequest Start a device-code login so the CLI can receive an API key
+type CreateDeviceAuthorizationRequest struct {
+	// ClientName Client name stored on the minted API key, e.g. devhelm-cli on mbp (max 190)
+	ClientName string `json:"clientName"`
+}
+
+// CreateDraftRevisionRequest defines model for CreateDraftRevisionRequest.
+type CreateDraftRevisionRequest struct {
+	// Code Bundle digest and entrypoint to publish as the live revision
+	Code MonitorCodeSpec `json:"code"`
+}
+
+// CreateDraftRevisionResponse Draft revision, and the draft discarded when the cap was full
+type CreateDraftRevisionResponse struct {
+	Evicted *RevisionDto `json:"evicted,omitempty"`
+
+	// Revision Definition revision package
+	Revision RevisionDto `json:"revision"`
+}
 
 // CreateEmailDomainRequest Create an email testing receive domain
 type CreateEmailDomainRequest struct {
@@ -4644,6 +5118,7 @@ type CreateMonitorRequest struct {
 	Assertions    *[]CreateAssertionRequest    `json:"assertions,omitempty"`
 	Auth          *MonitorAuthConfig           `json:"auth,omitempty"`
 	CapturePolicy *CapturePolicy               `json:"capturePolicy,omitempty"`
+	Code          *MonitorCodeSpec             `json:"code,omitempty"`
 	Config        *CreateMonitorRequest_Config `json:"config,omitempty"`
 
 	// DefinitionId Existing definition to reuse for a sibling monitor
@@ -4658,23 +5133,32 @@ type CreateMonitorRequest struct {
 	// FastRetryMaxAttempts Fast-retry attempts after failure. Null or 0 disables
 	FastRetryMaxAttempts *int32 `json:"fastRetryMaxAttempts,omitempty"`
 
-	// FrequencySeconds Check frequency in seconds (10–86400). Null defaults to the plan minimum
+	// FrequencySeconds Check frequency in seconds; minimum depends on plan (default: plan minimum)
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
-	// ManagedBy Source that created this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API
+	// ManagedBy Source that created this monitor: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API
 	ManagedBy *CreateMonitorRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this monitor
-	Name    string              `json:"name"`
-	Package *MonitorPackageSpec `json:"package,omitempty"`
+	Name             string            `json:"name"`
+	OwnerDeclaration *OwnerDeclaration `json:"ownerDeclaration,omitempty"`
+
+	// OwnerEnforced Only the managedBy tool may change configuration (default: false)
+	OwnerEnforced *bool `json:"ownerEnforced,omitempty"`
+
+	// OwnerProject Project the owning tool declares for this monitor, e.g. acme/web
+	OwnerProject *string `json:"ownerProject,omitempty"`
 
 	// Regions Probe regions to run checks from. Allowed values are deployment-dependent. Production: us-east, us-west, eu-west, ap-south
 	Regions *[]string `json:"regions,omitempty"`
 
 	// RunParallel When multiple locations are set, run all of them each interval (default: true). false rotates one location per interval
-	RunParallel *bool                  `json:"runParallel,omitempty"`
-	Tags        *AddMonitorTagsRequest `json:"tags,omitempty"`
+	RunParallel *bool `json:"runParallel,omitempty"`
+
+	// SecretKeys Secret keys to attach; null starts with the scanned set
+	SecretKeys *[]string              `json:"secretKeys,omitempty"`
+	Tags       *AddMonitorTagsRequest `json:"tags,omitempty"`
 
 	// Type Monitor protocol type
 	Type CreateMonitorRequestType `json:"type"`
@@ -4685,7 +5169,7 @@ type CreateMonitorRequest_Config struct {
 	union json.RawMessage
 }
 
-// CreateMonitorRequestManagedBy Source that created this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API
+// CreateMonitorRequestManagedBy Source that created this monitor: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API
 type CreateMonitorRequestManagedBy string
 
 // CreateMonitorRequestType Monitor protocol type
@@ -4710,12 +5194,6 @@ type CreateNotificationPolicyRequest struct {
 
 	// Priority Evaluation priority; higher value = evaluated first (default 0)
 	Priority *int32 `json:"priority,omitempty"`
-}
-
-// CreatePackageUploadRequest defines model for CreatePackageUploadRequest.
-type CreatePackageUploadRequest struct {
-	// Digest SHA-256 hex digest of the package zip to upload (64 chars)
-	Digest string `json:"digest"`
 }
 
 // CreateResourceGroupRequest Request body for creating a resource group
@@ -4748,7 +5226,7 @@ type CreateResourceGroupRequest struct {
 	// HealthThresholdValue Health threshold value: count (0+) or percentage (0–100)
 	HealthThresholdValue *float32 `json:"healthThresholdValue,omitempty"`
 
-	// ManagedBy Source creating this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+	// ManagedBy Source creating this group: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 	ManagedBy *CreateResourceGroupRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this group
@@ -4764,7 +5242,7 @@ type CreateResourceGroupRequest struct {
 // CreateResourceGroupRequestHealthThresholdType Health threshold type: COUNT or PERCENTAGE
 type CreateResourceGroupRequestHealthThresholdType string
 
-// CreateResourceGroupRequestManagedBy Source creating this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+// CreateResourceGroupRequestManagedBy Source creating this group: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 type CreateResourceGroupRequestManagedBy string
 
 // CreateSecretRequest defines model for CreateSecretRequest.
@@ -4930,7 +5408,7 @@ type CreateStatusPageRequest struct {
 	// IncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC (default: AUTOMATIC)
 	IncidentMode *CreateStatusPageRequestIncidentMode `json:"incidentMode,omitempty"`
 
-	// ManagedBy Source creating this page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+	// ManagedBy Source creating this page: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 	ManagedBy *CreateStatusPageRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this status page
@@ -4946,7 +5424,7 @@ type CreateStatusPageRequest struct {
 // CreateStatusPageRequestIncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC (default: AUTOMATIC)
 type CreateStatusPageRequestIncidentMode string
 
-// CreateStatusPageRequestManagedBy Source creating this page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+// CreateStatusPageRequestManagedBy Source creating this page: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 type CreateStatusPageRequestManagedBy string
 
 // CreateStatusPageRequestVisibility Page visibility: PUBLIC, PASSWORD, or IP_RESTRICTED (default: PUBLIC)
@@ -5073,6 +5551,18 @@ type CursorPageIncidentActivityEventDto struct {
 	NextCursor *string `json:"nextCursor,omitempty"`
 }
 
+// CursorPageMonitorHistoryEntryDto Cursor-paginated response for time-series and append-only data
+type CursorPageMonitorHistoryEntryDto struct {
+	// Data Items on this page
+	Data []MonitorHistoryEntryDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
 // CursorPageNotificationDispatchDto Cursor-paginated response for time-series and append-only data
 type CursorPageNotificationDispatchDto struct {
 	// Data Items on this page
@@ -5089,6 +5579,30 @@ type CursorPageNotificationDispatchDto struct {
 type CursorPageRunDto struct {
 	// Data Items on this page
 	Data []RunDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
+// CursorPageRunRevisionMarkerDto Cursor-paginated response for time-series and append-only data
+type CursorPageRunRevisionMarkerDto struct {
+	// Data Items on this page
+	Data []RunRevisionMarkerDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
+// CursorPageRunSkippedEntryDto Cursor-paginated response for time-series and append-only data
+type CursorPageRunSkippedEntryDto struct {
+	// Data Items on this page
+	Data []RunSkippedEntryDto `json:"data"`
 
 	// HasMore Whether more results exist beyond this page
 	HasMore bool `json:"hasMore"`
@@ -5236,7 +5750,8 @@ type DefinitionHeadDto struct {
 	ActivatedAt time.Time `json:"activatedAt"`
 
 	// ActivatedBy Who last activated this Head
-	ActivatedBy *string `json:"activatedBy,omitempty"`
+	ActivatedBy      *string          `json:"activatedBy,omitempty"`
+	ActivatedByActor *ActorDisplayDto `json:"activatedByActor,omitempty"`
 
 	// DefinitionId Definition this Head belongs to
 	DefinitionId openapi_types.UUID `json:"definitionId"`
@@ -5244,11 +5759,20 @@ type DefinitionHeadDto struct {
 	// Environment Environment with variable substitutions for monitor configs
 	Environment EnvironmentDto `json:"environment"`
 
+	// LinkedIncidents Open incidents on this monitor
+	LinkedIncidents *[]LinkedIncidentDto `json:"linkedIncidents,omitempty"`
+
+	// Note Note from the latest publish
+	Note *string `json:"note,omitempty"`
+
 	// Reason Rollback reason when this Head was restored
 	Reason *string `json:"reason,omitempty"`
 
 	// Revision Definition revision package
 	Revision RevisionDto `json:"revision"`
+
+	// RolledBackDigest Digest the last rollback replaced; cleared by the next publish
+	RolledBackDigest *string `json:"rolledBackDigest,omitempty"`
 }
 
 // DekRotationResultDto Result of a data encryption key rotation operation
@@ -5311,16 +5835,45 @@ type DeliveryAttemptDto struct {
 	Status string `json:"status"`
 }
 
-// DemandedKeyLocation Per-key declaring file and location from package scan
-type DemandedKeyLocation struct {
-	// DeclaringFile Declaring file path inside the zip
-	DeclaringFile *string `json:"declaringFile,omitempty"`
+// DemoAvailabilityDto defines model for DemoAvailabilityDto.
+type DemoAvailabilityDto struct {
+	// Slots Available demo times in UTC
+	Slots []Slot `json:"slots"`
+}
 
-	// DeclaringLocation Call site from package scan, e.g. signIn(…) · line 6
-	DeclaringLocation *string `json:"declaringLocation,omitempty"`
+// DemoBookingDto defines model for DemoBookingDto.
+type DemoBookingDto struct {
+	// CancelUrl Link to cancel the confirmed demo
+	CancelUrl *string `json:"cancelUrl,omitempty"`
 
-	// Key Secret name the code reads
-	Key string `json:"key"`
+	// ErrorCode Reason the booking could not be confirmed
+	ErrorCode *string `json:"errorCode,omitempty"`
+
+	// Id Identifier for this booking attempt
+	Id openapi_types.UUID `json:"id"`
+
+	// MeetingUrl Link to join the confirmed demo
+	MeetingUrl *string `json:"meetingUrl,omitempty"`
+
+	// RescheduleUrl Link to reschedule the confirmed demo
+	RescheduleUrl *string `json:"rescheduleUrl,omitempty"`
+
+	// StartTime Demo start time in UTC
+	StartTime time.Time `json:"startTime"`
+
+	// State Current booking state
+	State string `json:"state"`
+
+	// Timezone Timezone for the calendar invitation
+	Timezone string `json:"timezone"`
+}
+
+// DemoBookingRecoveryDto defines model for DemoBookingRecoveryDto.
+type DemoBookingRecoveryDto struct {
+	Booking *DemoBookingDto `json:"booking,omitempty"`
+
+	// Closed Whether this unsaved attempt is closed and can be retried
+	Closed bool `json:"closed"`
 }
 
 // DeployLockDto Represents an active deploy lock for a workspace
@@ -5336,6 +5889,51 @@ type DeployLockDto struct {
 
 	// LockedBy Identity of the lock holder (e.g. CLI session ID, username)
 	LockedBy string `json:"lockedBy"`
+}
+
+// DeviceAuthorizationDto Device-code challenge the CLI polls until an admin approves it
+type DeviceAuthorizationDto struct {
+	// DeviceCode Secret code the CLI sends when polling for the API key
+	DeviceCode string `json:"deviceCode"`
+
+	// ExpiresIn Seconds until the codes expire
+	ExpiresIn int32 `json:"expiresIn"`
+
+	// Interval Minimum seconds between token polls
+	Interval int32 `json:"interval"`
+
+	// UserCode Short code the user confirms in the dashboard, e.g. ABCD-EFGH
+	UserCode string `json:"userCode"`
+
+	// VerificationUri Dashboard page where the user enters the code
+	VerificationUri string `json:"verificationUri"`
+
+	// VerificationUriComplete Dashboard page with the user code already filled in
+	VerificationUriComplete string `json:"verificationUriComplete"`
+}
+
+// DeviceTokenDto Result of polling a device-code login
+type DeviceTokenDto struct {
+	// ApiKey Minted API key, returned once with status complete
+	ApiKey *string `json:"apiKey,omitempty"`
+
+	// Interval Minimum seconds before the next poll
+	Interval int32 `json:"interval"`
+
+	// OrganizationId Organization that owns the minted API key
+	OrganizationId *int32 `json:"organizationId,omitempty"`
+
+	// Status Poll outcome
+	Status string `json:"status"`
+
+	// WorkspaceId Workspace chosen when the login was approved
+	WorkspaceId *int32 `json:"workspaceId,omitempty"`
+}
+
+// DeviceTokenRequest Poll a device-code login for the minted API key
+type DeviceTokenRequest struct {
+	// DeviceCode Device code returned when the login was started
+	DeviceCode string `json:"deviceCode"`
 }
 
 // DiscordChannelConfig defines model for DiscordChannelConfig.
@@ -5355,8 +5953,8 @@ type DiscordChannelConfigChannelType string
 // Dns DNS check-type-specific details
 type Dns struct {
 	// Attempts DNS resolution attempts
-	Attempts  *[]*map[string]*map[string]interface{} `json:"attempts,omitempty"`
-	CheckType DnsCheckType                           `json:"check_type"`
+	Attempts  *[]*map[string]*json.RawMessage `json:"attempts,omitempty"`
+	CheckType DnsCheckType                    `json:"check_type"`
 
 	// FailureKind Kind of DNS failure, if any
 	FailureKind *string `json:"failureKind,omitempty"`
@@ -5365,7 +5963,7 @@ type Dns struct {
 	Hostname *string `json:"hostname,omitempty"`
 
 	// Records Resolved DNS records keyed by record type
-	Records *map[string]*[]*map[string]*map[string]interface{} `json:"records,omitempty"`
+	Records *map[string]*[]*map[string]*json.RawMessage `json:"records,omitempty"`
 
 	// RequestedTypes Requested DNS record types
 	RequestedTypes *[]*string `json:"requestedTypes,omitempty"`
@@ -5712,6 +6310,36 @@ type EntitlementDto struct {
 	Value int64 `json:"value"`
 }
 
+// EntitlementResponse Full entitlement state for an organization: resolved limits, usage, and trial info
+type EntitlementResponse struct {
+	// CapStops Stopped meters keyed by meter name, with included or spend_cap reasons
+	CapStops *map[string]*string `json:"capStops,omitempty"`
+
+	// Entitlements All entitlements keyed by entitlement key
+	Entitlements map[string]EntitlementDto `json:"entitlements"`
+
+	// SubscriptionStatus Current subscription status (null if no subscription)
+	SubscriptionStatus *string `json:"subscriptionStatus,omitempty"`
+
+	// SyntheticsOverageCents Consumed overage cents this period, including when overage is now off
+	SyntheticsOverageCents *int64 `json:"syntheticsOverageCents,omitempty"`
+
+	// Tier Resolved billing plan tier
+	Tier string `json:"tier"`
+
+	// TrialActive Whether the org is currently on a trial
+	TrialActive bool `json:"trialActive"`
+
+	// TrialExpiresAt Trial expiry date (null if not trialing)
+	TrialExpiresAt *time.Time `json:"trialExpiresAt,omitempty"`
+
+	// Usage Current usage counters keyed by entitlement key (only for countable resources)
+	Usage map[string]int64 `json:"usage"`
+
+	// UsagePeriodStart Start of the current usage window
+	UsagePeriodStart time.Time `json:"usagePeriodStart"`
+}
+
 // EnvironmentDto Environment with variable substitutions for monitor configs
 type EnvironmentDto struct {
 	// CreatedAt Timestamp when the environment was created
@@ -5778,7 +6406,7 @@ type ErrorResponse struct {
 	Code string `json:"code"`
 
 	// Details Extra fields for this error, such as a missing secret key and environment
-	Details *map[string]interface{} `json:"details,omitempty"`
+	Details *map[string]*json.RawMessage `json:"details,omitempty"`
 
 	// Errors Structured per-field rejections; populated for validation errors, null otherwise
 	Errors *[]*ErrorEntry `json:"errors,omitempty"`
@@ -5793,10 +6421,8 @@ type ErrorResponse struct {
 	Limit *int64 `json:"limit,omitempty"`
 
 	// Message Human-readable error message; safe to surface to end users
-	Message string `json:"message"`
-
-	// Next Command and docs that fix this error
-	Next *ErrorNext `json:"next,omitempty"`
+	Message string     `json:"message"`
+	Next    *ErrorNext `json:"next,omitempty"`
 
 	// Owner Who owns the resource when a write is refused
 	Owner *string `json:"owner,omitempty"`
@@ -5868,13 +6494,63 @@ type EscalationStep struct {
 	RequireAck *bool `json:"requireAck,omitempty"`
 }
 
+// EvidencePurgeRequest Purge of stored evidence
+type EvidencePurgeRequest struct {
+	// Reason Why the evidence must be deleted; kept in the audit log (max 500)
+	Reason string `json:"reason"`
+}
+
+// EvidencePurgedMetadata Reason recorded when stored evidence is purged
+type EvidencePurgedMetadata struct {
+	Kind EvidencePurgedMetadataKind `json:"kind"`
+
+	// Reason Why the evidence was deleted
+	Reason string `json:"reason"`
+}
+
+// EvidencePurgedMetadataKind defines model for EvidencePurgedMetadata.Kind.
+type EvidencePurgedMetadataKind string
+
 // FailureDetail Details about a single monitor that failed the bulk action
 type FailureDetail struct {
+	// Code Error code for the failure, as returned by the single-monitor operation
+	Code *string `json:"code,omitempty"`
+
 	// MonitorId Monitor ID that failed
 	MonitorId openapi_types.UUID `json:"monitorId"`
 
 	// Reason Human-readable reason for the failure
 	Reason string `json:"reason"`
+}
+
+// Finding Problems found in the supplied source files
+type Finding struct {
+	// Code Import validation code
+	Code string `json:"code"`
+
+	// File Source file containing the import
+	File *string `json:"file,omitempty"`
+
+	// Line One-based source line containing the import
+	Line *int32 `json:"line,omitempty"`
+
+	// Message Description of the import problem
+	Message string `json:"message"`
+}
+
+// Flakiness Completed region-cycle retry recovery counts
+type Flakiness struct {
+	// CycleCount Completed region cycles in this window
+	CycleCount int64 `json:"cycleCount"`
+
+	// FlakyCycleCount Completed region cycles recovered by retry
+	FlakyCycleCount int64 `json:"flakyCycleCount"`
+
+	// From Start of the seven-day measurement window
+	From time.Time `json:"from"`
+
+	// To Exclusive end of the measurement window
+	To time.Time `json:"to"`
 }
 
 // GitLabChannelConfig defines model for GitLabChannelConfig.
@@ -6460,6 +7136,9 @@ type IncidentDto struct {
 	// TriggeringCheckId Scheduler-minted check execution ID whose result confirmed this incident; joins to check_results, rule_evaluations, and incident_state_transitions. Omitted from JSON (undefined to SDKs) when null, treat missing as null.
 	TriggeringCheckId *openapi_types.UUID `json:"triggeringCheckId,omitempty"`
 
+	// TriggeringRunId Code-monitor run whose failing tick confirmed this incident; null for uptime
+	TriggeringRunId *openapi_types.UUID `json:"triggeringRunId,omitempty"`
+
 	// UpdatedAt Timestamp when the incident was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 }
@@ -6523,60 +7202,6 @@ type IncidentFailingMemberSnapshotDto struct {
 	// ServiceId Service ID when memberType is service
 	ServiceId *openapi_types.UUID `json:"serviceId,omitempty"`
 }
-
-// IncidentFilterParams defines model for IncidentFilterParams.
-type IncidentFilterParams struct {
-	// EnvironmentId Only return incidents whose monitor lives in this environment
-	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
-
-	// ExcludeId Exclude this incident ID from results (related-incident lists)
-	ExcludeId *openapi_types.UUID `json:"excludeId,omitempty"`
-
-	// MonitorId Only return incidents tied to this monitor ID
-	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
-
-	// Page Zero-based page index (default: 0)
-	Page int32 `json:"page"`
-
-	// ResourceGroupId Only return incidents owned by this resource group (incidents.resource_group_id)
-	ResourceGroupId *openapi_types.UUID `json:"resourceGroupId,omitempty"`
-
-	// Search Case-insensitive substring match on title or incident ID
-	Search *string `json:"search,omitempty"`
-
-	// ServiceId Only return incidents tied to this service ID (third-party services)
-	ServiceId *openapi_types.UUID `json:"serviceId,omitempty"`
-
-	// Severity Filter by severity; null returns every severity
-	Severity *IncidentFilterParamsSeverity `json:"severity,omitempty"`
-
-	// Size Number of incidents per page (1–200, default: 10)
-	Size int32 `json:"size"`
-
-	// Source Filter by where the incident originated (auto, manual, third-party)
-	Source *IncidentFilterParamsSource `json:"source,omitempty"`
-
-	// StartedFrom Earliest startedAt to include (inclusive, ISO 8601)
-	StartedFrom *time.Time `json:"startedFrom,omitempty"`
-
-	// StartedTo Latest startedAt to include (inclusive, ISO 8601)
-	StartedTo *time.Time `json:"startedTo,omitempty"`
-
-	// Status Filter by incident lifecycle status; null returns every status
-	Status *IncidentFilterParamsStatus `json:"status,omitempty"`
-
-	// TagId Only return incidents whose monitor carries this tag
-	TagId *openapi_types.UUID `json:"tagId,omitempty"`
-}
-
-// IncidentFilterParamsSeverity Filter by severity; null returns every severity
-type IncidentFilterParamsSeverity string
-
-// IncidentFilterParamsSource Filter by where the incident originated (auto, manual, third-party)
-type IncidentFilterParamsSource string
-
-// IncidentFilterParamsStatus Filter by incident lifecycle status; null returns every status
-type IncidentFilterParamsStatus string
 
 // IncidentIoChannelConfig defines model for IncidentIoChannelConfig.
 type IncidentIoChannelConfig struct {
@@ -6710,7 +7335,8 @@ type IncidentTriggerDto struct {
 	Source string `json:"source"`
 
 	// Threshold Rule required count or threshold_ms from forensics; null when unavailable
-	Threshold *int32 `json:"threshold,omitempty"`
+	Threshold     *int32  `json:"threshold,omitempty"`
+	TriggeringRun *RunDto `json:"triggeringRun,omitempty"`
 }
 
 // IncidentUpdateDto defines model for IncidentUpdateDto.
@@ -6821,6 +7447,27 @@ type InviteDto struct {
 	RoleOffered string `json:"roleOffered"`
 }
 
+// Item At most 100 monitor chips; counts cover the complete population
+type Item struct {
+	// Bucket Display bucket: failing, flaky, or healthy
+	Bucket string `json:"bucket"`
+
+	// FlakyRate Current seven-day fraction of retry-saved cycles
+	FlakyRate *float64 `json:"flakyRate,omitempty"`
+
+	// Monitor Full monitor representation
+	Monitor MonitorDto `json:"monitor"`
+
+	// StreakStartedAt Earliest recorded failure after the last retained passing group
+	StreakStartedAt *time.Time `json:"streakStartedAt,omitempty"`
+
+	// StreakTruncated True when retention prevents proving the failure streak start
+	StreakTruncated bool `json:"streakTruncated"`
+
+	// WorstRegion Region deciding this cycle display verdict
+	WorstRegion *string `json:"worstRegion,omitempty"`
+}
+
 // JiraChannelConfig defines model for JiraChannelConfig.
 type JiraChannelConfig struct {
 	// ApiToken Atlassian API token
@@ -6878,6 +7525,12 @@ type KeyInfo struct {
 
 	// Name Human-readable key name
 	Name string `json:"name"`
+
+	// Scopes Scopes this key is allowed to call; full grants everything
+	Scopes []string `json:"scopes"`
+
+	// Tool Tool this key writes as on owner-enforced monitors
+	Tool *string `json:"tool,omitempty"`
 }
 
 // LinearChannelConfig defines model for LinearChannelConfig.
@@ -6895,6 +7548,21 @@ type LinearChannelConfig struct {
 
 // LinearChannelConfigChannelType defines model for LinearChannelConfig.ChannelType.
 type LinearChannelConfigChannelType string
+
+// LinkedIncidentDto Open incident on a monitor affected by this rollback
+type LinkedIncidentDto struct {
+	// Id Incident identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// MonitorId Monitor the incident belongs to
+	MonitorId openapi_types.UUID `json:"monitorId"`
+
+	// Status Incident status
+	Status string `json:"status"`
+
+	// Title Incident title
+	Title *string `json:"title,omitempty"`
+}
 
 // LinkedStatusPageIncidentDto defines model for LinkedStatusPageIncidentDto.
 type LinkedStatusPageIncidentDto struct {
@@ -7139,7 +7807,7 @@ type McpServer struct {
 	ResourceCount *int32 `json:"resourceCount,omitempty"`
 
 	// ServerInfo MCP server info (name, version, etc.)
-	ServerInfo *map[string]*map[string]interface{} `json:"serverInfo,omitempty"`
+	ServerInfo *map[string]*json.RawMessage `json:"serverInfo,omitempty"`
 
 	// ToolCount Number of tools exposed
 	ToolCount *int32 `json:"toolCount,omitempty"`
@@ -7218,6 +7886,18 @@ type MemberRoleChangedMetadata struct {
 // MemberRoleChangedMetadataKind defines model for MemberRoleChangedMetadata.Kind.
 type MemberRoleChangedMetadataKind string
 
+// Meter Multi-step API usage totals
+type Meter struct {
+	// Included Included runs; null means unlimited
+	Included *int64 `json:"included,omitempty"`
+
+	// TestRuns Billable validation runs included in consumed runs
+	TestRuns int64 `json:"testRuns"`
+
+	// Used Billable runs consumed
+	Used int64 `json:"used"`
+}
+
 // MonitorAssertionDto defines model for MonitorAssertionDto.
 type MonitorAssertionDto struct {
 	AssertionType string                     `json:"assertionType"`
@@ -7250,10 +7930,88 @@ type MonitorAuthDto_Config struct {
 	union json.RawMessage
 }
 
-// MonitorDriftDto Live overlay drift against the implied declared baseline
+// MonitorBatchHistoryDto History for a set of monitors
+type MonitorBatchHistoryDto struct {
+	// Monitors One entry per requested monitor that exists in the workspace
+	Monitors []MonitorBatchHistoryItemDto `json:"monitors"`
+}
+
+// MonitorBatchHistoryItemDto Availability, p95 latency and ticks of one monitor over the window
+type MonitorBatchHistoryItemDto struct {
+	// Availability Share of checks that passed, 0–100; null when no checks ran
+	Availability *float64 `json:"availability,omitempty"`
+
+	// DisplayTicks 48 display buckets; present only when density=48
+	DisplayTicks *[]MonitorDisplayTickDto `json:"displayTicks,omitempty"`
+
+	// Id Monitor identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// P95 95th percentile response time in milliseconds; null when none recorded
+	P95 *float64 `json:"p95,omitempty"`
+
+	// Ticks Outcome per time bucket, oldest first
+	Ticks []MonitorHistoryTickDto `json:"ticks"`
+}
+
+// MonitorCappedDto Run allowance that is keeping a code monitor from running
+type MonitorCappedDto struct {
+	// Kind Allowance stopping this meter: included or spend_cap
+	Kind *string `json:"kind,omitempty"`
+
+	// ResumesAt When runs resume; null when unknown
+	ResumesAt *time.Time `json:"resumesAt,omitempty"`
+}
+
+// MonitorCodeSpec Bundle digest and entrypoint to publish as the live revision
+type MonitorCodeSpec struct {
+	// Bundle Closure digest from POST /bundles (sha256:<hex>)
+	Bundle string `json:"bundle"`
+
+	// Entrypoint File that runs, relative to the bundle root
+	Entrypoint string      `json:"entrypoint"`
+	Source     *CodeSource `json:"source,omitempty"`
+}
+
+// MonitorDisplayTickDto Display history bucket; infrastructure outcomes do not vote on target health
+type MonitorDisplayTickDto struct {
+	// At Inclusive start of this bucket
+	At time.Time `json:"at"`
+
+	// FailingRegions Regions with a target failure in this bucket
+	FailingRegions []string `json:"failingRegions"`
+
+	// Outcome passed, failed, degraded, timed_out, passed_on_retry, couldnt_run, skipped, or no_data
+	Outcome string `json:"outcome"`
+
+	// RetryPassCount Region cycles that passed after retry in this bucket
+	RetryPassCount int64 `json:"retryPassCount"`
+
+	// RunId Representative run to open for this bucket
+	RunId *openapi_types.UUID `json:"runId,omitempty"`
+}
+
+// MonitorDriftCodeDto Live code digest compared with the last digest applied from Git
+type MonitorDriftCodeDto struct {
+	// Drifted Whether the live digest differs from the Git digest
+	Drifted bool `json:"drifted"`
+
+	// GitDigest Digest of the code revision last applied from Git
+	GitDigest string `json:"gitDigest"`
+
+	// LiveDigest Digest of the code revision running now
+	LiveDigest string `json:"liveDigest"`
+}
+
+// MonitorDriftDto How the live monitor differs from what was last applied from code
 type MonitorDriftDto struct {
+	Code *MonitorDriftCodeDto `json:"code,omitempty"`
+
 	// Fields Fields whose live overlay differs from the declared baseline
 	Fields []MonitorDriftFieldDto `json:"fields"`
+
+	// Settings Settings that differ from the last values applied from Git; null without a settings baseline
+	Settings *[]MonitorDriftSettingDto `json:"settings,omitempty"`
 }
 
 // MonitorDriftFieldDto One field where live state differs from declared
@@ -7268,6 +8026,25 @@ type MonitorDriftFieldDto struct {
 	Live string `json:"live"`
 }
 
+// MonitorDriftSettingDto One setting where the live value differs from Git
+type MonitorDriftSettingDto struct {
+	// ChangedAt When this setting was last changed
+	ChangedAt *time.Time `json:"changedAt,omitempty"`
+	ChangedBy *UserDto   `json:"changedBy,omitempty"`
+
+	// Field Setting name: frequency or regions
+	Field string `json:"field"`
+
+	// Git Value last applied from Git, in the same format as live
+	Git string `json:"git"`
+
+	// Live Live value: seconds for frequency, comma-separated ids for regions
+	Live string `json:"live"`
+
+	// Reason Recorded reason; null when no reason was stored
+	Reason *string `json:"reason,omitempty"`
+}
+
 // MonitorDto Full monitor representation
 type MonitorDto struct {
 	// AlertChannelIds Alert channel IDs linked to this monitor; populated on single-monitor responses
@@ -7280,19 +8057,30 @@ type MonitorDto struct {
 	// BindingReadiness Secret binding state: ready, blocked, or not_applicable
 	BindingReadiness *string `json:"bindingReadiness,omitempty"`
 
+	// BlockedKeys Secret keys missing while the monitor is blocked
+	BlockedKeys *[]string `json:"blockedKeys,omitempty"`
+
 	// BoundStatusPageComponents Status-page components that represent this monitor; omitted when none
 	BoundStatusPageComponents *[]StatusPageBoundComponentDto `json:"boundStatusPageComponents,omitempty"`
+	Capped                    *MonitorCappedDto              `json:"capped,omitempty"`
 	CapturePolicy             *CapturePolicy                 `json:"capturePolicy,omitempty"`
 	Config                    MonitorDto_Config              `json:"config"`
 
 	// CreatedAt Timestamp when the monitor was created
 	CreatedAt time.Time `json:"createdAt"`
 
+	// CreatedVia Client that originally created the monitor
+	CreatedVia *string `json:"createdVia,omitempty"`
+
 	// CurrentStatus Current operational state. One of UP, DOWN, DEGRADED, PAUSED, or UNKNOWN
 	CurrentStatus *string `json:"currentStatus,omitempty"`
 
 	// DefinitionId Definition id for a browser or multi-step monitor. Null on probe monitors
 	DefinitionId *openapi_types.UUID `json:"definitionId,omitempty"`
+
+	// DeletedAt When the monitor was moved to Trash
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
+	DeletedBy *UserDto   `json:"deletedBy,omitempty"`
 
 	// DisplayHealth List and header chip health; not currentStatus and not evaluation state
 	DisplayHealth *string `json:"displayHealth,omitempty"`
@@ -7304,12 +8092,30 @@ type MonitorDto struct {
 	// FastRetryMaxAttempts Fast-retry max attempts; null/0 = off
 	FastRetryMaxAttempts *int32 `json:"fastRetryMaxAttempts,omitempty"`
 
-	// FrequencySeconds Check frequency in seconds (30–86400)
+	// FlakyRate Share of recent cycles that passed only after a retry, 0–1; null when not flaky
+	FlakyRate *float64 `json:"flakyRate,omitempty"`
+
+	// FlakySeverity How flaky the monitor is: LOW, MEDIUM, or HIGH
+	FlakySeverity *string `json:"flakySeverity,omitempty"`
+
+	// FlakySince When the first retry-passed cycle in the last 7 days finished
+	FlakySince *time.Time `json:"flakySince,omitempty"`
+
+	// FrequencySeconds Check frequency in seconds; minimum depends on plan
 	FrequencySeconds int32 `json:"frequencySeconds"`
 
 	// Id Unique monitor identifier
 	Id             openapi_types.UUID `json:"id"`
 	IncidentPolicy *IncidentPolicyDto `json:"incidentPolicy,omitempty"`
+
+	// LastCheckOutcome Result of the most recent check in any region: PASSED, DEGRADED, or FAILED
+	LastCheckOutcome *string `json:"lastCheckOutcome,omitempty"`
+
+	// LastCheckRegion Region of the most recent check
+	LastCheckRegion *string `json:"lastCheckRegion,omitempty"`
+
+	// LastFailureSummary Why the latest failing region failed
+	LastFailureSummary *string `json:"lastFailureSummary,omitempty"`
 
 	// LastRunAt When the latest code run was enqueued
 	LastRunAt *time.Time `json:"lastRunAt,omitempty"`
@@ -7317,8 +8123,20 @@ type MonitorDto struct {
 	// LastRunId Latest code run id
 	LastRunId *openapi_types.UUID `json:"lastRunId,omitempty"`
 
-	// ManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API
+	// LastStateChangeAt When the monitor last changed state: paused, evaluation change, or incident open or resolve
+	LastStateChangeAt *time.Time `json:"lastStateChangeAt,omitempty"`
+
+	// LiveRevisionDigest Closure digest of the revision scheduled runs execute
+	LiveRevisionDigest *string `json:"liveRevisionDigest,omitempty"`
+
+	// LiveRevisionId Revision scheduled runs execute
+	LiveRevisionId *openapi_types.UUID `json:"liveRevisionId,omitempty"`
+
+	// ManagedBy Source that created/owns this monitor: DASHBOARD, GIT, TERRAFORM, MCP or API
 	ManagedBy string `json:"managedBy"`
+
+	// MissingKeys Secret keys missing while the monitor is blocked
+	MissingKeys *[]string `json:"missingKeys,omitempty"`
 
 	// MuteReason Optional mute reason
 	MuteReason *string `json:"muteReason,omitempty"`
@@ -7339,7 +8157,11 @@ type MonitorDto struct {
 	OpenIncident *openapi_types.UUID `json:"openIncident,omitempty"`
 
 	// OrganizationId Organization this monitor belongs to
-	OrganizationId int32 `json:"organizationId"`
+	OrganizationId int32            `json:"organizationId"`
+	Owner          *MonitorOwnerDto `json:"owner,omitempty"`
+
+	// OwnerEnforced Whether only the managedBy tool may change this monitor's configuration
+	OwnerEnforced bool `json:"ownerEnforced"`
 
 	// PauseExpiresAt Pause expiry
 	PauseExpiresAt *time.Time `json:"pauseExpiresAt,omitempty"`
@@ -7362,25 +8184,166 @@ type MonitorDto struct {
 	// QuarantineUntil Quarantine expiry; non-null means quarantined
 	QuarantineUntil *time.Time `json:"quarantineUntil,omitempty"`
 
+	// RegionHealth Latest verdict per region the monitor runs from; null while paused
+	RegionHealth *[]MonitorRegionHealthDto `json:"regionHealth,omitempty"`
+
 	// Regions Probe regions where checks are executed
 	Regions []string `json:"regions"`
+
+	// ResumesAt When a capped monitor resumes
+	ResumesAt *time.Time `json:"resumesAt,omitempty"`
 
 	// RunParallel When multiple locations are set, run all of them each interval. False rotates one location per interval
 	RunParallel *bool `json:"runParallel,omitempty"`
 
+	// SecretKeys Explicit attached secret keys; null uses scanned demand
+	SecretKeys *[]string `json:"secretKeys,omitempty"`
+
 	// Tags Tags applied to this monitor
-	Tags *[]TagDto `json:"tags,omitempty"`
-	Type string    `json:"type"`
+	Tags   *[]TagDto         `json:"tags,omitempty"`
+	Triage *MonitorTriageDto `json:"triage,omitempty"`
+	Type   string            `json:"type"`
 
 	// UpdatedAt Timestamp when the monitor was last updated
 	UpdatedAt       time.Time                  `json:"updatedAt"`
-	Upload          *PackageUploadDto          `json:"upload,omitempty"`
 	UsageProjection *MonitorUsageProjectionDto `json:"usageProjection,omitempty"`
 }
 
 // MonitorDto_Config defines model for MonitorDto.Config.
 type MonitorDto_Config struct {
 	union json.RawMessage
+}
+
+// MonitorFacetDto Values of one facet field
+type MonitorFacetDto struct {
+	// Field Facet field: type, environment, region, tag, or owner
+	Field string `json:"field"`
+
+	// Values Values with at least one monitor, largest first
+	Values []MonitorFacetValueDto `json:"values"`
+}
+
+// MonitorFacetValueDto One value of a facet field
+type MonitorFacetValueDto struct {
+	// Count Monitors with this value
+	Count int64 `json:"count"`
+
+	// Failing Matching monitors currently failing
+	Failing *int64 `json:"failing,omitempty"`
+
+	// Flaky Matching running monitors recovered by retry
+	Flaky *int64 `json:"flaky,omitempty"`
+
+	// NotRunning Matching monitors currently unable to run
+	NotRunning *int64 `json:"notRunning,omitempty"`
+
+	// Owner Owning tool for a project facet value
+	Owner *string `json:"owner,omitempty"`
+
+	// Value Value as the list filter takes it: type name, environment id, region, tag name, or owner
+	Value string `json:"value"`
+
+	// WorstState Most severe displayHealth among the monitors with this value
+	WorstState string `json:"worstState"`
+}
+
+// MonitorFieldChange One non-secret setting changed by a monitor action
+type MonitorFieldChange struct {
+	// Field Setting that changed
+	Field string `json:"field"`
+
+	// From Previous setting value
+	From *string `json:"from,omitempty"`
+
+	// To New setting value
+	To *string `json:"to,omitempty"`
+}
+
+// MonitorFleetSummaryDto Whole-workspace monitor history and live group counts
+type MonitorFleetSummaryDto struct {
+	// From Inclusive start of the history window
+	From time.Time `json:"from"`
+
+	// Groups Current monitor group counts, independent of list filters
+	Groups []MonitorListGroupDto `json:"groups"`
+
+	// LastFailureBucketAt Start of the most recent failing display bucket
+	LastFailureBucketAt *time.Time `json:"lastFailureBucketAt,omitempty"`
+
+	// OpenIncidentCount Open confirmed monitor incidents
+	OpenIncidentCount int64 `json:"openIncidentCount"`
+
+	// Ticks 48 display buckets showing the worst observed monitor outcome
+	Ticks []MonitorDisplayTickDto `json:"ticks"`
+
+	// To Exclusive end of the history window
+	To time.Time `json:"to"`
+
+	// UptimePercent Passed target checks divided by measured target checks, 0–100
+	UptimePercent *float64 `json:"uptimePercent,omitempty"`
+
+	// Window Window: 24h, 7d, or 30d
+	Window string `json:"window"`
+}
+
+// MonitorHistoryEntryDto Collapsed scheduled ticks that did not run
+type MonitorHistoryEntryDto struct {
+	// Count Skipped ticks collapsed into this row
+	Count int32 `json:"count"`
+
+	// Environment Environment recorded when these ticks were skipped
+	Environment *string `json:"environment,omitempty"`
+
+	// From First skipped tick in this collapsed row
+	From time.Time `json:"from"`
+
+	// Kind Row kind: not_run
+	Kind string `json:"kind"`
+
+	// MissingKeys Secret keys recorded as missing for this interval
+	MissingKeys *[]string `json:"missingKeys,omitempty"`
+
+	// MonitorId Monitor this row belongs to
+	MonitorId openapi_types.UUID `json:"monitorId"`
+
+	// Reason Why the ticks were skipped: quota, blocked, or plan_limit
+	Reason string `json:"reason"`
+
+	// Region Region of the skipped ticks; null when they span several regions
+	Region *string `json:"region,omitempty"`
+
+	// To Latest skipped tick in this collapsed row
+	To time.Time `json:"to"`
+}
+
+// MonitorHistoryTickDto Outcome of the checks in one time bucket
+type MonitorHistoryTickDto struct {
+	// At Start of the bucket
+	At time.Time `json:"at"`
+
+	// Outcome PASSED when every check passed, FAILED when none did, otherwise DEGRADED
+	Outcome string `json:"outcome"`
+}
+
+// MonitorListFacetsDto Group and facet counts for the monitors a list filter selects
+type MonitorListFacetsDto struct {
+	// Facets Values and counts per facet field
+	Facets []MonitorFacetDto `json:"facets"`
+
+	// Groups Count per list group
+	Groups []MonitorListGroupDto `json:"groups"`
+
+	// Sources Matching monitors per owning tool and project
+	Sources *[]MonitorSourceSummaryDto `json:"sources,omitempty"`
+}
+
+// MonitorListGroupDto Number of monitors in one list group
+type MonitorListGroupDto struct {
+	// Count Monitors in the group
+	Count int64 `json:"count"`
+
+	// Key Group: failing, not_running, flaky, passing, running, or paused
+	Key string `json:"key"`
 }
 
 // MonitorOverlayRequest defines model for MonitorOverlayRequest.
@@ -7392,43 +8355,72 @@ type MonitorOverlayRequest struct {
 	Reason *string `json:"reason,omitempty"`
 }
 
-// MonitorPackageSpec New package zip metadata for this environment
-type MonitorPackageSpec struct {
-	// AuthoredBy Author attribution supplied with the package
-	AuthoredBy *string `json:"authoredBy,omitempty"`
+// MonitorOwnerDto Tool that owns a monitor and the project it declares
+type MonitorOwnerDto struct {
+	// Address Resource address declared by the owning tool
+	Address *string `json:"address,omitempty"`
 
-	// Digest SHA-256 hex digest of the package zip (64 characters)
-	Digest string `json:"digest"`
+	// Label Display label declared by the owning client
+	Label *string `json:"label,omitempty"`
 
-	// Entrypoint Entrypoint path inside the zip, e.g. tests/login.spec.ts
-	Entrypoint string `json:"entrypoint"`
+	// LabeledAt When the owner label was declared
+	LabeledAt *time.Time `json:"labeledAt,omitempty"`
 
-	// Files Relative file paths included in the zip
-	Files []string `json:"files"`
+	// Project Project the owning tool declares; null when it declares none
+	Project *string `json:"project,omitempty"`
 
-	// GitFile Path of the declaring file in that repo
-	GitFile *string `json:"gitFile,omitempty"`
-
-	// GitMessage Commit message from the repo that produced this zip
-	GitMessage *string `json:"gitMessage,omitempty"`
-
-	// GitSha Commit SHA from the repo that produced this zip. Client-supplied provenance only
-	GitSha *string `json:"gitSha,omitempty"`
-
-	// KeyLocations Per-key declaring file and location from package scan
-	KeyLocations *[]DemandedKeyLocation `json:"keyLocations,omitempty"`
-
-	// Keys Secret names the zip demanded. PUT: null preserves, [] clears
-	Keys *[]string `json:"keys,omitempty"`
+	// Type Owning tool: DASHBOARD, GIT, TERRAFORM, MCP or API
+	Type string `json:"type"`
 }
 
-// MonitorReference Monitors that reference this secret for authentication
+// MonitorOwnershipMetadata Ownership change, admin override, or forced deploy-lock release
+type MonitorOwnershipMetadata struct {
+	// FromOwner Owning tool before the change
+	FromOwner *string                      `json:"fromOwner,omitempty"`
+	Kind      MonitorOwnershipMetadataKind `json:"kind"`
+
+	// Reason Reason the caller gave
+	Reason *string `json:"reason,omitempty"`
+
+	// ToOwner Owning tool after the change
+	ToOwner *string `json:"toOwner,omitempty"`
+}
+
+// MonitorOwnershipMetadataKind defines model for MonitorOwnershipMetadata.Kind.
+type MonitorOwnershipMetadataKind string
+
+// MonitorReference Monitors that reference this secret in code, authentication, or sessions
 type MonitorReference struct {
 	// Id Monitor identifier
 	Id openapi_types.UUID `json:"id"`
 
 	// Name Monitor name
 	Name string `json:"name"`
+}
+
+// MonitorRegionHealthDto Latest verdict for one region of a monitor
+type MonitorRegionHealthDto struct {
+	// Region Probe region
+	Region string `json:"region"`
+
+	// Verdict Latest verdict: UP, DEGRADED, DOWN, or UNKNOWN when no recent check
+	Verdict string `json:"verdict"`
+}
+
+// MonitorRegionalHealthDto Regional presentation from runs, independent of incident evaluation
+type MonitorRegionalHealthDto struct {
+	// EvaluationCycleId Cycle used for the regional presentation
+	EvaluationCycleId *openapi_types.UUID `json:"evaluationCycleId,omitempty"`
+
+	// FailingCycleCount Failing cycles since evaluation changed; null outside retained history
+	FailingCycleCount *int64  `json:"failingCycleCount,omitempty"`
+	LastFailure       *RunDto `json:"lastFailure,omitempty"`
+
+	// RegionalDisplayHealth Target evidence from complete fresh parallel cycles; additive only. Consumers retain MonitorDto.displayHealth precedence for blocked, capped and quarantined states
+	RegionalDisplayHealth *string `json:"regionalDisplayHealth,omitempty"`
+
+	// Regions Latest health-voting execution for each configured region
+	Regions []Region `json:"regions"`
 }
 
 // MonitorRunDurationBatchDto Run-duration percentiles for a batch of monitors
@@ -7470,31 +8462,40 @@ type MonitorRunDurationSummaryDto struct {
 	To time.Time `json:"to"`
 }
 
-// MonitorRunListParams defines model for MonitorRunListParams.
-type MonitorRunListParams struct {
-	// Cursor Opaque cursor from the previous page; results cover the last 90 days
-	Cursor *string `json:"cursor,omitempty"`
+// MonitorRunSeriesDto Execution chart and target-health cycles, read directly from retained runs. Health retries are reduced before assigning a cycle to its initial enqueue bucket; execution durations use their own enqueue window. Both comparison windows use the same current retained-cycle evidence
+type MonitorRunSeriesDto struct {
+	// Buckets Buckets across every selected region
+	Buckets []Bucket `json:"buckets"`
 
-	// Limit Page size (1–100, default 25)
-	Limit int32 `json:"limit"`
+	// From Inclusive start of the chart
+	From time.Time `json:"from"`
 
-	// Outcome Filter by outcome; not_passed also includes passed-on-retry runs
-	Outcome *string `json:"outcome,omitempty"`
+	// Points Latest execution points for 24h; null for longer windows
+	Points *[]Point `json:"points,omitempty"`
 
-	// Phase Filter by run phase; not_finished excludes finished runs
-	Phase *string `json:"phase,omitempty"`
+	// PointsTruncated More 24h points exist than the returned 2000-point limit
+	PointsTruncated bool `json:"pointsTruncated"`
 
-	// Q Substring match on headline
-	Q *string `json:"q,omitempty"`
+	// PreviousUptimePercent Target uptime in the previous equal-length period
+	PreviousUptimePercent *float64 `json:"previousUptimePercent,omitempty"`
 
-	// Region Filter by probe region
-	Region *string `json:"region,omitempty"`
+	// Regions Buckets for each selected region
+	Regions []Region `json:"regions"`
 
-	// RevisionId Only runs for this published revision
-	RevisionId *openapi_types.UUID `json:"revisionId,omitempty"`
+	// To Exclusive end of the chart
+	To time.Time `json:"to"`
 
-	// Source Filter by what triggered the run
-	Source *string `json:"source,omitempty"`
+	// UptimePercent Passed final target outcomes as a percent of passed and failed
+	UptimePercent *float64 `json:"uptimePercent,omitempty"`
+
+	// Window Requested chart window
+	Window string `json:"window"`
+}
+
+// MonitorScheduleDto Scheduler admission clock for a code monitor
+type MonitorScheduleDto struct {
+	// NextRunAt When the next scheduled cycle is due for admission
+	NextRunAt *time.Time `json:"nextRunAt,omitempty"`
 }
 
 // MonitorSecretRequestsDto Environment and secret keys this monitor requires
@@ -7504,12 +8505,24 @@ type MonitorSecretRequestsDto struct {
 
 	// Requests Secret keys this monitor requires and their resolve state
 	Requests []SecretRequestDto `json:"requests"`
+
+	// Undemanded Keys retained outside the selected revision scanned demand
+	Undemanded *[]SecretRequestDto `json:"undemanded,omitempty"`
 }
 
 // MonitorSessionDto Cached sign-in session for a monitor
 type MonitorSessionDto struct {
+	// CaptureRunId Run that last captured storage state successfully
+	CaptureRunId *openapi_types.UUID `json:"captureRunId,omitempty"`
+
+	// CapturedAt When storage state was last captured successfully
+	CapturedAt *time.Time `json:"capturedAt,omitempty"`
+
 	// CookieNames Cookie names in the cached session
 	CookieNames []string `json:"cookieNames"`
+
+	// DefaultSession Whether legacy single-session routes select this setup file; absent on older APIs
+	DefaultSession *bool `json:"defaultSession,omitempty"`
 
 	// ExpiresAt When the cached session expires
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
@@ -7560,14 +8573,28 @@ type MonitorSettingsPreviewDto struct {
 	Used int64 `json:"used"`
 }
 
+// MonitorSourceSummaryDto Monitors declared by one owning tool and project
+type MonitorSourceSummaryDto struct {
+	// Count Number of matching monitors
+	Count int64 `json:"count"`
+
+	// Owner Tool that owns a monitor and the project it declares
+	Owner MonitorOwnerDto `json:"owner"`
+}
+
 // MonitorTestRequest defines model for MonitorTestRequest.
 type MonitorTestRequest struct {
 	// Assertions Optional assertions to evaluate against the test result
-	Assertions *[]CreateAssertionRequest `json:"assertions,omitempty"`
-	Config     MonitorTestRequest_Config `json:"config"`
+	Assertions *[]CreateAssertionRequest  `json:"assertions,omitempty"`
+	Code       *MonitorCodeSpec           `json:"code,omitempty"`
+	Config     *MonitorTestRequest_Config `json:"config,omitempty"`
 
-	// EnvironmentId Environment to test against; null uses the monitor environment
+	// EnvironmentId Environment to run in; required for browser and multi-step API code
 	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
+
+	// Region Probe region for a code-bundle test (default: us-east)
+	Region  *string            `json:"region,omitempty"`
+	Session *RunSessionContext `json:"session,omitempty"`
 
 	// Type Monitor protocol type to test
 	Type MonitorTestRequestType `json:"type"`
@@ -7593,7 +8620,45 @@ type MonitorTestResultDto struct {
 	ResponseSizeBytes *int64                   `json:"responseSizeBytes,omitempty"`
 	ResponseTimeMs    *int64                   `json:"responseTimeMs,omitempty"`
 	StatusCode        *int32                   `json:"statusCode,omitempty"`
-	Warnings          *[]string                `json:"warnings,omitempty"`
+	Warnings          *[]*string               `json:"warnings,omitempty"`
+}
+
+// MonitorTriageDto Operational facts for a monitor
+type MonitorTriageDto struct {
+	// DeletedBindings Status-page bindings retained for restoration
+	DeletedBindings []RestorableBinding `json:"deletedBindings"`
+	Flakiness       *Flakiness          `json:"flakiness,omitempty"`
+	Incident        *IncidentDto        `json:"incident,omitempty"`
+
+	// LastCheckAt When the latest completed check finished
+	LastCheckAt     *time.Time `json:"lastCheckAt,omitempty"`
+	LatestHealthRun *RunDto    `json:"latestHealthRun,omitempty"`
+	LatestRun       *RunDto    `json:"latestRun,omitempty"`
+	PausedBy        *UserDto   `json:"pausedBy,omitempty"`
+
+	// RestoreBlockers Reasons this trashed monitor cannot currently be restored
+	RestoreBlockers []string `json:"restoreBlockers"`
+}
+
+// MonitorUsage Usage grouped by monitor and meter, including deleted monitors
+type MonitorUsage struct {
+	// Deleted Whether the monitor has been deleted
+	Deleted bool `json:"deleted"`
+
+	// Meter Meter this usage counts toward
+	Meter string `json:"meter"`
+
+	// MonitorId Monitor owning this usage
+	MonitorId openapi_types.UUID `json:"monitorId"`
+
+	// MonitorName Monitor name; null when unavailable
+	MonitorName *string `json:"monitorName,omitempty"`
+
+	// Runs Billable runs consumed
+	Runs int64 `json:"runs"`
+
+	// TestRuns Billable validation runs included in consumed runs
+	TestRuns int64 `json:"testRuns"`
 }
 
 // MonitorUsageProjectionDto Projected monthly usage for a browser or multi-step API schedule
@@ -7626,6 +8691,66 @@ type MonitorUsageProjectionDto struct {
 	WouldHitSpendCap bool `json:"wouldHitSpendCap"`
 }
 
+// MonitorValidationFindingDto One problem found while checking monitors
+type MonitorValidationFindingDto struct {
+	// Code Stable problem code, such as MONITOR_FREQUENCY_BELOW_PLAN_MIN
+	Code string `json:"code"`
+
+	// Environment Destination environment slug or id
+	Environment *string `json:"environment,omitempty"`
+
+	// Field Request field this finding refers to
+	Field *string `json:"field,omitempty"`
+
+	// Have Current or requested amount
+	Have *int64 `json:"have,omitempty"`
+
+	// Limit Plan limit or floor
+	Limit *int64 `json:"limit,omitempty"`
+
+	// Message What is wrong
+	Message string `json:"message"`
+
+	// MonitorIndex Index of the monitor in the request
+	MonitorIndex *int32 `json:"monitorIndex,omitempty"`
+
+	// Plan Billing plan, such as FREE
+	Plan *string `json:"plan,omitempty"`
+
+	// RuntimeId Runtime id this finding refers to
+	RuntimeId *string `json:"runtimeId,omitempty"`
+
+	// SecretKey Secret key name with no value in this environment
+	SecretKey *string `json:"secretKey,omitempty"`
+
+	// Severity error blocks a write; warning does not
+	Severity string `json:"severity"`
+
+	// UpgradeUrl Where to change plan
+	UpgradeUrl *string `json:"upgradeUrl,omitempty"`
+}
+
+// MonitorValidationProjectionDto Projected monthly runs for one code monitor destination
+type MonitorValidationProjectionDto struct {
+	// Environment Destination environment slug or id
+	Environment *string `json:"environment,omitempty"`
+
+	// MonitorIndex Index of the monitor in the request
+	MonitorIndex int32 `json:"monitorIndex"`
+
+	// Usage Projected monthly usage for a browser or multi-step API schedule
+	Usage MonitorUsageProjectionDto `json:"usage"`
+}
+
+// MonitorValidationResultDto Dry-run findings and projected runs. Nothing is saved
+type MonitorValidationResultDto struct {
+	// Findings Every problem found, including warnings
+	Findings []MonitorValidationFindingDto `json:"findings"`
+
+	// Projections Projected monthly runs for each code monitor destination
+	Projections []MonitorValidationProjectionDto `json:"projections"`
+}
+
 // MonitorVersionDto A point-in-time version snapshot of a monitor configuration
 type MonitorVersionDto struct {
 	// ChangeSummary Human-readable description of what changed
@@ -7634,7 +8759,7 @@ type MonitorVersionDto struct {
 	// ChangedById User ID who made the change; null for automated changes
 	ChangedById *int32 `json:"changedById,omitempty"`
 
-	// ChangedVia Change source (DASHBOARD, CLI, API)
+	// ChangedVia Change source: API, DASHBOARD, GIT, TERRAFORM or MCP
 	ChangedVia string `json:"changedVia"`
 
 	// CreatedAt Timestamp when this version was recorded
@@ -7677,15 +8802,15 @@ type MonitorsSummaryDto struct {
 	Up int64 `json:"up"`
 }
 
-// NearestOtherRegion Prior pass of this step in another region
+// NearestOtherRegion Nearest earlier pass in another region when this region has none
 type NearestOtherRegion struct {
-	// ArtifactId Screenshot on that run
-	ArtifactId openapi_types.UUID `json:"artifactId"`
+	// FinishedAt When the passing run finished
+	FinishedAt time.Time `json:"finishedAt"`
 
-	// Region Region of that run
+	// Region Region of the passing run
 	Region string `json:"region"`
 
-	// RunId Run that holds the other-region shot
+	// RunId Passing run identifier
 	RunId openapi_types.UUID `json:"runId"`
 }
 
@@ -8091,6 +9216,9 @@ type OverviewStepDto struct {
 	// P95Ms p95 duration in ms; null until the step has settled timings
 	P95Ms *float64 `json:"p95Ms,omitempty"`
 
+	// P99Ms p99 duration in ms; null without settled timings
+	P99Ms *float64 `json:"p99Ms,omitempty"`
+
 	// Received Assertion received from the latest failure
 	Received *string `json:"received,omitempty"`
 
@@ -8104,16 +9232,13 @@ type OverviewStepsDto struct {
 	Steps []OverviewStepDto `json:"steps"`
 }
 
-// PackageUploadDto Signed package upload target
-type PackageUploadDto struct {
-	// ExpiresAt When the signed URL expires
-	ExpiresAt time.Time `json:"expiresAt"`
+// OwnerDeclaration Advisory location and label declared by the owner
+type OwnerDeclaration struct {
+	// Address Resource address declared by the owning tool
+	Address *string `json:"address,omitempty"`
 
-	// PutUrl Presigned PUT URL for the zip bytes
-	PutUrl string `json:"putUrl"`
-
-	// RequiredHeaders Must send Content-Type: application/zip and If-None-Match: *
-	RequiredHeaders map[string]string `json:"requiredHeaders"`
+	// Label Display label declared by the owning client
+	Label *string `json:"label,omitempty"`
 }
 
 // PageSection A top-level page section (either a group or an ungrouped component)
@@ -8126,13 +9251,6 @@ type PageSection struct {
 
 	// PageOrder Position on the page (0-based)
 	PageOrder int32 `json:"pageOrder"`
-}
-
-// Pageable defines model for Pageable.
-type Pageable struct {
-	Page int32    `json:"page"`
-	Size int32    `json:"size"`
-	Sort []string `json:"sort"`
 }
 
 // PagerDutyChannelConfig defines model for PagerDutyChannelConfig.
@@ -8177,6 +9295,13 @@ type PickerItem struct {
 	// FinishedAt When that run finished
 	FinishedAt time.Time `json:"finishedAt"`
 
+	// Outcome Outcome of this finished run
+	Outcome *string `json:"outcome,omitempty"`
+
+	// Region Region of this finished run
+	Region   *string      `json:"region,omitempty"`
+	Revision *RevisionDto `json:"revision,omitempty"`
+
 	// RevisionId Revision that run executed
 	RevisionId openapi_types.UUID `json:"revisionId"`
 
@@ -8205,6 +9330,24 @@ type PlanInfo struct {
 	Usage map[string]int64 `json:"usage"`
 }
 
+// Point Latest execution points for 24h; null for longer windows
+type Point struct {
+	// At When the execution finished
+	At time.Time `json:"at"`
+
+	// DurationMs Execution duration in milliseconds
+	DurationMs *int64 `json:"durationMs,omitempty"`
+
+	// Outcome Recorded execution outcome
+	Outcome string `json:"outcome"`
+
+	// Region Execution region
+	Region string `json:"region"`
+
+	// RunId Execution identifier
+	RunId openapi_types.UUID `json:"runId"`
+}
+
 // PolicySnapshotDto Policy snapshot used during this check (all evaluations of a single check are against one policy)
 type PolicySnapshotDto struct {
 	// EngineVersion Detection engine version that observed this policy
@@ -8220,7 +9363,7 @@ type PolicySnapshotDto struct {
 	LastSeenAt time.Time `json:"lastSeenAt"`
 
 	// Policy Canonical policy document (snake_case, sorted keys)
-	Policy map[string]map[string]interface{} `json:"policy"`
+	Policy map[string]json.RawMessage `json:"policy"`
 }
 
 // PollChartBucketDto Aggregated poll metrics for a time bucket
@@ -8252,7 +9395,22 @@ type PricingTier struct {
 
 // PublishRevisionRequest defines model for PublishRevisionRequest.
 type PublishRevisionRequest struct {
-	// RevisionId Existing revision to activate as Head for this monitor's environment
+	// AcknowledgeRollback Rolled-back digest this publish re-applies on purpose
+	AcknowledgeRollback *string `json:"acknowledgeRollback,omitempty"`
+
+	// ExpectedLiveRevisionId Live revision this publish replaces; null skips the check
+	ExpectedLiveRevisionId *openapi_types.UUID `json:"expectedLiveRevisionId,omitempty"`
+
+	// Force Skip the requireTested check; needs the publish-untested scope
+	Force *bool `json:"force,omitempty"`
+
+	// Note Optional note describing this publish
+	Note *string `json:"note,omitempty"`
+
+	// RequireTested When true, require a passing test in this environment within 24 hours
+	RequireTested *bool `json:"requireTested,omitempty"`
+
+	// RevisionId Revision to make live for this monitor's environment
 	RevisionId openapi_types.UUID `json:"revisionId"`
 }
 
@@ -8387,6 +9545,78 @@ type RegexBodyAssertion struct {
 // RegexBodyAssertionType defines model for RegexBodyAssertion.Type.
 type RegexBodyAssertionType string
 
+// Region Buckets for each selected region
+type Region struct {
+	// Buckets Clock-aligned chart buckets
+	Buckets []Bucket `json:"buckets"`
+
+	// Region Execution region
+	Region string `json:"region"`
+
+	// UptimePercent Final target uptime in this region
+	UptimePercent *float64 `json:"uptimePercent,omitempty"`
+}
+
+// RegionBucketDto One chart bucket of checks and latency percentiles
+type RegionBucketDto struct {
+	// From Inclusive bucket start (ISO 8601)
+	From time.Time `json:"from"`
+
+	// P50 50th-percentile latency in milliseconds
+	P50 *float64 `json:"p50,omitempty"`
+
+	// P95 95th-percentile latency in milliseconds
+	P95 *float64 `json:"p95,omitempty"`
+
+	// P99 99th-percentile latency in milliseconds
+	P99 *float64 `json:"p99,omitempty"`
+
+	// Passed Checks that passed in this bucket
+	Passed int64 `json:"passed"`
+
+	// To Exclusive bucket end (ISO 8601)
+	To time.Time `json:"to"`
+
+	// Total Checks run in this bucket
+	Total int64 `json:"total"`
+}
+
+// RegionDto Public region checks can run from
+type RegionDto struct {
+	// DisplayName Name shown for this region
+	DisplayName string `json:"displayName"`
+
+	// Id Region id, such as us-east
+	Id string `json:"id"`
+}
+
+// RegionResultSeriesDto Per-region uptime and latency series for a monitor chart window
+type RegionResultSeriesDto struct {
+	// BucketSeconds Chart bucket width in seconds
+	BucketSeconds int32 `json:"bucketSeconds"`
+
+	// PreviousUptimePercent Uptime percent for the previous equal-length window
+	PreviousUptimePercent *float64 `json:"previousUptimePercent,omitempty"`
+
+	// Regions Per-region series covering the requested window
+	Regions []RegionSeriesDto `json:"regions"`
+
+	// Window Requested window (24h, 7d, or 30d)
+	Window string `json:"window"`
+}
+
+// RegionSeriesDto Uptime and latency buckets for one region
+type RegionSeriesDto struct {
+	// Buckets Clock-aligned buckets spanning the window
+	Buckets []RegionBucketDto `json:"buckets"`
+
+	// Region Probe region identifier
+	Region string `json:"region"`
+
+	// UptimePercent Uptime percent over checks run in the window
+	UptimePercent *float64 `json:"uptimePercent,omitempty"`
+}
+
 // RegionStatusDto Latest check result for a single region
 type RegionStatusDto struct {
 	// FailureReason Why the last check failed; null when it passed
@@ -8513,7 +9743,7 @@ type ResourceGroupDto struct {
 	// Id Unique resource group identifier
 	Id openapi_types.UUID `json:"id"`
 
-	// ManagedBy Source that created/owns this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on groups created before this attribution column existed.
+	// ManagedBy Source that created/owns this group: DASHBOARD, GIT, TERRAFORM, MCP or API. Null on groups created before this attribution column existed.
 	ManagedBy *string `json:"managedBy,omitempty"`
 
 	// Members Member list with individual statuses; populated on detail GET only
@@ -8678,6 +9908,19 @@ type ResponseTimeWarnAssertion struct {
 // ResponseTimeWarnAssertionType defines model for ResponseTimeWarnAssertion.Type.
 type ResponseTimeWarnAssertionType string
 
+// RestorableBinding Status-page binding retained while a monitor is trashed
+type RestorableBinding struct {
+	// Component Saved component configuration
+	Component  StatusPageBindingSnapshot `json:"component"`
+	StatusPage StatusPageDto             `json:"statusPage"`
+}
+
+// RestoreMonitorRequest defines model for RestoreMonitorRequest.
+type RestoreMonitorRequest struct {
+	// EnvironmentId Environment to restore a code monitor into; null preserves its environment
+	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
+}
+
 // ResultSummaryDto Dashboard summary: current status, per-region latest results, and chart data
 type ResultSummaryDto struct {
 	// ChartData Time-bucketed chart data for the requested window
@@ -8741,15 +9984,19 @@ type RevisionDiffHunkDto struct {
 // RevisionDto Definition revision package
 type RevisionDto struct {
 	// AuthoredBy Who authored this package
-	AuthoredBy *string `json:"authoredBy,omitempty"`
+	AuthoredBy   *string               `json:"authoredBy,omitempty"`
+	BaseRevision *RevisionReferenceDto `json:"baseRevision,omitempty"`
 
 	// CreatedAt When the revision was minted
 	CreatedAt time.Time `json:"createdAt"`
 
+	// CreatedByKind Tool that created this draft
+	CreatedByKind *string `json:"createdByKind,omitempty"`
+
 	// DefinitionId Parent definition
 	DefinitionId openapi_types.UUID `json:"definitionId"`
 
-	// Digest SHA-256 hex digest of the zip
+	// Digest Closure digest from POST /bundles (sha256:<hex>)
 	Digest string `json:"digest"`
 
 	// DownloadUntil When package bytes expire for download
@@ -8757,6 +10004,9 @@ type RevisionDto struct {
 
 	// Entrypoint Entrypoint file that runs
 	Entrypoint string `json:"entrypoint"`
+
+	// ExpiresAt When this draft expires; preserved after discard
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
 
 	// Files Paths present in the zip
 	Files []string `json:"files"`
@@ -8774,9 +10024,50 @@ type RevisionDto struct {
 	Id openapi_types.UUID `json:"id"`
 
 	// Keys Secret key names the code demands
-	Keys []string `json:"keys"`
+	Keys      []string              `json:"keys"`
+	LiveStats *RevisionLiveStatsDto `json:"liveStats,omitempty"`
 
 	// Number Monotonic revision number within the definition
+	Number int32 `json:"number"`
+
+	// PurgedAt When package bytes were purged
+	PurgedAt *time.Time  `json:"purgedAt,omitempty"`
+	Source   *CodeSource `json:"source,omitempty"`
+
+	// State draft, tested_passed, tested_failed, live, previous, or discarded
+	State *string `json:"state,omitempty"`
+
+	// TestOutcome Latest test outcome; absent until a test finishes
+	TestOutcome *string `json:"testOutcome,omitempty"`
+
+	// TestRunId Latest validation run for this revision
+	TestRunId *openapi_types.UUID `json:"testRunId,omitempty"`
+}
+
+// RevisionFilesDto Source files of a revision bundle
+type RevisionFilesDto struct {
+	// Entrypoint Entry file path inside the bundle
+	Entrypoint string `json:"entrypoint"`
+
+	// Files Source text by file path
+	Files map[string]string `json:"files"`
+}
+
+// RevisionLiveStatsDto Scheduled runs of this revision, and how many failed
+type RevisionLiveStatsDto struct {
+	// Failed How many of those runs failed
+	Failed int64 `json:"failed"`
+
+	// Runs Scheduled runs and fast retries of this revision
+	Runs int64 `json:"runs"`
+}
+
+// RevisionReferenceDto Live revision this draft was based on
+type RevisionReferenceDto struct {
+	// Id Related revision identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Number Revision number within its definition
 	Number int32 `json:"number"`
 }
 
@@ -8792,11 +10083,17 @@ type RollbackPreviewDto struct {
 
 // RollbackRevisionRequest defines model for RollbackRevisionRequest.
 type RollbackRevisionRequest struct {
+	// Emergency Emergency rollback; requires a confirmed incident on this monitor
+	Emergency *bool `json:"emergency,omitempty"`
+
+	// ExpectedLiveRevisionId Live revision this rollback replaces; null skips the check
+	ExpectedLiveRevisionId *openapi_types.UUID `json:"expectedLiveRevisionId,omitempty"`
+
 	// Reason Why this rollback was performed (1–280 chars)
 	Reason string `json:"reason"`
 
-	// RevisionId Existing revision to restore as Head for this monitor's environment
-	RevisionId openapi_types.UUID `json:"revisionId"`
+	// RevisionId Revision to restore; null restores the previous live revision
+	RevisionId *openapi_types.UUID `json:"revisionId,omitempty"`
 }
 
 // RootlyChannelConfig defines model for RootlyChannelConfig.
@@ -8842,7 +10139,7 @@ type RuleEvaluationDto struct {
 	EngineVersion string `json:"engineVersion"`
 
 	// EvaluationDetails Structured details (e.g. failure counts, response-time aggregates)
-	EvaluationDetails map[string]map[string]interface{} `json:"evaluationDetails"`
+	EvaluationDetails map[string]json.RawMessage `json:"evaluationDetails"`
 
 	// Id Forensic row UUID
 	Id openapi_types.UUID `json:"id"`
@@ -8979,12 +10276,6 @@ type RunCaseDto struct {
 	Title string `json:"title"`
 }
 
-// RunCaseListParams defines model for RunCaseListParams.
-type RunCaseListParams struct {
-	// Attempt Only return cases for this Playwright attempt
-	Attempt *int32 `json:"attempt,omitempty"`
-}
-
 // RunConsoleDto Console groups or ungrouped lines
 type RunConsoleDto struct {
 	// Groups Grouped messages; empty when ungrouped or no_browser
@@ -9000,28 +10291,14 @@ type RunConsoleDto struct {
 	State string `json:"state"`
 }
 
-// RunConsoleParams defines model for RunConsoleParams.
-type RunConsoleParams struct {
-	// Attempt In-check attempt (default selected attempt)
-	Attempt *int32 `json:"attempt,omitempty"`
-
-	// Format raw downloads the ungrouped log as text/plain
-	Format *string `json:"format,omitempty"`
-
-	// Level Filter error, warning, or info
-	Level *string `json:"level,omitempty"`
-
-	// Ungrouped Return chronological lines instead of groups
-	Ungrouped *bool `json:"ungrouped,omitempty"`
-}
-
 // RunDiffDto Step duration diff against a prior pass
 type RunDiffDto struct {
 	// BaselineKind How the baseline was chosen
 	BaselineKind string `json:"baselineKind"`
 
 	// BaselineRunId Baseline run; null when no prior pass
-	BaselineRunId *openapi_types.UUID `json:"baselineRunId,omitempty"`
+	BaselineRunId      *openapi_types.UUID `json:"baselineRunId,omitempty"`
+	NearestOtherRegion *NearestOtherRegion `json:"nearestOtherRegion,omitempty"`
 
 	// Picker Other finished runs of this monitor for the picker
 	Picker []PickerItem `json:"picker"`
@@ -9035,6 +10312,9 @@ type RunDiffDto struct {
 
 // RunDto Code-monitor run
 type RunDto struct {
+	// ArtifactsExpireAt When artifact bytes will expire
+	ArtifactsExpireAt *time.Time `json:"artifactsExpireAt,omitempty"`
+
 	// ArtifactsExpiredAt When artifact bytes expired
 	ArtifactsExpiredAt *time.Time `json:"artifactsExpiredAt,omitempty"`
 
@@ -9047,8 +10327,11 @@ type RunDto struct {
 	// Attempts In-check attempts
 	Attempts []RunAttemptDto `json:"attempts"`
 
+	// Billable Whether a finished run counts against the included run pool
+	Billable bool `json:"billable"`
+
 	// BindingVersionSnapshot Resolved secret key names frozen at create
-	BindingVersionSnapshot map[string]map[string]interface{} `json:"bindingVersionSnapshot"`
+	BindingVersionSnapshot map[string]json.RawMessage `json:"bindingVersionSnapshot"`
 
 	// BundleDigest Package digest frozen at create
 	BundleDigest string `json:"bundleDigest"`
@@ -9060,7 +10343,10 @@ type RunDto struct {
 	CancelledBy *string `json:"cancelledBy,omitempty"`
 
 	// CapturePolicySnapshot Capture settings frozen at create
-	CapturePolicySnapshot map[string]map[string]interface{} `json:"capturePolicySnapshot"`
+	CapturePolicySnapshot map[string]json.RawMessage `json:"capturePolicySnapshot"`
+
+	// Cause Platform cause for an execution error, inconclusive finish, or network failure
+	Cause *string `json:"cause,omitempty"`
 
 	// CountsTowardHealth Whether this run votes on monitor health
 	CountsTowardHealth bool `json:"countsTowardHealth"`
@@ -9088,10 +10374,14 @@ type RunDto struct {
 	ExecutionAttempts []RunExecutionAttemptDto `json:"executionAttempts"`
 
 	// ExecutionLine Live execution one-liner
-	ExecutionLine *string `json:"executionLine,omitempty"`
+	ExecutionLine *string        `json:"executionLine,omitempty"`
+	Failure       *RunFailureDto `json:"failure,omitempty"`
 
 	// FinishedAt When the run finished
 	FinishedAt *time.Time `json:"finishedAt,omitempty"`
+
+	// Flaky Whether the run passed only after at least one fast retry
+	Flaky bool `json:"flaky"`
 
 	// Headline Last control headline
 	Headline *string `json:"headline,omitempty"`
@@ -9115,8 +10405,8 @@ type RunDto struct {
 	// MetaLine Server-composed header meta line
 	MetaLine *string `json:"metaLine,omitempty"`
 
-	// MonitorId Monitor this run belongs to
-	MonitorId openapi_types.UUID `json:"monitorId"`
+	// MonitorId Monitor this run belongs to; null for an ad-hoc validation run
+	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
 
 	// MonitorName Monitor display name
 	MonitorName *string `json:"monitorName,omitempty"`
@@ -9133,6 +10423,12 @@ type RunDto struct {
 	// Phase Current run phase
 	Phase string `json:"phase"`
 
+	// PinnedAt When this run was pinned past retention
+	PinnedAt *time.Time `json:"pinnedAt,omitempty"`
+
+	// PurgedAt When stored evidence was purged
+	PurgedAt *time.Time `json:"purgedAt,omitempty"`
+
 	// QueuePosition Live queue position; null when not queued
 	QueuePosition *int32 `json:"queuePosition,omitempty"`
 
@@ -9147,24 +10443,36 @@ type RunDto struct {
 
 	// RetryOfRunId Parent run when this is a fast retry
 	RetryOfRunId *openapi_types.UUID `json:"retryOfRunId,omitempty"`
+	Revision     *RevisionDto        `json:"revision,omitempty"`
 
 	// RevisionId Revision this run executed
 	RevisionId openapi_types.UUID `json:"revisionId"`
 
+	// RuntimeId Runtime profile that executed this run
+	RuntimeId *string            `json:"runtimeId,omitempty"`
+	Session   *RunSessionContext `json:"session,omitempty"`
+
 	// Source What triggered this run
 	Source string `json:"source"`
+
+	// StartDeadlineAt When this queued run must start
+	StartDeadlineAt *time.Time `json:"startDeadlineAt,omitempty"`
 
 	// StartedAt When execution claimed a seat
 	StartedAt *time.Time `json:"startedAt,omitempty"`
 
 	// Stream True while the run is still live and clients may stream
-	Stream bool `json:"stream"`
-
-	// TabCounts Run detail tab counts
+	Stream    bool            `json:"stream"`
 	TabCounts RunTabCountsDto `json:"tabCounts"`
+
+	// TriggerId Groups runs started by one manual trigger; null for other runs
+	TriggerId *openapi_types.UUID `json:"triggerId,omitempty"`
 
 	// UpdatedAt When the run row last changed
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+
+	// Url Dashboard URL for this run
+	Url *string `json:"url,omitempty"`
 }
 
 // RunEventDto Run control event
@@ -9185,7 +10493,7 @@ type RunEventDto struct {
 	OrganizationId int32 `json:"organizationId"`
 
 	// Payload Small typed payload for this event
-	Payload map[string]map[string]interface{} `json:"payload"`
+	Payload map[string]json.RawMessage `json:"payload"`
 
 	// RunId Run this event belongs to
 	RunId openapi_types.UUID `json:"runId"`
@@ -9198,12 +10506,6 @@ type RunEventDto struct {
 
 	// Type Control event type
 	Type string `json:"type"`
-}
-
-// RunEventParams defines model for RunEventParams.
-type RunEventParams struct {
-	// After Replay events with seq greater than this value
-	After *int64 `json:"after,omitempty"`
 }
 
 // RunEvidenceDto List evidence chip
@@ -9263,37 +10565,43 @@ type RunExecutionDto struct {
 	Runtime RuntimeProfileDto `json:"runtime"`
 }
 
-// RunListParams defines model for RunListParams.
-type RunListParams struct {
-	// EnvironmentId Only return runs executed in this environment
-	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
+// RunFacetDto Run facets respecting the other active filters
+type RunFacetDto struct {
+	// Field Filter field these values describe
+	Field string `json:"field"`
 
-	// From Inclusive enqueue lower bound (default last 30 minutes; clamped to 90 days)
-	From *time.Time `json:"from,omitempty"`
+	// Values Values selected by the other filters
+	Values []Value `json:"values"`
+}
 
-	// Outcome Filter by outcome; not_passed also includes passed-on-retry runs
-	Outcome *string `json:"outcome,omitempty"`
+// RunFailureDto Why a run failed, including the source location when the reporter captured one
+type RunFailureDto struct {
+	// File User source file; null when the reporter did not capture one
+	File *string `json:"file,omitempty"`
 
-	// Page Zero-based page index (default 0)
-	Page int32 `json:"page"`
+	// Index 0-based index of the failed step
+	Index *int32 `json:"index,omitempty"`
 
-	// Phase Filter by run phase; not_finished excludes finished runs
-	Phase *string `json:"phase,omitempty"`
+	// Kind Failure category
+	Kind string `json:"kind"`
 
-	// Q Substring match on monitor name or headline
-	Q *string `json:"q,omitempty"`
+	// Line 1-based line in the user source file
+	Line *int32 `json:"line,omitempty"`
 
-	// Region Filter by probe region
-	Region *string `json:"region,omitempty"`
+	// Message Reporter message, trimmed
+	Message *string `json:"message,omitempty"`
 
-	// Size Page size (1–100, default 50)
-	Size int32 `json:"size"`
+	// Step Step title that failed; null when the run failed before a step
+	Step *string `json:"step,omitempty"`
+}
 
-	// Source Filter by what triggered the run
-	Source *string `json:"source,omitempty"`
+// RunHistogramBucketDto UTC time buckets of health-voting run attempts
+type RunHistogramBucketDto struct {
+	// Counts Health-voting run attempt counts
+	Counts []RunOutcomeCountDto `json:"counts"`
 
-	// To Inclusive enqueue upper bound (default now)
-	To *time.Time `json:"to,omitempty"`
+	// Start Inclusive UTC start of this bucket
+	Start time.Time `json:"start"`
 }
 
 // RunLiveDto Live run progress
@@ -9319,6 +10627,15 @@ type RunMetricsSummaryDto struct {
 	// AvailableArtifactCount Required artifact records with an available unexpired object key
 	AvailableArtifactCount *int64 `json:"availableArtifactCount,omitempty"`
 
+	// Buckets UTC time buckets of health-voting run attempts
+	Buckets *[]RunHistogramBucketDto `json:"buckets,omitempty"`
+
+	// CycleCount Distinct scheduled cycle identities in the filtered population
+	CycleCount *int64 `json:"cycleCount,omitempty"`
+
+	// DisplayGroupCount Cycle and manual-trigger groups in the filtered population
+	DisplayGroupCount *int64 `json:"displayGroupCount,omitempty"`
+
 	// DurationSampleCount Finished matching runs with a measured execution duration
 	DurationSampleCount int64 `json:"durationSampleCount"`
 
@@ -9340,14 +10657,26 @@ type RunMetricsSummaryDto struct {
 	// EvidenceUnknownPolicyRunCount Runs with a missing or incomplete capture policy
 	EvidenceUnknownPolicyRunCount int64 `json:"evidenceUnknownPolicyRunCount"`
 
+	// ExcludedRunCount Matching attempts that do not vote on health
+	ExcludedRunCount *int64 `json:"excludedRunCount,omitempty"`
+
 	// ExpiredArtifactCount Required artifact records marked expired or past their expiry
 	ExpiredArtifactCount *int64 `json:"expiredArtifactCount,omitempty"`
+
+	// Facets Run facets respecting the other active filters
+	Facets *[]RunFacetDto `json:"facets,omitempty"`
 
 	// FailedArtifactCount Required artifact records with a failed upload
 	FailedArtifactCount *int64 `json:"failedArtifactCount,omitempty"`
 
+	// FailedCycleCount Recorded complete cycles with a final failed or timed-out region; display count
+	FailedCycleCount *int64 `json:"failedCycleCount,omitempty"`
+
 	// From Inclusive start of the enqueue-time window
 	From time.Time `json:"from"`
+
+	// HealthVotingP95DurationMs 95th-percentile duration of health-voting run attempts
+	HealthVotingP95DurationMs *float64 `json:"healthVotingP95DurationMs,omitempty"`
 
 	// IntentionalNoEvidenceArtifactCount Required artifact records explicitly suppressed, not reached, or not captured
 	IntentionalNoEvidenceArtifactCount *int64 `json:"intentionalNoEvidenceArtifactCount,omitempty"`
@@ -9358,14 +10687,38 @@ type RunMetricsSummaryDto struct {
 	// MissingArtifactKindCount Required evidence kinds with no artifact record after the run finished
 	MissingArtifactKindCount *int64 `json:"missingArtifactKindCount,omitempty"`
 
+	// OutcomeCounts Health-voting run attempts by projected outcome
+	OutcomeCounts *[]RunOutcomeCountDto `json:"outcomeCounts,omitempty"`
+
 	// P95DurationMs 95th percentile execution duration in milliseconds; null when no durations were measured
 	P95DurationMs *float64 `json:"p95DurationMs,omitempty"`
 
 	// ProcessingArtifactCount Required artifact records still processing
 	ProcessingArtifactCount *int64 `json:"processingArtifactCount,omitempty"`
 
+	// SessionLastRunAt Latest session enqueue within retention, independent of the window
+	SessionLastRunAt *time.Time `json:"sessionLastRunAt,omitempty"`
+
 	// To Inclusive end of the enqueue-time window
 	To time.Time `json:"to"`
+}
+
+// RunMonitorStripDto defines model for RunMonitorStripDto.
+type RunMonitorStripDto struct {
+	// FailingCount Monitors whose latest window group is complete with a failed or timed-out region
+	FailingCount int64 `json:"failingCount"`
+
+	// FlakyCount Passing monitors with current seven-day flakiness
+	FlakyCount int64 `json:"flakyCount"`
+
+	// HealthyCount Monitors whose latest window group passed without current flakiness
+	HealthyCount int64 `json:"healthyCount"`
+
+	// Monitors At most 100 monitor chips; counts cover the complete population
+	Monitors []Item `json:"monitors"`
+
+	// UnclassifiedCount Monitors whose latest voting group is pending or has no passing/failing verdict
+	UnclassifiedCount int64 `json:"unclassifiedCount"`
 }
 
 // RunNetworkDto Network waterfall page
@@ -9383,34 +10736,80 @@ type RunNetworkDto struct {
 	NextCursor *string `json:"nextCursor,omitempty"`
 }
 
-// RunNetworkParams defines model for RunNetworkParams.
-type RunNetworkParams struct {
-	// Attempt In-check attempt (default selected attempt)
-	Attempt *int32 `json:"attempt,omitempty"`
+// RunOutcomeCountDto Per-outcome attempt counts; populated for region facets
+type RunOutcomeCountDto struct {
+	// Count Matching run attempts with this outcome
+	Count int64 `json:"count"`
 
-	// Cursor Opaque cursor from the previous page
-	Cursor *string `json:"cursor,omitempty"`
+	// Outcome Projected run outcome
+	Outcome string `json:"outcome"`
+}
 
-	// Failed Only rows with status >= 400 or a failure
-	Failed *bool `json:"failed,omitempty"`
+// RunRevisionMarkerDto Items on this page
+type RunRevisionMarkerDto struct {
+	// ActivatedAt Latest recorded activation of this revision in the monitor environment
+	ActivatedAt time.Time `json:"activatedAt"`
 
-	// Slow Only rows with durationMs >= 1000
-	Slow *bool `json:"slow,omitempty"`
+	// Monitor Full monitor representation
+	Monitor MonitorDto `json:"monitor"`
 
-	// Source page or request
-	Source *string `json:"source,omitempty"`
+	// Revision Definition revision package
+	Revision RevisionDto `json:"revision"`
+}
 
-	// StepId Only rows for this step
-	StepId *string `json:"stepId,omitempty"`
+// RunSessionContext CI session that started this run; absent on historical runs
+type RunSessionContext struct {
+	// Branch Branch that started this CI session
+	Branch *string `json:"branch,omitempty"`
 
-	// Xhr Only xhr, fetch, and api resource types
-	Xhr *bool `json:"xhr,omitempty"`
+	// Commit Commit that started this CI session
+	Commit *string `json:"commit,omitempty"`
+
+	// Id Caller-provided CI session identifier
+	Id string `json:"id"`
+
+	// Label CI session label, such as CI #4812
+	Label *string `json:"label,omitempty"`
+
+	// Url HTTP or HTTPS URL of the CI job
+	Url *string `json:"url,omitempty"`
+}
+
+// RunSkippedEntryDto Items on this page
+type RunSkippedEntryDto struct {
+	// Count Recorded ticks in the whole folded row; absent for a plan pause
+	Count *int64 `json:"count,omitempty"`
+
+	// Environment Environment recorded when ticks were skipped
+	Environment *string `json:"environment,omitempty"`
+
+	// From Beginning of the recorded interval
+	From time.Time `json:"from"`
+
+	// Id Persisted skipped row identity; absent for a plan-disabled interval
+	Id *openapi_types.UUID `json:"id,omitempty"`
+
+	// Kind not_run for recorded ticks; plan_disabled for a current plan pause
+	Kind string `json:"kind"`
+
+	// MissingKeys Secret keys recorded as missing
+	MissingKeys []string    `json:"missingKeys"`
+	Monitor     *MonitorDto `json:"monitor,omitempty"`
+
+	// Reason Cause: quota, blocked, spend_cap, or plan_limit
+	Reason string `json:"reason"`
+
+	// Region Region; absent when ticks cover multiple regions
+	Region *string `json:"region,omitempty"`
+
+	// To End of the interval; current plan pauses end at the query snapshot
+	To time.Time `json:"to"`
 }
 
 // RunStepDto Run step
 type RunStepDto struct {
-	// Assertion Assertion payload when this step is an assertion
-	Assertion *map[string]*map[string]interface{} `json:"assertion,omitempty"`
+	// Assertion Assertion or safe wait-result metadata
+	Assertion *map[string]*json.RawMessage `json:"assertion,omitempty"`
 
 	// Attempt Playwright in-case attempt number
 	Attempt int32 `json:"attempt"`
@@ -9464,6 +10863,27 @@ type RunTabCountsDto struct {
 	Steps int32 `json:"steps"`
 }
 
+// RunTraceSummaryDto Bounded trace summary for a run
+type RunTraceSummaryDto struct {
+	// ConsoleErrors Console error lines
+	ConsoleErrors []string `json:"consoleErrors"`
+
+	// FailedActions Failed step titles and messages
+	FailedActions []string `json:"failedActions"`
+
+	// FailedRequests Failed network requests
+	FailedRequests []string `json:"failedRequests"`
+
+	// RunId Run this summary belongs to
+	RunId openapi_types.UUID `json:"runId"`
+
+	// Text Plain-text summary, length-capped
+	Text string `json:"text"`
+
+	// Truncated Whether any section was cut to the cap
+	Truncated bool `json:"truncated"`
+}
+
 // RunnerLogLiveEvent Live runner-log line
 type RunnerLogLiveEvent struct {
 	// Line One runner-log line
@@ -9471,6 +10891,21 @@ type RunnerLogLiveEvent struct {
 
 	// Ts Loki timestamp in nanoseconds
 	Ts string `json:"ts"`
+}
+
+// RunnerRegionStatusDto Whether a public region accepts browser and multi-step runs
+type RunnerRegionStatusDto struct {
+	// Id Public region identifier
+	Id string `json:"id"`
+
+	// Status ok when both code-monitor types have an active accepting pool; otherwise degraded
+	Status string `json:"status"`
+}
+
+// RunnerRegionStatusesDto Public runner-region acceptance status
+type RunnerRegionStatusesDto struct {
+	// Regions Acceptance status per public region
+	Regions []RunnerRegionStatusDto `json:"regions"`
 }
 
 // RuntimeProfileDto Default execution environment; null uses the catalog default
@@ -9548,11 +10983,8 @@ type ScheduledMaintenanceDto struct {
 
 // ScriptMonitorConfig defines model for ScriptMonitorConfig.
 type ScriptMonitorConfig struct {
-	// RuntimeId Runtime pin such as 2026.11; omit to pin the current runtime at create
+	// RuntimeId Runtime pin such as 2026.11; omit to pin the newest runtime that can run
 	RuntimeId *string `json:"runtimeId,omitempty"`
-
-	// Script Legacy inline script on existing rows
-	Script *string `json:"script,omitempty"`
 
 	// TimeoutSeconds Maximum execution time in seconds (5–240)
 	TimeoutSeconds *int32 `json:"timeoutSeconds,omitempty"`
@@ -9582,20 +11014,30 @@ type SecretDto struct {
 	// UpdatedAt Timestamp when the secret was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 
-	// UsedByMonitors Monitors that reference this secret for authentication
+	// UsedByMonitors Monitors that reference this secret in code, authentication, or sessions
 	UsedByMonitors *[]MonitorReference `json:"usedByMonitors,omitempty"`
 
 	// ValueHash SHA-256 hex digest of the current plaintext; use for change detection
-	ValueHash string `json:"valueHash"`
+	ValueHash  string               `json:"valueHash"`
+	ValueStamp *SecretValueStampDto `json:"valueStamp,omitempty"`
+
+	// ValuesAt Environments in which this secret has a value
+	ValuesAt *[]Summary `json:"valuesAt,omitempty"`
 }
 
 // SecretRequestDto Secret key a monitor requires and how it is fulfilled
 type SecretRequestDto struct {
+	// Attached Whether this key is attached for vault resolution
+	Attached *bool `json:"attached,omitempty"`
+
 	// DeclaringFile Declaring file path inside the package zip
 	DeclaringFile *string `json:"declaringFile,omitempty"`
 
 	// DeclaringLocation Call site from package scan, e.g. signIn(…) · line 6
 	DeclaringLocation *string `json:"declaringLocation,omitempty"`
+
+	// Demanded Whether the selected revision statically declares this key
+	Demanded *bool `json:"demanded,omitempty"`
 
 	// FulfilledBy Fulfilled from environment variables or a secret
 	FulfilledBy *string `json:"fulfilledBy,omitempty"`
@@ -9610,14 +11052,25 @@ type SecretRequestDto struct {
 	LastResolvedRunId *openapi_types.UUID `json:"lastResolvedRunId,omitempty"`
 
 	// Readiness Whether this key is resolved or missing
-	Readiness string     `json:"readiness"`
-	Secret    *SecretDto `json:"secret,omitempty"`
+	Readiness  string               `json:"readiness"`
+	Secret     *SecretDto           `json:"secret,omitempty"`
+	ValueStamp *SecretValueStampDto `json:"valueStamp,omitempty"`
 }
 
 // SecretUsageDto Monitors that reference this secret
 type SecretUsageDto struct {
 	// Monitors Monitors that reference this secret
 	Monitors []MonitorDto `json:"monitors"`
+}
+
+// SecretValueStampDto Change metadata for the requested environment value
+type SecretValueStampDto struct {
+	// Environment Environment containing this value
+	Environment Summary `json:"environment"`
+
+	// UpdatedAt When this environment value was last written
+	UpdatedAt *time.Time       `json:"updatedAt,omitempty"`
+	UpdatedBy *ActorDisplayDto `json:"updatedBy,omitempty"`
 }
 
 // SeoMetadataDto Admin-editable SEO metadata for pSEO pages
@@ -10035,6 +11488,12 @@ type SingleValueResponseApiKeyDto struct {
 	Data ApiKeyDto `json:"data"`
 }
 
+// SingleValueResponseArtifactDownloadDto defines model for SingleValueResponseArtifactDownloadDto.
+type SingleValueResponseArtifactDownloadDto struct {
+	// Data Signed, short-lived download link for one run artifact
+	Data ArtifactDownloadDto `json:"data"`
+}
+
 // SingleValueResponseAuthMeResponse defines model for SingleValueResponseAuthMeResponse.
 type SingleValueResponseAuthMeResponse struct {
 	// Data Identity, organization, plan, and rate-limit info for the authenticated API key
@@ -10053,6 +11512,16 @@ type SingleValueResponseBulkMonitorActionResult struct {
 	Data BulkMonitorActionResult `json:"data"`
 }
 
+// SingleValueResponseBundleCheckResultDto defines model for SingleValueResponseBundleCheckResultDto.
+type SingleValueResponseBundleCheckResultDto struct {
+	Data BundleCheckResultDto `json:"data"`
+}
+
+// SingleValueResponseBundleDto defines model for SingleValueResponseBundleDto.
+type SingleValueResponseBundleDto struct {
+	Data BundleDto `json:"data"`
+}
+
 // SingleValueResponseCaptureCompareDto defines model for SingleValueResponseCaptureCompareDto.
 type SingleValueResponseCaptureCompareDto struct {
 	// Data Screenshot compare against the last pass of this step
@@ -10062,6 +11531,12 @@ type SingleValueResponseCaptureCompareDto struct {
 // SingleValueResponseCheckTraceDto defines model for SingleValueResponseCheckTraceDto.
 type SingleValueResponseCheckTraceDto struct {
 	Data CheckTraceDto `json:"data"`
+}
+
+// SingleValueResponseCreateDraftRevisionResponse defines model for SingleValueResponseCreateDraftRevisionResponse.
+type SingleValueResponseCreateDraftRevisionResponse struct {
+	// Data Draft revision, and the draft discarded when the cap was full
+	Data CreateDraftRevisionResponse `json:"data"`
 }
 
 // SingleValueResponseDashboardOverviewDto defines model for SingleValueResponseDashboardOverviewDto.
@@ -10094,6 +11569,18 @@ type SingleValueResponseDeployLockDto struct {
 	Data DeployLockDto `json:"data"`
 }
 
+// SingleValueResponseDeviceAuthorizationDto defines model for SingleValueResponseDeviceAuthorizationDto.
+type SingleValueResponseDeviceAuthorizationDto struct {
+	// Data Device-code challenge the CLI polls until an admin approves it
+	Data DeviceAuthorizationDto `json:"data"`
+}
+
+// SingleValueResponseDeviceTokenDto defines model for SingleValueResponseDeviceTokenDto.
+type SingleValueResponseDeviceTokenDto struct {
+	// Data Result of polling a device-code login
+	Data DeviceTokenDto `json:"data"`
+}
+
 // SingleValueResponseEmailDomainDto defines model for SingleValueResponseEmailDomainDto.
 type SingleValueResponseEmailDomainDto struct {
 	// Data Email testing receive domain
@@ -10110,6 +11597,12 @@ type SingleValueResponseEmailMessageDto struct {
 type SingleValueResponseEmailMessageSourceDto struct {
 	// Data Original message source as received (RFC 822)
 	Data EmailMessageSourceDto `json:"data"`
+}
+
+// SingleValueResponseEntitlementResponse defines model for SingleValueResponseEntitlementResponse.
+type SingleValueResponseEntitlementResponse struct {
+	// Data Full entitlement state for an organization: resolved limits, usage, and trial info
+	Data EntitlementResponse `json:"data"`
 }
 
 // SingleValueResponseEnvironmentDto defines model for SingleValueResponseEnvironmentDto.
@@ -10163,6 +11656,11 @@ type SingleValueResponseListEmailDomainActivityDto struct {
 	Data []EmailDomainActivityDto `json:"data"`
 }
 
+// SingleValueResponseListRegionDto defines model for SingleValueResponseListRegionDto.
+type SingleValueResponseListRegionDto struct {
+	Data []RegionDto `json:"data"`
+}
+
 // SingleValueResponseListUUID defines model for SingleValueResponseListUUID.
 type SingleValueResponseListUUID struct {
 	Data []openapi_types.UUID `json:"data"`
@@ -10194,9 +11692,15 @@ type SingleValueResponseMonitorAuthDto struct {
 	Data MonitorAuthDto `json:"data"`
 }
 
+// SingleValueResponseMonitorBatchHistoryDto defines model for SingleValueResponseMonitorBatchHistoryDto.
+type SingleValueResponseMonitorBatchHistoryDto struct {
+	// Data History for a set of monitors
+	Data MonitorBatchHistoryDto `json:"data"`
+}
+
 // SingleValueResponseMonitorDriftDto defines model for SingleValueResponseMonitorDriftDto.
 type SingleValueResponseMonitorDriftDto struct {
-	// Data Live overlay drift against the implied declared baseline
+	// Data How the live monitor differs from what was last applied from code
 	Data MonitorDriftDto `json:"data"`
 }
 
@@ -10204,6 +11708,24 @@ type SingleValueResponseMonitorDriftDto struct {
 type SingleValueResponseMonitorDto struct {
 	// Data Full monitor representation
 	Data MonitorDto `json:"data"`
+}
+
+// SingleValueResponseMonitorFleetSummaryDto defines model for SingleValueResponseMonitorFleetSummaryDto.
+type SingleValueResponseMonitorFleetSummaryDto struct {
+	// Data Whole-workspace monitor history and live group counts
+	Data MonitorFleetSummaryDto `json:"data"`
+}
+
+// SingleValueResponseMonitorListFacetsDto defines model for SingleValueResponseMonitorListFacetsDto.
+type SingleValueResponseMonitorListFacetsDto struct {
+	// Data Group and facet counts for the monitors a list filter selects
+	Data MonitorListFacetsDto `json:"data"`
+}
+
+// SingleValueResponseMonitorRegionalHealthDto defines model for SingleValueResponseMonitorRegionalHealthDto.
+type SingleValueResponseMonitorRegionalHealthDto struct {
+	// Data Regional presentation from runs, independent of incident evaluation
+	Data MonitorRegionalHealthDto `json:"data"`
 }
 
 // SingleValueResponseMonitorRunDurationBatchDto defines model for SingleValueResponseMonitorRunDurationBatchDto.
@@ -10216,6 +11738,18 @@ type SingleValueResponseMonitorRunDurationBatchDto struct {
 type SingleValueResponseMonitorRunDurationSummaryDto struct {
 	// Data Per-monitor execution duration summary
 	Data MonitorRunDurationSummaryDto `json:"data"`
+}
+
+// SingleValueResponseMonitorRunSeriesDto defines model for SingleValueResponseMonitorRunSeriesDto.
+type SingleValueResponseMonitorRunSeriesDto struct {
+	// Data Execution chart and target-health cycles, read directly from retained runs. Health retries are reduced before assigning a cycle to its initial enqueue bucket; execution durations use their own enqueue window. Both comparison windows use the same current retained-cycle evidence
+	Data MonitorRunSeriesDto `json:"data"`
+}
+
+// SingleValueResponseMonitorScheduleDto defines model for SingleValueResponseMonitorScheduleDto.
+type SingleValueResponseMonitorScheduleDto struct {
+	// Data Scheduler admission clock for a code monitor
+	Data MonitorScheduleDto `json:"data"`
 }
 
 // SingleValueResponseMonitorSecretRequestsDto defines model for SingleValueResponseMonitorSecretRequestsDto.
@@ -10245,6 +11779,12 @@ type SingleValueResponseMonitorTestResultDto struct {
 type SingleValueResponseMonitorUsageProjectionDto struct {
 	// Data Projected monthly usage for a browser or multi-step API schedule
 	Data MonitorUsageProjectionDto `json:"data"`
+}
+
+// SingleValueResponseMonitorValidationResultDto defines model for SingleValueResponseMonitorValidationResultDto.
+type SingleValueResponseMonitorValidationResultDto struct {
+	// Data Dry-run findings and projected runs. Nothing is saved
+	Data MonitorValidationResultDto `json:"data"`
 }
 
 // SingleValueResponseMonitorVersionDto defines model for SingleValueResponseMonitorVersionDto.
@@ -10283,16 +11823,16 @@ type SingleValueResponseOverviewStepsDto struct {
 	Data OverviewStepsDto `json:"data"`
 }
 
-// SingleValueResponsePackageUploadDto defines model for SingleValueResponsePackageUploadDto.
-type SingleValueResponsePackageUploadDto struct {
-	// Data Signed package upload target
-	Data PackageUploadDto `json:"data"`
-}
-
 // SingleValueResponsePolicySnapshotDto defines model for SingleValueResponsePolicySnapshotDto.
 type SingleValueResponsePolicySnapshotDto struct {
 	// Data Policy snapshot used during this check (all evaluations of a single check are against one policy)
 	Data *PolicySnapshotDto `json:"data"`
+}
+
+// SingleValueResponseRegionResultSeriesDto defines model for SingleValueResponseRegionResultSeriesDto.
+type SingleValueResponseRegionResultSeriesDto struct {
+	// Data Per-region uptime and latency series for a monitor chart window
+	Data RegionResultSeriesDto `json:"data"`
 }
 
 // SingleValueResponseResourceGroupDto defines model for SingleValueResponseResourceGroupDto.
@@ -10331,6 +11871,12 @@ type SingleValueResponseRevisionDto struct {
 	Data RevisionDto `json:"data"`
 }
 
+// SingleValueResponseRevisionFilesDto defines model for SingleValueResponseRevisionFilesDto.
+type SingleValueResponseRevisionFilesDto struct {
+	// Data Source files of a revision bundle
+	Data RevisionFilesDto `json:"data"`
+}
+
 // SingleValueResponseRollbackPreviewDto defines model for SingleValueResponseRollbackPreviewDto.
 type SingleValueResponseRollbackPreviewDto struct {
 	// Data Consequence preview for rolling back Head in this environment
@@ -10359,6 +11905,23 @@ type SingleValueResponseRunDto struct {
 type SingleValueResponseRunMetricsSummaryDto struct {
 	// Data Duration and evidence metrics for the filtered Runs population
 	Data RunMetricsSummaryDto `json:"data"`
+}
+
+// SingleValueResponseRunMonitorStripDto defines model for SingleValueResponseRunMonitorStripDto.
+type SingleValueResponseRunMonitorStripDto struct {
+	Data RunMonitorStripDto `json:"data"`
+}
+
+// SingleValueResponseRunTraceSummaryDto defines model for SingleValueResponseRunTraceSummaryDto.
+type SingleValueResponseRunTraceSummaryDto struct {
+	// Data Bounded trace summary for a run
+	Data RunTraceSummaryDto `json:"data"`
+}
+
+// SingleValueResponseRunnerRegionStatusesDto defines model for SingleValueResponseRunnerRegionStatusesDto.
+type SingleValueResponseRunnerRegionStatusesDto struct {
+	// Data Public runner-region acceptance status
+	Data RunnerRegionStatusesDto `json:"data"`
 }
 
 // SingleValueResponseRuntimeProfileDto defines model for SingleValueResponseRuntimeProfileDto.
@@ -10488,6 +12051,12 @@ type SingleValueResponseSyntheticsFamilyMetricsDto struct {
 	Data SyntheticsFamilyMetricsDto `json:"data"`
 }
 
+// SingleValueResponseSyntheticsUsagePeriodDto defines model for SingleValueResponseSyntheticsUsagePeriodDto.
+type SingleValueResponseSyntheticsUsagePeriodDto struct {
+	// Data Billable synthetics usage in the current period
+	Data SyntheticsUsagePeriodDto `json:"data"`
+}
+
 // SingleValueResponseTagDto defines model for SingleValueResponseTagDto.
 type SingleValueResponseTagDto struct {
 	// Data Tag for organizing and filtering monitors
@@ -10503,6 +12072,12 @@ type SingleValueResponseTestChannelResult struct {
 type SingleValueResponseTestMatchResult struct {
 	// Data Result of a dry-run match evaluation against a notification policy
 	Data TestMatchResult `json:"data"`
+}
+
+// SingleValueResponseTriggerRunsResponse defines model for SingleValueResponseTriggerRunsResponse.
+type SingleValueResponseTriggerRunsResponse struct {
+	// Data Runs started by one trigger
+	Data TriggerRunsResponse `json:"data"`
 }
 
 // SingleValueResponseUptimeDto defines model for SingleValueResponseUptimeDto.
@@ -10593,6 +12168,15 @@ type SlackChannelConfig struct {
 
 // SlackChannelConfigChannelType defines model for SlackChannelConfig.ChannelType.
 type SlackChannelConfigChannelType string
+
+// Slot Available demo times in UTC
+type Slot struct {
+	// StartTime Demo start time in UTC
+	StartTime time.Time `json:"startTime"`
+
+	// Token Token used to confirm this time
+	Token string `json:"token"`
+}
 
 // SmsChannelConfig defines model for SmsChannelConfig.
 type SmsChannelConfig struct {
@@ -10691,6 +12275,30 @@ type StatusEventDto struct {
 
 	// Type Status event row type on the Dependencies Detail rail
 	Type string `json:"type"`
+}
+
+// StatusPageBindingSnapshot Saved component configuration
+type StatusPageBindingSnapshot struct {
+	// Description Optional component description
+	Description *string `json:"description,omitempty"`
+
+	// DisplayOrder Position within the page or group
+	DisplayOrder int32 `json:"displayOrder"`
+
+	// ExcludeFromOverall Whether to exclude this component from overall status
+	ExcludeFromOverall bool `json:"excludeFromOverall"`
+
+	// GroupId Group that contains this component
+	GroupId *openapi_types.UUID `json:"groupId,omitempty"`
+
+	// Name Component display name
+	Name string `json:"name"`
+
+	// ShowUptime Whether to show measured uptime
+	ShowUptime bool `json:"showUptime"`
+
+	// StartDate Optional start date for published uptime history
+	StartDate *openapi_types.Date `json:"startDate,omitempty"`
 }
 
 // StatusPageBoundComponentDto Status-page component that represents a monitor, group, or dependency
@@ -10839,7 +12447,7 @@ type StatusPageDto struct {
 	Id             openapi_types.UUID `json:"id"`
 	IncidentMode   string             `json:"incidentMode"`
 
-	// ManagedBy Source that created/owns this status page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on pages created before this attribution column existed.
+	// ManagedBy Source that created/owns this status page: DASHBOARD, GIT, TERRAFORM, MCP or API. Null on pages created before this attribution column existed.
 	ManagedBy       *string                           `json:"managedBy,omitempty"`
 	Name            string                            `json:"name"`
 	OpenIncident    *StatusPageOpenIncidentSummaryDto `json:"openIncident,omitempty"`
@@ -11020,7 +12628,10 @@ type StatusPageSubscriberDto struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-// Summary Environment associated with this monitor; null when unassigned
+// StreamingResponseBody defines model for StreamingResponseBody.
+type StreamingResponseBody = json.RawMessage
+
+// Summary Environment containing this value
 type Summary struct {
 	Id   openapi_types.UUID `json:"id"`
 	Name string             `json:"name"`
@@ -11058,6 +12669,24 @@ type SyntheticsFamilyMetricsDto struct {
 
 	// PassedCheckCount Number of measured PASSED target checks
 	PassedCheckCount int64 `json:"passedCheckCount"`
+}
+
+// SyntheticsUsagePeriodDto Billable synthetics usage in the current period
+type SyntheticsUsagePeriodDto struct {
+	// Api Multi-step API usage totals
+	Api Meter `json:"api"`
+
+	// Browser Multi-step API usage totals
+	Browser Meter `json:"browser"`
+
+	// Monitors Usage grouped by monitor and meter, including deleted monitors
+	Monitors []MonitorUsage `json:"monitors"`
+
+	// PeriodEnd End of the usage period
+	PeriodEnd time.Time `json:"periodEnd"`
+
+	// PeriodStart Start of the usage period
+	PeriodStart time.Time `json:"periodStart"`
 }
 
 // TableValueResultAlertChannelDto defines model for TableValueResultAlertChannelDto.
@@ -11231,6 +12860,15 @@ type TableValueResultMonitorDto struct {
 	TotalPages    *int32       `json:"totalPages,omitempty"`
 }
 
+// TableValueResultMonitorSessionDto defines model for TableValueResultMonitorSessionDto.
+type TableValueResultMonitorSessionDto struct {
+	Data          []MonitorSessionDto `json:"data"`
+	HasNext       bool                `json:"hasNext"`
+	HasPrev       bool                `json:"hasPrev"`
+	TotalElements *int64              `json:"totalElements,omitempty"`
+	TotalPages    *int32              `json:"totalPages,omitempty"`
+}
+
 // TableValueResultMonitorVersionDto defines model for TableValueResultMonitorVersionDto.
 type TableValueResultMonitorVersionDto struct {
 	Data          []MonitorVersionDto `json:"data"`
@@ -11310,15 +12948,6 @@ type TableValueResultRunCaseDto struct {
 	HasPrev       bool         `json:"hasPrev"`
 	TotalElements *int64       `json:"totalElements,omitempty"`
 	TotalPages    *int32       `json:"totalPages,omitempty"`
-}
-
-// TableValueResultRunDto defines model for TableValueResultRunDto.
-type TableValueResultRunDto struct {
-	Data          []RunDto `json:"data"`
-	HasNext       bool     `json:"hasNext"`
-	HasPrev       bool     `json:"hasPrev"`
-	TotalElements *int64   `json:"totalElements,omitempty"`
-	TotalPages    *int32   `json:"totalPages,omitempty"`
 }
 
 // TableValueResultRuntimeProfileDto defines model for TableValueResultRuntimeProfileDto.
@@ -11767,6 +13396,23 @@ type TraceNearbyAction struct {
 	Title string `json:"title"`
 }
 
+// TransferMonitorRequest defines model for TransferMonitorRequest.
+type TransferMonitorRequest struct {
+	OwnerDeclaration *OwnerDeclaration `json:"ownerDeclaration,omitempty"`
+
+	// Project Project the new owner declares for this monitor; null clears it
+	Project *string `json:"project,omitempty"`
+
+	// Reason Why ownership is moving (recorded in the audit log)
+	Reason string `json:"reason"`
+
+	// To New owning tool: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31)
+	To TransferMonitorRequestTo `json:"to"`
+}
+
+// TransferMonitorRequestTo New owning tool: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31)
+type TransferMonitorRequestTo string
+
 // TriggerRule Array of trigger rules defining when an incident should be raised
 type TriggerRule struct {
 	// AggregationType How response times are aggregated for response-time rules
@@ -11803,6 +13449,43 @@ type TriggerRuleSeverity string
 // TriggerRuleType Condition that opens or escalates an incident from check results
 type TriggerRuleType string
 
+// TriggerRunRef One region of a trigger
+type TriggerRunRef struct {
+	// Id Run identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Phase Current run phase
+	Phase string `json:"phase"`
+
+	// Region Probe region for this run
+	Region string `json:"region"`
+
+	// Url API path for this run
+	Url string `json:"url"`
+}
+
+// TriggerRunRequest defines model for TriggerRunRequest.
+type TriggerRunRequest struct {
+	// Regions Regions to run; empty or omitted runs every configured region
+	Regions *[]string          `json:"regions,omitempty"`
+	Session *RunSessionContext `json:"session,omitempty"`
+
+	// Signal Count these runs toward health and incidents (default: false)
+	Signal *bool `json:"signal,omitempty"`
+}
+
+// TriggerRunsResponse Runs started by one trigger
+type TriggerRunsResponse struct {
+	// BilledRuns Runs billed for this trigger, one per region
+	BilledRuns int32 `json:"billedRuns"`
+
+	// Runs Queued runs, one per region
+	Runs []TriggerRunRef `json:"runs"`
+
+	// TriggerId Groups every run started by this trigger; scheduled runs group by evaluation cycle instead
+	TriggerId openapi_types.UUID `json:"triggerId"`
+}
+
 // UpdateAlertChannelRequest defines model for UpdateAlertChannelRequest.
 type UpdateAlertChannelRequest struct {
 	Config UpdateAlertChannelRequest_Config `json:"config"`
@@ -11810,7 +13493,7 @@ type UpdateAlertChannelRequest struct {
 	// Enabled Whether this channel is enabled (default: true); null preserves current value
 	Enabled *bool `json:"enabled,omitempty"`
 
-	// ManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+	// ManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 	ManagedBy *UpdateAlertChannelRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name New channel name (full replacement, not partial update)
@@ -11822,7 +13505,7 @@ type UpdateAlertChannelRequest_Config struct {
 	union json.RawMessage
 }
 
-// UpdateAlertChannelRequestManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+// UpdateAlertChannelRequestManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 type UpdateAlertChannelRequestManagedBy string
 
 // UpdateAlertSensitivityRequest Request body for updating alert sensitivity on a service subscription
@@ -12066,6 +13749,9 @@ type UpdateMonitorAuthRequest_Config struct {
 
 // UpdateMonitorRequest defines model for UpdateMonitorRequest.
 type UpdateMonitorRequest struct {
+	// AcknowledgeRollback Rolled-back digest this code publish re-applies on purpose
+	AcknowledgeRollback *string `json:"acknowledgeRollback,omitempty"`
+
 	// AlertChannelIds Replace alert channel list. Null preserves current
 	AlertChannelIds *[]openapi_types.UUID `json:"alertChannelIds,omitempty"`
 
@@ -12079,6 +13765,7 @@ type UpdateMonitorRequest struct {
 
 	// ClearEnvironmentId Set to true to remove the environment association
 	ClearEnvironmentId *bool                        `json:"clearEnvironmentId,omitempty"`
+	Code               *MonitorCodeSpec             `json:"code,omitempty"`
 	Config             *UpdateMonitorRequest_Config `json:"config,omitempty"`
 
 	// Enabled Enable or disable the monitor (pause or resume). Null preserves current
@@ -12087,10 +13774,13 @@ type UpdateMonitorRequest struct {
 	// EnvironmentId New environment; null preserves current
 	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
 
+	// ExpectedUpdatedAt Last updatedAt this edit was based on; null skips the check
+	ExpectedUpdatedAt *time.Time `json:"expectedUpdatedAt,omitempty"`
+
 	// FastRetryMaxAttempts Fast-retry attempts after failure. Null preserves current. 0 disables
 	FastRetryMaxAttempts *int32 `json:"fastRetryMaxAttempts,omitempty"`
 
-	// FrequencySeconds New check frequency in seconds (10–86400). Null preserves current
+	// FrequencySeconds Check frequency in seconds; minimum depends on plan. Null preserves current
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
@@ -12098,14 +13788,22 @@ type UpdateMonitorRequest struct {
 	ManagedBy *UpdateMonitorRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name New monitor name. Null preserves current
-	Name    *string             `json:"name,omitempty"`
-	Package *MonitorPackageSpec `json:"package,omitempty"`
+	Name *string `json:"name,omitempty"`
+
+	// OwnerEnforced Only the managedBy tool may change configuration. Null preserves current
+	OwnerEnforced *bool `json:"ownerEnforced,omitempty"`
+
+	// OwnerProject Project the owning tool declares; null preserves current
+	OwnerProject *string `json:"ownerProject,omitempty"`
 
 	// Regions New probe regions. Null preserves current. Allowed values are deployment-dependent
 	Regions *[]string `json:"regions,omitempty"`
 
 	// RunParallel Run every location each interval; false rotates one. Null preserves current
 	RunParallel *bool `json:"runParallel,omitempty"`
+
+	// SecretKeys Replace attached secret keys; null preserves current
+	SecretKeys *[]string `json:"secretKeys,omitempty"`
 
 	// Status Not writable; use pause or resume
 	Status *string                `json:"status,omitempty"`
@@ -12269,7 +13967,7 @@ type UpdateResourceGroupRequest struct {
 	// HealthThresholdValue Health threshold value; null disables threshold
 	HealthThresholdValue *float32 `json:"healthThresholdValue,omitempty"`
 
-	// ManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+	// ManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 	ManagedBy *UpdateResourceGroupRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this group
@@ -12285,7 +13983,7 @@ type UpdateResourceGroupRequest struct {
 // UpdateResourceGroupRequestHealthThresholdType Health threshold type: COUNT or PERCENTAGE; null disables threshold
 type UpdateResourceGroupRequestHealthThresholdType string
 
-// UpdateResourceGroupRequestManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+// UpdateResourceGroupRequestManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 type UpdateResourceGroupRequestManagedBy string
 
 // UpdateRootlyChannelConfig defines model for UpdateRootlyChannelConfig.
@@ -12460,7 +14158,7 @@ type UpdateStatusPageRequest struct {
 	// IncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC; null preserves current
 	IncidentMode *UpdateStatusPageRequestIncidentMode `json:"incidentMode,omitempty"`
 
-	// ManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+	// ManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 	ManagedBy *UpdateStatusPageRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name New name; null preserves current
@@ -12473,7 +14171,7 @@ type UpdateStatusPageRequest struct {
 // UpdateStatusPageRequestIncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC; null preserves current
 type UpdateStatusPageRequestIncidentMode string
 
-// UpdateStatusPageRequestManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+// UpdateStatusPageRequestManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 type UpdateStatusPageRequestManagedBy string
 
 // UpdateStatusPageRequestVisibility Page visibility; null preserves current
@@ -12677,6 +14375,27 @@ type UserDto struct {
 
 	// UserRole Platform role: USER or SUPERADMIN
 	UserRole string `json:"userRole"`
+}
+
+// ValidateMonitorsRequest defines model for ValidateMonitorsRequest.
+type ValidateMonitorsRequest struct {
+	// Monitors Monitors to check as create payloads, before anything is saved
+	Monitors []CreateMonitorRequest `json:"monitors"`
+}
+
+// Value Values selected by the other filters
+type Value struct {
+	// Count Matching run attempts for this value
+	Count int64 `json:"count"`
+
+	// FailedCount Failed attempt count; populated for region facets
+	FailedCount *int64 `json:"failedCount,omitempty"`
+
+	// OutcomeCounts Per-outcome attempt counts; populated for region facets
+	OutcomeCounts *[]RunOutcomeCountDto `json:"outcomeCounts,omitempty"`
+
+	// Value Exact filter value; steps use caseIndex:step
+	Value string `json:"value"`
 }
 
 // VoiceLanguageDto Supported TTS voice language for phone call alerts
@@ -12985,53 +14704,400 @@ type ZapierChannelConfig struct {
 // ZapierChannelConfigChannelType defines model for ZapierChannelConfig.ChannelType.
 type ZapierChannelConfigChannelType string
 
-// List14Params defines parameters for List14.
-type List14Params struct {
+// List15Params defines parameters for List15.
+type List15Params struct {
 	// Type Filter by channel integration type (e.g. SLACK, WEBHOOK, EMAIL)
-	Type *List14ParamsType `form:"type,omitempty" json:"type,omitempty"`
+	Type *List15ParamsType `form:"type,omitempty" json:"type,omitempty"`
 
-	// ManagedBy Filter by managed-by source (DASHBOARD, CLI, TERRAFORM, MCP, API)
-	ManagedBy *List14ParamsManagedBy `form:"managedBy,omitempty" json:"managedBy,omitempty"`
+	// ManagedBy Filter by managed-by source (DASHBOARD, GIT, TERRAFORM, MCP, API; CLI = GIT until 2027-01-31)
+	ManagedBy *List15ParamsManagedBy `form:"managedBy,omitempty" json:"managedBy,omitempty"`
 
 	// Search Case-insensitive contains-match on the channel name
-	Search   *string  `form:"search,omitempty" json:"search,omitempty"`
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// List14ParamsType defines parameters for List14.
-type List14ParamsType string
+// List15ParamsType defines parameters for List15.
+type List15ParamsType string
 
-// List14ParamsManagedBy defines parameters for List14.
-type List14ParamsManagedBy string
+// List15ParamsManagedBy defines parameters for List15.
+type List15ParamsManagedBy string
 
-// List23Params defines parameters for List23.
-type List23Params struct {
-	Action       *string    `form:"action,omitempty" json:"action,omitempty"`
-	ActorId      *int32     `form:"actorId,omitempty" json:"actorId,omitempty"`
-	ResourceType *string    `form:"resourceType,omitempty" json:"resourceType,omitempty"`
-	From         *time.Time `form:"from,omitempty" json:"from,omitempty"`
-	To           *time.Time `form:"to,omitempty" json:"to,omitempty"`
-	Page         *int32     `form:"page,omitempty" json:"page,omitempty"`
-	Size         *int32     `form:"size,omitempty" json:"size,omitempty"`
+// Create16Params defines parameters for Create16.
+type Create16Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TestConfigParams defines parameters for TestConfig.
+type TestConfigParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete10Params defines parameters for Delete10.
+type Delete10Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get8Params defines parameters for Get8.
+type Get8Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update14Params defines parameters for Update14.
+type Update14Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListDeliveries1Params defines parameters for ListDeliveries1.
+type ListDeliveries1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetEnabledParams defines parameters for SetEnabled.
+type SetEnabledParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Test2Params defines parameters for Test2.
+type Test2Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListAttemptsParams defines parameters for ListAttempts.
+type ListAttemptsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RetryParams defines parameters for Retry.
+type RetryParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List14Params defines parameters for List14.
+type List14Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create15Params defines parameters for Create15.
+type Create15Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete12Params defines parameters for Delete12.
+type Delete12Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update17Params defines parameters for Update17.
+type Update17Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RegenerateParams defines parameters for Regenerate.
+type RegenerateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Revoke1Params defines parameters for Revoke1.
+type Revoke1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetArtifactContentParams defines parameters for GetArtifactContent.
+type GetArtifactContentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetArtifactDownloadParams defines parameters for GetArtifactDownload.
+type GetArtifactDownloadParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List24Params defines parameters for List24.
+type List24Params struct {
+	Action       *string `form:"action,omitempty" json:"action,omitempty"`
+	ActorId      *int32  `form:"actorId,omitempty" json:"actorId,omitempty"`
+	ResourceType *string `form:"resourceType,omitempty" json:"resourceType,omitempty"`
+
+	// ResourceId Only events on this resource id, e.g. a monitor id
+	ResourceId *string    `form:"resourceId,omitempty" json:"resourceId,omitempty"`
+	From       *time.Time `form:"from,omitempty" json:"from,omitempty"`
+	To         *time.Time `form:"to,omitempty" json:"to,omitempty"`
+	Page       *int32     `form:"page,omitempty" json:"page,omitempty"`
+	Size       *int32     `form:"size,omitempty" json:"size,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ExportAuditLogParams defines parameters for ExportAuditLog.
+type ExportAuditLogParams struct {
+	// Action Only events with this action, e.g. monitor.paused
+	Action *string `form:"action,omitempty" json:"action,omitempty"`
+
+	// ActorId Only events performed by this user
+	ActorId *int32 `form:"actorId,omitempty" json:"actorId,omitempty"`
+
+	// ResourceType Only events on this resource type, e.g. monitor
+	ResourceType *string `form:"resourceType,omitempty" json:"resourceType,omitempty"`
+
+	// ResourceId Only events on this resource id, e.g. a monitor id
+	ResourceId *string `form:"resourceId,omitempty" json:"resourceId,omitempty"`
+
+	// From Earliest event time (default: 30 days ago)
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Latest event time
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Start1Params defines parameters for Start1.
+type Start1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TokenParams defines parameters for Token.
+type TokenParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Me1Params defines parameters for Me1.
+type Me1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UploadZipParams defines parameters for UploadZip.
+type UploadZipParams struct {
+	Entrypoint *string `form:"entrypoint,omitempty" json:"entrypoint,omitempty"`
+	RuntimeId  *string `form:"runtimeId,omitempty" json:"runtimeId,omitempty"`
+
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CheckParams defines parameters for Check.
+type CheckParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListCategoriesParams defines parameters for ListCategories.
 type ListCategoriesParams struct {
 	// PublishedOnly Count only published services (curated public pSEO set); default false
 	PublishedOnly *bool `form:"publishedOnly,omitempty" json:"publishedOnly,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// OverviewParams defines parameters for Overview.
+type OverviewParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List23Params defines parameters for List23.
+type List23Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get14Params defines parameters for Get14.
+type Get14Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListRevisions1Params defines parameters for ListRevisions1.
+type ListRevisions1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetDashboardDemoAvailabilityParams defines parameters for GetDashboardDemoAvailability.
+type GetDashboardDemoAvailabilityParams struct {
+	Date     openapi_types.Date `form:"date" json:"date"`
+	Timezone string             `form:"timezone" json:"timezone"`
+	Days     *int32             `form:"days,omitempty" json:"days,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateDashboardDemoBookingParams defines parameters for CreateDashboardDemoBooking.
+type CreateDashboardDemoBookingParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetDashboardDemoBookingParams defines parameters for GetDashboardDemoBooking.
+type GetDashboardDemoBookingParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CloseUnsavedDashboardDemoBookingParams defines parameters for CloseUnsavedDashboardDemoBooking.
+type CloseUnsavedDashboardDemoBookingParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CurrentParams defines parameters for Current.
+type CurrentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AcquireParams defines parameters for Acquire.
+type AcquireParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ForceReleaseParams defines parameters for ForceRelease.
+type ForceReleaseParams struct {
+	// Reason Why the lock is being broken (recorded in the audit log)
+	Reason *string `form:"reason,omitempty" json:"reason,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ReleaseParams defines parameters for Release.
+type ReleaseParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListEmailDomainsParams defines parameters for ListEmailDomains.
 type ListEmailDomainsParams struct {
 	// Search Case-insensitive name search
-	Search   *string  `form:"search,omitempty" json:"search,omitempty"`
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateEmailDomainParams defines parameters for CreateEmailDomain.
+type CreateEmailDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListEmailDomainActivityParams defines parameters for ListEmailDomainActivity.
 type ListEmailDomainActivityParams struct {
 	// DomainIds Comma-separated domain ids (1–100)
 	DomainIds *[]openapi_types.UUID `form:"domainIds,omitempty" json:"domainIds,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteEmailDomainParams defines parameters for DeleteEmailDomain.
+type DeleteEmailDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetEmailDomainParams defines parameters for GetEmailDomain.
+type GetEmailDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateEmailDomainParams defines parameters for UpdateEmailDomain.
+type UpdateEmailDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteEmailInboxParams defines parameters for DeleteEmailInbox.
+type DeleteEmailInboxParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListEmailMessagesParams defines parameters for ListEmailMessages.
@@ -13044,6 +15110,132 @@ type ListEmailMessagesParams struct {
 	Cursor *string             `form:"cursor,omitempty" json:"cursor,omitempty"`
 	After  *openapi_types.UUID `form:"after,omitempty" json:"after,omitempty"`
 	Limit  *int32              `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// InjectEmailMessageParams defines parameters for InjectEmailMessage.
+type InjectEmailMessageParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteEmailMessageParams defines parameters for DeleteEmailMessage.
+type DeleteEmailMessageParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetEmailMessageParams defines parameters for GetEmailMessage.
+type GetEmailMessageParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetEmailMessageAttachmentParams defines parameters for GetEmailMessageAttachment.
+type GetEmailMessageAttachmentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListEmailMessageLinksParams defines parameters for ListEmailMessageLinks.
+type ListEmailMessageLinksParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListEmailMessageOtpParams defines parameters for ListEmailMessageOtp.
+type ListEmailMessageOtpParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetEmailMessageRawParams defines parameters for GetEmailMessageRaw.
+type GetEmailMessageRawParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetEmailMessageSourceParams defines parameters for GetEmailMessageSource.
+type GetEmailMessageSourceParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// VerifyEmailDomainParams defines parameters for VerifyEmailDomain.
+type VerifyEmailDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// WaitForEmailParams defines parameters for WaitForEmail.
+type WaitForEmailParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// WaitForEmailByLocalpartParams defines parameters for WaitForEmailByLocalpart.
+type WaitForEmailByLocalpartParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetCurrentEntitlementsParams defines parameters for GetCurrentEntitlements.
+type GetCurrentEntitlementsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List13Params defines parameters for List13.
+type List13Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create14Params defines parameters for Create14.
+type Create14Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete9Params defines parameters for Delete9.
+type Delete9Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get7Params defines parameters for Get7.
+type Get7Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update13Params defines parameters for Update13.
+type Update13Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetTimelineParams defines parameters for GetTimeline.
+type GetTimelineParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListMonitorRuleEvaluationsParams defines parameters for ListMonitorRuleEvaluations.
@@ -13053,14 +15245,54 @@ type ListMonitorRuleEvaluationsParams struct {
 	OnlyMatched *bool      `form:"onlyMatched,omitempty" json:"onlyMatched,omitempty"`
 	From        *time.Time `form:"from,omitempty" json:"from,omitempty"`
 	To          *time.Time `form:"to,omitempty" json:"to,omitempty"`
-	Pageable    Pageable   `form:"pageable" json:"pageable"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListMonitorTransitionsParams defines parameters for ListMonitorTransitions.
 type ListMonitorTransitionsParams struct {
-	From     *time.Time `form:"from,omitempty" json:"from,omitempty"`
-	To       *time.Time `form:"to,omitempty" json:"to,omitempty"`
-	Pageable Pageable   `form:"pageable" json:"pageable"`
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+	To   *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetPolicySnapshotParams defines parameters for GetPolicySnapshot.
+type GetPolicySnapshotParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetTraceParams defines parameters for GetTrace.
+type GetTraceParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PingGetParams defines parameters for PingGet.
+type PingGetParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // PingPostJSONBody defines parameters for PingPost.
@@ -13069,39 +15301,311 @@ type PingPostJSONBody = string
 // PingPostTextBody defines parameters for PingPost.
 type PingPostTextBody = string
 
-// List11Params defines parameters for List11.
-type List11Params struct {
-	Params IncidentFilterParams `form:"params" json:"params"`
+// PingPostParams defines parameters for PingPost.
+type PingPostParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List12Params defines parameters for List12.
+type List12Params struct {
+	// Status Filter by incident lifecycle status; null returns every status
+	Status *List12ParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Severity Filter by severity; null returns every severity
+	Severity *List12ParamsSeverity `form:"severity,omitempty" json:"severity,omitempty"`
+
+	// Source Filter by where the incident originated (auto, manual, third-party)
+	Source *List12ParamsSource `form:"source,omitempty" json:"source,omitempty"`
+
+	// MonitorId Only return incidents tied to this monitor ID
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// ServiceId Only return incidents tied to this service ID (third-party services)
+	ServiceId *openapi_types.UUID `form:"serviceId,omitempty" json:"serviceId,omitempty"`
+
+	// ResourceGroupId Only return incidents owned by this resource group (incidents.resource_group_id)
+	ResourceGroupId *openapi_types.UUID `form:"resourceGroupId,omitempty" json:"resourceGroupId,omitempty"`
+
+	// TagId Only return incidents whose monitor carries this tag
+	TagId *openapi_types.UUID `form:"tagId,omitempty" json:"tagId,omitempty"`
+
+	// EnvironmentId Only return incidents whose monitor lives in this environment
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// ExcludeId Exclude this incident ID from results (related-incident lists)
+	ExcludeId *openapi_types.UUID `form:"excludeId,omitempty" json:"excludeId,omitempty"`
+
+	// StartedFrom Earliest startedAt to include (inclusive, ISO 8601)
+	StartedFrom *time.Time `form:"startedFrom,omitempty" json:"startedFrom,omitempty"`
+
+	// StartedTo Latest startedAt to include (inclusive, ISO 8601)
+	StartedTo *time.Time `form:"startedTo,omitempty" json:"startedTo,omitempty"`
+
+	// Search Case-insensitive substring match on title or incident ID
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Page Zero-based page index (default: 0)
+	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size Number of incidents per page (1–200, default: 10)
+	Size *int32 `form:"size,omitempty" json:"size,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List12ParamsStatus defines parameters for List12.
+type List12ParamsStatus string
+
+// List12ParamsSeverity defines parameters for List12.
+type List12ParamsSeverity string
+
+// List12ParamsSource defines parameters for List12.
+type List12ParamsSource string
+
+// Create13Params defines parameters for Create13.
+type Create13Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get9Params defines parameters for Get9.
+type Get9Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update16Params defines parameters for Update16.
+type Update16Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AcknowledgeAllParams defines parameters for AcknowledgeAll.
+type AcknowledgeAllParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListEvents1Params defines parameters for ListEvents1.
 type ListEvents1Params struct {
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListRelatedParams defines parameters for ListRelated.
 type ListRelatedParams struct {
 	WindowDays *int32 `form:"windowDays,omitempty" json:"windowDays,omitempty"`
 	Limit      *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// List9Params defines parameters for List9.
-type List9Params struct {
+// ResolveParams defines parameters for Resolve.
+type ResolveParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListIncidentRunsParams defines parameters for ListIncidentRuns.
+type ListIncidentRunsParams struct {
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetTriggerParams defines parameters for GetTrigger.
+type GetTriggerParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddUpdateParams defines parameters for AddUpdate.
+type AddUpdateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest3Params defines parameters for Ingest3.
+type Ingest3Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// IngestParams defines parameters for Ingest.
+type IngestParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest5Params defines parameters for Ingest5.
+type Ingest5Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest6Params defines parameters for Ingest6.
+type Ingest6Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest4Params defines parameters for Ingest4.
+type Ingest4Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest1Params defines parameters for Ingest1.
+type Ingest1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest2Params defines parameters for Ingest2.
+type Ingest2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List22Params defines parameters for List22.
+type List22Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListVoiceLanguagesParams defines parameters for ListVoiceLanguages.
+type ListVoiceLanguagesParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List11Params defines parameters for List11.
+type List11Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create12Params defines parameters for Create12.
+type Create12Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Resend1Params defines parameters for Resend1.
+type Resend1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RevokeParams defines parameters for Revoke.
+type RevokeParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List10Params defines parameters for List10.
+type List10Params struct {
 	// MonitorId Filter by monitor UUID
 	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
 
 	// Filter Filter by status: 'active' or 'upcoming'
 	Filter *string `form:"filter,omitempty" json:"filter,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// List20Params defines parameters for List20.
-type List20Params struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+// Create11Params defines parameters for Create11.
+type Create11Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// List8Params defines parameters for List8.
-type List8Params struct {
+// Delete8Params defines parameters for Delete8.
+type Delete8Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetById2Params defines parameters for GetById2.
+type GetById2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update12Params defines parameters for Update12.
+type Update12Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List21Params defines parameters for List21.
+type List21Params struct {
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Remove2Params defines parameters for Remove2.
+type Remove2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ChangeRoleParams defines parameters for ChangeRole.
+type ChangeRoleParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ChangeStatusParams defines parameters for ChangeStatus.
+type ChangeStatusParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List9Params defines parameters for List9.
+type List9Params struct {
 	// Enabled Filter by enabled state (true/false)
 	Enabled *bool `form:"enabled,omitempty" json:"enabled,omitempty"`
 
@@ -13109,13 +15613,13 @@ type List8Params struct {
 	Status *string `form:"status,omitempty" json:"status,omitempty"`
 
 	// Type Filter by monitor type
-	Type *List8ParamsType `form:"type,omitempty" json:"type,omitempty"`
+	Type *List9ParamsType `form:"type,omitempty" json:"type,omitempty"`
 
 	// Types Filter by monitor types, comma-separated; matches any listed type
-	Types *[]List8ParamsTypes `form:"types,omitempty" json:"types,omitempty"`
+	Types *[]List9ParamsTypes `form:"types,omitempty" json:"types,omitempty"`
 
 	// ManagedBy Filter by managed-by source
-	ManagedBy *List8ParamsManagedBy `form:"managedBy,omitempty" json:"managedBy,omitempty"`
+	ManagedBy *List9ParamsManagedBy `form:"managedBy,omitempty" json:"managedBy,omitempty"`
 
 	// Tags Filter by tag names, comma-separated (e.g. prod,critical); OR semantics
 	Tags *string `form:"tags,omitempty" json:"tags,omitempty"`
@@ -13136,27 +15640,319 @@ type List8Params struct {
 	NeedsAttention *bool `form:"needsAttention,omitempty" json:"needsAttention,omitempty"`
 
 	// Region Filter by probe region
-	Region   *string  `form:"region,omitempty" json:"region,omitempty"`
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Name Exact, case-sensitive monitor name
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
+
+	// OpenIncident Whether a confirmed incident is open
+	OpenIncident *bool `form:"openIncident,omitempty" json:"openIncident,omitempty"`
+
+	// Muted Whether alert delivery is currently muted
+	Muted *bool `form:"muted,omitempty" json:"muted,omitempty"`
+
+	// Quarantined Whether quarantine has not expired
+	Quarantined *bool `form:"quarantined,omitempty" json:"quarantined,omitempty"`
+
+	// PausedBefore Only monitors paused before this timestamp
+	PausedBefore *time.Time `form:"pausedBefore,omitempty" json:"pausedBefore,omitempty"`
+
+	// Flaky Whether recent completed cycles recovered on retry
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// Group List group: failing, not_running, passing, or paused
+	Group *string `form:"group,omitempty" json:"group,omitempty"`
+
+	// OwnerProject Exact project declared by the owning tool
+	OwnerProject *string `form:"ownerProject,omitempty" json:"ownerProject,omitempty"`
+
+	// Sort Use state for group and streak ordering
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// List8ParamsType defines parameters for List8.
-type List8ParamsType string
+// List9ParamsType defines parameters for List9.
+type List9ParamsType string
 
-// List8ParamsTypes defines parameters for List8.
-type List8ParamsTypes string
+// List9ParamsTypes defines parameters for List9.
+type List9ParamsTypes string
 
-// List8ParamsManagedBy defines parameters for List8.
-type List8ParamsManagedBy string
+// List9ParamsManagedBy defines parameters for List9.
+type List9ParamsManagedBy string
+
+// Create10Params defines parameters for Create10.
+type Create10Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BatchHistoryParams defines parameters for BatchHistory.
+type BatchHistoryParams struct {
+	// Ids Monitor ids, comma-separated; at most 100
+	Ids []openapi_types.UUID `form:"ids" json:"ids"`
+
+	// Window History window: 24h (default), 7d or 30d
+	Window *string `form:"window,omitempty" json:"window,omitempty"`
+
+	// Density Return 48 display-only history buckets
+	Density *int32 `form:"density,omitempty" json:"density,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BulkActionParams defines parameters for BulkAction.
+type BulkActionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CsvParams defines parameters for Csv.
+type CsvParams struct {
+	Ids []openapi_types.UUID `form:"ids" json:"ids"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// FacetsParams defines parameters for Facets.
+type FacetsParams struct {
+	// Enabled Filter by enabled state (true/false)
+	Enabled *bool `form:"enabled,omitempty" json:"enabled,omitempty"`
+
+	// Status Lifecycle status alias: 'active' (enabled=true) or 'paused' (enabled=false). Ignored when ?enabled is also supplied.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// Type Filter by monitor type
+	Type *FacetsParamsType `form:"type,omitempty" json:"type,omitempty"`
+
+	// Types Filter by monitor types, comma-separated; matches any listed type
+	Types *[]FacetsParamsTypes `form:"types,omitempty" json:"types,omitempty"`
+
+	// ManagedBy Filter by managed-by source
+	ManagedBy *FacetsParamsManagedBy `form:"managedBy,omitempty" json:"managedBy,omitempty"`
+
+	// Tags Filter by tag names, comma-separated (e.g. prod,critical); OR semantics
+	Tags *string `form:"tags,omitempty" json:"tags,omitempty"`
+
+	// Tag Filter by a single tag name (alias for ?tags=); merged with ?tags using OR semantics
+	Tag *string `form:"tag,omitempty" json:"tag,omitempty"`
+
+	// Search Case-insensitive name search
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// EnvironmentId Filter by environment ID
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// DisplayHealth Filter by projected chip health
+	DisplayHealth *string `form:"displayHealth,omitempty" json:"displayHealth,omitempty"`
+
+	// NeedsAttention When true, only monitors that need operator attention
+	NeedsAttention *bool `form:"needsAttention,omitempty" json:"needsAttention,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Name Exact, case-sensitive monitor name
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
+
+	// OpenIncident Whether a confirmed incident is open
+	OpenIncident *bool `form:"openIncident,omitempty" json:"openIncident,omitempty"`
+
+	// Muted Whether alert delivery is currently muted
+	Muted *bool `form:"muted,omitempty" json:"muted,omitempty"`
+
+	// Quarantined Whether quarantine has not expired
+	Quarantined *bool `form:"quarantined,omitempty" json:"quarantined,omitempty"`
+
+	// PausedBefore Only monitors paused before this timestamp
+	PausedBefore *time.Time `form:"pausedBefore,omitempty" json:"pausedBefore,omitempty"`
+
+	// Flaky Whether recent completed cycles recovered on retry
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// Group List group: failing, not_running, passing, or paused
+	Group *string `form:"group,omitempty" json:"group,omitempty"`
+
+	// OwnerProject Exact project declared by the owning tool
+	OwnerProject *string `form:"ownerProject,omitempty" json:"ownerProject,omitempty"`
+
+	// Sort Use state for group and streak ordering
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// FacetsParamsType defines parameters for Facets.
+type FacetsParamsType string
+
+// FacetsParamsTypes defines parameters for Facets.
+type FacetsParamsTypes string
+
+// FacetsParamsManagedBy defines parameters for Facets.
+type FacetsParamsManagedBy string
+
+// TestAdHocParams defines parameters for TestAdHoc.
+type TestAdHocParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListTrashParams defines parameters for ListTrash.
+type ListTrashParams struct {
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PreviewUsage1Params defines parameters for PreviewUsage1.
+type PreviewUsage1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ValidateMonitorsParams defines parameters for ValidateMonitors.
+type ValidateMonitorsParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete7Params defines parameters for Delete7.
+type Delete7Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get6Params defines parameters for Get6.
+type Get6Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update11Params defines parameters for Update11.
+type Update11Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DriftParams defines parameters for Drift.
+type DriftParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListMonitorHistoryParams defines parameters for ListMonitorHistory.
+type ListMonitorHistoryParams struct {
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// MuteParams defines parameters for Mute.
+type MuteParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
 
 // GetMonitorOverviewStepsParams defines parameters for GetMonitorOverviewSteps.
 type GetMonitorOverviewStepsParams struct {
 	// Window Time window for step aggregates
 	Window *GetMonitorOverviewStepsParamsWindow `form:"window,omitempty" json:"window,omitempty"`
+
+	// RevisionId Revision to inspect; defaults to the live revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// LastRuns Latest settled runs, 1–30; ignores the window within retention
+	LastRuns *int32 `form:"lastRuns,omitempty" json:"lastRuns,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetMonitorOverviewStepsParamsWindow defines parameters for GetMonitorOverviewSteps.
 type GetMonitorOverviewStepsParamsWindow string
+
+// PauseParams defines parameters for Pause.
+type PauseParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PublishParams defines parameters for Publish.
+type PublishParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// QuarantineParams defines parameters for Quarantine.
+type QuarantineParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ReleaseQuarantineParams defines parameters for ReleaseQuarantine.
+type ReleaseQuarantineParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RestoreParams defines parameters for Restore.
+type RestoreParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
 
 // GetResultsParams defines parameters for GetResults.
 type GetResultsParams struct {
@@ -13177,50 +15973,576 @@ type GetResultsParams struct {
 
 	// Passed Filter by pass/fail status
 	Passed *bool `form:"passed,omitempty" json:"passed,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
+
+// GetMonitorResultsByRegionParams defines parameters for GetMonitorResultsByRegion.
+type GetMonitorResultsByRegionParams struct {
+	// Window Time window: 24h (30-minute buckets), 7d (3-hour), 30d (12-hour)
+	Window *GetMonitorResultsByRegionParamsWindow `form:"window,omitempty" json:"window,omitempty"`
+
+	// Region Limit to one of the monitor's regions (e.g. us-east)
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetMonitorResultsByRegionParamsWindow defines parameters for GetMonitorResultsByRegion.
+type GetMonitorResultsByRegionParamsWindow string
 
 // GetSummaryParams defines parameters for GetSummary.
 type GetSummaryParams struct {
 	// ChartWindow Chart window: 24h returns hourly buckets, 7d/30d/90d return daily buckets
 	ChartWindow *GetSummaryParamsChartWindow `form:"chartWindow,omitempty" json:"chartWindow,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetSummaryParamsChartWindow defines parameters for GetSummary.
 type GetSummaryParamsChartWindow string
 
+// ResumeParams defines parameters for Resume.
+type ResumeParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListRevisionsParams defines parameters for ListRevisions.
 type ListRevisionsParams struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	// State Comma-separated draft, tested_passed, tested_failed, live, previous, discarded, or all; default live,previous
+	State *string `form:"state,omitempty" json:"state,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateDraftParams defines parameters for CreateDraft.
+type CreateDraftParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// DiscardDraftParams defines parameters for DiscardDraft.
+type DiscardDraftParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// KeepDraftParams defines parameters for KeepDraft.
+type KeepDraftParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TestRevisionParams defines parameters for TestRevision.
+type TestRevisionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RollbackParams defines parameters for Rollback.
+type RollbackParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // RollbackPreviewParams defines parameters for RollbackPreview.
 type RollbackPreviewParams struct {
-	RevisionId openapi_types.UUID `form:"revisionId" json:"revisionId"`
+	// RevisionId Revision to preview; null previews the previous live revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RotateTokenParams defines parameters for RotateToken.
+type RotateTokenParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListMonitorRunsParams defines parameters for ListMonitorRuns.
 type ListMonitorRunsParams struct {
-	Params MonitorRunListParams `form:"params" json:"params"`
+	// Phase Filter by run phase; not_finished excludes finished runs
+	Phase *string `form:"phase,omitempty" json:"phase,omitempty"`
+
+	// Outcome Outcomes, repeated or comma-separated; not_passed includes retries
+	Outcome *string `form:"outcome,omitempty" json:"outcome,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Source Filter by what triggered the run
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// Q Substring match on headline
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// RevisionId Only runs for this published revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// From Inclusive enqueue lower bound (clamped to 90 days)
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive enqueue upper bound (default now)
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Cursor Opaque cursor from the previous page; results cover the last 90 days
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 25)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
+	MonitorType *string `form:"monitorType,omitempty" json:"monitorType,omitempty"`
+
+	// IncidentId Runs in the incident window, intersected with from and to
+	IncidentId *openapi_types.UUID `form:"incidentId,omitempty" json:"incidentId,omitempty"`
+
+	// Branch Exact branch from revision provenance
+	Branch *string `form:"branch,omitempty" json:"branch,omitempty"`
+
+	// Flaky Select monitors currently flaky over the last seven days
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// SessionId Caller-provided CI session identifier
+	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
+
+	// EvaluationCycleId Only runs in this evaluation cycle, including retries
+	EvaluationCycleId *openapi_types.UUID `form:"evaluationCycleId,omitempty" json:"evaluationCycleId,omitempty"`
+
+	// ExcludeSource Exclude this source; omitted preserves all sources
+	ExcludeSource *string `form:"excludeSource,omitempty" json:"excludeSource,omitempty"`
+
+	// Sort Enqueue order: asc or desc (default: desc)
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Step Zero-based failed step index; requires monitor and caseIndex
+	Step *int32 `form:"step,omitempty" json:"step,omitempty"`
+
+	// CaseIndex Zero-based case index qualifying the failed step
+	CaseIndex *int32 `form:"caseIndex,omitempty" json:"caseIndex,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RunNowParams defines parameters for RunNow.
+type RunNowParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// HealthParams defines parameters for Health.
+type HealthParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ScheduleParams defines parameters for Schedule.
+type ScheduleParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SeriesParams defines parameters for Series.
+type SeriesParams struct {
+	// Window Chart window: 24h, 7d, or 30d
+	Window *string `form:"window,omitempty" json:"window,omitempty"`
+
+	// RevisionId Limit chart samples to one revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// Region Limit chart samples to one configured region
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SummarizeMonitorRunsParams defines parameters for SummarizeMonitorRuns.
+type SummarizeMonitorRunsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List20Params defines parameters for List20.
+type List20Params struct {
+	// RevisionId Revision whose key demand to preview; null uses live
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RescanParams defines parameters for Rescan.
+type RescanParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemapParams defines parameters for Remap.
+type RemapParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetSessionParams defines parameters for GetSession.
+type GetSessionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PutSessionParams defines parameters for PutSession.
+type PutSessionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RenewSessionParams defines parameters for RenewSession.
+type RenewSessionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RevokeSessionParams defines parameters for RevokeSession.
+type RevokeSessionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListMonitorSetupSessionsParams defines parameters for ListMonitorSetupSessions.
+type ListMonitorSetupSessionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpsertMonitorSetupSessionParams defines parameters for UpsertMonitorSetupSession.
+type UpsertMonitorSetupSessionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RenewMonitorSetupSessionParams defines parameters for RenewMonitorSetupSession.
+type RenewMonitorSetupSessionParams struct {
+	// SetupFile Setup file to capture
+	SetupFile string `form:"setupFile" json:"setupFile"`
+
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RevokeMonitorSetupSessionParams defines parameters for RevokeMonitorSetupSession.
+type RevokeMonitorSetupSessionParams struct {
+	// SetupFile Setup file to revoke
+	SetupFile string `form:"setupFile" json:"setupFile"`
+
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SettingsPreviewParams defines parameters for SettingsPreview.
+type SettingsPreviewParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListStatusPagesForMonitorParams defines parameters for ListStatusPagesForMonitor.
+type ListStatusPagesForMonitorParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveMonitorTagsParams defines parameters for RemoveMonitorTags.
+type RemoveMonitorTagsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetMonitorTagsParams defines parameters for GetMonitorTags.
+type GetMonitorTagsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddMonitorTagsParams defines parameters for AddMonitorTags.
+type AddMonitorTagsParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TakeoverParams defines parameters for Takeover.
+type TakeoverParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TestExistingParams defines parameters for TestExisting.
+type TestExistingParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TestNotificationsParams defines parameters for TestNotifications.
+type TestNotificationsParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TransferParams defines parameters for Transfer.
+type TransferParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TriggerMonitorRunsParams defines parameters for TriggerMonitorRuns.
+type TriggerMonitorRunsParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UnmuteParams defines parameters for Unmute.
+type UnmuteParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetUptimeParams defines parameters for GetUptime.
 type GetUptimeParams struct {
 	// Window Time window for uptime calculation
 	Window *GetUptimeParamsWindow `form:"window,omitempty" json:"window,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetUptimeParamsWindow defines parameters for GetUptime.
 type GetUptimeParamsWindow string
 
+// PreviewUsageParams defines parameters for PreviewUsage.
+type PreviewUsageParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListVersionsParams defines parameters for ListVersions.
 type ListVersionsParams struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetVersionParams defines parameters for GetVersion.
+type GetVersionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetChannelsParams defines parameters for SetChannels.
+type SetChannelsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddParams defines parameters for Add.
+type AddParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Remove1Params defines parameters for Remove1.
+type Remove1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update10Params defines parameters for Update10.
+type Update10Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveParams defines parameters for Remove.
+type RemoveParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetParams defines parameters for Set.
+type SetParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update9Params defines parameters for Update9.
+type Update9Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get5Params defines parameters for Get5.
+type Get5Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update8Params defines parameters for Update8.
+type Update8Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListByIncidentParams defines parameters for ListByIncident.
 type ListByIncidentParams struct {
 	// IncidentId UUID of the incident to inspect
 	IncidentId openapi_types.UUID `form:"incident_id" json:"incident_id"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetById3Params defines parameters for GetById3.
+type GetById3Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AcknowledgeParams defines parameters for Acknowledge.
+type AcknowledgeParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UnacknowledgeParams defines parameters for Unacknowledge.
+type UnacknowledgeParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List8Params defines parameters for List8.
+type List8Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create9Params defines parameters for Create9.
+type Create9Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete6Params defines parameters for Delete6.
+type Delete6Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetById1Params defines parameters for GetById1.
+type GetById1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update7Params defines parameters for Update7.
+type Update7Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListDispatchesParams defines parameters for ListDispatches.
@@ -13236,54 +16558,708 @@ type ListDispatchesParams struct {
 
 	// Limit Page size 1–100 when windowing/paginating (default 50)
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// List18Params defines parameters for List18.
-type List18Params struct {
+// Test1Params defines parameters for Test1.
+type Test1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List19Params defines parameters for List19.
+type List19Params struct {
 	UnreadOnly *bool  `form:"unreadOnly,omitempty" json:"unreadOnly,omitempty"`
 	Page       *int32 `form:"page,omitempty" json:"page,omitempty"`
 	Size       *int32 `form:"size,omitempty" json:"size,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// MarkAllReadParams defines parameters for MarkAllRead.
+type MarkAllReadParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UnreadCountParams defines parameters for UnreadCount.
+type UnreadCountParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// MarkReadParams defines parameters for MarkRead.
+type MarkReadParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get4Params defines parameters for Get4.
+type Get4Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update6Params defines parameters for Update6.
+type Update6Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListRegionsParams defines parameters for ListRegions.
+type ListRegionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List7Params defines parameters for List7.
+type List7Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create8Params defines parameters for Create8.
+type Create8Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete5Params defines parameters for Delete5.
+type Delete5Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // Get3Params defines parameters for Get3.
 type Get3Params struct {
 	IncludeMetrics *bool `form:"includeMetrics,omitempty" json:"includeMetrics,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update5Params defines parameters for Update5.
+type Update5Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetHealthParams defines parameters for GetHealth.
+type GetHealthParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListMatchedPoliciesParams defines parameters for ListMatchedPolicies.
+type ListMatchedPoliciesParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddMember1Params defines parameters for AddMember1.
+type AddMember1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveMember1Params defines parameters for RemoveMember1.
+type RemoveMember1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get13Params defines parameters for Get13.
+type Get13Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BundleParams defines parameters for Bundle.
+type BundleParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BundleContentParams defines parameters for BundleContent.
+type BundleContentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DiffParams defines parameters for Diff.
+type DiffParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// FilesParams defines parameters for Files.
+type FilesParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PurgeRevisionParams defines parameters for PurgeRevision.
+type PurgeRevisionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListRunsParams defines parameters for ListRuns.
 type ListRunsParams struct {
-	Params RunListParams `form:"params" json:"params"`
+	// Phase Filter by run phase; not_finished excludes finished runs
+	Phase *string `form:"phase,omitempty" json:"phase,omitempty"`
+
+	// Outcome Outcomes, repeated or comma-separated; not_passed includes retries
+	Outcome *string `form:"outcome,omitempty" json:"outcome,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Source Filter by what triggered the run
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// EnvironmentId Only return runs executed in this environment
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// From Inclusive enqueue lower bound (default last 24 hours; clamped to 90 days)
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive enqueue upper bound (default now)
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Q Substring match on monitor name or headline
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Cursor Opaque cursor from the previous page
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// MonitorId Only runs for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// RevisionId Only runs for this revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
+	MonitorType *string `form:"monitorType,omitempty" json:"monitorType,omitempty"`
+
+	// IncidentId Runs in the incident window, intersected with from and to
+	IncidentId *openapi_types.UUID `form:"incidentId,omitempty" json:"incidentId,omitempty"`
+
+	// Branch Exact branch from revision provenance
+	Branch *string `form:"branch,omitempty" json:"branch,omitempty"`
+
+	// Flaky Select monitors currently flaky over the last seven days
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// SessionId Caller-provided CI session identifier
+	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
+
+	// EvaluationCycleId Only runs in this evaluation cycle, including retries
+	EvaluationCycleId *openapi_types.UUID `form:"evaluationCycleId,omitempty" json:"evaluationCycleId,omitempty"`
+
+	// ExcludeSource Exclude this source; omitted preserves all sources
+	ExcludeSource *string `form:"excludeSource,omitempty" json:"excludeSource,omitempty"`
+
+	// Sort Enqueue order: asc or desc (default: desc)
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Step Zero-based failed step index; requires monitor and caseIndex
+	Step *int32 `form:"step,omitempty" json:"step,omitempty"`
+
+	// CaseIndex Zero-based case index qualifying the failed step
+	CaseIndex *int32 `form:"caseIndex,omitempty" json:"caseIndex,omitempty"`
+
+	// Adhoc Include ad-hoc validation runs that have no monitor (default: false)
+	Adhoc *bool `form:"adhoc,omitempty" json:"adhoc,omitempty"`
+
+	// Bucket Histogram width: 30m, 1h or 1d; at most 1000 buckets
+	Bucket *string `form:"bucket,omitempty" json:"bucket,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ExportRunsParams defines parameters for ExportRuns.
+type ExportRunsParams struct {
+	// Phase Filter by run phase; not_finished excludes finished runs
+	Phase *string `form:"phase,omitempty" json:"phase,omitempty"`
+
+	// Outcome Outcomes, repeated or comma-separated; not_passed includes retries
+	Outcome *string `form:"outcome,omitempty" json:"outcome,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Source Filter by what triggered the run
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// EnvironmentId Only return runs executed in this environment
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// From Inclusive enqueue lower bound (default last 24 hours; clamped to 90 days)
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive enqueue upper bound (default now)
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Q Substring match on monitor name or headline
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Cursor Opaque cursor from the previous page
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// MonitorId Only runs for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// RevisionId Only runs for this revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
+	MonitorType *string `form:"monitorType,omitempty" json:"monitorType,omitempty"`
+
+	// IncidentId Runs in the incident window, intersected with from and to
+	IncidentId *openapi_types.UUID `form:"incidentId,omitempty" json:"incidentId,omitempty"`
+
+	// Branch Exact branch from revision provenance
+	Branch *string `form:"branch,omitempty" json:"branch,omitempty"`
+
+	// Flaky Select monitors currently flaky over the last seven days
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// SessionId Caller-provided CI session identifier
+	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
+
+	// EvaluationCycleId Only runs in this evaluation cycle, including retries
+	EvaluationCycleId *openapi_types.UUID `form:"evaluationCycleId,omitempty" json:"evaluationCycleId,omitempty"`
+
+	// ExcludeSource Exclude this source; omitted preserves all sources
+	ExcludeSource *string `form:"excludeSource,omitempty" json:"excludeSource,omitempty"`
+
+	// Sort Enqueue order: asc or desc (default: desc)
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Step Zero-based failed step index; requires monitor and caseIndex
+	Step *int32 `form:"step,omitempty" json:"step,omitempty"`
+
+	// CaseIndex Zero-based case index qualifying the failed step
+	CaseIndex *int32 `form:"caseIndex,omitempty" json:"caseIndex,omitempty"`
+
+	// Adhoc Include ad-hoc validation runs that have no monitor (default: false)
+	Adhoc *bool `form:"adhoc,omitempty" json:"adhoc,omitempty"`
+
+	// Bucket Histogram width: 30m, 1h or 1d; at most 1000 buckets
+	Bucket *string `form:"bucket,omitempty" json:"bucket,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetRunMonitorStripParams defines parameters for GetRunMonitorStrip.
+type GetRunMonitorStripParams struct {
+	// From Inclusive window start; default last 24 hours, clamped to 90 days
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive window end; default now
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// MonitorId Only entries for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// Cursor Opaque cursor returned by this endpoint
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListRunRevisionMarkersParams defines parameters for ListRunRevisionMarkers.
+type ListRunRevisionMarkersParams struct {
+	// From Inclusive window start; default last 24 hours, clamped to 90 days
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive window end; default now
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// MonitorId Only entries for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// Cursor Opaque cursor returned by this endpoint
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListSkippedRunsParams defines parameters for ListSkippedRuns.
+type ListSkippedRunsParams struct {
+	// EnvironmentId Current monitor environment; historical ticks retain their snapshot
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
+	MonitorType *string `form:"monitorType,omitempty" json:"monitorType,omitempty"`
+
+	// From Inclusive window start; default last 24 hours, clamped to 90 days
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive window end; default now
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// MonitorId Only entries for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// Cursor Opaque cursor returned by this endpoint
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // SummarizeRunsParams defines parameters for SummarizeRuns.
 type SummarizeRunsParams struct {
-	Params RunListParams `form:"params" json:"params"`
+	// Phase Filter by run phase; not_finished excludes finished runs
+	Phase *string `form:"phase,omitempty" json:"phase,omitempty"`
+
+	// Outcome Outcomes, repeated or comma-separated; not_passed includes retries
+	Outcome *string `form:"outcome,omitempty" json:"outcome,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Source Filter by what triggered the run
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// EnvironmentId Only return runs executed in this environment
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// From Inclusive enqueue lower bound (default last 24 hours; clamped to 90 days)
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive enqueue upper bound (default now)
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Q Substring match on monitor name or headline
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Cursor Opaque cursor from the previous page
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// MonitorId Only runs for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// RevisionId Only runs for this revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
+	MonitorType *string `form:"monitorType,omitempty" json:"monitorType,omitempty"`
+
+	// IncidentId Runs in the incident window, intersected with from and to
+	IncidentId *openapi_types.UUID `form:"incidentId,omitempty" json:"incidentId,omitempty"`
+
+	// Branch Exact branch from revision provenance
+	Branch *string `form:"branch,omitempty" json:"branch,omitempty"`
+
+	// Flaky Select monitors currently flaky over the last seven days
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// SessionId Caller-provided CI session identifier
+	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
+
+	// EvaluationCycleId Only runs in this evaluation cycle, including retries
+	EvaluationCycleId *openapi_types.UUID `form:"evaluationCycleId,omitempty" json:"evaluationCycleId,omitempty"`
+
+	// ExcludeSource Exclude this source; omitted preserves all sources
+	ExcludeSource *string `form:"excludeSource,omitempty" json:"excludeSource,omitempty"`
+
+	// Sort Enqueue order: asc or desc (default: desc)
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Step Zero-based failed step index; requires monitor and caseIndex
+	Step *int32 `form:"step,omitempty" json:"step,omitempty"`
+
+	// CaseIndex Zero-based case index qualifying the failed step
+	CaseIndex *int32 `form:"caseIndex,omitempty" json:"caseIndex,omitempty"`
+
+	// Adhoc Include ad-hoc validation runs that have no monitor (default: false)
+	Adhoc *bool `form:"adhoc,omitempty" json:"adhoc,omitempty"`
+
+	// Bucket Histogram width: 30m, 1h or 1d; at most 1000 buckets
+	Bucket *string `form:"bucket,omitempty" json:"bucket,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetRunParams defines parameters for GetRun.
+type GetRunParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListRunArtifactsParams defines parameters for ListRunArtifacts.
+type ListRunArtifactsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CancelRunParams defines parameters for CancelRun.
+type CancelRunParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CompareRunCaptureParams defines parameters for CompareRunCapture.
+type CompareRunCaptureParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListRunCasesParams defines parameters for ListRunCases.
 type ListRunCasesParams struct {
-	Params RunCaseListParams `form:"params" json:"params"`
+	// Attempt Only return cases for this Playwright attempt
+	Attempt *int32 `form:"attempt,omitempty" json:"attempt,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetRunConsoleRawParams defines parameters for GetRunConsoleRaw.
 type GetRunConsoleRawParams struct {
-	Params RunConsoleParams `form:"params" json:"params"`
+	// Attempt In-check attempt (default selected attempt)
+	Attempt *int32 `form:"attempt,omitempty" json:"attempt,omitempty"`
+
+	// Ungrouped Return chronological lines instead of groups
+	Ungrouped *bool `form:"ungrouped,omitempty" json:"ungrouped,omitempty"`
+
+	// Level Filter error, warning, or info
+	Level *string `form:"level,omitempty" json:"level,omitempty"`
+
+	// Format raw downloads the ungrouped log as text/plain
+	Format *string `form:"format,omitempty" json:"format,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetRunDiffParams defines parameters for GetRunDiff.
 type GetRunDiffParams struct {
 	BaselineRunId *openapi_types.UUID `form:"baselineRunId,omitempty" json:"baselineRunId,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // StreamRunEventsParams defines parameters for StreamRunEvents.
 type StreamRunEventsParams struct {
-	Params      RunEventParams `form:"params" json:"params"`
-	LastEventID *string        `json:"Last-Event-ID,omitempty"`
+	// After Replay events with seq greater than this value
+	After       *int64  `form:"after,omitempty" json:"after,omitempty"`
+	LastEventID *string `json:"Last-Event-ID,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ExportRunParams defines parameters for ExportRun.
+type ExportRunParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListRunNetworkParams defines parameters for ListRunNetwork.
 type ListRunNetworkParams struct {
-	Params RunNetworkParams `form:"params" json:"params"`
+	// Attempt In-check attempt (default selected attempt)
+	Attempt *int32 `form:"attempt,omitempty" json:"attempt,omitempty"`
+
+	// Failed Only rows with status >= 400 or a failure
+	Failed *bool `form:"failed,omitempty" json:"failed,omitempty"`
+
+	// Slow Only rows with durationMs >= 1000
+	Slow *bool `form:"slow,omitempty" json:"slow,omitempty"`
+
+	// StepId Only rows for this step
+	StepId *string `form:"stepId,omitempty" json:"stepId,omitempty"`
+
+	// Xhr Only xhr, fetch, and api resource types
+	Xhr *bool `form:"xhr,omitempty" json:"xhr,omitempty"`
+
+	// Source page or request
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// Cursor Opaque cursor from the previous page
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetRunNetworkRowParams defines parameters for GetRunNetworkRow.
+type GetRunNetworkRowParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UnpinRunParams defines parameters for UnpinRun.
+type UnpinRunParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PinRunParams defines parameters for PinRun.
+type PinRunParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PurgeRunParams defines parameters for PurgeRun.
+type PurgeRunParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetRunRunnerLogParams defines parameters for GetRunRunnerLog.
+type GetRunRunnerLogParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// StreamRunRunnerLogParams defines parameters for StreamRunRunnerLog.
+type StreamRunRunnerLogParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetRunTraceSummaryParams defines parameters for GetRunTraceSummary.
+type GetRunTraceSummaryParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List6Params defines parameters for List6.
+type List6Params struct {
+	// EnvironmentId Environment whose value metadata to show
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create7Params defines parameters for Create7.
+type Create7Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete4Params defines parameters for Delete4.
+type Delete4Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update4Params defines parameters for Update4.
+type Update4Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AuditParams defines parameters for Audit.
+type AuditParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteEnvironmentValueParams defines parameters for DeleteEnvironmentValue.
+type DeleteEnvironmentValueParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// WriteEnvironmentValueParams defines parameters for WriteEnvironmentValue.
+type WriteEnvironmentValueParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UsageParams defines parameters for Usage.
+type UsageParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List18Params defines parameters for List18.
+type List18Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Unsubscribe1Params defines parameters for Unsubscribe1.
+type Unsubscribe1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get12Params defines parameters for Get12.
+type Get12Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateAlertSensitivityParams defines parameters for UpdateAlertSensitivity.
+type UpdateAlertSensitivityParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Subscribe1Params defines parameters for Subscribe1.
+type Subscribe1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListServicesParams defines parameters for ListServices.
@@ -13311,6 +17287,9 @@ type ListServicesParams struct {
 
 	// Limit Page size (1–100, default 20)
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListCrossServiceIncidentsParams defines parameters for ListCrossServiceIncidents.
@@ -13322,8 +17301,19 @@ type ListCrossServiceIncidentsParams struct {
 	Status *ListCrossServiceIncidentsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
 
 	// Category Filter by service category
-	Category *string  `form:"category,omitempty" json:"category,omitempty"`
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	Category *string `form:"category,omitempty" json:"category,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListCrossServiceIncidentsParamsStatus defines parameters for ListCrossServiceIncidents.
@@ -13333,6 +17323,9 @@ type ListCrossServiceIncidentsParamsStatus string
 type GetGlobalStatusSummaryParams struct {
 	// PublishedOnly Aggregate only published services (curated public pSEO set); default false
 	PublishedOnly *bool `form:"publishedOnly,omitempty" json:"publishedOnly,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetServiceParams defines parameters for GetService.
@@ -13342,6 +17335,9 @@ type GetServiceParams struct {
 
 	// PublishedOnly Resolve only published services (curated public pSEO set); 404 otherwise. Default false
 	PublishedOnly *bool `form:"publishedOnly,omitempty" json:"publishedOnly,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetComponentsParams defines parameters for GetComponents.
@@ -13357,6 +17353,9 @@ type GetComponentsParams struct {
 
 	// Size Page size (default 25, max 100)
 	Size *int32 `form:"size,omitempty" json:"size,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetBatchComponentUptimeParams defines parameters for GetBatchComponentUptime.
@@ -13372,6 +17371,9 @@ type GetBatchComponentUptimeParams struct {
 
 	// ComponentIds Component ids to include (max 100); omit for every component
 	ComponentIds *[]openapi_types.UUID `form:"componentIds,omitempty" json:"componentIds,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetBatchComponentUptimeParamsPeriod defines parameters for GetBatchComponentUptime.
@@ -13387,10 +17389,19 @@ type GetComponentUptimeParams struct {
 
 	// To Explicit window end (ISO date); defaults to today
 	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetComponentUptimeParamsPeriod defines parameters for GetComponentUptime.
 type GetComponentUptimeParamsPeriod string
+
+// GetServiceDayDetailParams defines parameters for GetServiceDayDetail.
+type GetServiceDayDetailParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
 
 // ListIncidents1Params defines parameters for ListIncidents1.
 type ListIncidents1Params struct {
@@ -13398,17 +17409,43 @@ type ListIncidents1Params struct {
 	From *openapi_types.Date `form:"from,omitempty" json:"from,omitempty"`
 
 	// Status Filter: active (unresolved), resolved, or omit for all
-	Status   *ListIncidents1ParamsStatus `form:"status,omitempty" json:"status,omitempty"`
-	Pageable Pageable                    `form:"pageable" json:"pageable"`
+	Status *ListIncidents1ParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListIncidents1ParamsStatus defines parameters for ListIncidents1.
 type ListIncidents1ParamsStatus string
 
+// GetIncident1Params defines parameters for GetIncident1.
+type GetIncident1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetServiceLiveStatusParams defines parameters for GetServiceLiveStatus.
+type GetServiceLiveStatusParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // GetScheduledMaintenancesParams defines parameters for GetScheduledMaintenances.
 type GetScheduledMaintenancesParams struct {
 	// Status Filter by status (e.g. scheduled, in_progress, verifying, completed)
 	Status *[]string `form:"status,omitempty" json:"status,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListPollResultsParams defines parameters for ListPollResults.
@@ -13418,12 +17455,18 @@ type ListPollResultsParams struct {
 
 	// Limit Page size (1–100, default 50)
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetPollSummaryParams defines parameters for GetPollSummary.
 type GetPollSummaryParams struct {
 	// Window Time window
 	Window *GetPollSummaryParamsWindow `form:"window,omitempty" json:"window,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetPollSummaryParamsWindow defines parameters for GetPollSummary.
@@ -13448,6 +17491,9 @@ type ListStatusEventsParams struct {
 
 	// Limit Page size (1–100, default 50)
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListStatusEventsParamsPeriod defines parameters for ListStatusEvents.
@@ -13460,6 +17506,9 @@ type GetServiceUptimeParams struct {
 
 	// Granularity Bucket granularity
 	Granularity *GetServiceUptimeParamsGranularity `form:"granularity,omitempty" json:"granularity,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetServiceUptimeParamsPeriod defines parameters for GetServiceUptime.
@@ -13468,69 +17517,544 @@ type GetServiceUptimeParamsPeriod string
 // GetServiceUptimeParamsGranularity defines parameters for GetServiceUptime.
 type GetServiceUptimeParamsGranularity string
 
+// List5Params defines parameters for List5.
+type List5Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create6Params defines parameters for Create6.
+type Create6Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete3Params defines parameters for Delete3.
+type Delete3Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get2Params defines parameters for Get2.
+type Get2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update3Params defines parameters for Update3.
+type Update3Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListComponentsParams defines parameters for ListComponents.
+type ListComponentsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateComponentParams defines parameters for CreateComponent.
+type CreateComponentParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ReorderComponentsParams defines parameters for ReorderComponents.
+type ReorderComponentsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteComponentParams defines parameters for DeleteComponent.
+type DeleteComponentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateComponentParams defines parameters for UpdateComponent.
+type UpdateComponentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ComponentMeasuredUptimeParams defines parameters for ComponentMeasuredUptime.
 type ComponentMeasuredUptimeParams struct {
 	Days *int32 `form:"days,omitempty" json:"days,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ClearComponentOverrideParams defines parameters for ClearComponentOverride.
+type ClearComponentOverrideParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetComponentOverrideParams defines parameters for SetComponentOverride.
+type SetComponentOverrideParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ComponentUptime1Params defines parameters for ComponentUptime1.
 type ComponentUptime1Params struct {
 	Days *int32 `form:"days,omitempty" json:"days,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListDomainsParams defines parameters for ListDomains.
+type ListDomainsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddDomainParams defines parameters for AddDomain.
+type AddDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveDomainParams defines parameters for RemoveDomain.
+type RemoveDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetPrimaryDomainParams defines parameters for SetPrimaryDomain.
+type SetPrimaryDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// VerifyDomainParams defines parameters for VerifyDomain.
+type VerifyDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListGroupsParams defines parameters for ListGroups.
+type ListGroupsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateGroupParams defines parameters for CreateGroup.
+type CreateGroupParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteGroupParams defines parameters for DeleteGroup.
+type DeleteGroupParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateGroupParams defines parameters for UpdateGroup.
+type UpdateGroupParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListIncidentsParams defines parameters for ListIncidents.
 type ListIncidentsParams struct {
-	Status   *[]ListIncidentsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
-	Pageable Pageable                     `form:"pageable" json:"pageable"`
+	Status *[]ListIncidentsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListIncidentsParamsStatus defines parameters for ListIncidents.
 type ListIncidentsParamsStatus string
 
+// CreateIncidentParams defines parameters for CreateIncident.
+type CreateIncidentParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteIncidentParams defines parameters for DeleteIncident.
+type DeleteIncidentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetIncidentParams defines parameters for GetIncident.
+type GetIncidentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateIncidentParams defines parameters for UpdateIncident.
+type UpdateIncidentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DismissIncidentParams defines parameters for DismissIncident.
+type DismissIncidentParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PublishIncidentParams defines parameters for PublishIncident.
+type PublishIncidentParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PostIncidentUpdateParams defines parameters for PostIncidentUpdate.
+type PostIncidentUpdateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PatchIncidentUpdateParams defines parameters for PatchIncidentUpdate.
+type PatchIncidentUpdateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ReorderLayoutParams defines parameters for ReorderLayout.
+type ReorderLayoutParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListMaintenanceParams defines parameters for ListMaintenance.
 type ListMaintenanceParams struct {
-	Status   *[]ListMaintenanceParamsStatus `form:"status,omitempty" json:"status,omitempty"`
-	Pageable Pageable                       `form:"pageable" json:"pageable"`
+	Status *[]ListMaintenanceParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListMaintenanceParamsStatus defines parameters for ListMaintenance.
 type ListMaintenanceParamsStatus string
 
+// CreateMaintenanceParams defines parameters for CreateMaintenance.
+type CreateMaintenanceParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteMaintenanceParams defines parameters for DeleteMaintenance.
+type DeleteMaintenanceParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetMaintenanceParams defines parameters for GetMaintenance.
+type GetMaintenanceParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateMaintenanceParams defines parameters for UpdateMaintenance.
+type UpdateMaintenanceParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DismissMaintenanceParams defines parameters for DismissMaintenance.
+type DismissMaintenanceParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PublishMaintenanceParams defines parameters for PublishMaintenance.
+type PublishMaintenanceParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PostMaintenanceUpdateParams defines parameters for PostMaintenanceUpdate.
+type PostMaintenanceUpdateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PatchMaintenanceUpdateParams defines parameters for PatchMaintenanceUpdate.
+type PatchMaintenanceUpdateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListNotificationDeliveriesParams defines parameters for ListNotificationDeliveries.
 type ListNotificationDeliveriesParams struct {
 	IncidentId *openapi_types.UUID                        `form:"incidentId,omitempty" json:"incidentId,omitempty"`
 	EventType  *ListNotificationDeliveriesParamsEventType `form:"eventType,omitempty" json:"eventType,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListNotificationDeliveriesParamsEventType defines parameters for ListNotificationDeliveries.
 type ListNotificationDeliveriesParamsEventType string
 
+// GetNotificationDeliveryParams defines parameters for GetNotificationDelivery.
+type GetNotificationDeliveryParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RetryNotificationDeliveryParams defines parameters for RetryNotificationDelivery.
+type RetryNotificationDeliveryParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListSubscribersParams defines parameters for ListSubscribers.
 type ListSubscribersParams struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddSubscriberParams defines parameters for AddSubscriber.
+type AddSubscriberParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveSubscriberParams defines parameters for RemoveSubscriber.
+type RemoveSubscriberParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// FleetParams defines parameters for Fleet.
+type FleetParams struct {
+	Window *string `form:"window,omitempty" json:"window,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetSyntheticsFamilyMetricsParams defines parameters for GetSyntheticsFamilyMetrics.
+type GetSyntheticsFamilyMetricsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetSyntheticsRunDurationsParams defines parameters for GetSyntheticsRunDurations.
 type GetSyntheticsRunDurationsParams struct {
 	MonitorIds []openapi_types.UUID `form:"monitorIds" json:"monitorIds"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// List3Params defines parameters for List3.
-type List3Params struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+// RegionsParams defines parameters for Regions.
+type RegionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List17Params defines parameters for List17.
+type List17Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get11Params defines parameters for Get11.
+type Get11Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetCurrentSyntheticsUsageParams defines parameters for GetCurrentSyntheticsUsage.
+type GetCurrentSyntheticsUsageParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List4Params defines parameters for List4.
+type List4Params struct {
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create5Params defines parameters for Create5.
+type Create5Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete2Params defines parameters for Delete2.
+type Delete2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetByIdParams defines parameters for GetById.
+type GetByIdParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update2Params defines parameters for Update2.
+type Update2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RotateDekParams defines parameters for RotateDek.
+type RotateDekParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListWebhookInboxesParams defines parameters for ListWebhookInboxes.
 type ListWebhookInboxesParams struct {
 	// Search Case-insensitive name search
-	Search   *string  `form:"search,omitempty" json:"search,omitempty"`
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateWebhookInboxParams defines parameters for CreateWebhookInbox.
+type CreateWebhookInboxParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListWebhookInboxActivityParams defines parameters for ListWebhookInboxActivity.
 type ListWebhookInboxActivityParams struct {
 	// InboxIds Comma-separated inbox ids (1–100)
 	InboxIds *[]openapi_types.UUID `form:"inboxIds,omitempty" json:"inboxIds,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteWebhookInboxParams defines parameters for DeleteWebhookInbox.
+type DeleteWebhookInboxParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetWebhookInboxParams defines parameters for GetWebhookInbox.
+type GetWebhookInboxParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateWebhookInboxParams defines parameters for UpdateWebhookInbox.
+type UpdateWebhookInboxParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteWebhookEventsParams defines parameters for DeleteWebhookEvents.
+type DeleteWebhookEventsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListWebhookEventsParams defines parameters for ListWebhookEvents.
@@ -13540,25 +18064,168 @@ type ListWebhookEventsParams struct {
 	Path   *string             `form:"path,omitempty" json:"path,omitempty"`
 	After  *openapi_types.UUID `form:"after,omitempty" json:"after,omitempty"`
 	Limit  *int32              `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// List2Params defines parameters for List2.
-type List2Params struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+// DeleteWebhookEventParams defines parameters for DeleteWebhookEvent.
+type DeleteWebhookEventParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetWebhookEventParams defines parameters for GetWebhookEvent.
+type GetWebhookEventParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetWebhookEventRawParams defines parameters for GetWebhookEventRaw.
+type GetWebhookEventRawParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// WaitForWebhookEventParams defines parameters for WaitForWebhookEvent.
+type WaitForWebhookEventParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List3Params defines parameters for List3.
+type List3Params struct {
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create4Params defines parameters for Create4.
+type Create4Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListEventsParams defines parameters for ListEvents.
+type ListEventsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetSigningSecretInfoParams defines parameters for GetSigningSecretInfo.
+type GetSigningSecretInfoParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RotateSigningSecretParams defines parameters for RotateSigningSecret.
+type RotateSigningSecretParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete1Params defines parameters for Delete1.
+type Delete1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get1Params defines parameters for Get1.
+type Get1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update1Params defines parameters for Update1.
+type Update1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListDeliveriesParams defines parameters for ListDeliveries.
 type ListDeliveriesParams struct {
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// List1Params defines parameters for List1.
-type List1Params struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+// TestParams defines parameters for Test.
+type TestParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// Create15JSONRequestBody defines body for Create15 for application/json ContentType.
-type Create15JSONRequestBody = CreateAlertChannelRequest
+// List2Params defines parameters for List2.
+type List2Params struct {
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create3Params defines parameters for Create3.
+type Create3Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteParams defines parameters for Delete.
+type DeleteParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetParams defines parameters for Get.
+type GetParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateParams defines parameters for Update.
+type UpdateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateRuntimeParams defines parameters for UpdateRuntime.
+type UpdateRuntimeParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create16JSONRequestBody defines body for Create16 for application/json ContentType.
+type Create16JSONRequestBody = CreateAlertChannelRequest
 
 // TestConfigJSONRequestBody defines body for TestConfig for application/json ContentType.
 type TestConfigJSONRequestBody = TestAlertChannelRequest
@@ -13569,11 +18236,26 @@ type Update14JSONRequestBody = UpdateAlertChannelRequest
 // SetEnabledJSONRequestBody defines body for SetEnabled for application/json ContentType.
 type SetEnabledJSONRequestBody = SetEnabledRequest
 
-// Create14JSONRequestBody defines body for Create14 for application/json ContentType.
-type Create14JSONRequestBody = CreateApiKeyRequest
+// Create15JSONRequestBody defines body for Create15 for application/json ContentType.
+type Create15JSONRequestBody = CreateApiKeyRequest
 
-// Update16JSONRequestBody defines body for Update16 for application/json ContentType.
-type Update16JSONRequestBody = UpdateApiKeyRequest
+// Update17JSONRequestBody defines body for Update17 for application/json ContentType.
+type Update17JSONRequestBody = UpdateApiKeyRequest
+
+// Start1JSONRequestBody defines body for Start1 for application/json ContentType.
+type Start1JSONRequestBody = CreateDeviceAuthorizationRequest
+
+// TokenJSONRequestBody defines body for Token for application/json ContentType.
+type TokenJSONRequestBody = DeviceTokenRequest
+
+// UploadZipJSONRequestBody defines body for UploadZip for application/json ContentType.
+type UploadZipJSONRequestBody = CreateBundleRequest
+
+// CheckJSONRequestBody defines body for Check for application/json ContentType.
+type CheckJSONRequestBody = CreateBundleRequest
+
+// CreateDashboardDemoBookingJSONRequestBody defines body for CreateDashboardDemoBooking for application/json ContentType.
+type CreateDashboardDemoBookingJSONRequestBody = CreateDemoBookingRequest
 
 // AcquireJSONRequestBody defines body for Acquire for application/json ContentType.
 type AcquireJSONRequestBody = AcquireDeployLockRequest
@@ -13593,8 +18275,8 @@ type WaitForEmailJSONRequestBody = WaitEmailMessageRequest
 // WaitForEmailByLocalpartJSONRequestBody defines body for WaitForEmailByLocalpart for application/json ContentType.
 type WaitForEmailByLocalpartJSONRequestBody = WaitEmailMessageRequest
 
-// Create13JSONRequestBody defines body for Create13 for application/json ContentType.
-type Create13JSONRequestBody = CreateEnvironmentRequest
+// Create14JSONRequestBody defines body for Create14 for application/json ContentType.
+type Create14JSONRequestBody = CreateEnvironmentRequest
 
 // Update13JSONRequestBody defines body for Update13 for application/json ContentType.
 type Update13JSONRequestBody = UpdateEnvironmentRequest
@@ -13605,11 +18287,11 @@ type PingPostJSONRequestBody = PingPostJSONBody
 // PingPostTextRequestBody defines body for PingPost for text/plain ContentType.
 type PingPostTextRequestBody = PingPostTextBody
 
-// Create12JSONRequestBody defines body for Create12 for application/json ContentType.
-type Create12JSONRequestBody = CreateManualIncidentRequest
+// Create13JSONRequestBody defines body for Create13 for application/json ContentType.
+type Create13JSONRequestBody = CreateManualIncidentRequest
 
-// Update15JSONRequestBody defines body for Update15 for application/json ContentType.
-type Update15JSONRequestBody = UpdateIncidentRequest
+// Update16JSONRequestBody defines body for Update16 for application/json ContentType.
+type Update16JSONRequestBody = UpdateIncidentRequest
 
 // ResolveJSONRequestBody defines body for Resolve for application/json ContentType.
 type ResolveJSONRequestBody = ResolveIncidentRequest
@@ -13617,11 +18299,11 @@ type ResolveJSONRequestBody = ResolveIncidentRequest
 // AddUpdateJSONRequestBody defines body for AddUpdate for application/json ContentType.
 type AddUpdateJSONRequestBody = AddIncidentUpdateRequest
 
-// Create11JSONRequestBody defines body for Create11 for application/json ContentType.
-type Create11JSONRequestBody = CreateInviteRequest
+// Create12JSONRequestBody defines body for Create12 for application/json ContentType.
+type Create12JSONRequestBody = CreateInviteRequest
 
-// Create10JSONRequestBody defines body for Create10 for application/json ContentType.
-type Create10JSONRequestBody = CreateMaintenanceWindowRequest
+// Create11JSONRequestBody defines body for Create11 for application/json ContentType.
+type Create11JSONRequestBody = CreateMaintenanceWindowRequest
 
 // Update12JSONRequestBody defines body for Update12 for application/json ContentType.
 type Update12JSONRequestBody = UpdateMaintenanceWindowRequest
@@ -13632,20 +18314,20 @@ type ChangeRoleJSONRequestBody = ChangeRoleRequest
 // ChangeStatusJSONRequestBody defines body for ChangeStatus for application/json ContentType.
 type ChangeStatusJSONRequestBody = ChangeStatusRequest
 
-// Create9JSONRequestBody defines body for Create9 for application/json ContentType.
-type Create9JSONRequestBody = CreateMonitorRequest
+// Create10JSONRequestBody defines body for Create10 for application/json ContentType.
+type Create10JSONRequestBody = CreateMonitorRequest
 
 // BulkActionJSONRequestBody defines body for BulkAction for application/json ContentType.
 type BulkActionJSONRequestBody = BulkMonitorActionRequest
-
-// CreatePackageUploadJSONRequestBody defines body for CreatePackageUpload for application/json ContentType.
-type CreatePackageUploadJSONRequestBody = CreatePackageUploadRequest
 
 // TestAdHocJSONRequestBody defines body for TestAdHoc for application/json ContentType.
 type TestAdHocJSONRequestBody = MonitorTestRequest
 
 // PreviewUsage1JSONRequestBody defines body for PreviewUsage1 for application/json ContentType.
 type PreviewUsage1JSONRequestBody = CreateMonitorRequest
+
+// ValidateMonitorsJSONRequestBody defines body for ValidateMonitors for application/json ContentType.
+type ValidateMonitorsJSONRequestBody = ValidateMonitorsRequest
 
 // Update11JSONRequestBody defines body for Update11 for application/json ContentType.
 type Update11JSONRequestBody = UpdateMonitorRequest
@@ -13662,6 +18344,12 @@ type PublishJSONRequestBody = PublishRevisionRequest
 // QuarantineJSONRequestBody defines body for Quarantine for application/json ContentType.
 type QuarantineJSONRequestBody = QuarantineMonitorRequest
 
+// RestoreJSONRequestBody defines body for Restore for application/json ContentType.
+type RestoreJSONRequestBody = RestoreMonitorRequest
+
+// CreateDraftJSONRequestBody defines body for CreateDraft for application/json ContentType.
+type CreateDraftJSONRequestBody = CreateDraftRevisionRequest
+
 // TestRevisionJSONRequestBody defines body for TestRevision for application/json ContentType.
 type TestRevisionJSONRequestBody = CodeTestTargetRequest
 
@@ -13673,6 +18361,9 @@ type RemapJSONRequestBody = RemapSecretRequest
 
 // PutSessionJSONRequestBody defines body for PutSession for application/json ContentType.
 type PutSessionJSONRequestBody = UpsertMonitorSessionRequest
+
+// UpsertMonitorSetupSessionJSONRequestBody defines body for UpsertMonitorSetupSession for application/json ContentType.
+type UpsertMonitorSetupSessionJSONRequestBody = UpsertMonitorSessionRequest
 
 // RemoveMonitorTagsJSONRequestBody defines body for RemoveMonitorTags for application/json ContentType.
 type RemoveMonitorTagsJSONRequestBody = RemoveMonitorTagsRequest
@@ -13688,6 +18379,12 @@ type TestExistingJSONRequestBody = CodeTestTargetRequest
 
 // TestNotificationsJSONRequestBody defines body for TestNotifications for application/json ContentType.
 type TestNotificationsJSONRequestBody = TestMonitorNotificationsRequest
+
+// TransferJSONRequestBody defines body for Transfer for application/json ContentType.
+type TransferJSONRequestBody = TransferMonitorRequest
+
+// TriggerMonitorRunsJSONRequestBody defines body for TriggerMonitorRuns for application/json ContentType.
+type TriggerMonitorRunsJSONRequestBody = TriggerRunRequest
 
 // PreviewUsageJSONRequestBody defines body for PreviewUsage for application/json ContentType.
 type PreviewUsageJSONRequestBody = UpdateMonitorRequest
@@ -13710,8 +18407,8 @@ type Update9JSONRequestBody = UpdateMonitorAuthRequest
 // Update8JSONRequestBody defines body for Update8 for application/json ContentType.
 type Update8JSONRequestBody = UpdateIncidentPolicyRequest
 
-// Create8JSONRequestBody defines body for Create8 for application/json ContentType.
-type Create8JSONRequestBody = CreateNotificationPolicyRequest
+// Create9JSONRequestBody defines body for Create9 for application/json ContentType.
+type Create9JSONRequestBody = CreateNotificationPolicyRequest
 
 // Update7JSONRequestBody defines body for Update7 for application/json ContentType.
 type Update7JSONRequestBody = UpdateNotificationPolicyRequest
@@ -13722,8 +18419,8 @@ type Test1JSONRequestBody = TestNotificationPolicyRequest
 // Update6JSONRequestBody defines body for Update6 for application/json ContentType.
 type Update6JSONRequestBody = UpdateOrgDetailsRequest
 
-// Create7JSONRequestBody defines body for Create7 for application/json ContentType.
-type Create7JSONRequestBody = CreateResourceGroupRequest
+// Create8JSONRequestBody defines body for Create8 for application/json ContentType.
+type Create8JSONRequestBody = CreateResourceGroupRequest
 
 // Update5JSONRequestBody defines body for Update5 for application/json ContentType.
 type Update5JSONRequestBody = UpdateResourceGroupRequest
@@ -13731,8 +18428,14 @@ type Update5JSONRequestBody = UpdateResourceGroupRequest
 // AddMember1JSONRequestBody defines body for AddMember1 for application/json ContentType.
 type AddMember1JSONRequestBody = AddResourceGroupMemberRequest
 
-// Create6JSONRequestBody defines body for Create6 for application/json ContentType.
-type Create6JSONRequestBody = CreateSecretRequest
+// PurgeRevisionJSONRequestBody defines body for PurgeRevision for application/json ContentType.
+type PurgeRevisionJSONRequestBody = EvidencePurgeRequest
+
+// PurgeRunJSONRequestBody defines body for PurgeRun for application/json ContentType.
+type PurgeRunJSONRequestBody = EvidencePurgeRequest
+
+// Create7JSONRequestBody defines body for Create7 for application/json ContentType.
+type Create7JSONRequestBody = CreateSecretRequest
 
 // Update4JSONRequestBody defines body for Update4 for application/json ContentType.
 type Update4JSONRequestBody = UpdateSecretRequest
@@ -13746,8 +18449,8 @@ type UpdateAlertSensitivityJSONRequestBody = UpdateAlertSensitivityRequest
 // Subscribe1JSONRequestBody defines body for Subscribe1 for application/json ContentType.
 type Subscribe1JSONRequestBody = ServiceSubscribeRequest
 
-// Create5JSONRequestBody defines body for Create5 for application/json ContentType.
-type Create5JSONRequestBody = CreateStatusPageRequest
+// Create6JSONRequestBody defines body for Create6 for application/json ContentType.
+type Create6JSONRequestBody = CreateStatusPageRequest
 
 // Update3JSONRequestBody defines body for Update3 for application/json ContentType.
 type Update3JSONRequestBody = UpdateStatusPageRequest
@@ -13809,8 +18512,8 @@ type PatchMaintenanceUpdateJSONRequestBody = UpdateStatusPageIncidentUpdateReque
 // AddSubscriberJSONRequestBody defines body for AddSubscriber for application/json ContentType.
 type AddSubscriberJSONRequestBody = AdminAddSubscriberRequest
 
-// Create4JSONRequestBody defines body for Create4 for application/json ContentType.
-type Create4JSONRequestBody = CreateTagRequest
+// Create5JSONRequestBody defines body for Create5 for application/json ContentType.
+type Create5JSONRequestBody = CreateTagRequest
 
 // Update2JSONRequestBody defines body for Update2 for application/json ContentType.
 type Update2JSONRequestBody = UpdateTagRequest
@@ -13824,8 +18527,8 @@ type UpdateWebhookInboxJSONRequestBody = UpdateWebhookInboxRequest
 // WaitForWebhookEventJSONRequestBody defines body for WaitForWebhookEvent for application/json ContentType.
 type WaitForWebhookEventJSONRequestBody = WaitWebhookEventRequest
 
-// Create3JSONRequestBody defines body for Create3 for application/json ContentType.
-type Create3JSONRequestBody = CreateWebhookEndpointRequest
+// Create4JSONRequestBody defines body for Create4 for application/json ContentType.
+type Create4JSONRequestBody = CreateWebhookEndpointRequest
 
 // Update1JSONRequestBody defines body for Update1 for application/json ContentType.
 type Update1JSONRequestBody = UpdateWebhookEndpointRequest
@@ -13833,8 +18536,8 @@ type Update1JSONRequestBody = UpdateWebhookEndpointRequest
 // TestJSONRequestBody defines body for Test for application/json ContentType.
 type TestJSONRequestBody = TestWebhookEndpointRequest
 
-// Create2JSONRequestBody defines body for Create2 for application/json ContentType.
-type Create2JSONRequestBody = CreateWorkspaceRequest
+// Create3JSONRequestBody defines body for Create3 for application/json ContentType.
+type Create3JSONRequestBody = CreateWorkspaceRequest
 
 // UpdateJSONRequestBody defines body for Update for application/json ContentType.
 type UpdateJSONRequestBody = UpdateWorkspaceRequest
@@ -13870,25 +18573,68 @@ func (t *AuditMetadata) MergeMemberRoleChangedMetadata(v MemberRoleChangedMetada
 	return err
 }
 
+// AsEvidencePurgedMetadata returns the union data inside the AuditMetadata as a EvidencePurgedMetadata
+func (t AuditMetadata) AsEvidencePurgedMetadata() (EvidencePurgedMetadata, error) {
+	var body EvidencePurgedMetadata
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromEvidencePurgedMetadata overwrites any union data inside the AuditMetadata as the provided EvidencePurgedMetadata
+func (t *AuditMetadata) FromEvidencePurgedMetadata(v EvidencePurgedMetadata) error {
+	v.Kind = "evidence_purged"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeEvidencePurgedMetadata performs a merge with any union data inside the AuditMetadata, using the provided EvidencePurgedMetadata
+func (t *AuditMetadata) MergeEvidencePurgedMetadata(v EvidencePurgedMetadata) error {
+	v.Kind = "evidence_purged"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMonitorOwnershipMetadata returns the union data inside the AuditMetadata as a MonitorOwnershipMetadata
+func (t AuditMetadata) AsMonitorOwnershipMetadata() (MonitorOwnershipMetadata, error) {
+	var body MonitorOwnershipMetadata
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMonitorOwnershipMetadata overwrites any union data inside the AuditMetadata as the provided MonitorOwnershipMetadata
+func (t *AuditMetadata) FromMonitorOwnershipMetadata(v MonitorOwnershipMetadata) error {
+	v.Kind = "monitor_ownership"
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMonitorOwnershipMetadata performs a merge with any union data inside the AuditMetadata, using the provided MonitorOwnershipMetadata
+func (t *AuditMetadata) MergeMonitorOwnershipMetadata(v MonitorOwnershipMetadata) error {
+	v.Kind = "monitor_ownership"
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t AuditMetadata) Discriminator() (string, error) {
 	var discriminator struct {
 		Discriminator string `json:"kind"`
 	}
 	err := json.Unmarshal(t.union, &discriminator)
 	return discriminator.Discriminator, err
-}
-
-func (t AuditMetadata) ValueByDiscriminator() (interface{}, error) {
-	discriminator, err := t.Discriminator()
-	if err != nil {
-		return nil, err
-	}
-	switch discriminator {
-	case "member_role_changed":
-		return t.AsMemberRoleChangedMetadata()
-	default:
-		return nil, errors.New("unknown discriminator value: " + discriminator)
-	}
 }
 
 func (t AuditMetadata) MarshalJSON() ([]byte, error) {
@@ -14075,29 +18821,6 @@ func (t CheckTypeDetailsDto) Discriminator() (string, error) {
 	}
 	err := json.Unmarshal(t.union, &discriminator)
 	return discriminator.Discriminator, err
-}
-
-func (t CheckTypeDetailsDto) ValueByDiscriminator() (interface{}, error) {
-	discriminator, err := t.Discriminator()
-	if err != nil {
-		return nil, err
-	}
-	switch discriminator {
-	case "code":
-		return t.AsCode()
-	case "dns":
-		return t.AsDns()
-	case "http":
-		return t.AsHttp()
-	case "icmp":
-		return t.AsIcmp()
-	case "mcp_server":
-		return t.AsMcpServer()
-	case "tcp":
-		return t.AsTcp()
-	default:
-		return nil, errors.New("unknown discriminator value: " + discriminator)
-	}
 }
 
 func (t CheckTypeDetailsDto) MarshalJSON() ([]byte, error) {
@@ -17206,25 +21929,6 @@ func (t MonitorAuthConfig) Discriminator() (string, error) {
 	}
 	err := json.Unmarshal(t.union, &discriminator)
 	return discriminator.Discriminator, err
-}
-
-func (t MonitorAuthConfig) ValueByDiscriminator() (interface{}, error) {
-	discriminator, err := t.Discriminator()
-	if err != nil {
-		return nil, err
-	}
-	switch discriminator {
-	case "api_key":
-		return t.AsApiKeyAuthConfig()
-	case "basic":
-		return t.AsBasicAuthConfig()
-	case "bearer":
-		return t.AsBearerAuthConfig()
-	case "header":
-		return t.AsHeaderAuthConfig()
-	default:
-		return nil, errors.New("unknown discriminator value: " + discriminator)
-	}
 }
 
 func (t MonitorAuthConfig) MarshalJSON() ([]byte, error) {

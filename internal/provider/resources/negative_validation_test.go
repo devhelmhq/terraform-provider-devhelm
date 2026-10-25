@@ -38,7 +38,7 @@ func TestMonitor_BuildCreate_InvalidTagIDErrors(t *testing.T) {
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
-	_, err := r.buildCreateRequest(ctx, plan)
+	_, err := r.buildCreateRequest(ctx, plan, nil, true)
 	if err == nil {
 		t.Fatal("expected error for invalid tag UUID")
 	}
@@ -58,7 +58,7 @@ func TestMonitor_BuildCreate_InvalidEnvironmentIDErrors(t *testing.T) {
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
-	_, err := r.buildCreateRequest(ctx, plan)
+	_, err := r.buildCreateRequest(ctx, plan, nil, true)
 	if err == nil {
 		t.Fatal("expected error for invalid environment UUID")
 	}
@@ -749,7 +749,7 @@ func TestMonitor_BuildCreate_InvalidMonitorType(t *testing.T) {
 		Assertions:     types.ListNull(assertionObjectType()),
 		IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
 	}
-	_, err := r.buildCreateRequest(ctx, plan)
+	_, err := r.buildCreateRequest(ctx, plan, nil, true)
 	if err == nil {
 		t.Fatal("expected error for invalid monitor type")
 	}

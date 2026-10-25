@@ -15,9 +15,11 @@
 #   drift-check stays green.
 #
 # Preprocessing resolution order:
-#   1. $OPENAPI_TOOLS env var (explicit override)
-#   2. Local monorepo sibling (../mini/packages/openapi-tools)
-#   3. Vendored preprocessor at scripts/preprocess.mjs (default — used in CI)
+#   1. $OPENAPI_TOOLS env var (explicit override, e.g. a local mono build)
+#   2. Vendored preprocessor at scripts/preprocess.mjs (default — used in CI)
+#
+# A local monorepo sibling is never picked up implicitly: a stale sibling
+# build produced types that differed from CI's typegen-check.
 #
 set -euo pipefail
 
@@ -50,11 +52,6 @@ resolve_preprocessor() {
     echo "$OPENAPI_TOOLS preprocess"
     return
   fi
-  local local_cli="$ROOT_DIR/../mini/packages/openapi-tools/dist/cli.js"
-  if [[ -f "$local_cli" ]]; then
-    echo "node $local_cli preprocess"
-    return
-  fi
   echo "node $SCRIPT_DIR/preprocess.mjs"
 }
 
@@ -62,6 +59,9 @@ PREPROCESS_CMD=$(resolve_preprocessor)
 
 echo "=> Preprocessing OpenAPI spec (via $PREPROCESS_CMD)..."
 $PREPROCESS_CMD "$INPUT" "$PREPROCESSED"
+
+echo "=> Typing free-form JSON objects as json.RawMessage..."
+node "$SCRIPT_DIR/lib/freeform-json.mjs" "$PREPROCESSED" "$PREPROCESSED"
 
 echo "=> Generating Go types from preprocessed spec..."
 

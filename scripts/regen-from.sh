@@ -11,6 +11,9 @@
 #
 # Behavior:
 #   - copies <path-to-spec.json> over docs/openapi/monitoring-api.json
+#   - copies the bundle conformance vectors (mono docs/contracts/
+#     bundle-vectors.json, found next to the spec's docs/ directory) over
+#     docs/contracts/bundle-vectors.json
 #   - runs typegen.sh (which invokes preprocessor + oapi-codegen)
 #   - runs `go build ./...` so type errors surface immediately
 #   - prints absolute path to internal/generated/types.go on stdout
@@ -39,6 +42,18 @@ INPUT_ABS="$(cd "$(dirname "$INPUT_SPEC")" && pwd)/$(basename "$INPUT_SPEC")"
 TARGET_ABS="$(cd "$(dirname "$TARGET_SPEC")" && pwd)/$(basename "$TARGET_SPEC")"
 if [[ "$INPUT_ABS" != "$TARGET_ABS" ]]; then
   cp "$INPUT_SPEC" "$TARGET_SPEC"
+fi
+
+# Bundle conformance vectors live in mono at docs/contracts/, a sibling of
+# docs/openapi/. Vendor them with the spec so internal/bundle tests run the
+# server's digests (doc 42 §5.3).
+INPUT_VECTORS="$(dirname "$INPUT_ABS")/../contracts/bundle-vectors.json"
+TARGET_VECTORS="$ROOT_DIR/docs/contracts/bundle-vectors.json"
+if [[ -f "$INPUT_VECTORS" ]]; then
+  mkdir -p "$(dirname "$TARGET_VECTORS")"
+  if [[ "$(cd "$(dirname "$INPUT_VECTORS")" && pwd)/bundle-vectors.json" != "$TARGET_VECTORS" ]]; then
+    cp "$INPUT_VECTORS" "$TARGET_VECTORS"
+  fi
 fi
 
 "$SCRIPT_DIR/typegen.sh" >&2

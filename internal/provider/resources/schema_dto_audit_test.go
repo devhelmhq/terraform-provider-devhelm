@@ -124,12 +124,10 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 				"tags": "tag_ids",
 			},
 			allowed: map[string]string{
-				"managed_by":              "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
-				"capture_policy":          "Code-monitor capture settings are not on the Terraform schema yet.",
-				"definition_id":           "Reusing an existing definition is not on the Terraform schema yet.",
-				"fast_retry_max_attempts": "Fast-retry is not on the Terraform schema yet.",
-				"package":                 "Browser and multi-step package upload is not on the Terraform schema yet.",
-				"run_parallel":            "Location rotation is not on the Terraform schema yet.",
+				"managed_by":        "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+				"definition_id":     "Sibling monitors that reuse a definition are a dashboard/CLI flow; Terraform owns one definition per resource.",
+				"owner_declaration": "Built from owner_address plus a Terraform label.",
+				"owner_project":     "Projects are a Git (CLI) concept; Terraform declares a resource address instead.",
 			},
 		},
 		{
@@ -140,14 +138,12 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 				"tags": "tag_ids",
 			},
 			allowed: map[string]string{
-				"managed_by":              "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
-				"clear_auth":              "Internal flag derived from null Auth attribute, not user-facing.",
-				"clear_environment_id":    "Internal flag derived from null environment_id attribute.",
-				"capture_policy":          "Code-monitor capture settings are not on the Terraform schema yet.",
-				"fast_retry_max_attempts": "Fast-retry is not on the Terraform schema yet.",
-				"package":                 "Browser and multi-step package upload is not on the Terraform schema yet.",
-				"run_parallel":            "Location rotation is not on the Terraform schema yet.",
-				"status":                  "Not writable on update; pause and resume are separate operations.",
+				"managed_by":           "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+				"clear_auth":           "Internal flag derived from null Auth attribute, not user-facing.",
+				"clear_environment_id": "Internal flag derived from null environment_id attribute.",
+				"expected_updated_at":  "Terraform's own refresh is the concurrency check; code publishes use expectedLiveRevisionId.",
+				"owner_project":        "Projects are a Git (CLI) concept; Terraform declares a resource address instead.",
+				"status":               "Not writable on update; pause and resume are separate operations.",
 			},
 		},
 		{
@@ -412,7 +408,7 @@ func hasStringValidators(t *testing.T, r resource.Resource, attrPath string) boo
 func TestSchemaValidatorAudit(t *testing.T) {
 	cases := []enumValidatorCase{
 		// Monitor enums
-		{&MonitorResource{}, "type", []string{"HTTP", "DNS", "TCP", "ICMP", "HEARTBEAT", "MCP_SERVER"}, "monitor type"},
+		{&MonitorResource{}, "type", []string{"HTTP", "DNS", "TCP", "ICMP", "HEARTBEAT", "MCP_SERVER", "BROWSER", "MULTI_STEP_API"}, "monitor type"},
 		{&MonitorResource{}, "frequency_seconds", nil, "monitor frequency range"},
 		{&MonitorResource{}, "incident_policy.trigger_rules.type", []string{"consecutive_failures", "failures_in_window", "response_time"}, "trigger rule type"},
 		{&MonitorResource{}, "incident_policy.trigger_rules.severity", []string{"down", "degraded"}, "trigger severity"},

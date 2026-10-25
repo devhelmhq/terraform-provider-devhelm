@@ -24,8 +24,11 @@ package api
 const (
 	// Top-level collections.
 	PathAlertChannels        = "/api/v1/alert-channels"
+	PathBundles              = "/api/v1/bundles"
 	PathEnvironments         = "/api/v1/environments"
 	PathMonitors             = "/api/v1/monitors"
+	PathMonitorAdHocTest     = "/api/v1/monitors/test"
+	PathRuntimeProfiles      = "/api/v1/synthetics/runtime-profiles"
 	PathNotificationPolicies = "/api/v1/notification-policies"
 	PathResourceGroups       = "/api/v1/resource-groups"
 	PathSecrets              = "/api/v1/secrets"
@@ -136,3 +139,42 @@ func TagPath(id string) string { return PathTags + "/" + id }
 
 // WebhookPath returns /api/v1/webhooks/{id}.
 func WebhookPath(id string) string { return PathWebhooks + "/" + id }
+
+// MonitorRevisionsPath returns /api/v1/monitors/{id}/revisions (list, or
+// POST to create a draft).
+func MonitorRevisionsPath(monitorID string) string { return MonitorPath(monitorID) + "/revisions" }
+
+// MonitorRevisionTestPath returns /api/v1/monitors/{id}/revisions/{rid}/test.
+func MonitorRevisionTestPath(monitorID, revisionID string) string {
+	return MonitorRevisionsPath(monitorID) + "/" + revisionID + "/test"
+}
+
+// MonitorPublishPath returns /api/v1/monitors/{id}/publish.
+func MonitorPublishPath(monitorID string) string { return MonitorPath(monitorID) + "/publish" }
+
+// MonitorTransferPath returns /api/v1/monitors/{id}/transfer.
+func MonitorTransferPath(monitorID string) string { return MonitorPath(monitorID) + "/transfer" }
+
+// RevisionPath returns /api/v1/revisions/{id}.
+func RevisionPath(id string) string { return "/api/v1/revisions/" + id }
+
+// RevisionFilesPath returns /api/v1/revisions/{id}/files.
+func RevisionFilesPath(id string) string { return RevisionPath(id) + "/files" }
+
+// DefinitionPath returns /api/v1/definitions/{id}.
+func DefinitionPath(id string) string { return "/api/v1/definitions/" + id }
+
+// RunPath returns /api/v1/runs/{id}.
+func RunPath(id string) string { return "/api/v1/runs/" + id }
+
+// RunEventsPath returns /api/v1/runs/{id}/events (SSE).
+func RunEventsPath(id string) string { return RunPath(id) + "/events" }
+
+// RuntimeProfilePath returns /api/v1/synthetics/runtime-profiles/{id}.
+func RuntimeProfilePath(id string) string { return PathRuntimeProfiles + "/" + id }
+
+// SecretEnvironmentValuePath returns
+// /api/v1/secrets/{key}/environments/{environmentId}.
+func SecretEnvironmentValuePath(key, environmentID string) string {
+	return SecretPath(key) + "/environments/" + environmentID
+}
