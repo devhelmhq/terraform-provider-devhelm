@@ -2,7 +2,7 @@
   "version" : 1,
   "digest" : "sha256: + lowercase hex of SHA-256 over the files sorted by unsigned UTF-8 path bytes; each file is int32 BE path byte length, path bytes, int64 BE content length, content. Text extensions (.ts .tsx .js .jsx .mjs .cjs .json .yml .yaml .md .txt .html .css) have CRLF replaced by LF; other bytes are hashed as sent. Paths are NFC, forward-slash, relative.",
   "closure" : "From the entrypoint (or the only source file when none is given; the whole set when there are several): relative imports, tsconfig.json paths/baseUrl imports (with the config chain), JSON imports and the sibling auth.setup.ts. 'digest' covers the closure, 'uploadDigest' every file sent.",
-  "format" : "files: path to UTF-8 text; binaryFiles: path to base64 bytes; symlinks: path to link target. expect is {entrypoint, digest, uploadDigest, files (sorted by UTF-8 bytes)} or {refusal: {code}}.",
+  "format" : "include: paths kept in the closure even when no import reaches them (their own imports follow). files: path to UTF-8 text; binaryFiles: path to base64 bytes; symlinks: path to link target. expect is {entrypoint, digest, uploadDigest, files (sorted by UTF-8 bytes)} or {refusal: {code, field?}}.",
   "vectors" : [ {
     "name" : "crlf-text",
     "description" : "CRLF in a text file hashes as LF",
@@ -115,7 +115,8 @@
     },
     "expect" : {
       "refusal" : {
-        "code" : "MONITOR_PACKAGE_PATH_INVALID"
+        "code" : "MONITOR_PACKAGE_PATH_INVALID",
+        "field" : "checks/link.ts"
       }
     }
   }, {
@@ -129,7 +130,8 @@
     },
     "expect" : {
       "refusal" : {
-        "code" : "IMPORT_NOT_IN_BUNDLE"
+        "code" : "IMPORT_NOT_IN_BUNDLE",
+        "field" : "checks/a.spec.ts"
       }
     }
   }, {
@@ -150,6 +152,58 @@
       "digest" : "sha256:b2add65f3cd16b8acca6e6191996ebf186d1ebc741bf6aa836b1218c79e2e139",
       "uploadDigest" : "sha256:df206a284251626ff4db4e12c56db1662fa278b24eac26503fea252973895ae8",
       "files" : [ "checks/checkout.spec.ts", "checks/helpers/cart.ts", "checks/helpers/price.ts" ]
+    }
+  }, {
+    "name" : "include-kept",
+    "description" : "An include path joins the closure although no import reaches it (a fixture read at runtime)",
+    "request" : {
+      "entrypoint" : "checks/a.spec.ts",
+      "include" : [ "checks/fixtures/order.json" ],
+      "files" : {
+        "checks/a.spec.ts" : "import { test, expect } from '@playwright/test';\ntest('order', async () => {});\n",
+        "checks/fixtures/order.json" : "{\"id\": 1}\n"
+      }
+    },
+    "expect" : {
+      "entrypoint" : "checks/a.spec.ts",
+      "digest" : "sha256:9fb1db0845c14f5610fa063c35c76ed8ef42e91b4431faa63f82f1efc949face",
+      "uploadDigest" : "sha256:9fb1db0845c14f5610fa063c35c76ed8ef42e91b4431faa63f82f1efc949face",
+      "files" : [ "checks/a.spec.ts", "checks/fixtures/order.json" ]
+    }
+  }, {
+    "name" : "include-set-with-include",
+    "description" : "Include-set request: the directory, the entrypoint and an include; unrelated files stay out",
+    "request" : {
+      "entrypoint" : "checks/checkout.spec.ts",
+      "include" : [ "checks/fixtures/order.json" ],
+      "files" : {
+        "checks/checkout.spec.ts" : "import { test, expect } from '@playwright/test';\nimport { cart } from './helpers/cart';\ntest('checkout', async () => { cart(); });\n",
+        "checks/fixtures/order.json" : "{\"id\": 1}\n",
+        "checks/helpers/cart.ts" : "export const cart = () => 1;\n",
+        "checks/other.spec.ts" : "import { test, expect } from '@playwright/test';\ntest('other', async () => {});\n"
+      }
+    },
+    "expect" : {
+      "entrypoint" : "checks/checkout.spec.ts",
+      "digest" : "sha256:ffb63814c6a125e5206a490874eab4de2cc7b7a0d97e113f13178201280172ee",
+      "uploadDigest" : "sha256:406a9dba733b405679804fe319e35025c99e6a88b0274f00006ea3547879fa00",
+      "files" : [ "checks/checkout.spec.ts", "checks/fixtures/order.json", "checks/helpers/cart.ts" ]
+    }
+  }, {
+    "name" : "include-missing-refused",
+    "description" : "An include path that is not in the files is refused",
+    "request" : {
+      "entrypoint" : "checks/a.spec.ts",
+      "include" : [ "checks/fixtures/missing.json" ],
+      "files" : {
+        "checks/a.spec.ts" : "import { test, expect } from '@playwright/test';\ntest('a', async () => {});\n"
+      }
+    },
+    "expect" : {
+      "refusal" : {
+        "code" : "MONITOR_PACKAGE_PATH_INVALID",
+        "field" : "include[0]"
+      }
     }
   } ]
 }

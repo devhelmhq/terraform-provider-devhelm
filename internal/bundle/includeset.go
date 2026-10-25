@@ -233,6 +233,14 @@ func Build(in Input) (*Set, error) {
 	}
 
 	sort.Strings(set.Included)
+	// Every include must ship something: a path the user says the code
+	// needs at runtime that isn't there is a configuration error, the same
+	// refusal the server gives for an include path missing from the upload.
+	for i, pattern := range patterns {
+		if !anyMatch(pattern, set.Included) {
+			return nil, refuse(CodePathInvalid, "include[%d] %q matches no files under %s", i, in.Include[i], root)
+		}
+	}
 	if err := set.checkLimits(); err != nil {
 		return nil, err
 	}
@@ -338,6 +346,15 @@ func matchAny(patterns []string, rel string) bool {
 		// `dir` and `dir/` include the directory's contents.
 		trimmed := strings.TrimSuffix(p, "/")
 		if rel == trimmed || strings.HasPrefix(rel, trimmed+"/") && !strings.ContainsAny(trimmed, "*?[{") {
+			return true
+		}
+	}
+	return false
+}
+
+func anyMatch(pattern string, paths []string) bool {
+	for _, p := range paths {
+		if matchAny([]string{pattern}, p) {
 			return true
 		}
 	}

@@ -4965,6 +4965,9 @@ type CreateBundleRequest struct {
 	// Files Path to UTF-8 text. Paths are relative to the bundle root
 	Files map[string]string `json:"files"`
 
+	// Include Files to keep even when no import reaches them, e.g. fixtures
+	Include *[]string `json:"include,omitempty"`
+
 	// RuntimeId Runtime used to refuse imports. Omit for the newest runtime that can run
 	RuntimeId *string `json:"runtimeId,omitempty"`
 }
@@ -14926,6 +14929,9 @@ type Me1Params struct {
 type UploadZipParams struct {
 	Entrypoint *string `form:"entrypoint,omitempty" json:"entrypoint,omitempty"`
 	RuntimeId  *string `form:"runtimeId,omitempty" json:"runtimeId,omitempty"`
+
+	// Include Files to keep even when no import reaches them, e.g. fixtures
+	Include *[]string `form:"include,omitempty" json:"include,omitempty"`
 
 	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
 	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`

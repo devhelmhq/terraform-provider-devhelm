@@ -27,14 +27,11 @@ func TestUploadBundle_TextGoesAsJSON(t *testing.T) {
 		if ct := r.Header.Get("Content-Type"); ct != "application/json" {
 			t.Errorf("content type = %s", ct)
 		}
-		var body struct {
-			generated.CreateBundleRequest
-			Include []string `json:"include"`
-		}
+		var body generated.CreateBundleRequest
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			t.Fatal(err)
 		}
-		if len(body.Include) != 1 || body.Include[0] != "f.json" {
+		if body.Include == nil || len(*body.Include) != 1 || (*body.Include)[0] != "f.json" {
 			t.Errorf("include = %v", body.Include)
 		}
 		if body.Files["a.ts"] != "export {}" || body.Entrypoint == nil || *body.Entrypoint != "a.ts" || *body.RuntimeId != "2026.11" {
