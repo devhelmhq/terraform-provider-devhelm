@@ -136,26 +136,31 @@ func TestBuild_RootFallsBackToEntryDirWithoutGit(t *testing.T) {
 	}
 }
 
-func TestBuild_IncludeGlobsNarrowAndExplicitRoot(t *testing.T) {
+func TestBuild_IncludeAddsUnimportedFilesOnTopOfTheDefaultSet(t *testing.T) {
 	dir := t.TempDir()
 	write(t, dir, map[string]string{
-		"synthetics/checkout.spec.ts": "x",
-		"synthetics/helpers/a.ts":     "x",
-		"synthetics/fixtures/big.txt": "x",
-		"shared/util.ts":              "x",
+		"synthetics/checkout.spec.ts":    "x",
+		"synthetics/helpers/a.ts":        "x",
+		"synthetics/fixtures/cards.json": "x",
+		"shared/util.ts":                 "x",
+		"shared/other.ts":                "x",
+		"unrelated/never.ts":             "x",
 	})
 	s, err := Build(Input{
 		Entrypoint: "synthetics/checkout.spec.ts",
-		Include:    []string{"synthetics/helpers/**", "shared/*.ts"},
+		Include:    []string{"synthetics/fixtures/**", "shared/util.ts"},
 		Root:       ".",
 		WorkDir:    dir,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"shared/util.ts", "synthetics/checkout.spec.ts", "synthetics/helpers/a.ts"}
+	want := []string{"shared/util.ts", "synthetics/checkout.spec.ts", "synthetics/fixtures/cards.json", "synthetics/helpers/a.ts"}
 	if got := keys(s); !reflect.DeepEqual(got, want) {
 		t.Errorf("files = %v, want %v", got, want)
+	}
+	if want := []string{"shared/util.ts", "synthetics/fixtures/cards.json"}; !reflect.DeepEqual(s.Included, want) {
+		t.Errorf("included = %v, want %v", s.Included, want)
 	}
 }
 

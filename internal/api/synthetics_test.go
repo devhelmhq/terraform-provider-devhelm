@@ -27,9 +27,15 @@ func TestUploadBundle_TextGoesAsJSON(t *testing.T) {
 		if ct := r.Header.Get("Content-Type"); ct != "application/json" {
 			t.Errorf("content type = %s", ct)
 		}
-		var body generated.CreateBundleRequest
+		var body struct {
+			generated.CreateBundleRequest
+			Include []string `json:"include"`
+		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			t.Fatal(err)
+		}
+		if len(body.Include) != 1 || body.Include[0] != "f.json" {
+			t.Errorf("include = %v", body.Include)
 		}
 		if body.Files["a.ts"] != "export {}" || body.Entrypoint == nil || *body.Entrypoint != "a.ts" || *body.RuntimeId != "2026.11" {
 			t.Errorf("body = %+v", body)
@@ -38,7 +44,7 @@ func TestUploadBundle_TextGoesAsJSON(t *testing.T) {
 		_, _ = w.Write([]byte(bundleReply))
 	}))
 	defer srv.Close()
-	b, err := UploadBundle(context.Background(), newTestClient(t, srv), map[string][]byte{"a.ts": []byte("export {}")}, "a.ts", "2026.11")
+	b, err := UploadBundle(context.Background(), newTestClient(t, srv), map[string][]byte{"a.ts": []byte("export {}"), "f.json": []byte("{}")}, "a.ts", "2026.11", []string{"f.json"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -53,7 +59,7 @@ func TestUploadBundle_BinaryGoesAsZipWithQueryParams(t *testing.T) {
 		if ct := r.Header.Get("Content-Type"); ct != "application/zip" {
 			t.Errorf("content type = %s", ct)
 		}
-		if r.URL.Query().Get("entrypoint") != "a.ts" {
+		if r.URL.Query().Get("entrypoint") != "a.ts" || r.URL.Query()["include"][0] != "logo.png" {
 			t.Errorf("query = %s", r.URL.RawQuery)
 		}
 		raw, _ := io.ReadAll(r.Body)
@@ -78,7 +84,7 @@ func TestUploadBundle_BinaryGoesAsZipWithQueryParams(t *testing.T) {
 	}))
 	defer srv.Close()
 	if _, err := UploadBundle(context.Background(), newTestClient(t, srv),
-		map[string][]byte{"a.ts": []byte("x"), "logo.png": bin}, "a.ts", ""); err != nil {
+		map[string][]byte{"a.ts": []byte("x"), "logo.png": bin}, "a.ts", "", []string{"logo.png"}); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -89,7 +95,7 @@ func TestUploadBundle_RefusalIsTypedValidationError(t *testing.T) {
 		_, _ = w.Write([]byte(envelope(400, "IMPORT_NOT_IN_BUNDLE", "validation", `"details":{"file":"a.ts","line":1}`)))
 	}))
 	defer srv.Close()
-	_, err := UploadBundle(context.Background(), newTestClient(t, srv), map[string][]byte{"a.ts": []byte("x")}, "a.ts", "")
+	_, err := UploadBundle(context.Background(), newTestClient(t, srv), map[string][]byte{"a.ts": []byte("x")}, "a.ts", "", nil)
 	var ve *ValidationError
 	if !errors.As(err, &ve) || ve.Code != "IMPORT_NOT_IN_BUNDLE" {
 		t.Fatalf("err = %v", err)

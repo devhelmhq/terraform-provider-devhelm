@@ -141,7 +141,7 @@ func (r *MonitorResource) resolveCode(ctx context.Context, code types.Object, co
 		}
 		return nil, err
 	}
-	b, err := api.UploadBundle(ctx, r.client, set.Files, set.Entrypoint, runtimeIDFromConfig(configJSON))
+	b, err := api.UploadBundle(ctx, r.client, set.Files, set.Entrypoint, runtimeIDFromConfig(configJSON), set.Included)
 	if err != nil {
 		return nil, err
 	}

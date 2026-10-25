@@ -213,8 +213,9 @@ func (r *MonitorResource) Schema(ctx context.Context, _ resource.SchemaRequest, 
 					},
 					"include": schema.ListAttribute{
 						Optional: true, ElementType: types.StringType,
-						Description: "Globs that narrow the include set (default: the entry file's directory, recursively, " +
-							"minus node_modules/, dist/, build/, coverage/, *.map, dotfiles and .devhelmignore matches)",
+						Description: "Globs for files that ship even though nothing imports them (fixtures, data), " +
+							"added to the default set: the entry file's directory, recursively, minus node_modules/, " +
+							"dist/, build/, coverage/, *.map, dotfiles and .devhelmignore matches",
 					},
 					"root": schema.StringAttribute{
 						Optional: true,

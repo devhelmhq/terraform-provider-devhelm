@@ -44,9 +44,10 @@ var defaultExcludes = []string{"node_modules/", "dist/", "build/", "coverage/", 
 type Input struct {
 	// Entrypoint is the file that runs (absolute, or relative to WorkDir).
 	Entrypoint string
-	// Include narrows the default include set to these globs (doublestar
-	// syntax; absolute, or relative to WorkDir). Empty means the entry
-	// file's directory, recursively.
+	// Include adds files that must ship even though nothing imports them
+	// (fixtures, data): doublestar globs, absolute or relative to WorkDir,
+	// on top of the default set (the entry file's directory, recursively,
+	// minus the ignores).
 	Include []string
 	// Root is the bundle root. Empty means the nearest ancestor of the
 	// entrypoint that contains `.git`, else the entrypoint's directory.
@@ -58,10 +59,13 @@ type Input struct {
 
 // Set is the resolved include set: the bundle root, the entrypoint relative
 // to it, and every file to upload keyed by its normalized bundle path.
+// Included lists the files matched by `include` (sorted): files that ship
+// even though nothing imports them, which the server keeps in the closure.
 type Set struct {
 	Root       string
 	Entrypoint string
 	Files      map[string][]byte
+	Included   []string
 }
 
 // Error is a client-side refusal with a stable code.
@@ -166,6 +170,7 @@ func Build(in Input) (*Set, error) {
 	if len(patterns) > 0 {
 		walkRoot = root
 	}
+	entryDirRel, _ := bundlePath(root, entryDir)
 	set := &Set{Root: root, Entrypoint: relEntry, Files: map[string][]byte{}}
 
 	err = filepath.WalkDir(walkRoot, func(p string, d fs.DirEntry, walkErr error) error {
@@ -191,7 +196,9 @@ func Build(in Input) (*Set, error) {
 		if ignore.ignored(rel, false) {
 			return nil
 		}
-		if len(patterns) > 0 && !matchAny(patterns, rel) {
+		inDefault := entryDirRel == "" || strings.HasPrefix(rel, entryDirRel+"/")
+		included := len(patterns) > 0 && matchAny(patterns, rel)
+		if !inDefault && !included {
 			return nil
 		}
 		if d.Type()&fs.ModeSymlink != 0 {
@@ -199,6 +206,9 @@ func Build(in Input) (*Set, error) {
 		}
 		if !d.Type().IsRegular() {
 			return nil
+		}
+		if included {
+			set.Included = append(set.Included, rel)
 		}
 		return set.add(rel, p)
 	})
@@ -222,6 +232,7 @@ func Build(in Input) (*Set, error) {
 		}
 	}
 
+	sort.Strings(set.Included)
 	if err := set.checkLimits(); err != nil {
 		return nil, err
 	}

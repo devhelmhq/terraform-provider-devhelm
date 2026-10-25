@@ -117,9 +117,10 @@ resource "devhelm_monitor" "checkout" {
 }
 ```
 
-- **Plan** uploads the include set (the entry file's directory, or `code.include`,
-  minus `node_modules/`, `dist/`, `build/`, `coverage/`, `*.map`, dotfiles and
-  `.devhelmignore`) and shows `code_hash` and the changed files in `code_files`.
+- **Plan** uploads the include set (the entry file's directory minus `node_modules/`,
+  `dist/`, `build/`, `coverage/`, `*.map`, dotfiles and `.devhelmignore`, plus any
+  `code.include` files that ship without being imported, such as fixtures) and shows
+  `code_hash` and the changed files in `code_files`.
 - **Apply** runs a validation run before the code goes live: a new monitor is
   validated before it's created, and changed code goes draft → test → publish.
   A failed run stops the apply with `[check_failed] <run url>` and the old code

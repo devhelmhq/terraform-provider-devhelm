@@ -119,7 +119,7 @@ resource "devhelm_monitor" "checkout" {
 
   code = {
     entrypoint = "${path.module}/synthetics/checkout.spec.ts"
-    include    = ["${path.module}/synthetics/**"] # optional; default is the entry file's directory
+    include    = ["${path.module}/synthetics/fixtures/**"] # optional; files that ship without being imported
   }
 
   capture_policy = {

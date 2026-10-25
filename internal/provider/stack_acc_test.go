@@ -172,3 +172,20 @@ func stackLifecycle(t *testing.T, monitorType string) {
 		},
 	})
 }
+
+// Validate-then-create (doc 42 R3): with test_before_publish the provider
+// runs the ad-hoc validation run before the monitor exists. Without a fleet
+// the run can't pass, so the create is refused and nothing is created.
+func TestAccStack_ValidateBeforeCreate(t *testing.T) {
+	requireStack(t)
+	prefix := "terraform-e2e-" + uuid.NewString()[:8]
+	dir := t.TempDir()
+	writeCheck(t, dir, "v1")
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: newProviderFactories(),
+		Steps: []resource.TestStep{{
+			Config:      stackCodeConfig(prefix, "MULTI_STEP_API", dir, `timeouts = { create = "45s" }`),
+			ExpectError: regexp.MustCompile(`\[(platform|timeout|check_failed)\]`),
+		}},
+	})
+}

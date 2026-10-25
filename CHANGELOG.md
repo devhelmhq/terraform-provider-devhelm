@@ -5,7 +5,8 @@
 ### Added
 
 - `devhelm_monitor` supports `BROWSER` and `MULTI_STEP_API` code monitors with a
-  `code` block (`entrypoint`, `include`, `root`). Plan uploads the include set
+  `code` block (`entrypoint`, `include` for fixtures and data that ship without
+  being imported, `root`). Plan uploads the include set
   (`POST /bundles`) and computes `code_hash` and `code_files`; apply validates
   new monitors before creating them and publishes changed code through
   draft → test → publish (`test_before_publish`, default true).

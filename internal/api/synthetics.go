@@ -48,7 +48,11 @@ const (
 // with any non-UTF-8 file (an image fixture, say) goes as `application/zip`
 // with `entrypoint` / `runtimeId` as query parameters. Both forms run the
 // same server validation and return the same digest for the same files.
-func UploadBundle(ctx context.Context, c *Client, files map[string][]byte, entrypoint, runtimeID string) (*generated.BundleDto, error) {
+//
+// include lists the files that must stay in the closure even though no
+// import reaches them (fixtures, data): `CreateBundleRequest.include` (W0-13),
+// or the repeated `include` query parameter on the zip form.
+func UploadBundle(ctx context.Context, c *Client, files map[string][]byte, entrypoint, runtimeID string, include []string) (*generated.BundleDto, error) {
 	allText := true
 	for _, content := range files {
 		if !utf8.Valid(content) {
@@ -57,7 +61,7 @@ func UploadBundle(ctx context.Context, c *Client, files map[string][]byte, entry
 		}
 	}
 	if allText {
-		body := generated.CreateBundleRequest{Files: make(map[string]string, len(files))}
+		body := bundleUploadRequest{CreateBundleRequest: generated.CreateBundleRequest{Files: make(map[string]string, len(files))}}
 		for p, content := range files {
 			body.Files[p] = string(content)
 		}
@@ -67,6 +71,7 @@ func UploadBundle(ctx context.Context, c *Client, files map[string][]byte, entry
 		if runtimeID != "" {
 			body.RuntimeId = &runtimeID
 		}
+		body.Include = include
 		return Create[generated.BundleDto](ctx, c, PathBundles, body)
 	}
 
@@ -81,11 +86,23 @@ func UploadBundle(ctx context.Context, c *Client, files map[string][]byte, entry
 	if runtimeID != "" {
 		q.Set("runtimeId", runtimeID)
 	}
+	for _, p := range include {
+		q.Add("include", p)
+	}
 	p := PathBundles
 	if len(q) > 0 {
 		p += "?" + q.Encode()
 	}
 	return send[generated.BundleDto](ctx, c, rawRequest{Method: http.MethodPost, Path: p, Body: zipped, ContentType: "application/zip"})
+}
+
+// bundleUploadRequest is CreateBundleRequest plus `include` (doc 42 W0-13),
+// which the vendored spec doesn't declare yet. Today's API ignores the field;
+// delete this type and set CreateBundleRequest.Include once the regenerated
+// spec carries it.
+type bundleUploadRequest struct {
+	generated.CreateBundleRequest
+	Include []string `json:"include,omitempty"`
 }
 
 func zipFiles(files map[string][]byte) ([]byte, error) {
