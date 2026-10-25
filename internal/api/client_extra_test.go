@@ -443,3 +443,34 @@ func TestSingleValueResponse_ZeroDataDocumentedContract(t *testing.T) {
 // helper to keep encoding/json imported for body diagnostics if a test
 // later reaches for it without re-importing.
 var _ = json.Marshal
+
+func TestKeyTool_ReadsAuthMeOnceAndDefaultsToAPI(t *testing.T) {
+	var calls int32
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		atomic.AddInt32(&calls, 1)
+		_, _ = w.Write([]byte(`{"data":{"key":{"id":1,"name":"ci","scopes":["full"],"createdAt":"2026-10-25T00:00:00Z"},` +
+			`"organization":{},"plan":{},"rateLimits":{}}}`))
+	}))
+	defer srv.Close()
+	c := newTestClient(t, srv)
+	for i := 0; i < 2; i++ {
+		tool, ok := c.KeyTool(context.Background())
+		if !ok || tool != ToolAPI {
+			t.Fatalf("tool = %q, %v; want API (null tool)", tool, ok)
+		}
+	}
+	if calls != 1 {
+		t.Errorf("auth/me calls = %d, want 1", calls)
+	}
+}
+
+func TestKeyTool_NonKeyCredentialIsUnknown(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte(`{"code":"BAD_REQUEST","category":"validation","message":"requires API key"}`))
+	}))
+	defer srv.Close()
+	if _, ok := newTestClient(t, srv).KeyTool(context.Background()); ok {
+		t.Error("a non-key credential must report unknown")
+	}
+}

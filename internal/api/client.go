@@ -15,8 +15,10 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
+	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -76,6 +78,12 @@ type Client struct {
 	// rather than being threaded through every resource. Wire contract:
 	// https://devhelm.io/telemetry.
 	SurfaceHeaders map[string]string
+
+	keyTool struct {
+		once  sync.Once
+		tool  string
+		known bool
+	}
 }
 
 func NewClient(baseURL, token, orgID, workspaceID, version string) *Client {
@@ -780,4 +788,27 @@ func PutNoContent(ctx context.Context, c *Client, path string, body any) error {
 		return err
 	}
 	return checkResponse(resp)
+}
+
+// KeyTool returns the tool this provider's API key writes as on
+// owner-enforced monitors (`GET /auth/me` → `key.tool`; null means API), and
+// whether it could be read. Non-key credentials report false. It is read
+// once per provider run.
+func (c *Client) KeyTool(ctx context.Context) (string, bool) {
+	c.keyTool.once.Do(func() {
+		// Only `key` matters here; the rest of AuthMeResponse (plan, rate
+		// limits) is ignored so its evolution can't hide the warning.
+		me, err := Get[struct {
+			Key generated.KeyInfo `json:"key"`
+		}](ctx, c, "/api/v1/auth/me")
+		if err != nil {
+			return
+		}
+		c.keyTool.known = true
+		c.keyTool.tool = ToolAPI
+		if me.Key.Tool != nil && *me.Key.Tool != "" {
+			c.keyTool.tool = *me.Key.Tool
+		}
+	})
+	return c.keyTool.tool, c.keyTool.known
 }

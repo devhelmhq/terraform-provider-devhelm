@@ -231,6 +231,10 @@ func (r *MonitorResource) ModifyPlan(ctx context.Context, req resource.ModifyPla
 		state = &s
 	}
 
+	if state == nil {
+		r.warnIfKeyCantOwn(ctx, req, &resp.Diagnostics)
+	}
+
 	// A monitor another tool owns (imported) moves to Terraform on apply.
 	if state != nil && !state.Owner.IsNull() && ownerType(state.Owner) != api.ToolTerraform {
 		plan.Owner = types.ObjectUnknown(ownerObjectType().AttrTypes)
@@ -275,6 +279,30 @@ func (r *MonitorResource) ModifyPlan(ctx context.Context, req resource.ModifyPla
 		}
 	}
 	resp.Diagnostics.Append(resp.Plan.Set(ctx, &plan)...)
+}
+
+// warnIfKeyCantOwn warns at plan time when a new monitor will be
+// owner-enforced but the provider's API key writes as another tool
+// (`GET /auth/me` → `key.tool`, null meaning API). Owner enforcement would
+// then refuse Terraform's own later writes. Credentials that aren't API
+// keys (auth/me refuses them) are skipped.
+func (r *MonitorResource) warnIfKeyCantOwn(ctx context.Context, req resource.ModifyPlanRequest, diags *diag.Diagnostics) {
+	if r.client == nil {
+		return
+	}
+	var configured types.Bool
+	diags.Append(req.Config.GetAttribute(ctx, path.Root("owner_enforced"), &configured)...)
+	if !configured.IsNull() && (configured.IsUnknown() || !configured.ValueBool()) {
+		return
+	}
+	tool, ok := r.client.KeyTool(ctx)
+	if !ok || tool == api.ToolTerraform {
+		return
+	}
+	diags.AddAttributeWarning(path.Root("owner_enforced"), "This API key can't own Terraform monitors",
+		fmt.Sprintf("The monitor will be owner-enforced and owned by TERRAFORM, but this provider's API key "+
+			"writes as %s, so the API will refuse Terraform's later changes to it. Use an API key created "+
+			"with tool TERRAFORM, or set owner_enforced = false.", tool))
 }
 
 // codeInputsKnown reports whether every attribute of the code block is known
@@ -420,21 +448,19 @@ func (r *MonitorResource) validateNewCode(ctx context.Context, plan *MonitorReso
 		diags.AddAttributeError(path.Root("environment_id"), "Invalid environment_id", err.Error())
 		return false
 	}
-	cfg := knownString(plan.Config)
-	if cfg == "" {
-		cfg = "{}"
-	}
-	var config generated.MonitorTestRequest_Config
-	if err := config.UnmarshalJSON([]byte(cfg)); err != nil {
-		diags.AddAttributeError(path.Root("config"), "Invalid config", err.Error())
-		return false
-	}
 	code := rc.spec()
 	body := generated.MonitorTestRequest{
 		Type:          generated.MonitorTestRequestType(plan.Type.ValueString()),
-		Config:        config,
 		EnvironmentId: envID,
 		Code:          &code,
+	}
+	if cfg := knownString(plan.Config); cfg != "" {
+		var config generated.MonitorTestRequest_Config
+		if err := config.UnmarshalJSON([]byte(cfg)); err != nil {
+			diags.AddAttributeError(path.Root("config"), "Invalid config", err.Error())
+			return false
+		}
+		body.Config = &config
 	}
 	run, err := api.Create[generated.RunDto](ctx, r.client, api.PathMonitorAdHocTest, body)
 	if err == nil {

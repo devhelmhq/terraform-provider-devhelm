@@ -76,6 +76,12 @@ func newMockAPI(t *testing.T) *mockAPI {
 		h(w, r)
 	}))
 	t.Cleanup(m.server.Close)
+	// Plans for new monitors read the key's tool (owner enforcement). By
+	// default the credential isn't an API key; tests that care register
+	// their own answer.
+	m.Handle(http.MethodGet, "/api/v1/auth/me", func(w http.ResponseWriter, _ *http.Request) {
+		httpError(w, http.StatusBadRequest, "This endpoint requires API key authentication")
+	})
 	return m
 }
 

@@ -374,6 +374,7 @@ const (
 	CreateAlertChannelRequestManagedByAPI       CreateAlertChannelRequestManagedBy = "API"
 	CreateAlertChannelRequestManagedByCLI       CreateAlertChannelRequestManagedBy = "CLI"
 	CreateAlertChannelRequestManagedByDASHBOARD CreateAlertChannelRequestManagedBy = "DASHBOARD"
+	CreateAlertChannelRequestManagedByGIT       CreateAlertChannelRequestManagedBy = "GIT"
 	CreateAlertChannelRequestManagedByMCP       CreateAlertChannelRequestManagedBy = "MCP"
 	CreateAlertChannelRequestManagedByTERRAFORM CreateAlertChannelRequestManagedBy = "TERRAFORM"
 )
@@ -386,6 +387,8 @@ func (e CreateAlertChannelRequestManagedBy) Valid() bool {
 	case CreateAlertChannelRequestManagedByCLI:
 		return true
 	case CreateAlertChannelRequestManagedByDASHBOARD:
+		return true
+	case CreateAlertChannelRequestManagedByGIT:
 		return true
 	case CreateAlertChannelRequestManagedByMCP:
 		return true
@@ -401,6 +404,7 @@ const (
 	CreateApiKeyRequestToolAPI       CreateApiKeyRequestTool = "API"
 	CreateApiKeyRequestToolCLI       CreateApiKeyRequestTool = "CLI"
 	CreateApiKeyRequestToolDASHBOARD CreateApiKeyRequestTool = "DASHBOARD"
+	CreateApiKeyRequestToolGIT       CreateApiKeyRequestTool = "GIT"
 	CreateApiKeyRequestToolMCP       CreateApiKeyRequestTool = "MCP"
 	CreateApiKeyRequestToolTERRAFORM CreateApiKeyRequestTool = "TERRAFORM"
 )
@@ -413,6 +417,8 @@ func (e CreateApiKeyRequestTool) Valid() bool {
 	case CreateApiKeyRequestToolCLI:
 		return true
 	case CreateApiKeyRequestToolDASHBOARD:
+		return true
+	case CreateApiKeyRequestToolGIT:
 		return true
 	case CreateApiKeyRequestToolMCP:
 		return true
@@ -506,6 +512,7 @@ const (
 	CreateMonitorRequestManagedByAPI       CreateMonitorRequestManagedBy = "API"
 	CreateMonitorRequestManagedByCLI       CreateMonitorRequestManagedBy = "CLI"
 	CreateMonitorRequestManagedByDASHBOARD CreateMonitorRequestManagedBy = "DASHBOARD"
+	CreateMonitorRequestManagedByGIT       CreateMonitorRequestManagedBy = "GIT"
 	CreateMonitorRequestManagedByMCP       CreateMonitorRequestManagedBy = "MCP"
 	CreateMonitorRequestManagedByTERRAFORM CreateMonitorRequestManagedBy = "TERRAFORM"
 )
@@ -518,6 +525,8 @@ func (e CreateMonitorRequestManagedBy) Valid() bool {
 	case CreateMonitorRequestManagedByCLI:
 		return true
 	case CreateMonitorRequestManagedByDASHBOARD:
+		return true
+	case CreateMonitorRequestManagedByGIT:
 		return true
 	case CreateMonitorRequestManagedByMCP:
 		return true
@@ -587,6 +596,7 @@ const (
 	CreateResourceGroupRequestManagedByAPI       CreateResourceGroupRequestManagedBy = "API"
 	CreateResourceGroupRequestManagedByCLI       CreateResourceGroupRequestManagedBy = "CLI"
 	CreateResourceGroupRequestManagedByDASHBOARD CreateResourceGroupRequestManagedBy = "DASHBOARD"
+	CreateResourceGroupRequestManagedByGIT       CreateResourceGroupRequestManagedBy = "GIT"
 	CreateResourceGroupRequestManagedByMCP       CreateResourceGroupRequestManagedBy = "MCP"
 	CreateResourceGroupRequestManagedByTERRAFORM CreateResourceGroupRequestManagedBy = "TERRAFORM"
 )
@@ -599,6 +609,8 @@ func (e CreateResourceGroupRequestManagedBy) Valid() bool {
 	case CreateResourceGroupRequestManagedByCLI:
 		return true
 	case CreateResourceGroupRequestManagedByDASHBOARD:
+		return true
+	case CreateResourceGroupRequestManagedByGIT:
 		return true
 	case CreateResourceGroupRequestManagedByMCP:
 		return true
@@ -779,6 +791,7 @@ const (
 	CreateStatusPageRequestManagedByAPI       CreateStatusPageRequestManagedBy = "API"
 	CreateStatusPageRequestManagedByCLI       CreateStatusPageRequestManagedBy = "CLI"
 	CreateStatusPageRequestManagedByDASHBOARD CreateStatusPageRequestManagedBy = "DASHBOARD"
+	CreateStatusPageRequestManagedByGIT       CreateStatusPageRequestManagedBy = "GIT"
 	CreateStatusPageRequestManagedByMCP       CreateStatusPageRequestManagedBy = "MCP"
 	CreateStatusPageRequestManagedByTERRAFORM CreateStatusPageRequestManagedBy = "TERRAFORM"
 )
@@ -791,6 +804,8 @@ func (e CreateStatusPageRequestManagedBy) Valid() bool {
 	case CreateStatusPageRequestManagedByCLI:
 		return true
 	case CreateStatusPageRequestManagedByDASHBOARD:
+		return true
+	case CreateStatusPageRequestManagedByGIT:
 		return true
 	case CreateStatusPageRequestManagedByMCP:
 		return true
@@ -1446,78 +1461,6 @@ const (
 func (e IcmpResponseTimeWarnAssertionType) Valid() bool {
 	switch e {
 	case IcmpResponseTimeWarnAssertionTypeIcmpResponseTimeWarn:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentFilterParamsSeverity.
-const (
-	IncidentFilterParamsSeverityDEGRADED    IncidentFilterParamsSeverity = "DEGRADED"
-	IncidentFilterParamsSeverityDOWN        IncidentFilterParamsSeverity = "DOWN"
-	IncidentFilterParamsSeverityMAINTENANCE IncidentFilterParamsSeverity = "MAINTENANCE"
-)
-
-// Valid indicates whether the value is a known member of the IncidentFilterParamsSeverity enum.
-func (e IncidentFilterParamsSeverity) Valid() bool {
-	switch e {
-	case IncidentFilterParamsSeverityDEGRADED:
-		return true
-	case IncidentFilterParamsSeverityDOWN:
-		return true
-	case IncidentFilterParamsSeverityMAINTENANCE:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentFilterParamsSource.
-const (
-	IncidentFilterParamsSourceAUTOMATIC     IncidentFilterParamsSource = "AUTOMATIC"
-	IncidentFilterParamsSourceMANUAL        IncidentFilterParamsSource = "MANUAL"
-	IncidentFilterParamsSourceMONITORS      IncidentFilterParamsSource = "MONITORS"
-	IncidentFilterParamsSourceRESOURCEGROUP IncidentFilterParamsSource = "RESOURCE_GROUP"
-	IncidentFilterParamsSourceSTATUSDATA    IncidentFilterParamsSource = "STATUS_DATA"
-)
-
-// Valid indicates whether the value is a known member of the IncidentFilterParamsSource enum.
-func (e IncidentFilterParamsSource) Valid() bool {
-	switch e {
-	case IncidentFilterParamsSourceAUTOMATIC:
-		return true
-	case IncidentFilterParamsSourceMANUAL:
-		return true
-	case IncidentFilterParamsSourceMONITORS:
-		return true
-	case IncidentFilterParamsSourceRESOURCEGROUP:
-		return true
-	case IncidentFilterParamsSourceSTATUSDATA:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for IncidentFilterParamsStatus.
-const (
-	IncidentFilterParamsStatusCONFIRMED IncidentFilterParamsStatus = "CONFIRMED"
-	IncidentFilterParamsStatusRESOLVED  IncidentFilterParamsStatus = "RESOLVED"
-	IncidentFilterParamsStatusTRIGGERED IncidentFilterParamsStatus = "TRIGGERED"
-	IncidentFilterParamsStatusWATCHING  IncidentFilterParamsStatus = "WATCHING"
-)
-
-// Valid indicates whether the value is a known member of the IncidentFilterParamsStatus enum.
-func (e IncidentFilterParamsStatus) Valid() bool {
-	switch e {
-	case IncidentFilterParamsStatusCONFIRMED:
-		return true
-	case IncidentFilterParamsStatusRESOLVED:
-		return true
-	case IncidentFilterParamsStatusTRIGGERED:
-		return true
-	case IncidentFilterParamsStatusWATCHING:
 		return true
 	default:
 		return false
@@ -2354,6 +2297,7 @@ const (
 	TransferMonitorRequestToAPI       TransferMonitorRequestTo = "API"
 	TransferMonitorRequestToCLI       TransferMonitorRequestTo = "CLI"
 	TransferMonitorRequestToDASHBOARD TransferMonitorRequestTo = "DASHBOARD"
+	TransferMonitorRequestToGIT       TransferMonitorRequestTo = "GIT"
 	TransferMonitorRequestToMCP       TransferMonitorRequestTo = "MCP"
 	TransferMonitorRequestToTERRAFORM TransferMonitorRequestTo = "TERRAFORM"
 )
@@ -2366,6 +2310,8 @@ func (e TransferMonitorRequestTo) Valid() bool {
 	case TransferMonitorRequestToCLI:
 		return true
 	case TransferMonitorRequestToDASHBOARD:
+		return true
+	case TransferMonitorRequestToGIT:
 		return true
 	case TransferMonitorRequestToMCP:
 		return true
@@ -2462,6 +2408,7 @@ const (
 	UpdateAlertChannelRequestManagedByAPI       UpdateAlertChannelRequestManagedBy = "API"
 	UpdateAlertChannelRequestManagedByCLI       UpdateAlertChannelRequestManagedBy = "CLI"
 	UpdateAlertChannelRequestManagedByDASHBOARD UpdateAlertChannelRequestManagedBy = "DASHBOARD"
+	UpdateAlertChannelRequestManagedByGIT       UpdateAlertChannelRequestManagedBy = "GIT"
 	UpdateAlertChannelRequestManagedByMCP       UpdateAlertChannelRequestManagedBy = "MCP"
 	UpdateAlertChannelRequestManagedByTERRAFORM UpdateAlertChannelRequestManagedBy = "TERRAFORM"
 )
@@ -2474,6 +2421,8 @@ func (e UpdateAlertChannelRequestManagedBy) Valid() bool {
 	case UpdateAlertChannelRequestManagedByCLI:
 		return true
 	case UpdateAlertChannelRequestManagedByDASHBOARD:
+		return true
+	case UpdateAlertChannelRequestManagedByGIT:
 		return true
 	case UpdateAlertChannelRequestManagedByMCP:
 		return true
@@ -2687,6 +2636,7 @@ const (
 	UpdateMonitorRequestManagedByAPI       UpdateMonitorRequestManagedBy = "API"
 	UpdateMonitorRequestManagedByCLI       UpdateMonitorRequestManagedBy = "CLI"
 	UpdateMonitorRequestManagedByDASHBOARD UpdateMonitorRequestManagedBy = "DASHBOARD"
+	UpdateMonitorRequestManagedByGIT       UpdateMonitorRequestManagedBy = "GIT"
 	UpdateMonitorRequestManagedByMCP       UpdateMonitorRequestManagedBy = "MCP"
 	UpdateMonitorRequestManagedByTERRAFORM UpdateMonitorRequestManagedBy = "TERRAFORM"
 )
@@ -2699,6 +2649,8 @@ func (e UpdateMonitorRequestManagedBy) Valid() bool {
 	case UpdateMonitorRequestManagedByCLI:
 		return true
 	case UpdateMonitorRequestManagedByDASHBOARD:
+		return true
+	case UpdateMonitorRequestManagedByGIT:
 		return true
 	case UpdateMonitorRequestManagedByMCP:
 		return true
@@ -2807,6 +2759,7 @@ const (
 	UpdateResourceGroupRequestManagedByAPI       UpdateResourceGroupRequestManagedBy = "API"
 	UpdateResourceGroupRequestManagedByCLI       UpdateResourceGroupRequestManagedBy = "CLI"
 	UpdateResourceGroupRequestManagedByDASHBOARD UpdateResourceGroupRequestManagedBy = "DASHBOARD"
+	UpdateResourceGroupRequestManagedByGIT       UpdateResourceGroupRequestManagedBy = "GIT"
 	UpdateResourceGroupRequestManagedByMCP       UpdateResourceGroupRequestManagedBy = "MCP"
 	UpdateResourceGroupRequestManagedByTERRAFORM UpdateResourceGroupRequestManagedBy = "TERRAFORM"
 )
@@ -2819,6 +2772,8 @@ func (e UpdateResourceGroupRequestManagedBy) Valid() bool {
 	case UpdateResourceGroupRequestManagedByCLI:
 		return true
 	case UpdateResourceGroupRequestManagedByDASHBOARD:
+		return true
+	case UpdateResourceGroupRequestManagedByGIT:
 		return true
 	case UpdateResourceGroupRequestManagedByMCP:
 		return true
@@ -2987,6 +2942,7 @@ const (
 	UpdateStatusPageRequestManagedByAPI       UpdateStatusPageRequestManagedBy = "API"
 	UpdateStatusPageRequestManagedByCLI       UpdateStatusPageRequestManagedBy = "CLI"
 	UpdateStatusPageRequestManagedByDASHBOARD UpdateStatusPageRequestManagedBy = "DASHBOARD"
+	UpdateStatusPageRequestManagedByGIT       UpdateStatusPageRequestManagedBy = "GIT"
 	UpdateStatusPageRequestManagedByMCP       UpdateStatusPageRequestManagedBy = "MCP"
 	UpdateStatusPageRequestManagedByTERRAFORM UpdateStatusPageRequestManagedBy = "TERRAFORM"
 )
@@ -2999,6 +2955,8 @@ func (e UpdateStatusPageRequestManagedBy) Valid() bool {
 	case UpdateStatusPageRequestManagedByCLI:
 		return true
 	case UpdateStatusPageRequestManagedByDASHBOARD:
+		return true
+	case UpdateStatusPageRequestManagedByGIT:
 		return true
 	case UpdateStatusPageRequestManagedByMCP:
 		return true
@@ -3287,6 +3245,7 @@ const (
 	List15ParamsManagedByAPI       List15ParamsManagedBy = "API"
 	List15ParamsManagedByCLI       List15ParamsManagedBy = "CLI"
 	List15ParamsManagedByDASHBOARD List15ParamsManagedBy = "DASHBOARD"
+	List15ParamsManagedByGIT       List15ParamsManagedBy = "GIT"
 	List15ParamsManagedByMCP       List15ParamsManagedBy = "MCP"
 	List15ParamsManagedByTERRAFORM List15ParamsManagedBy = "TERRAFORM"
 )
@@ -3300,9 +3259,83 @@ func (e List15ParamsManagedBy) Valid() bool {
 		return true
 	case List15ParamsManagedByDASHBOARD:
 		return true
+	case List15ParamsManagedByGIT:
+		return true
 	case List15ParamsManagedByMCP:
 		return true
 	case List15ParamsManagedByTERRAFORM:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for List12ParamsStatus.
+const (
+	List12ParamsStatusCONFIRMED List12ParamsStatus = "CONFIRMED"
+	List12ParamsStatusRESOLVED  List12ParamsStatus = "RESOLVED"
+	List12ParamsStatusTRIGGERED List12ParamsStatus = "TRIGGERED"
+	List12ParamsStatusWATCHING  List12ParamsStatus = "WATCHING"
+)
+
+// Valid indicates whether the value is a known member of the List12ParamsStatus enum.
+func (e List12ParamsStatus) Valid() bool {
+	switch e {
+	case List12ParamsStatusCONFIRMED:
+		return true
+	case List12ParamsStatusRESOLVED:
+		return true
+	case List12ParamsStatusTRIGGERED:
+		return true
+	case List12ParamsStatusWATCHING:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for List12ParamsSeverity.
+const (
+	List12ParamsSeverityDEGRADED    List12ParamsSeverity = "DEGRADED"
+	List12ParamsSeverityDOWN        List12ParamsSeverity = "DOWN"
+	List12ParamsSeverityMAINTENANCE List12ParamsSeverity = "MAINTENANCE"
+)
+
+// Valid indicates whether the value is a known member of the List12ParamsSeverity enum.
+func (e List12ParamsSeverity) Valid() bool {
+	switch e {
+	case List12ParamsSeverityDEGRADED:
+		return true
+	case List12ParamsSeverityDOWN:
+		return true
+	case List12ParamsSeverityMAINTENANCE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for List12ParamsSource.
+const (
+	List12ParamsSourceAUTOMATIC     List12ParamsSource = "AUTOMATIC"
+	List12ParamsSourceMANUAL        List12ParamsSource = "MANUAL"
+	List12ParamsSourceMONITORS      List12ParamsSource = "MONITORS"
+	List12ParamsSourceRESOURCEGROUP List12ParamsSource = "RESOURCE_GROUP"
+	List12ParamsSourceSTATUSDATA    List12ParamsSource = "STATUS_DATA"
+)
+
+// Valid indicates whether the value is a known member of the List12ParamsSource enum.
+func (e List12ParamsSource) Valid() bool {
+	switch e {
+	case List12ParamsSourceAUTOMATIC:
+		return true
+	case List12ParamsSourceMANUAL:
+		return true
+	case List12ParamsSourceMONITORS:
+		return true
+	case List12ParamsSourceRESOURCEGROUP:
+		return true
+	case List12ParamsSourceSTATUSDATA:
 		return true
 	default:
 		return false
@@ -3386,6 +3419,7 @@ const (
 	List9ParamsManagedByAPI       List9ParamsManagedBy = "API"
 	List9ParamsManagedByCLI       List9ParamsManagedBy = "CLI"
 	List9ParamsManagedByDASHBOARD List9ParamsManagedBy = "DASHBOARD"
+	List9ParamsManagedByGIT       List9ParamsManagedBy = "GIT"
 	List9ParamsManagedByMCP       List9ParamsManagedBy = "MCP"
 	List9ParamsManagedByTERRAFORM List9ParamsManagedBy = "TERRAFORM"
 )
@@ -3398,6 +3432,8 @@ func (e List9ParamsManagedBy) Valid() bool {
 	case List9ParamsManagedByCLI:
 		return true
 	case List9ParamsManagedByDASHBOARD:
+		return true
+	case List9ParamsManagedByGIT:
 		return true
 	case List9ParamsManagedByMCP:
 		return true
@@ -3485,6 +3521,7 @@ const (
 	FacetsParamsManagedByAPI       FacetsParamsManagedBy = "API"
 	FacetsParamsManagedByCLI       FacetsParamsManagedBy = "CLI"
 	FacetsParamsManagedByDASHBOARD FacetsParamsManagedBy = "DASHBOARD"
+	FacetsParamsManagedByGIT       FacetsParamsManagedBy = "GIT"
 	FacetsParamsManagedByMCP       FacetsParamsManagedBy = "MCP"
 	FacetsParamsManagedByTERRAFORM FacetsParamsManagedBy = "TERRAFORM"
 )
@@ -3497,6 +3534,8 @@ func (e FacetsParamsManagedBy) Valid() bool {
 	case FacetsParamsManagedByCLI:
 		return true
 	case FacetsParamsManagedByDASHBOARD:
+		return true
+	case FacetsParamsManagedByGIT:
 		return true
 	case FacetsParamsManagedByMCP:
 		return true
@@ -4039,7 +4078,7 @@ type AlertChannelDto struct {
 	// LastDeliveryStatus Outcome of the most recent delivery (SUCCESS, FAILED, etc.)
 	LastDeliveryStatus *string `json:"lastDeliveryStatus,omitempty"`
 
-	// ManagedBy Source that created/owns this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on channels created before this attribution column existed.
+	// ManagedBy Source that created/owns this channel: DASHBOARD, GIT, TERRAFORM, MCP or API. Null on channels created before this attribution column existed.
 	ManagedBy *string `json:"managedBy,omitempty"`
 
 	// Name Human-readable channel name
@@ -4395,7 +4434,7 @@ type BulkMonitorActionRequest struct {
 	// Action Action to apply to every monitor in the bulk request
 	Action BulkMonitorActionRequestAction `json:"action"`
 
-	// FrequencySeconds New check frequency in seconds (10–86400), required for UPDATE_SCHEDULE
+	// FrequencySeconds Check frequency in seconds for UPDATE_SCHEDULE; minimum depends on plan
 	FrequencySeconds *int32 `json:"frequencySeconds,omitempty"`
 
 	// MonitorIds IDs of monitors to act on (max 200)
@@ -4866,7 +4905,7 @@ type ConsoleLineDto struct {
 type CreateAlertChannelRequest struct {
 	Config CreateAlertChannelRequest_Config `json:"config"`
 
-	// ManagedBy Source creating this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+	// ManagedBy Source creating this channel: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 	ManagedBy *CreateAlertChannelRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this alert channel
@@ -4878,7 +4917,7 @@ type CreateAlertChannelRequest_Config struct {
 	union json.RawMessage
 }
 
-// CreateAlertChannelRequestManagedBy Source creating this channel: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+// CreateAlertChannelRequestManagedBy Source creating this channel: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 type CreateAlertChannelRequestManagedBy string
 
 // CreateApiKeyRequest defines model for CreateApiKeyRequest.
@@ -4895,11 +4934,11 @@ type CreateApiKeyRequest struct {
 	// Scopes Scopes to grant (default: full)
 	Scopes *[]string `json:"scopes,omitempty"`
 
-	// Tool Tool this key writes as on owner-enforced monitors (default: API)
+	// Tool Tool this key writes as on owner-enforced monitors (default: API; CLI = GIT until 2027-01-31)
 	Tool *CreateApiKeyRequestTool `json:"tool,omitempty"`
 }
 
-// CreateApiKeyRequestTool Tool this key writes as on owner-enforced monitors (default: API)
+// CreateApiKeyRequestTool Tool this key writes as on owner-enforced monitors (default: API; CLI = GIT until 2027-01-31)
 type CreateApiKeyRequestTool string
 
 // CreateAssertionRequest Replace all assertions. Null preserves current
@@ -5094,11 +5133,11 @@ type CreateMonitorRequest struct {
 	// FastRetryMaxAttempts Fast-retry attempts after failure. Null or 0 disables
 	FastRetryMaxAttempts *int32 `json:"fastRetryMaxAttempts,omitempty"`
 
-	// FrequencySeconds Check frequency in seconds (10–86400). Null defaults to the plan minimum
+	// FrequencySeconds Check frequency in seconds; minimum depends on plan (default: plan minimum)
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
-	// ManagedBy Source that created this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API
+	// ManagedBy Source that created this monitor: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API
 	ManagedBy *CreateMonitorRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this monitor
@@ -5130,7 +5169,7 @@ type CreateMonitorRequest_Config struct {
 	union json.RawMessage
 }
 
-// CreateMonitorRequestManagedBy Source that created this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API
+// CreateMonitorRequestManagedBy Source that created this monitor: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API
 type CreateMonitorRequestManagedBy string
 
 // CreateMonitorRequestType Monitor protocol type
@@ -5187,7 +5226,7 @@ type CreateResourceGroupRequest struct {
 	// HealthThresholdValue Health threshold value: count (0+) or percentage (0–100)
 	HealthThresholdValue *float32 `json:"healthThresholdValue,omitempty"`
 
-	// ManagedBy Source creating this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+	// ManagedBy Source creating this group: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 	ManagedBy *CreateResourceGroupRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this group
@@ -5203,7 +5242,7 @@ type CreateResourceGroupRequest struct {
 // CreateResourceGroupRequestHealthThresholdType Health threshold type: COUNT or PERCENTAGE
 type CreateResourceGroupRequestHealthThresholdType string
 
-// CreateResourceGroupRequestManagedBy Source creating this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+// CreateResourceGroupRequestManagedBy Source creating this group: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 type CreateResourceGroupRequestManagedBy string
 
 // CreateSecretRequest defines model for CreateSecretRequest.
@@ -5369,7 +5408,7 @@ type CreateStatusPageRequest struct {
 	// IncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC (default: AUTOMATIC)
 	IncidentMode *CreateStatusPageRequestIncidentMode `json:"incidentMode,omitempty"`
 
-	// ManagedBy Source creating this page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+	// ManagedBy Source creating this page: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 	ManagedBy *CreateStatusPageRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this status page
@@ -5385,7 +5424,7 @@ type CreateStatusPageRequest struct {
 // CreateStatusPageRequestIncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC (default: AUTOMATIC)
 type CreateStatusPageRequestIncidentMode string
 
-// CreateStatusPageRequestManagedBy Source creating this page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Defaults to API when omitted.
+// CreateStatusPageRequestManagedBy Source creating this page: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31). Defaults to API when omitted.
 type CreateStatusPageRequestManagedBy string
 
 // CreateStatusPageRequestVisibility Page visibility: PUBLIC, PASSWORD, or IP_RESTRICTED (default: PUBLIC)
@@ -7164,60 +7203,6 @@ type IncidentFailingMemberSnapshotDto struct {
 	ServiceId *openapi_types.UUID `json:"serviceId,omitempty"`
 }
 
-// IncidentFilterParams defines model for IncidentFilterParams.
-type IncidentFilterParams struct {
-	// EnvironmentId Only return incidents whose monitor lives in this environment
-	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
-
-	// ExcludeId Exclude this incident ID from results (related-incident lists)
-	ExcludeId *openapi_types.UUID `json:"excludeId,omitempty"`
-
-	// MonitorId Only return incidents tied to this monitor ID
-	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
-
-	// Page Zero-based page index (default: 0)
-	Page int32 `json:"page"`
-
-	// ResourceGroupId Only return incidents owned by this resource group (incidents.resource_group_id)
-	ResourceGroupId *openapi_types.UUID `json:"resourceGroupId,omitempty"`
-
-	// Search Case-insensitive substring match on title or incident ID
-	Search *string `json:"search,omitempty"`
-
-	// ServiceId Only return incidents tied to this service ID (third-party services)
-	ServiceId *openapi_types.UUID `json:"serviceId,omitempty"`
-
-	// Severity Filter by severity; null returns every severity
-	Severity *IncidentFilterParamsSeverity `json:"severity,omitempty"`
-
-	// Size Number of incidents per page (1–200, default: 10)
-	Size int32 `json:"size"`
-
-	// Source Filter by where the incident originated (auto, manual, third-party)
-	Source *IncidentFilterParamsSource `json:"source,omitempty"`
-
-	// StartedFrom Earliest startedAt to include (inclusive, ISO 8601)
-	StartedFrom *time.Time `json:"startedFrom,omitempty"`
-
-	// StartedTo Latest startedAt to include (inclusive, ISO 8601)
-	StartedTo *time.Time `json:"startedTo,omitempty"`
-
-	// Status Filter by incident lifecycle status; null returns every status
-	Status *IncidentFilterParamsStatus `json:"status,omitempty"`
-
-	// TagId Only return incidents whose monitor carries this tag
-	TagId *openapi_types.UUID `json:"tagId,omitempty"`
-}
-
-// IncidentFilterParamsSeverity Filter by severity; null returns every severity
-type IncidentFilterParamsSeverity string
-
-// IncidentFilterParamsSource Filter by where the incident originated (auto, manual, third-party)
-type IncidentFilterParamsSource string
-
-// IncidentFilterParamsStatus Filter by incident lifecycle status; null returns every status
-type IncidentFilterParamsStatus string
-
 // IncidentIoChannelConfig defines model for IncidentIoChannelConfig.
 type IncidentIoChannelConfig struct {
 	// ApiKey incident.io API key with 'Create incidents' permission
@@ -7543,6 +7528,9 @@ type KeyInfo struct {
 
 	// Scopes Scopes this key is allowed to call; full grants everything
 	Scopes []string `json:"scopes"`
+
+	// Tool Tool this key writes as on owner-enforced monitors
+	Tool *string `json:"tool,omitempty"`
 }
 
 // LinearChannelConfig defines model for LinearChannelConfig.
@@ -8113,7 +8101,7 @@ type MonitorDto struct {
 	// FlakySince When the first retry-passed cycle in the last 7 days finished
 	FlakySince *time.Time `json:"flakySince,omitempty"`
 
-	// FrequencySeconds Check frequency in seconds (30–86400)
+	// FrequencySeconds Check frequency in seconds; minimum depends on plan
 	FrequencySeconds int32 `json:"frequencySeconds"`
 
 	// Id Unique monitor identifier
@@ -8144,7 +8132,7 @@ type MonitorDto struct {
 	// LiveRevisionId Revision scheduled runs execute
 	LiveRevisionId *openapi_types.UUID `json:"liveRevisionId,omitempty"`
 
-	// ManagedBy Source that created/owns this monitor: DASHBOARD, CLI, TERRAFORM, MCP, or API
+	// ManagedBy Source that created/owns this monitor: DASHBOARD, GIT, TERRAFORM, MCP or API
 	ManagedBy string `json:"managedBy"`
 
 	// MissingKeys Secret keys missing while the monitor is blocked
@@ -8381,7 +8369,7 @@ type MonitorOwnerDto struct {
 	// Project Project the owning tool declares; null when it declares none
 	Project *string `json:"project,omitempty"`
 
-	// Type Owning tool: DASHBOARD, CLI, TERRAFORM, MCP, or API
+	// Type Owning tool: DASHBOARD, GIT, TERRAFORM, MCP or API
 	Type string `json:"type"`
 }
 
@@ -8472,69 +8460,6 @@ type MonitorRunDurationSummaryDto struct {
 
 	// To Exclusive end of the enqueue-time window
 	To time.Time `json:"to"`
-}
-
-// MonitorRunListParams defines model for MonitorRunListParams.
-type MonitorRunListParams struct {
-	// Branch Exact branch from revision provenance
-	Branch *string `json:"branch,omitempty"`
-
-	// CaseIndex Zero-based case index qualifying the failed step
-	CaseIndex *int32 `json:"caseIndex,omitempty"`
-
-	// Cursor Opaque cursor from the previous page; results cover the last 90 days
-	Cursor *string `json:"cursor,omitempty"`
-
-	// EvaluationCycleId Only runs in this evaluation cycle, including retries
-	EvaluationCycleId *openapi_types.UUID `json:"evaluationCycleId,omitempty"`
-
-	// ExcludeSource Exclude this source; omitted preserves all sources
-	ExcludeSource *string `json:"excludeSource,omitempty"`
-
-	// Flaky Select monitors currently flaky over the last seven days
-	Flaky *bool `json:"flaky,omitempty"`
-
-	// From Inclusive enqueue lower bound (clamped to 90 days)
-	From *time.Time `json:"from,omitempty"`
-
-	// IncidentId Runs in the incident window, intersected with from and to
-	IncidentId *openapi_types.UUID `json:"incidentId,omitempty"`
-
-	// Limit Page size (1–100, default 25)
-	Limit int32 `json:"limit"`
-
-	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
-	MonitorType *string `json:"monitorType,omitempty"`
-
-	// Outcome Outcomes, repeated or comma-separated; not_passed includes retries
-	Outcome *string `json:"outcome,omitempty"`
-
-	// Phase Filter by run phase; not_finished excludes finished runs
-	Phase *string `json:"phase,omitempty"`
-
-	// Q Substring match on headline
-	Q *string `json:"q,omitempty"`
-
-	// Region Filter by probe region
-	Region *string `json:"region,omitempty"`
-
-	// RevisionId Only runs for this published revision
-	RevisionId *openapi_types.UUID `json:"revisionId,omitempty"`
-
-	// SessionId Caller-provided CI session identifier
-	SessionId *string `json:"sessionId,omitempty"`
-
-	// Sort Enqueue order: asc or desc (default: desc)
-	Sort *string `json:"sort,omitempty"`
-
-	// Source Filter by what triggered the run
-	Source *string `json:"source,omitempty"`
-
-	// Step Zero-based failed step index; requires monitor and caseIndex
-	Step *int32 `json:"step,omitempty"`
-
-	// To Inclusive enqueue upper bound (default now)
-	To *time.Time `json:"to,omitempty"`
 }
 
 // MonitorRunSeriesDto Execution chart and target-health cycles, read directly from retained runs. Health retries are reduced before assigning a cycle to its initial enqueue bucket; execution durations use their own enqueue window. Both comparison windows use the same current retained-cycle evidence
@@ -8660,13 +8585,16 @@ type MonitorSourceSummaryDto struct {
 // MonitorTestRequest defines model for MonitorTestRequest.
 type MonitorTestRequest struct {
 	// Assertions Optional assertions to evaluate against the test result
-	Assertions *[]CreateAssertionRequest `json:"assertions,omitempty"`
-	Code       *MonitorCodeSpec          `json:"code,omitempty"`
-	Config     MonitorTestRequest_Config `json:"config"`
+	Assertions *[]CreateAssertionRequest  `json:"assertions,omitempty"`
+	Code       *MonitorCodeSpec           `json:"code,omitempty"`
+	Config     *MonitorTestRequest_Config `json:"config,omitempty"`
 
-	// EnvironmentId Environment to test against; null uses the monitor environment
+	// EnvironmentId Environment to run in; required for browser and multi-step API code
 	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
-	Session       *RunSessionContext  `json:"session,omitempty"`
+
+	// Region Probe region for a code-bundle test (default: us-east)
+	Region  *string            `json:"region,omitempty"`
+	Session *RunSessionContext `json:"session,omitempty"`
 
 	// Type Monitor protocol type to test
 	Type MonitorTestRequestType `json:"type"`
@@ -8710,36 +8638,6 @@ type MonitorTriageDto struct {
 
 	// RestoreBlockers Reasons this trashed monitor cannot currently be restored
 	RestoreBlockers []string `json:"restoreBlockers"`
-}
-
-// MonitorTriageParams defines model for MonitorTriageParams.
-type MonitorTriageParams struct {
-	// Flaky Whether recent completed cycles recovered on retry
-	Flaky *bool `json:"flaky,omitempty"`
-
-	// Group List group: failing, not_running, passing, or paused
-	Group *string `json:"group,omitempty"`
-
-	// Muted Whether alert delivery is currently muted
-	Muted *bool `json:"muted,omitempty"`
-
-	// Name Exact monitor name, ignoring case and surrounding spaces
-	Name *string `json:"name,omitempty"`
-
-	// OpenIncident Whether a confirmed incident is open
-	OpenIncident *bool `json:"openIncident,omitempty"`
-
-	// OwnerProject Exact project declared by the owning tool
-	OwnerProject *string `json:"ownerProject,omitempty"`
-
-	// PausedBefore Only monitors paused before this timestamp
-	PausedBefore *time.Time `json:"pausedBefore,omitempty"`
-
-	// Quarantined Whether quarantine has not expired
-	Quarantined *bool `json:"quarantined,omitempty"`
-
-	// Sort Use state for group and streak ordering
-	Sort *string `json:"sort,omitempty"`
 }
 
 // MonitorUsage Usage grouped by monitor and meter, including deleted monitors
@@ -8861,7 +8759,7 @@ type MonitorVersionDto struct {
 	// ChangedById User ID who made the change; null for automated changes
 	ChangedById *int32 `json:"changedById,omitempty"`
 
-	// ChangedVia Change source (DASHBOARD, CLI, API)
+	// ChangedVia Change source: API, DASHBOARD, GIT, TERRAFORM or MCP
 	ChangedVia string `json:"changedVia"`
 
 	// CreatedAt Timestamp when this version was recorded
@@ -9355,13 +9253,6 @@ type PageSection struct {
 	PageOrder int32 `json:"pageOrder"`
 }
 
-// Pageable defines model for Pageable.
-type Pageable struct {
-	Page int32    `json:"page"`
-	Size int32    `json:"size"`
-	Sort []string `json:"sort"`
-}
-
 // PagerDutyChannelConfig defines model for PagerDutyChannelConfig.
 type PagerDutyChannelConfig struct {
 	ChannelType PagerDutyChannelConfigChannelType `json:"channelType"`
@@ -9852,7 +9743,7 @@ type ResourceGroupDto struct {
 	// Id Unique resource group identifier
 	Id openapi_types.UUID `json:"id"`
 
-	// ManagedBy Source that created/owns this group: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on groups created before this attribution column existed.
+	// ManagedBy Source that created/owns this group: DASHBOARD, GIT, TERRAFORM, MCP or API. Null on groups created before this attribution column existed.
 	ManagedBy *string `json:"managedBy,omitempty"`
 
 	// Members Member list with individual statuses; populated on detail GET only
@@ -10385,12 +10276,6 @@ type RunCaseDto struct {
 	Title string `json:"title"`
 }
 
-// RunCaseListParams defines model for RunCaseListParams.
-type RunCaseListParams struct {
-	// Attempt Only return cases for this Playwright attempt
-	Attempt *int32 `json:"attempt,omitempty"`
-}
-
 // RunConsoleDto Console groups or ungrouped lines
 type RunConsoleDto struct {
 	// Groups Grouped messages; empty when ungrouped or no_browser
@@ -10404,21 +10289,6 @@ type RunConsoleDto struct {
 
 	// State on for browser, no_browser for API_CHECK
 	State string `json:"state"`
-}
-
-// RunConsoleParams defines model for RunConsoleParams.
-type RunConsoleParams struct {
-	// Attempt In-check attempt (default selected attempt)
-	Attempt *int32 `json:"attempt,omitempty"`
-
-	// Format raw downloads the ungrouped log as text/plain
-	Format *string `json:"format,omitempty"`
-
-	// Level Filter error, warning, or info
-	Level *string `json:"level,omitempty"`
-
-	// Ungrouped Return chronological lines instead of groups
-	Ungrouped *bool `json:"ungrouped,omitempty"`
 }
 
 // RunDiffDto Step duration diff against a prior pass
@@ -10510,6 +10380,9 @@ type RunDto struct {
 	// FinishedAt When the run finished
 	FinishedAt *time.Time `json:"finishedAt,omitempty"`
 
+	// Flaky Whether the run passed only after at least one fast retry
+	Flaky bool `json:"flaky"`
+
 	// Headline Last control headline
 	Headline *string `json:"headline,omitempty"`
 
@@ -10532,8 +10405,8 @@ type RunDto struct {
 	// MetaLine Server-composed header meta line
 	MetaLine *string `json:"metaLine,omitempty"`
 
-	// MonitorId Monitor this run belongs to
-	MonitorId openapi_types.UUID `json:"monitorId"`
+	// MonitorId Monitor this run belongs to; null for an ad-hoc validation run
+	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
 
 	// MonitorName Monitor display name
 	MonitorName *string `json:"monitorName,omitempty"`
@@ -10589,9 +10462,7 @@ type RunDto struct {
 	StartedAt *time.Time `json:"startedAt,omitempty"`
 
 	// Stream True while the run is still live and clients may stream
-	Stream bool `json:"stream"`
-
-	// TabCounts Run detail tab counts
+	Stream    bool            `json:"stream"`
 	TabCounts RunTabCountsDto `json:"tabCounts"`
 
 	// TriggerId Groups runs started by one manual trigger; null for other runs
@@ -10635,12 +10506,6 @@ type RunEventDto struct {
 
 	// Type Control event type
 	Type string `json:"type"`
-}
-
-// RunEventParams defines model for RunEventParams.
-type RunEventParams struct {
-	// After Replay events with seq greater than this value
-	After *int64 `json:"after,omitempty"`
 }
 
 // RunEvidenceDto List evidence chip
@@ -10737,78 +10602,6 @@ type RunHistogramBucketDto struct {
 
 	// Start Inclusive UTC start of this bucket
 	Start time.Time `json:"start"`
-}
-
-// RunListParams defines model for RunListParams.
-type RunListParams struct {
-	// Branch Exact branch from revision provenance
-	Branch *string `json:"branch,omitempty"`
-
-	// Bucket Histogram width: 30m, 1h or 1d; at most 1000 buckets
-	Bucket *string `json:"bucket,omitempty"`
-
-	// CaseIndex Zero-based case index qualifying the failed step
-	CaseIndex *int32 `json:"caseIndex,omitempty"`
-
-	// Cursor Opaque cursor from the previous page
-	Cursor *string `json:"cursor,omitempty"`
-
-	// EnvironmentId Only return runs executed in this environment
-	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
-
-	// EvaluationCycleId Only runs in this evaluation cycle, including retries
-	EvaluationCycleId *openapi_types.UUID `json:"evaluationCycleId,omitempty"`
-
-	// ExcludeSource Exclude this source; omitted preserves all sources
-	ExcludeSource *string `json:"excludeSource,omitempty"`
-
-	// Flaky Select monitors currently flaky over the last seven days
-	Flaky *bool `json:"flaky,omitempty"`
-
-	// From Inclusive enqueue lower bound (default last 24 hours; clamped to 90 days)
-	From *time.Time `json:"from,omitempty"`
-
-	// IncidentId Runs in the incident window, intersected with from and to
-	IncidentId *openapi_types.UUID `json:"incidentId,omitempty"`
-
-	// Limit Page size (1–100, default 50)
-	Limit int32 `json:"limit"`
-
-	// MonitorId Only runs for this monitor
-	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
-
-	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
-	MonitorType *string `json:"monitorType,omitempty"`
-
-	// Outcome Outcomes, repeated or comma-separated; not_passed includes retries
-	Outcome *string `json:"outcome,omitempty"`
-
-	// Phase Filter by run phase; not_finished excludes finished runs
-	Phase *string `json:"phase,omitempty"`
-
-	// Q Substring match on monitor name or headline
-	Q *string `json:"q,omitempty"`
-
-	// Region Filter by probe region
-	Region *string `json:"region,omitempty"`
-
-	// RevisionId Only runs for this revision
-	RevisionId *openapi_types.UUID `json:"revisionId,omitempty"`
-
-	// SessionId Caller-provided CI session identifier
-	SessionId *string `json:"sessionId,omitempty"`
-
-	// Sort Enqueue order: asc or desc (default: desc)
-	Sort *string `json:"sort,omitempty"`
-
-	// Source Filter by what triggered the run
-	Source *string `json:"source,omitempty"`
-
-	// Step Zero-based failed step index; requires monitor and caseIndex
-	Step *int32 `json:"step,omitempty"`
-
-	// To Inclusive enqueue upper bound (default now)
-	To *time.Time `json:"to,omitempty"`
 }
 
 // RunLiveDto Live run progress
@@ -10943,30 +10736,6 @@ type RunNetworkDto struct {
 	NextCursor *string `json:"nextCursor,omitempty"`
 }
 
-// RunNetworkParams defines model for RunNetworkParams.
-type RunNetworkParams struct {
-	// Attempt In-check attempt (default selected attempt)
-	Attempt *int32 `json:"attempt,omitempty"`
-
-	// Cursor Opaque cursor from the previous page
-	Cursor *string `json:"cursor,omitempty"`
-
-	// Failed Only rows with status >= 400 or a failure
-	Failed *bool `json:"failed,omitempty"`
-
-	// Slow Only rows with durationMs >= 1000
-	Slow *bool `json:"slow,omitempty"`
-
-	// Source page or request
-	Source *string `json:"source,omitempty"`
-
-	// StepId Only rows for this step
-	StepId *string `json:"stepId,omitempty"`
-
-	// Xhr Only xhr, fetch, and api resource types
-	Xhr *bool `json:"xhr,omitempty"`
-}
-
 // RunOutcomeCountDto Per-outcome attempt counts; populated for region facets
 type RunOutcomeCountDto struct {
 	// Count Matching run attempts with this outcome
@@ -11035,30 +10804,6 @@ type RunSkippedEntryDto struct {
 
 	// To End of the interval; current plan pauses end at the query snapshot
 	To time.Time `json:"to"`
-}
-
-// RunSkippedListParams defines model for RunSkippedListParams.
-type RunSkippedListParams struct {
-	// Cursor Opaque cursor returned by this endpoint
-	Cursor *string `json:"cursor,omitempty"`
-
-	// EnvironmentId Current monitor environment; historical ticks retain their snapshot
-	EnvironmentId *openapi_types.UUID `json:"environmentId,omitempty"`
-
-	// From Inclusive window start; default last 24 hours, clamped to 90 days
-	From *time.Time `json:"from,omitempty"`
-
-	// Limit Page size (1–100, default 50)
-	Limit int32 `json:"limit"`
-
-	// MonitorId Only entries for this monitor
-	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
-
-	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
-	MonitorType *string `json:"monitorType,omitempty"`
-
-	// To Inclusive window end; default now
-	To *time.Time `json:"to,omitempty"`
 }
 
 // RunStepDto Run step
@@ -11137,24 +10882,6 @@ type RunTraceSummaryDto struct {
 
 	// Truncated Whether any section was cut to the cap
 	Truncated bool `json:"truncated"`
-}
-
-// RunWindowListParams defines model for RunWindowListParams.
-type RunWindowListParams struct {
-	// Cursor Opaque cursor returned by this endpoint
-	Cursor *string `json:"cursor,omitempty"`
-
-	// From Inclusive window start; default last 24 hours, clamped to 90 days
-	From *time.Time `json:"from,omitempty"`
-
-	// Limit Page size (1–100, default 50)
-	Limit int32 `json:"limit"`
-
-	// MonitorId Only entries for this monitor
-	MonitorId *openapi_types.UUID `json:"monitorId,omitempty"`
-
-	// To Inclusive window end; default now
-	To *time.Time `json:"to,omitempty"`
 }
 
 // RunnerLogLiveEvent Live runner-log line
@@ -12720,7 +12447,7 @@ type StatusPageDto struct {
 	Id             openapi_types.UUID `json:"id"`
 	IncidentMode   string             `json:"incidentMode"`
 
-	// ManagedBy Source that created/owns this status page: DASHBOARD, CLI, TERRAFORM, MCP, or API. Null on pages created before this attribution column existed.
+	// ManagedBy Source that created/owns this status page: DASHBOARD, GIT, TERRAFORM, MCP or API. Null on pages created before this attribution column existed.
 	ManagedBy       *string                           `json:"managedBy,omitempty"`
 	Name            string                            `json:"name"`
 	OpenIncident    *StatusPageOpenIncidentSummaryDto `json:"openIncident,omitempty"`
@@ -13679,11 +13406,11 @@ type TransferMonitorRequest struct {
 	// Reason Why ownership is moving (recorded in the audit log)
 	Reason string `json:"reason"`
 
-	// To New owning tool: DASHBOARD, CLI, TERRAFORM, MCP, or API
+	// To New owning tool: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31)
 	To TransferMonitorRequestTo `json:"to"`
 }
 
-// TransferMonitorRequestTo New owning tool: DASHBOARD, CLI, TERRAFORM, MCP, or API
+// TransferMonitorRequestTo New owning tool: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31)
 type TransferMonitorRequestTo string
 
 // TriggerRule Array of trigger rules defining when an incident should be raised
@@ -13766,7 +13493,7 @@ type UpdateAlertChannelRequest struct {
 	// Enabled Whether this channel is enabled (default: true); null preserves current value
 	Enabled *bool `json:"enabled,omitempty"`
 
-	// ManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+	// ManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 	ManagedBy *UpdateAlertChannelRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name New channel name (full replacement, not partial update)
@@ -13778,7 +13505,7 @@ type UpdateAlertChannelRequest_Config struct {
 	union json.RawMessage
 }
 
-// UpdateAlertChannelRequestManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+// UpdateAlertChannelRequestManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 type UpdateAlertChannelRequestManagedBy string
 
 // UpdateAlertSensitivityRequest Request body for updating alert sensitivity on a service subscription
@@ -14053,7 +13780,7 @@ type UpdateMonitorRequest struct {
 	// FastRetryMaxAttempts Fast-retry attempts after failure. Null preserves current. 0 disables
 	FastRetryMaxAttempts *int32 `json:"fastRetryMaxAttempts,omitempty"`
 
-	// FrequencySeconds New check frequency in seconds (10–86400). Null preserves current
+	// FrequencySeconds Check frequency in seconds; minimum depends on plan. Null preserves current
 	FrequencySeconds *int32                       `json:"frequencySeconds,omitempty"`
 	IncidentPolicy   *UpdateIncidentPolicyRequest `json:"incidentPolicy,omitempty"`
 
@@ -14240,7 +13967,7 @@ type UpdateResourceGroupRequest struct {
 	// HealthThresholdValue Health threshold value; null disables threshold
 	HealthThresholdValue *float32 `json:"healthThresholdValue,omitempty"`
 
-	// ManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+	// ManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 	ManagedBy *UpdateResourceGroupRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name Human-readable name for this group
@@ -14256,7 +13983,7 @@ type UpdateResourceGroupRequest struct {
 // UpdateResourceGroupRequestHealthThresholdType Health threshold type: COUNT or PERCENTAGE; null disables threshold
 type UpdateResourceGroupRequestHealthThresholdType string
 
-// UpdateResourceGroupRequestManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+// UpdateResourceGroupRequestManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 type UpdateResourceGroupRequestManagedBy string
 
 // UpdateRootlyChannelConfig defines model for UpdateRootlyChannelConfig.
@@ -14431,7 +14158,7 @@ type UpdateStatusPageRequest struct {
 	// IncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC; null preserves current
 	IncidentMode *UpdateStatusPageRequestIncidentMode `json:"incidentMode,omitempty"`
 
-	// ManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+	// ManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 	ManagedBy *UpdateStatusPageRequestManagedBy `json:"managedBy,omitempty"`
 
 	// Name New name; null preserves current
@@ -14444,7 +14171,7 @@ type UpdateStatusPageRequest struct {
 // UpdateStatusPageRequestIncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC; null preserves current
 type UpdateStatusPageRequestIncidentMode string
 
-// UpdateStatusPageRequestManagedBy New attribution source: DASHBOARD, CLI, TERRAFORM, MCP, or API; null preserves current value.
+// UpdateStatusPageRequestManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 type UpdateStatusPageRequestManagedBy string
 
 // UpdateStatusPageRequestVisibility Page visibility; null preserves current
@@ -14982,12 +14709,23 @@ type List15Params struct {
 	// Type Filter by channel integration type (e.g. SLACK, WEBHOOK, EMAIL)
 	Type *List15ParamsType `form:"type,omitempty" json:"type,omitempty"`
 
-	// ManagedBy Filter by managed-by source (DASHBOARD, CLI, TERRAFORM, MCP, API)
+	// ManagedBy Filter by managed-by source (DASHBOARD, GIT, TERRAFORM, MCP, API; CLI = GIT until 2027-01-31)
 	ManagedBy *List15ParamsManagedBy `form:"managedBy,omitempty" json:"managedBy,omitempty"`
 
 	// Search Case-insensitive contains-match on the channel name
-	Search   *string  `form:"search,omitempty" json:"search,omitempty"`
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List15ParamsType defines parameters for List15.
@@ -14995,6 +14733,135 @@ type List15ParamsType string
 
 // List15ParamsManagedBy defines parameters for List15.
 type List15ParamsManagedBy string
+
+// Create16Params defines parameters for Create16.
+type Create16Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TestConfigParams defines parameters for TestConfig.
+type TestConfigParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete10Params defines parameters for Delete10.
+type Delete10Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get8Params defines parameters for Get8.
+type Get8Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update14Params defines parameters for Update14.
+type Update14Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListDeliveries1Params defines parameters for ListDeliveries1.
+type ListDeliveries1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetEnabledParams defines parameters for SetEnabled.
+type SetEnabledParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Test2Params defines parameters for Test2.
+type Test2Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListAttemptsParams defines parameters for ListAttempts.
+type ListAttemptsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RetryParams defines parameters for Retry.
+type RetryParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List14Params defines parameters for List14.
+type List14Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create15Params defines parameters for Create15.
+type Create15Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete12Params defines parameters for Delete12.
+type Delete12Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update17Params defines parameters for Update17.
+type Update17Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RegenerateParams defines parameters for Regenerate.
+type RegenerateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Revoke1Params defines parameters for Revoke1.
+type Revoke1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetArtifactContentParams defines parameters for GetArtifactContent.
+type GetArtifactContentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetArtifactDownloadParams defines parameters for GetArtifactDownload.
+type GetArtifactDownloadParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
 
 // List24Params defines parameters for List24.
 type List24Params struct {
@@ -15008,6 +14875,9 @@ type List24Params struct {
 	To         *time.Time `form:"to,omitempty" json:"to,omitempty"`
 	Page       *int32     `form:"page,omitempty" json:"page,omitempty"`
 	Size       *int32     `form:"size,omitempty" json:"size,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ExportAuditLogParams defines parameters for ExportAuditLog.
@@ -15029,18 +14899,81 @@ type ExportAuditLogParams struct {
 
 	// To Latest event time
 	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Start1Params defines parameters for Start1.
+type Start1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TokenParams defines parameters for Token.
+type TokenParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Me1Params defines parameters for Me1.
+type Me1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // UploadZipParams defines parameters for UploadZip.
 type UploadZipParams struct {
 	Entrypoint *string `form:"entrypoint,omitempty" json:"entrypoint,omitempty"`
 	RuntimeId  *string `form:"runtimeId,omitempty" json:"runtimeId,omitempty"`
+
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CheckParams defines parameters for Check.
+type CheckParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListCategoriesParams defines parameters for ListCategories.
 type ListCategoriesParams struct {
 	// PublishedOnly Count only published services (curated public pSEO set); default false
 	PublishedOnly *bool `form:"publishedOnly,omitempty" json:"publishedOnly,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// OverviewParams defines parameters for Overview.
+type OverviewParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List23Params defines parameters for List23.
+type List23Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get14Params defines parameters for Get14.
+type Get14Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListRevisions1Params defines parameters for ListRevisions1.
+type ListRevisions1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetDashboardDemoAvailabilityParams defines parameters for GetDashboardDemoAvailability.
@@ -15048,25 +14981,123 @@ type GetDashboardDemoAvailabilityParams struct {
 	Date     openapi_types.Date `form:"date" json:"date"`
 	Timezone string             `form:"timezone" json:"timezone"`
 	Days     *int32             `form:"days,omitempty" json:"days,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateDashboardDemoBookingParams defines parameters for CreateDashboardDemoBooking.
+type CreateDashboardDemoBookingParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetDashboardDemoBookingParams defines parameters for GetDashboardDemoBooking.
+type GetDashboardDemoBookingParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CloseUnsavedDashboardDemoBookingParams defines parameters for CloseUnsavedDashboardDemoBooking.
+type CloseUnsavedDashboardDemoBookingParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CurrentParams defines parameters for Current.
+type CurrentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AcquireParams defines parameters for Acquire.
+type AcquireParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ForceReleaseParams defines parameters for ForceRelease.
 type ForceReleaseParams struct {
 	// Reason Why the lock is being broken (recorded in the audit log)
 	Reason *string `form:"reason,omitempty" json:"reason,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ReleaseParams defines parameters for Release.
+type ReleaseParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListEmailDomainsParams defines parameters for ListEmailDomains.
 type ListEmailDomainsParams struct {
 	// Search Case-insensitive name search
-	Search   *string  `form:"search,omitempty" json:"search,omitempty"`
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateEmailDomainParams defines parameters for CreateEmailDomain.
+type CreateEmailDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListEmailDomainActivityParams defines parameters for ListEmailDomainActivity.
 type ListEmailDomainActivityParams struct {
 	// DomainIds Comma-separated domain ids (1–100)
 	DomainIds *[]openapi_types.UUID `form:"domainIds,omitempty" json:"domainIds,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteEmailDomainParams defines parameters for DeleteEmailDomain.
+type DeleteEmailDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetEmailDomainParams defines parameters for GetEmailDomain.
+type GetEmailDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateEmailDomainParams defines parameters for UpdateEmailDomain.
+type UpdateEmailDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteEmailInboxParams defines parameters for DeleteEmailInbox.
+type DeleteEmailInboxParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListEmailMessagesParams defines parameters for ListEmailMessages.
@@ -15079,6 +15110,132 @@ type ListEmailMessagesParams struct {
 	Cursor *string             `form:"cursor,omitempty" json:"cursor,omitempty"`
 	After  *openapi_types.UUID `form:"after,omitempty" json:"after,omitempty"`
 	Limit  *int32              `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// InjectEmailMessageParams defines parameters for InjectEmailMessage.
+type InjectEmailMessageParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteEmailMessageParams defines parameters for DeleteEmailMessage.
+type DeleteEmailMessageParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetEmailMessageParams defines parameters for GetEmailMessage.
+type GetEmailMessageParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetEmailMessageAttachmentParams defines parameters for GetEmailMessageAttachment.
+type GetEmailMessageAttachmentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListEmailMessageLinksParams defines parameters for ListEmailMessageLinks.
+type ListEmailMessageLinksParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListEmailMessageOtpParams defines parameters for ListEmailMessageOtp.
+type ListEmailMessageOtpParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetEmailMessageRawParams defines parameters for GetEmailMessageRaw.
+type GetEmailMessageRawParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetEmailMessageSourceParams defines parameters for GetEmailMessageSource.
+type GetEmailMessageSourceParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// VerifyEmailDomainParams defines parameters for VerifyEmailDomain.
+type VerifyEmailDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// WaitForEmailParams defines parameters for WaitForEmail.
+type WaitForEmailParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// WaitForEmailByLocalpartParams defines parameters for WaitForEmailByLocalpart.
+type WaitForEmailByLocalpartParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetCurrentEntitlementsParams defines parameters for GetCurrentEntitlements.
+type GetCurrentEntitlementsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List13Params defines parameters for List13.
+type List13Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create14Params defines parameters for Create14.
+type Create14Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete9Params defines parameters for Delete9.
+type Delete9Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get7Params defines parameters for Get7.
+type Get7Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update13Params defines parameters for Update13.
+type Update13Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetTimelineParams defines parameters for GetTimeline.
+type GetTimelineParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListMonitorRuleEvaluationsParams defines parameters for ListMonitorRuleEvaluations.
@@ -15088,14 +15245,54 @@ type ListMonitorRuleEvaluationsParams struct {
 	OnlyMatched *bool      `form:"onlyMatched,omitempty" json:"onlyMatched,omitempty"`
 	From        *time.Time `form:"from,omitempty" json:"from,omitempty"`
 	To          *time.Time `form:"to,omitempty" json:"to,omitempty"`
-	Pageable    Pageable   `form:"pageable" json:"pageable"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListMonitorTransitionsParams defines parameters for ListMonitorTransitions.
 type ListMonitorTransitionsParams struct {
-	From     *time.Time `form:"from,omitempty" json:"from,omitempty"`
-	To       *time.Time `form:"to,omitempty" json:"to,omitempty"`
-	Pageable Pageable   `form:"pageable" json:"pageable"`
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+	To   *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetPolicySnapshotParams defines parameters for GetPolicySnapshot.
+type GetPolicySnapshotParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetTraceParams defines parameters for GetTrace.
+type GetTraceParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PingGetParams defines parameters for PingGet.
+type PingGetParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // PingPostJSONBody defines parameters for PingPost.
@@ -15104,27 +15301,235 @@ type PingPostJSONBody = string
 // PingPostTextBody defines parameters for PingPost.
 type PingPostTextBody = string
 
+// PingPostParams defines parameters for PingPost.
+type PingPostParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // List12Params defines parameters for List12.
 type List12Params struct {
-	Params IncidentFilterParams `form:"params" json:"params"`
+	// Status Filter by incident lifecycle status; null returns every status
+	Status *List12ParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Severity Filter by severity; null returns every severity
+	Severity *List12ParamsSeverity `form:"severity,omitempty" json:"severity,omitempty"`
+
+	// Source Filter by where the incident originated (auto, manual, third-party)
+	Source *List12ParamsSource `form:"source,omitempty" json:"source,omitempty"`
+
+	// MonitorId Only return incidents tied to this monitor ID
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// ServiceId Only return incidents tied to this service ID (third-party services)
+	ServiceId *openapi_types.UUID `form:"serviceId,omitempty" json:"serviceId,omitempty"`
+
+	// ResourceGroupId Only return incidents owned by this resource group (incidents.resource_group_id)
+	ResourceGroupId *openapi_types.UUID `form:"resourceGroupId,omitempty" json:"resourceGroupId,omitempty"`
+
+	// TagId Only return incidents whose monitor carries this tag
+	TagId *openapi_types.UUID `form:"tagId,omitempty" json:"tagId,omitempty"`
+
+	// EnvironmentId Only return incidents whose monitor lives in this environment
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// ExcludeId Exclude this incident ID from results (related-incident lists)
+	ExcludeId *openapi_types.UUID `form:"excludeId,omitempty" json:"excludeId,omitempty"`
+
+	// StartedFrom Earliest startedAt to include (inclusive, ISO 8601)
+	StartedFrom *time.Time `form:"startedFrom,omitempty" json:"startedFrom,omitempty"`
+
+	// StartedTo Latest startedAt to include (inclusive, ISO 8601)
+	StartedTo *time.Time `form:"startedTo,omitempty" json:"startedTo,omitempty"`
+
+	// Search Case-insensitive substring match on title or incident ID
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Page Zero-based page index (default: 0)
+	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size Number of incidents per page (1–200, default: 10)
+	Size *int32 `form:"size,omitempty" json:"size,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List12ParamsStatus defines parameters for List12.
+type List12ParamsStatus string
+
+// List12ParamsSeverity defines parameters for List12.
+type List12ParamsSeverity string
+
+// List12ParamsSource defines parameters for List12.
+type List12ParamsSource string
+
+// Create13Params defines parameters for Create13.
+type Create13Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get9Params defines parameters for Get9.
+type Get9Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update16Params defines parameters for Update16.
+type Update16Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AcknowledgeAllParams defines parameters for AcknowledgeAll.
+type AcknowledgeAllParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListEvents1Params defines parameters for ListEvents1.
 type ListEvents1Params struct {
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListRelatedParams defines parameters for ListRelated.
 type ListRelatedParams struct {
 	WindowDays *int32 `form:"windowDays,omitempty" json:"windowDays,omitempty"`
 	Limit      *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ResolveParams defines parameters for Resolve.
+type ResolveParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListIncidentRunsParams defines parameters for ListIncidentRuns.
 type ListIncidentRunsParams struct {
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetTriggerParams defines parameters for GetTrigger.
+type GetTriggerParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddUpdateParams defines parameters for AddUpdate.
+type AddUpdateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest3Params defines parameters for Ingest3.
+type Ingest3Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// IngestParams defines parameters for Ingest.
+type IngestParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest5Params defines parameters for Ingest5.
+type Ingest5Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest6Params defines parameters for Ingest6.
+type Ingest6Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest4Params defines parameters for Ingest4.
+type Ingest4Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest1Params defines parameters for Ingest1.
+type Ingest1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Ingest2Params defines parameters for Ingest2.
+type Ingest2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List22Params defines parameters for List22.
+type List22Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListVoiceLanguagesParams defines parameters for ListVoiceLanguages.
+type ListVoiceLanguagesParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List11Params defines parameters for List11.
+type List11Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create12Params defines parameters for Create12.
+type Create12Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Resend1Params defines parameters for Resend1.
+type Resend1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RevokeParams defines parameters for Revoke.
+type RevokeParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List10Params defines parameters for List10.
@@ -15134,11 +15539,69 @@ type List10Params struct {
 
 	// Filter Filter by status: 'active' or 'upcoming'
 	Filter *string `form:"filter,omitempty" json:"filter,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create11Params defines parameters for Create11.
+type Create11Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete8Params defines parameters for Delete8.
+type Delete8Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetById2Params defines parameters for GetById2.
+type GetById2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update12Params defines parameters for Update12.
+type Update12Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List21Params defines parameters for List21.
 type List21Params struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Remove2Params defines parameters for Remove2.
+type Remove2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ChangeRoleParams defines parameters for ChangeRole.
+type ChangeRoleParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ChangeStatusParams defines parameters for ChangeStatus.
+type ChangeStatusParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List9Params defines parameters for List9.
@@ -15177,9 +15640,43 @@ type List9Params struct {
 	NeedsAttention *bool `form:"needsAttention,omitempty" json:"needsAttention,omitempty"`
 
 	// Region Filter by probe region
-	Region   *string             `form:"region,omitempty" json:"region,omitempty"`
-	Triage   MonitorTriageParams `form:"triage" json:"triage"`
-	Pageable Pageable            `form:"pageable" json:"pageable"`
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Name Exact, case-sensitive monitor name
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
+
+	// OpenIncident Whether a confirmed incident is open
+	OpenIncident *bool `form:"openIncident,omitempty" json:"openIncident,omitempty"`
+
+	// Muted Whether alert delivery is currently muted
+	Muted *bool `form:"muted,omitempty" json:"muted,omitempty"`
+
+	// Quarantined Whether quarantine has not expired
+	Quarantined *bool `form:"quarantined,omitempty" json:"quarantined,omitempty"`
+
+	// PausedBefore Only monitors paused before this timestamp
+	PausedBefore *time.Time `form:"pausedBefore,omitempty" json:"pausedBefore,omitempty"`
+
+	// Flaky Whether recent completed cycles recovered on retry
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// Group List group: failing, not_running, passing, or paused
+	Group *string `form:"group,omitempty" json:"group,omitempty"`
+
+	// OwnerProject Exact project declared by the owning tool
+	OwnerProject *string `form:"ownerProject,omitempty" json:"ownerProject,omitempty"`
+
+	// Sort Use state for group and streak ordering
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List9ParamsType defines parameters for List9.
@@ -15191,6 +15688,15 @@ type List9ParamsTypes string
 // List9ParamsManagedBy defines parameters for List9.
 type List9ParamsManagedBy string
 
+// Create10Params defines parameters for Create10.
+type Create10Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // BatchHistoryParams defines parameters for BatchHistory.
 type BatchHistoryParams struct {
 	// Ids Monitor ids, comma-separated; at most 100
@@ -15201,11 +15707,26 @@ type BatchHistoryParams struct {
 
 	// Density Return 48 display-only history buckets
 	Density *int32 `form:"density,omitempty" json:"density,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BulkActionParams defines parameters for BulkAction.
+type BulkActionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // CsvParams defines parameters for Csv.
 type CsvParams struct {
 	Ids []openapi_types.UUID `form:"ids" json:"ids"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // FacetsParams defines parameters for Facets.
@@ -15244,8 +15765,37 @@ type FacetsParams struct {
 	NeedsAttention *bool `form:"needsAttention,omitempty" json:"needsAttention,omitempty"`
 
 	// Region Filter by probe region
-	Region *string             `form:"region,omitempty" json:"region,omitempty"`
-	Triage MonitorTriageParams `form:"triage" json:"triage"`
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Name Exact, case-sensitive monitor name
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
+
+	// OpenIncident Whether a confirmed incident is open
+	OpenIncident *bool `form:"openIncident,omitempty" json:"openIncident,omitempty"`
+
+	// Muted Whether alert delivery is currently muted
+	Muted *bool `form:"muted,omitempty" json:"muted,omitempty"`
+
+	// Quarantined Whether quarantine has not expired
+	Quarantined *bool `form:"quarantined,omitempty" json:"quarantined,omitempty"`
+
+	// PausedBefore Only monitors paused before this timestamp
+	PausedBefore *time.Time `form:"pausedBefore,omitempty" json:"pausedBefore,omitempty"`
+
+	// Flaky Whether recent completed cycles recovered on retry
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// Group List group: failing, not_running, passing, or paused
+	Group *string `form:"group,omitempty" json:"group,omitempty"`
+
+	// OwnerProject Exact project declared by the owning tool
+	OwnerProject *string `form:"ownerProject,omitempty" json:"ownerProject,omitempty"`
+
+	// Sort Use state for group and streak ordering
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // FacetsParamsType defines parameters for Facets.
@@ -15257,15 +15807,88 @@ type FacetsParamsTypes string
 // FacetsParamsManagedBy defines parameters for Facets.
 type FacetsParamsManagedBy string
 
+// TestAdHocParams defines parameters for TestAdHoc.
+type TestAdHocParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListTrashParams defines parameters for ListTrash.
 type ListTrashParams struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PreviewUsage1Params defines parameters for PreviewUsage1.
+type PreviewUsage1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ValidateMonitorsParams defines parameters for ValidateMonitors.
+type ValidateMonitorsParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete7Params defines parameters for Delete7.
+type Delete7Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get6Params defines parameters for Get6.
+type Get6Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update11Params defines parameters for Update11.
+type Update11Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DriftParams defines parameters for Drift.
+type DriftParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListMonitorHistoryParams defines parameters for ListMonitorHistory.
 type ListMonitorHistoryParams struct {
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// MuteParams defines parameters for Mute.
+type MuteParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetMonitorOverviewStepsParams defines parameters for GetMonitorOverviewSteps.
@@ -15278,10 +15901,58 @@ type GetMonitorOverviewStepsParams struct {
 
 	// LastRuns Latest settled runs, 1–30; ignores the window within retention
 	LastRuns *int32 `form:"lastRuns,omitempty" json:"lastRuns,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetMonitorOverviewStepsParamsWindow defines parameters for GetMonitorOverviewSteps.
 type GetMonitorOverviewStepsParamsWindow string
+
+// PauseParams defines parameters for Pause.
+type PauseParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PublishParams defines parameters for Publish.
+type PublishParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// QuarantineParams defines parameters for Quarantine.
+type QuarantineParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ReleaseQuarantineParams defines parameters for ReleaseQuarantine.
+type ReleaseQuarantineParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RestoreParams defines parameters for Restore.
+type RestoreParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
 
 // GetResultsParams defines parameters for GetResults.
 type GetResultsParams struct {
@@ -15302,6 +15973,9 @@ type GetResultsParams struct {
 
 	// Passed Filter by pass/fail status
 	Passed *bool `form:"passed,omitempty" json:"passed,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetMonitorResultsByRegionParams defines parameters for GetMonitorResultsByRegion.
@@ -15311,6 +15985,9 @@ type GetMonitorResultsByRegionParams struct {
 
 	// Region Limit to one of the monitor's regions (e.g. us-east)
 	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetMonitorResultsByRegionParamsWindow defines parameters for GetMonitorResultsByRegion.
@@ -15320,20 +15997,80 @@ type GetMonitorResultsByRegionParamsWindow string
 type GetSummaryParams struct {
 	// ChartWindow Chart window: 24h returns hourly buckets, 7d/30d/90d return daily buckets
 	ChartWindow *GetSummaryParamsChartWindow `form:"chartWindow,omitempty" json:"chartWindow,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetSummaryParamsChartWindow defines parameters for GetSummary.
 type GetSummaryParamsChartWindow string
 
+// ResumeParams defines parameters for Resume.
+type ResumeParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListRevisionsParams defines parameters for ListRevisions.
 type ListRevisionsParams struct {
 	// State Comma-separated draft, tested_passed, tested_failed, live, previous, discarded, or all; default live,previous
-	State    *string  `form:"state,omitempty" json:"state,omitempty"`
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	State *string `form:"state,omitempty" json:"state,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // CreateDraftParams defines parameters for CreateDraft.
 type CreateDraftParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// DiscardDraftParams defines parameters for DiscardDraft.
+type DiscardDraftParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// KeepDraftParams defines parameters for KeepDraft.
+type KeepDraftParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TestRevisionParams defines parameters for TestRevision.
+type TestRevisionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RollbackParams defines parameters for Rollback.
+type RollbackParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
@@ -15341,16 +16078,105 @@ type CreateDraftParams struct {
 type RollbackPreviewParams struct {
 	// RevisionId Revision to preview; null previews the previous live revision
 	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RotateTokenParams defines parameters for RotateToken.
+type RotateTokenParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListMonitorRunsParams defines parameters for ListMonitorRuns.
 type ListMonitorRunsParams struct {
-	Params MonitorRunListParams `form:"params" json:"params"`
+	// Phase Filter by run phase; not_finished excludes finished runs
+	Phase *string `form:"phase,omitempty" json:"phase,omitempty"`
+
+	// Outcome Outcomes, repeated or comma-separated; not_passed includes retries
+	Outcome *string `form:"outcome,omitempty" json:"outcome,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Source Filter by what triggered the run
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// Q Substring match on headline
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// RevisionId Only runs for this published revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// From Inclusive enqueue lower bound (clamped to 90 days)
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive enqueue upper bound (default now)
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Cursor Opaque cursor from the previous page; results cover the last 90 days
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 25)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
+	MonitorType *string `form:"monitorType,omitempty" json:"monitorType,omitempty"`
+
+	// IncidentId Runs in the incident window, intersected with from and to
+	IncidentId *openapi_types.UUID `form:"incidentId,omitempty" json:"incidentId,omitempty"`
+
+	// Branch Exact branch from revision provenance
+	Branch *string `form:"branch,omitempty" json:"branch,omitempty"`
+
+	// Flaky Select monitors currently flaky over the last seven days
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// SessionId Caller-provided CI session identifier
+	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
+
+	// EvaluationCycleId Only runs in this evaluation cycle, including retries
+	EvaluationCycleId *openapi_types.UUID `form:"evaluationCycleId,omitempty" json:"evaluationCycleId,omitempty"`
+
+	// ExcludeSource Exclude this source; omitted preserves all sources
+	ExcludeSource *string `form:"excludeSource,omitempty" json:"excludeSource,omitempty"`
+
+	// Sort Enqueue order: asc or desc (default: desc)
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Step Zero-based failed step index; requires monitor and caseIndex
+	Step *int32 `form:"step,omitempty" json:"step,omitempty"`
+
+	// CaseIndex Zero-based case index qualifying the failed step
+	CaseIndex *int32 `form:"caseIndex,omitempty" json:"caseIndex,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // RunNowParams defines parameters for RunNow.
 type RunNowParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
 	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// HealthParams defines parameters for Health.
+type HealthParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ScheduleParams defines parameters for Schedule.
+type ScheduleParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // SeriesParams defines parameters for Series.
@@ -15363,49 +16189,360 @@ type SeriesParams struct {
 
 	// Region Limit chart samples to one configured region
 	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SummarizeMonitorRunsParams defines parameters for SummarizeMonitorRuns.
+type SummarizeMonitorRunsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List20Params defines parameters for List20.
 type List20Params struct {
 	// RevisionId Revision whose key demand to preview; null uses live
 	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RescanParams defines parameters for Rescan.
+type RescanParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemapParams defines parameters for Remap.
+type RemapParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetSessionParams defines parameters for GetSession.
+type GetSessionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PutSessionParams defines parameters for PutSession.
+type PutSessionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RenewSessionParams defines parameters for RenewSession.
+type RenewSessionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RevokeSessionParams defines parameters for RevokeSession.
+type RevokeSessionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListMonitorSetupSessionsParams defines parameters for ListMonitorSetupSessions.
+type ListMonitorSetupSessionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpsertMonitorSetupSessionParams defines parameters for UpsertMonitorSetupSession.
+type UpsertMonitorSetupSessionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // RenewMonitorSetupSessionParams defines parameters for RenewMonitorSetupSession.
 type RenewMonitorSetupSessionParams struct {
 	// SetupFile Setup file to capture
 	SetupFile string `form:"setupFile" json:"setupFile"`
+
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // RevokeMonitorSetupSessionParams defines parameters for RevokeMonitorSetupSession.
 type RevokeMonitorSetupSessionParams struct {
 	// SetupFile Setup file to revoke
 	SetupFile string `form:"setupFile" json:"setupFile"`
+
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SettingsPreviewParams defines parameters for SettingsPreview.
+type SettingsPreviewParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListStatusPagesForMonitorParams defines parameters for ListStatusPagesForMonitor.
+type ListStatusPagesForMonitorParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveMonitorTagsParams defines parameters for RemoveMonitorTags.
+type RemoveMonitorTagsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetMonitorTagsParams defines parameters for GetMonitorTags.
+type GetMonitorTagsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddMonitorTagsParams defines parameters for AddMonitorTags.
+type AddMonitorTagsParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TakeoverParams defines parameters for Takeover.
+type TakeoverParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TestExistingParams defines parameters for TestExisting.
+type TestExistingParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TestNotificationsParams defines parameters for TestNotifications.
+type TestNotificationsParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TransferParams defines parameters for Transfer.
+type TransferParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // TriggerMonitorRunsParams defines parameters for TriggerMonitorRuns.
 type TriggerMonitorRunsParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
 	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UnmuteParams defines parameters for Unmute.
+type UnmuteParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetUptimeParams defines parameters for GetUptime.
 type GetUptimeParams struct {
 	// Window Time window for uptime calculation
 	Window *GetUptimeParamsWindow `form:"window,omitempty" json:"window,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetUptimeParamsWindow defines parameters for GetUptime.
 type GetUptimeParamsWindow string
 
+// PreviewUsageParams defines parameters for PreviewUsage.
+type PreviewUsageParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListVersionsParams defines parameters for ListVersions.
 type ListVersionsParams struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetVersionParams defines parameters for GetVersion.
+type GetVersionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetChannelsParams defines parameters for SetChannels.
+type SetChannelsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddParams defines parameters for Add.
+type AddParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Remove1Params defines parameters for Remove1.
+type Remove1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update10Params defines parameters for Update10.
+type Update10Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveParams defines parameters for Remove.
+type RemoveParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetParams defines parameters for Set.
+type SetParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update9Params defines parameters for Update9.
+type Update9Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get5Params defines parameters for Get5.
+type Get5Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update8Params defines parameters for Update8.
+type Update8Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListByIncidentParams defines parameters for ListByIncident.
 type ListByIncidentParams struct {
 	// IncidentId UUID of the incident to inspect
 	IncidentId openapi_types.UUID `form:"incident_id" json:"incident_id"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetById3Params defines parameters for GetById3.
+type GetById3Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AcknowledgeParams defines parameters for Acknowledge.
+type AcknowledgeParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UnacknowledgeParams defines parameters for Unacknowledge.
+type UnacknowledgeParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List8Params defines parameters for List8.
+type List8Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create9Params defines parameters for Create9.
+type Create9Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete6Params defines parameters for Delete6.
+type Delete6Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetById1Params defines parameters for GetById1.
+type GetById1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update7Params defines parameters for Update7.
+type Update7Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListDispatchesParams defines parameters for ListDispatches.
@@ -15421,6 +16558,18 @@ type ListDispatchesParams struct {
 
 	// Limit Page size 1–100 when windowing/paginating (default 50)
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Test1Params defines parameters for Test1.
+type Test1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List19Params defines parameters for List19.
@@ -15428,73 +16577,689 @@ type List19Params struct {
 	UnreadOnly *bool  `form:"unreadOnly,omitempty" json:"unreadOnly,omitempty"`
 	Page       *int32 `form:"page,omitempty" json:"page,omitempty"`
 	Size       *int32 `form:"size,omitempty" json:"size,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// MarkAllReadParams defines parameters for MarkAllRead.
+type MarkAllReadParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UnreadCountParams defines parameters for UnreadCount.
+type UnreadCountParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// MarkReadParams defines parameters for MarkRead.
+type MarkReadParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get4Params defines parameters for Get4.
+type Get4Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update6Params defines parameters for Update6.
+type Update6Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListRegionsParams defines parameters for ListRegions.
+type ListRegionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List7Params defines parameters for List7.
+type List7Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create8Params defines parameters for Create8.
+type Create8Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete5Params defines parameters for Delete5.
+type Delete5Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // Get3Params defines parameters for Get3.
 type Get3Params struct {
 	IncludeMetrics *bool `form:"includeMetrics,omitempty" json:"includeMetrics,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update5Params defines parameters for Update5.
+type Update5Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetHealthParams defines parameters for GetHealth.
+type GetHealthParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListMatchedPoliciesParams defines parameters for ListMatchedPolicies.
+type ListMatchedPoliciesParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddMember1Params defines parameters for AddMember1.
+type AddMember1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveMember1Params defines parameters for RemoveMember1.
+type RemoveMember1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get13Params defines parameters for Get13.
+type Get13Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BundleParams defines parameters for Bundle.
+type BundleParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BundleContentParams defines parameters for BundleContent.
+type BundleContentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DiffParams defines parameters for Diff.
+type DiffParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// FilesParams defines parameters for Files.
+type FilesParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PurgeRevisionParams defines parameters for PurgeRevision.
+type PurgeRevisionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListRunsParams defines parameters for ListRuns.
 type ListRunsParams struct {
-	Params RunListParams `form:"params" json:"params"`
+	// Phase Filter by run phase; not_finished excludes finished runs
+	Phase *string `form:"phase,omitempty" json:"phase,omitempty"`
+
+	// Outcome Outcomes, repeated or comma-separated; not_passed includes retries
+	Outcome *string `form:"outcome,omitempty" json:"outcome,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Source Filter by what triggered the run
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// EnvironmentId Only return runs executed in this environment
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// From Inclusive enqueue lower bound (default last 24 hours; clamped to 90 days)
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive enqueue upper bound (default now)
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Q Substring match on monitor name or headline
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Cursor Opaque cursor from the previous page
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// MonitorId Only runs for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// RevisionId Only runs for this revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
+	MonitorType *string `form:"monitorType,omitempty" json:"monitorType,omitempty"`
+
+	// IncidentId Runs in the incident window, intersected with from and to
+	IncidentId *openapi_types.UUID `form:"incidentId,omitempty" json:"incidentId,omitempty"`
+
+	// Branch Exact branch from revision provenance
+	Branch *string `form:"branch,omitempty" json:"branch,omitempty"`
+
+	// Flaky Select monitors currently flaky over the last seven days
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// SessionId Caller-provided CI session identifier
+	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
+
+	// EvaluationCycleId Only runs in this evaluation cycle, including retries
+	EvaluationCycleId *openapi_types.UUID `form:"evaluationCycleId,omitempty" json:"evaluationCycleId,omitempty"`
+
+	// ExcludeSource Exclude this source; omitted preserves all sources
+	ExcludeSource *string `form:"excludeSource,omitempty" json:"excludeSource,omitempty"`
+
+	// Sort Enqueue order: asc or desc (default: desc)
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Step Zero-based failed step index; requires monitor and caseIndex
+	Step *int32 `form:"step,omitempty" json:"step,omitempty"`
+
+	// CaseIndex Zero-based case index qualifying the failed step
+	CaseIndex *int32 `form:"caseIndex,omitempty" json:"caseIndex,omitempty"`
+
+	// Adhoc Include ad-hoc validation runs that have no monitor (default: false)
+	Adhoc *bool `form:"adhoc,omitempty" json:"adhoc,omitempty"`
+
+	// Bucket Histogram width: 30m, 1h or 1d; at most 1000 buckets
+	Bucket *string `form:"bucket,omitempty" json:"bucket,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ExportRunsParams defines parameters for ExportRuns.
 type ExportRunsParams struct {
-	Params RunListParams `form:"params" json:"params"`
+	// Phase Filter by run phase; not_finished excludes finished runs
+	Phase *string `form:"phase,omitempty" json:"phase,omitempty"`
+
+	// Outcome Outcomes, repeated or comma-separated; not_passed includes retries
+	Outcome *string `form:"outcome,omitempty" json:"outcome,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Source Filter by what triggered the run
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// EnvironmentId Only return runs executed in this environment
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// From Inclusive enqueue lower bound (default last 24 hours; clamped to 90 days)
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive enqueue upper bound (default now)
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Q Substring match on monitor name or headline
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Cursor Opaque cursor from the previous page
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// MonitorId Only runs for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// RevisionId Only runs for this revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
+	MonitorType *string `form:"monitorType,omitempty" json:"monitorType,omitempty"`
+
+	// IncidentId Runs in the incident window, intersected with from and to
+	IncidentId *openapi_types.UUID `form:"incidentId,omitempty" json:"incidentId,omitempty"`
+
+	// Branch Exact branch from revision provenance
+	Branch *string `form:"branch,omitempty" json:"branch,omitempty"`
+
+	// Flaky Select monitors currently flaky over the last seven days
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// SessionId Caller-provided CI session identifier
+	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
+
+	// EvaluationCycleId Only runs in this evaluation cycle, including retries
+	EvaluationCycleId *openapi_types.UUID `form:"evaluationCycleId,omitempty" json:"evaluationCycleId,omitempty"`
+
+	// ExcludeSource Exclude this source; omitted preserves all sources
+	ExcludeSource *string `form:"excludeSource,omitempty" json:"excludeSource,omitempty"`
+
+	// Sort Enqueue order: asc or desc (default: desc)
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Step Zero-based failed step index; requires monitor and caseIndex
+	Step *int32 `form:"step,omitempty" json:"step,omitempty"`
+
+	// CaseIndex Zero-based case index qualifying the failed step
+	CaseIndex *int32 `form:"caseIndex,omitempty" json:"caseIndex,omitempty"`
+
+	// Adhoc Include ad-hoc validation runs that have no monitor (default: false)
+	Adhoc *bool `form:"adhoc,omitempty" json:"adhoc,omitempty"`
+
+	// Bucket Histogram width: 30m, 1h or 1d; at most 1000 buckets
+	Bucket *string `form:"bucket,omitempty" json:"bucket,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetRunMonitorStripParams defines parameters for GetRunMonitorStrip.
 type GetRunMonitorStripParams struct {
-	Params RunWindowListParams `form:"params" json:"params"`
+	// From Inclusive window start; default last 24 hours, clamped to 90 days
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive window end; default now
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// MonitorId Only entries for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// Cursor Opaque cursor returned by this endpoint
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListRunRevisionMarkersParams defines parameters for ListRunRevisionMarkers.
 type ListRunRevisionMarkersParams struct {
-	Params RunWindowListParams `form:"params" json:"params"`
+	// From Inclusive window start; default last 24 hours, clamped to 90 days
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive window end; default now
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// MonitorId Only entries for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// Cursor Opaque cursor returned by this endpoint
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListSkippedRunsParams defines parameters for ListSkippedRuns.
 type ListSkippedRunsParams struct {
-	Params RunSkippedListParams `form:"params" json:"params"`
+	// EnvironmentId Current monitor environment; historical ticks retain their snapshot
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
+	MonitorType *string `form:"monitorType,omitempty" json:"monitorType,omitempty"`
+
+	// From Inclusive window start; default last 24 hours, clamped to 90 days
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive window end; default now
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// MonitorId Only entries for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// Cursor Opaque cursor returned by this endpoint
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // SummarizeRunsParams defines parameters for SummarizeRuns.
 type SummarizeRunsParams struct {
-	Params RunListParams `form:"params" json:"params"`
+	// Phase Filter by run phase; not_finished excludes finished runs
+	Phase *string `form:"phase,omitempty" json:"phase,omitempty"`
+
+	// Outcome Outcomes, repeated or comma-separated; not_passed includes retries
+	Outcome *string `form:"outcome,omitempty" json:"outcome,omitempty"`
+
+	// Region Filter by probe region
+	Region *string `form:"region,omitempty" json:"region,omitempty"`
+
+	// Source Filter by what triggered the run
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// EnvironmentId Only return runs executed in this environment
+	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// From Inclusive enqueue lower bound (default last 24 hours; clamped to 90 days)
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Inclusive enqueue upper bound (default now)
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Q Substring match on monitor name or headline
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Cursor Opaque cursor from the previous page
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Page size (1–100, default 50)
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// MonitorId Only runs for this monitor
+	MonitorId *openapi_types.UUID `form:"monitorId,omitempty" json:"monitorId,omitempty"`
+
+	// RevisionId Only runs for this revision
+	RevisionId *openapi_types.UUID `form:"revisionId,omitempty" json:"revisionId,omitempty"`
+
+	// MonitorType Monitor type: BROWSER or MULTI_STEP_API
+	MonitorType *string `form:"monitorType,omitempty" json:"monitorType,omitempty"`
+
+	// IncidentId Runs in the incident window, intersected with from and to
+	IncidentId *openapi_types.UUID `form:"incidentId,omitempty" json:"incidentId,omitempty"`
+
+	// Branch Exact branch from revision provenance
+	Branch *string `form:"branch,omitempty" json:"branch,omitempty"`
+
+	// Flaky Select monitors currently flaky over the last seven days
+	Flaky *bool `form:"flaky,omitempty" json:"flaky,omitempty"`
+
+	// SessionId Caller-provided CI session identifier
+	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
+
+	// EvaluationCycleId Only runs in this evaluation cycle, including retries
+	EvaluationCycleId *openapi_types.UUID `form:"evaluationCycleId,omitempty" json:"evaluationCycleId,omitempty"`
+
+	// ExcludeSource Exclude this source; omitted preserves all sources
+	ExcludeSource *string `form:"excludeSource,omitempty" json:"excludeSource,omitempty"`
+
+	// Sort Enqueue order: asc or desc (default: desc)
+	Sort *string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Step Zero-based failed step index; requires monitor and caseIndex
+	Step *int32 `form:"step,omitempty" json:"step,omitempty"`
+
+	// CaseIndex Zero-based case index qualifying the failed step
+	CaseIndex *int32 `form:"caseIndex,omitempty" json:"caseIndex,omitempty"`
+
+	// Adhoc Include ad-hoc validation runs that have no monitor (default: false)
+	Adhoc *bool `form:"adhoc,omitempty" json:"adhoc,omitempty"`
+
+	// Bucket Histogram width: 30m, 1h or 1d; at most 1000 buckets
+	Bucket *string `form:"bucket,omitempty" json:"bucket,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetRunParams defines parameters for GetRun.
+type GetRunParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListRunArtifactsParams defines parameters for ListRunArtifacts.
+type ListRunArtifactsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CancelRunParams defines parameters for CancelRun.
+type CancelRunParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CompareRunCaptureParams defines parameters for CompareRunCapture.
+type CompareRunCaptureParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListRunCasesParams defines parameters for ListRunCases.
 type ListRunCasesParams struct {
-	Params RunCaseListParams `form:"params" json:"params"`
+	// Attempt Only return cases for this Playwright attempt
+	Attempt *int32 `form:"attempt,omitempty" json:"attempt,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetRunConsoleRawParams defines parameters for GetRunConsoleRaw.
 type GetRunConsoleRawParams struct {
-	Params RunConsoleParams `form:"params" json:"params"`
+	// Attempt In-check attempt (default selected attempt)
+	Attempt *int32 `form:"attempt,omitempty" json:"attempt,omitempty"`
+
+	// Ungrouped Return chronological lines instead of groups
+	Ungrouped *bool `form:"ungrouped,omitempty" json:"ungrouped,omitempty"`
+
+	// Level Filter error, warning, or info
+	Level *string `form:"level,omitempty" json:"level,omitempty"`
+
+	// Format raw downloads the ungrouped log as text/plain
+	Format *string `form:"format,omitempty" json:"format,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetRunDiffParams defines parameters for GetRunDiff.
 type GetRunDiffParams struct {
 	BaselineRunId *openapi_types.UUID `form:"baselineRunId,omitempty" json:"baselineRunId,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // StreamRunEventsParams defines parameters for StreamRunEvents.
 type StreamRunEventsParams struct {
-	Params      RunEventParams `form:"params" json:"params"`
-	LastEventID *string        `json:"Last-Event-ID,omitempty"`
+	// After Replay events with seq greater than this value
+	After       *int64  `form:"after,omitempty" json:"after,omitempty"`
+	LastEventID *string `json:"Last-Event-ID,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ExportRunParams defines parameters for ExportRun.
+type ExportRunParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListRunNetworkParams defines parameters for ListRunNetwork.
 type ListRunNetworkParams struct {
-	Params RunNetworkParams `form:"params" json:"params"`
+	// Attempt In-check attempt (default selected attempt)
+	Attempt *int32 `form:"attempt,omitempty" json:"attempt,omitempty"`
+
+	// Failed Only rows with status >= 400 or a failure
+	Failed *bool `form:"failed,omitempty" json:"failed,omitempty"`
+
+	// Slow Only rows with durationMs >= 1000
+	Slow *bool `form:"slow,omitempty" json:"slow,omitempty"`
+
+	// StepId Only rows for this step
+	StepId *string `form:"stepId,omitempty" json:"stepId,omitempty"`
+
+	// Xhr Only xhr, fetch, and api resource types
+	Xhr *bool `form:"xhr,omitempty" json:"xhr,omitempty"`
+
+	// Source page or request
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// Cursor Opaque cursor from the previous page
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetRunNetworkRowParams defines parameters for GetRunNetworkRow.
+type GetRunNetworkRowParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UnpinRunParams defines parameters for UnpinRun.
+type UnpinRunParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PinRunParams defines parameters for PinRun.
+type PinRunParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PurgeRunParams defines parameters for PurgeRun.
+type PurgeRunParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetRunRunnerLogParams defines parameters for GetRunRunnerLog.
+type GetRunRunnerLogParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// StreamRunRunnerLogParams defines parameters for StreamRunRunnerLog.
+type StreamRunRunnerLogParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetRunTraceSummaryParams defines parameters for GetRunTraceSummary.
+type GetRunTraceSummaryParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List6Params defines parameters for List6.
 type List6Params struct {
 	// EnvironmentId Environment whose value metadata to show
 	EnvironmentId *openapi_types.UUID `form:"environmentId,omitempty" json:"environmentId,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create7Params defines parameters for Create7.
+type Create7Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete4Params defines parameters for Delete4.
+type Delete4Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update4Params defines parameters for Update4.
+type Update4Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AuditParams defines parameters for Audit.
+type AuditParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteEnvironmentValueParams defines parameters for DeleteEnvironmentValue.
+type DeleteEnvironmentValueParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// WriteEnvironmentValueParams defines parameters for WriteEnvironmentValue.
+type WriteEnvironmentValueParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UsageParams defines parameters for Usage.
+type UsageParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List18Params defines parameters for List18.
+type List18Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Unsubscribe1Params defines parameters for Unsubscribe1.
+type Unsubscribe1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get12Params defines parameters for Get12.
+type Get12Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateAlertSensitivityParams defines parameters for UpdateAlertSensitivity.
+type UpdateAlertSensitivityParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Subscribe1Params defines parameters for Subscribe1.
+type Subscribe1Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListServicesParams defines parameters for ListServices.
@@ -15522,6 +17287,9 @@ type ListServicesParams struct {
 
 	// Limit Page size (1–100, default 20)
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListCrossServiceIncidentsParams defines parameters for ListCrossServiceIncidents.
@@ -15533,8 +17301,19 @@ type ListCrossServiceIncidentsParams struct {
 	Status *ListCrossServiceIncidentsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
 
 	// Category Filter by service category
-	Category *string  `form:"category,omitempty" json:"category,omitempty"`
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	Category *string `form:"category,omitempty" json:"category,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListCrossServiceIncidentsParamsStatus defines parameters for ListCrossServiceIncidents.
@@ -15544,6 +17323,9 @@ type ListCrossServiceIncidentsParamsStatus string
 type GetGlobalStatusSummaryParams struct {
 	// PublishedOnly Aggregate only published services (curated public pSEO set); default false
 	PublishedOnly *bool `form:"publishedOnly,omitempty" json:"publishedOnly,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetServiceParams defines parameters for GetService.
@@ -15553,6 +17335,9 @@ type GetServiceParams struct {
 
 	// PublishedOnly Resolve only published services (curated public pSEO set); 404 otherwise. Default false
 	PublishedOnly *bool `form:"publishedOnly,omitempty" json:"publishedOnly,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetComponentsParams defines parameters for GetComponents.
@@ -15568,6 +17353,9 @@ type GetComponentsParams struct {
 
 	// Size Page size (default 25, max 100)
 	Size *int32 `form:"size,omitempty" json:"size,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetBatchComponentUptimeParams defines parameters for GetBatchComponentUptime.
@@ -15583,6 +17371,9 @@ type GetBatchComponentUptimeParams struct {
 
 	// ComponentIds Component ids to include (max 100); omit for every component
 	ComponentIds *[]openapi_types.UUID `form:"componentIds,omitempty" json:"componentIds,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetBatchComponentUptimeParamsPeriod defines parameters for GetBatchComponentUptime.
@@ -15598,10 +17389,19 @@ type GetComponentUptimeParams struct {
 
 	// To Explicit window end (ISO date); defaults to today
 	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetComponentUptimeParamsPeriod defines parameters for GetComponentUptime.
 type GetComponentUptimeParamsPeriod string
+
+// GetServiceDayDetailParams defines parameters for GetServiceDayDetail.
+type GetServiceDayDetailParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
 
 // ListIncidents1Params defines parameters for ListIncidents1.
 type ListIncidents1Params struct {
@@ -15609,17 +17409,43 @@ type ListIncidents1Params struct {
 	From *openapi_types.Date `form:"from,omitempty" json:"from,omitempty"`
 
 	// Status Filter: active (unresolved), resolved, or omit for all
-	Status   *ListIncidents1ParamsStatus `form:"status,omitempty" json:"status,omitempty"`
-	Pageable Pageable                    `form:"pageable" json:"pageable"`
+	Status *ListIncidents1ParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListIncidents1ParamsStatus defines parameters for ListIncidents1.
 type ListIncidents1ParamsStatus string
 
+// GetIncident1Params defines parameters for GetIncident1.
+type GetIncident1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetServiceLiveStatusParams defines parameters for GetServiceLiveStatus.
+type GetServiceLiveStatusParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // GetScheduledMaintenancesParams defines parameters for GetScheduledMaintenances.
 type GetScheduledMaintenancesParams struct {
 	// Status Filter by status (e.g. scheduled, in_progress, verifying, completed)
 	Status *[]string `form:"status,omitempty" json:"status,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListPollResultsParams defines parameters for ListPollResults.
@@ -15629,12 +17455,18 @@ type ListPollResultsParams struct {
 
 	// Limit Page size (1–100, default 50)
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetPollSummaryParams defines parameters for GetPollSummary.
 type GetPollSummaryParams struct {
 	// Window Time window
 	Window *GetPollSummaryParamsWindow `form:"window,omitempty" json:"window,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetPollSummaryParamsWindow defines parameters for GetPollSummary.
@@ -15659,6 +17491,9 @@ type ListStatusEventsParams struct {
 
 	// Limit Page size (1–100, default 50)
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListStatusEventsParamsPeriod defines parameters for ListStatusEvents.
@@ -15671,6 +17506,9 @@ type GetServiceUptimeParams struct {
 
 	// Granularity Bucket granularity
 	Granularity *GetServiceUptimeParamsGranularity `form:"granularity,omitempty" json:"granularity,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetServiceUptimeParamsPeriod defines parameters for GetServiceUptime.
@@ -15679,74 +17517,544 @@ type GetServiceUptimeParamsPeriod string
 // GetServiceUptimeParamsGranularity defines parameters for GetServiceUptime.
 type GetServiceUptimeParamsGranularity string
 
+// List5Params defines parameters for List5.
+type List5Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create6Params defines parameters for Create6.
+type Create6Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete3Params defines parameters for Delete3.
+type Delete3Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get2Params defines parameters for Get2.
+type Get2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update3Params defines parameters for Update3.
+type Update3Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListComponentsParams defines parameters for ListComponents.
+type ListComponentsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateComponentParams defines parameters for CreateComponent.
+type CreateComponentParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ReorderComponentsParams defines parameters for ReorderComponents.
+type ReorderComponentsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteComponentParams defines parameters for DeleteComponent.
+type DeleteComponentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateComponentParams defines parameters for UpdateComponent.
+type UpdateComponentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ComponentMeasuredUptimeParams defines parameters for ComponentMeasuredUptime.
 type ComponentMeasuredUptimeParams struct {
 	Days *int32 `form:"days,omitempty" json:"days,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ClearComponentOverrideParams defines parameters for ClearComponentOverride.
+type ClearComponentOverrideParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetComponentOverrideParams defines parameters for SetComponentOverride.
+type SetComponentOverrideParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ComponentUptime1Params defines parameters for ComponentUptime1.
 type ComponentUptime1Params struct {
 	Days *int32 `form:"days,omitempty" json:"days,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListDomainsParams defines parameters for ListDomains.
+type ListDomainsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddDomainParams defines parameters for AddDomain.
+type AddDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveDomainParams defines parameters for RemoveDomain.
+type RemoveDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetPrimaryDomainParams defines parameters for SetPrimaryDomain.
+type SetPrimaryDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// VerifyDomainParams defines parameters for VerifyDomain.
+type VerifyDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListGroupsParams defines parameters for ListGroups.
+type ListGroupsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateGroupParams defines parameters for CreateGroup.
+type CreateGroupParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteGroupParams defines parameters for DeleteGroup.
+type DeleteGroupParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateGroupParams defines parameters for UpdateGroup.
+type UpdateGroupParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListIncidentsParams defines parameters for ListIncidents.
 type ListIncidentsParams struct {
-	Status   *[]ListIncidentsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
-	Pageable Pageable                     `form:"pageable" json:"pageable"`
+	Status *[]ListIncidentsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListIncidentsParamsStatus defines parameters for ListIncidents.
 type ListIncidentsParamsStatus string
 
+// CreateIncidentParams defines parameters for CreateIncident.
+type CreateIncidentParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteIncidentParams defines parameters for DeleteIncident.
+type DeleteIncidentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetIncidentParams defines parameters for GetIncident.
+type GetIncidentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateIncidentParams defines parameters for UpdateIncident.
+type UpdateIncidentParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DismissIncidentParams defines parameters for DismissIncident.
+type DismissIncidentParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PublishIncidentParams defines parameters for PublishIncident.
+type PublishIncidentParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PostIncidentUpdateParams defines parameters for PostIncidentUpdate.
+type PostIncidentUpdateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PatchIncidentUpdateParams defines parameters for PatchIncidentUpdate.
+type PatchIncidentUpdateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ReorderLayoutParams defines parameters for ReorderLayout.
+type ReorderLayoutParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListMaintenanceParams defines parameters for ListMaintenance.
 type ListMaintenanceParams struct {
-	Status   *[]ListMaintenanceParamsStatus `form:"status,omitempty" json:"status,omitempty"`
-	Pageable Pageable                       `form:"pageable" json:"pageable"`
+	Status *[]ListMaintenanceParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListMaintenanceParamsStatus defines parameters for ListMaintenance.
 type ListMaintenanceParamsStatus string
 
+// CreateMaintenanceParams defines parameters for CreateMaintenance.
+type CreateMaintenanceParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteMaintenanceParams defines parameters for DeleteMaintenance.
+type DeleteMaintenanceParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetMaintenanceParams defines parameters for GetMaintenance.
+type GetMaintenanceParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateMaintenanceParams defines parameters for UpdateMaintenance.
+type UpdateMaintenanceParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DismissMaintenanceParams defines parameters for DismissMaintenance.
+type DismissMaintenanceParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PublishMaintenanceParams defines parameters for PublishMaintenance.
+type PublishMaintenanceParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PostMaintenanceUpdateParams defines parameters for PostMaintenanceUpdate.
+type PostMaintenanceUpdateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PatchMaintenanceUpdateParams defines parameters for PatchMaintenanceUpdate.
+type PatchMaintenanceUpdateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListNotificationDeliveriesParams defines parameters for ListNotificationDeliveries.
 type ListNotificationDeliveriesParams struct {
 	IncidentId *openapi_types.UUID                        `form:"incidentId,omitempty" json:"incidentId,omitempty"`
 	EventType  *ListNotificationDeliveriesParamsEventType `form:"eventType,omitempty" json:"eventType,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListNotificationDeliveriesParamsEventType defines parameters for ListNotificationDeliveries.
 type ListNotificationDeliveriesParamsEventType string
 
+// GetNotificationDeliveryParams defines parameters for GetNotificationDelivery.
+type GetNotificationDeliveryParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RetryNotificationDeliveryParams defines parameters for RetryNotificationDelivery.
+type RetryNotificationDeliveryParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListSubscribersParams defines parameters for ListSubscribers.
 type ListSubscribersParams struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddSubscriberParams defines parameters for AddSubscriber.
+type AddSubscriberParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveSubscriberParams defines parameters for RemoveSubscriber.
+type RemoveSubscriberParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // FleetParams defines parameters for Fleet.
 type FleetParams struct {
 	Window *string `form:"window,omitempty" json:"window,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetSyntheticsFamilyMetricsParams defines parameters for GetSyntheticsFamilyMetrics.
+type GetSyntheticsFamilyMetricsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // GetSyntheticsRunDurationsParams defines parameters for GetSyntheticsRunDurations.
 type GetSyntheticsRunDurationsParams struct {
 	MonitorIds []openapi_types.UUID `form:"monitorIds" json:"monitorIds"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RegionsParams defines parameters for Regions.
+type RegionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// List17Params defines parameters for List17.
+type List17Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get11Params defines parameters for Get11.
+type Get11Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetCurrentSyntheticsUsageParams defines parameters for GetCurrentSyntheticsUsage.
+type GetCurrentSyntheticsUsageParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List4Params defines parameters for List4.
 type List4Params struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create5Params defines parameters for Create5.
+type Create5Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete2Params defines parameters for Delete2.
+type Delete2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetByIdParams defines parameters for GetById.
+type GetByIdParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update2Params defines parameters for Update2.
+type Update2Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RotateDekParams defines parameters for RotateDek.
+type RotateDekParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListWebhookInboxesParams defines parameters for ListWebhookInboxes.
 type ListWebhookInboxesParams struct {
 	// Search Case-insensitive name search
-	Search   *string  `form:"search,omitempty" json:"search,omitempty"`
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateWebhookInboxParams defines parameters for CreateWebhookInbox.
+type CreateWebhookInboxParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListWebhookInboxActivityParams defines parameters for ListWebhookInboxActivity.
 type ListWebhookInboxActivityParams struct {
 	// InboxIds Comma-separated inbox ids (1–100)
 	InboxIds *[]openapi_types.UUID `form:"inboxIds,omitempty" json:"inboxIds,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteWebhookInboxParams defines parameters for DeleteWebhookInbox.
+type DeleteWebhookInboxParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetWebhookInboxParams defines parameters for GetWebhookInbox.
+type GetWebhookInboxParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateWebhookInboxParams defines parameters for UpdateWebhookInbox.
+type UpdateWebhookInboxParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteWebhookEventsParams defines parameters for DeleteWebhookEvents.
+type DeleteWebhookEventsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListWebhookEventsParams defines parameters for ListWebhookEvents.
@@ -15756,21 +18064,164 @@ type ListWebhookEventsParams struct {
 	Path   *string             `form:"path,omitempty" json:"path,omitempty"`
 	After  *openapi_types.UUID `form:"after,omitempty" json:"after,omitempty"`
 	Limit  *int32              `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteWebhookEventParams defines parameters for DeleteWebhookEvent.
+type DeleteWebhookEventParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetWebhookEventParams defines parameters for GetWebhookEvent.
+type GetWebhookEventParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetWebhookEventRawParams defines parameters for GetWebhookEventRaw.
+type GetWebhookEventRawParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// WaitForWebhookEventParams defines parameters for WaitForWebhookEvent.
+type WaitForWebhookEventParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List3Params defines parameters for List3.
 type List3Params struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create4Params defines parameters for Create4.
+type Create4Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListEventsParams defines parameters for ListEvents.
+type ListEventsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetSigningSecretInfoParams defines parameters for GetSigningSecretInfo.
+type GetSigningSecretInfoParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RotateSigningSecretParams defines parameters for RotateSigningSecret.
+type RotateSigningSecretParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Delete1Params defines parameters for Delete1.
+type Delete1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Get1Params defines parameters for Get1.
+type Get1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update1Params defines parameters for Update1.
+type Update1Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // ListDeliveriesParams defines parameters for ListDeliveries.
 type ListDeliveriesParams struct {
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// TestParams defines parameters for Test.
+type TestParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // List2Params defines parameters for List2.
 type List2Params struct {
-	Pageable Pageable `form:"pageable" json:"pageable"`
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Create3Params defines parameters for Create3.
+type Create3Params struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteParams defines parameters for Delete.
+type DeleteParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetParams defines parameters for Get.
+type GetParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateParams defines parameters for Update.
+type UpdateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateRuntimeParams defines parameters for UpdateRuntime.
+type UpdateRuntimeParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
 // Create16JSONRequestBody defines body for Create16 for application/json ContentType.
