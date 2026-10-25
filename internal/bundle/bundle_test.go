@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -252,5 +253,16 @@ func TestBuild_BinaryFileIsKeptByteForByte(t *testing.T) {
 	}
 	if !bytes.Equal(s.Files["logo.png"], bin) {
 		t.Errorf("binary content changed")
+	}
+}
+
+func TestBuild_IncludeMatchingNothingNamesTheOriginalEntry(t *testing.T) {
+	dir := t.TempDir()
+	write(t, dir, map[string]string{"a.spec.ts": "x", "fixtures/f.json": "{}"})
+	_, err := Build(Input{Entrypoint: "a.spec.ts", Root: ".", WorkDir: dir,
+		Include: []string{"", "fixtures/**", "missing/*.json"}})
+	var be *Error
+	if !errors.As(err, &be) || be.Code != CodePathInvalid || !strings.Contains(be.Message, `include[2] "missing/*.json"`) {
+		t.Fatalf("err = %v, want include[2] refusal", err)
 	}
 }
