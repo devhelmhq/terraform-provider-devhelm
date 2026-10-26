@@ -4121,6 +4121,18 @@
             }
           },
           {
+            "name": "include",
+            "in": "query",
+            "description": "Files to keep even when no import reaches them, e.g. fixtures",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "Idempotency-Key",
             "in": "header",
             "description": "Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)",
@@ -61475,6 +61487,19 @@
             "type": "string",
             "description": "Runtime used to refuse imports. Omit for the newest runtime that can run",
             "nullable": true
+          },
+          "include": {
+            "maxItems": 256,
+            "minItems": 0,
+            "type": "array",
+            "description": "Files to keep even when no import reaches them, e.g. fixtures",
+            "nullable": true,
+            "items": {
+              "maxLength": 512,
+              "minLength": 0,
+              "type": "string",
+              "description": "Files to keep even when no import reaches them, e.g. fixtures"
+            }
           }
         }
       },
