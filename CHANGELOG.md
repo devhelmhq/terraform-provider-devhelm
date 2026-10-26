@@ -32,9 +32,7 @@
   ownership to Terraform (the plan shows `owner` changing).
 - `config` is optional for code monitors; `frequency_seconds` accepts 10–86400
   (the minimum depends on the plan).
-
-### Removed
-
-- `devhelm_monitor.enabled`. Pause and mute are overlays: use
-  `devhelm monitors pause|resume|mute|unmute <monitor>`. Setting `enabled` is
-  an error; existing state clears on refresh.
+- `devhelm_monitor.enabled` no longer defaults to `true`. Set it to pause or
+  resume the monitor; omit it to leave pause state to the dashboard or CLI
+  (state follows the server, and apply never resumes a paused monitor).
+  Configurations and state from v0.2.0-beta.10 plan no diff.
