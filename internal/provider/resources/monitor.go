@@ -1867,11 +1867,13 @@ func (r *MonitorResource) saveCreated(ctx context.Context, plan *MonitorResource
 			map[string]any{"id": id, "reason": reason})
 	}
 
+	planned := plan.Enabled
 	resp.Diagnostics.Append(r.mapToState(ctx, plan, monitor)...)
 	if resp.Diagnostics.HasError() {
 		cleanupOrphan("mapToState returned errors")
 		return
 	}
+	keepPlannedEnabled(plan, planned)
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 	if resp.Diagnostics.HasError() {
 		cleanupOrphan("State.Set returned errors")
@@ -1982,6 +1984,17 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	r.refreshAfterUpdate(ctx, id, &plan, &state, resp)
 }
 
+// keepPlannedEnabled keeps a known planned `enabled` in state after an
+// apply, so a pause or resume made elsewhere between plan and apply (or a
+// server that keeps a monitor paused) never fails the apply with an
+// inconsistent result; the next refresh shows the server value. An unknown
+// plan (omitted on create) keeps the server value.
+func keepPlannedEnabled(model *MonitorResourceModel, planned types.Bool) {
+	if !planned.IsUnknown() && !planned.IsNull() {
+		model.Enabled = planned
+	}
+}
+
 // testBeforePublish reads test_before_publish, which defaults to true. The
 // default lives here, not in the schema, so state written before the
 // attribute existed (v0.2.0-beta.10) plans no diff.
@@ -2080,10 +2093,12 @@ func (r *MonitorResource) refreshAfterUpdate(ctx context.Context, id string, pla
 		return
 	}
 
+	planned := plan.Enabled
 	resp.Diagnostics.Append(r.mapToState(ctx, plan, monitor)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	keepPlannedEnabled(plan, planned)
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 
 	if tagErr != nil {
