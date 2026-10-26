@@ -189,3 +189,61 @@ func TestAccStack_ValidateBeforeCreate(t *testing.T) {
 		}},
 	})
 }
+
+// code.include ships a fixture nothing imports (doc 42 §5.3, W0-13): the
+// server keeps the include paths in the closure, so the fixture is in
+// code_files and the live revision.
+func TestAccStack_IncludeKeepsUnimportedFixture(t *testing.T) {
+	requireStack(t)
+	prefix := "terraform-e2e-" + uuid.NewString()[:8]
+	dir := t.TempDir()
+	writeCheck(t, dir, "v1")
+	if err := os.MkdirAll(filepath.Join(dir, "fixtures"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "fixtures", "order.json"), []byte("{\"id\": 1}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "unused.ts"), []byte("export const unused = 1;\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cfg := stackProvider() + fmt.Sprintf(`
+resource "devhelm_environment" "e2e" {
+  name      = "%[1]s-env"
+  slug      = "%[1]s-env"
+  variables = { BASE_URL = "https://example.com" }
+}
+
+resource "devhelm_monitor" "m" {
+  name                = "%[1]s"
+  type                = "MULTI_STEP_API"
+  environment_id      = devhelm_environment.e2e.id
+  frequency_seconds   = 600
+  regions             = ["us-east"]
+  test_before_publish = false
+  code = {
+    entrypoint = "%[2]s/check.spec.ts"
+    root       = %[2]q
+    include    = ["%[2]s/fixtures/**"]
+  }
+}
+
+data "devhelm_monitor_revision" "live" {
+  monitor_id = devhelm_monitor.m.id
+}
+`, prefix, dir)
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: newProviderFactories(),
+		Steps: []resource.TestStep{
+			{
+				Config: cfg,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("devhelm_monitor.m", "code_files.fixtures/order.json"),
+					resource.TestCheckNoResourceAttr("devhelm_monitor.m", "code_files.unused.ts"),
+					resource.TestCheckTypeSetElemAttr("data.devhelm_monitor_revision.live", "files.*", "fixtures/order.json"),
+				),
+			},
+			{Config: cfg, PlanOnly: true},
+		},
+	})
+}

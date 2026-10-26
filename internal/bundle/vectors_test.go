@@ -22,6 +22,7 @@ type vector struct {
 	Name    string `json:"name"`
 	Request struct {
 		Entrypoint  *string           `json:"entrypoint"`
+		Include     []string          `json:"include"`
 		Files       map[string]string `json:"files"`
 		BinaryFiles map[string]string `json:"binaryFiles"`
 		Symlinks    map[string]string `json:"symlinks"`
@@ -114,12 +115,12 @@ func TestBundleVectors_DigestsMatchTheServer(t *testing.T) {
 			dir := t.TempDir()
 			files := materialize(t, dir, v)
 			entry := entryFor(v, files)
-			in := Input{Entrypoint: entry, Root: dir, WorkDir: dir}
+			in := Input{Entrypoint: entry, Root: dir, WorkDir: dir, Include: v.Request.Include}
 			// Files outside the entry directory (a root tsconfig.json, a
 			// shared lib/) come in through `include`, as a user would
 			// write them.
 			for p := range files {
-				if !strings.HasPrefix(p, filepath.ToSlash(filepath.Dir(entry))+"/") {
+				if !strings.HasPrefix(p, filepath.ToSlash(filepath.Dir(entry))+"/") && len(v.Request.Include) == 0 {
 					in.Include = []string{"**"}
 				}
 			}
@@ -146,6 +147,10 @@ func TestBundleVectors_DigestsMatchTheServer(t *testing.T) {
 			// The provider sends the include set: everything in the request.
 			if got, want := set.Paths(), sortedKeys(files); !reflect.DeepEqual(got, want) {
 				t.Fatalf("include set = %v, want %v", got, want)
+			}
+			// The explicit include paths go to the server as `include`.
+			if len(v.Request.Include) > 0 && !reflect.DeepEqual(set.Included, v.Request.Include) {
+				t.Errorf("included = %v, want %v", set.Included, v.Request.Include)
 			}
 			if got := set.UploadDigest(); got != v.Expect.UploadDigest {
 				t.Errorf("uploadDigest = %s, want %s", got, v.Expect.UploadDigest)

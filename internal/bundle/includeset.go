@@ -151,8 +151,11 @@ func Build(in Input) (*Set, error) {
 		}
 	}
 
+	// patterns[i] came from in.Include[origin[i]] (blank entries are
+	// skipped); hits counts the files each one matched.
 	var patterns []string
-	for _, g := range in.Include {
+	var origin []int
+	for i, g := range in.Include {
 		if strings.TrimSpace(g) == "" {
 			continue
 		}
@@ -164,6 +167,7 @@ func Build(in Input) (*Set, error) {
 			return nil, refuse(CodePathInvalid, "include %q is not a valid glob", g)
 		}
 		patterns = append(patterns, pattern)
+		origin = append(origin, i)
 	}
 
 	walkRoot := entryDir
@@ -171,6 +175,7 @@ func Build(in Input) (*Set, error) {
 		walkRoot = root
 	}
 	entryDirRel, _ := bundlePath(root, entryDir)
+	hits := make([]int, len(patterns))
 	set := &Set{Root: root, Entrypoint: relEntry, Files: map[string][]byte{}}
 
 	err = filepath.WalkDir(walkRoot, func(p string, d fs.DirEntry, walkErr error) error {
@@ -197,7 +202,13 @@ func Build(in Input) (*Set, error) {
 			return nil
 		}
 		inDefault := entryDirRel == "" || strings.HasPrefix(rel, entryDirRel+"/")
-		included := len(patterns) > 0 && matchAny(patterns, rel)
+		included := false
+		for i, pattern := range patterns {
+			if matchAny([]string{pattern}, rel) {
+				hits[i]++
+				included = true
+			}
+		}
 		if !inDefault && !included {
 			return nil
 		}
@@ -233,6 +244,15 @@ func Build(in Input) (*Set, error) {
 	}
 
 	sort.Strings(set.Included)
+	// Every include must ship something: a path the user says the code
+	// needs at runtime that isn't there is a configuration error, the same
+	// refusal the server gives for an include path missing from the upload.
+	for i := range patterns {
+		if hits[i] == 0 {
+			return nil, refuse(CodePathInvalid, "include[%d] %q matches no files under %s (dotfiles and ignored paths are skipped)",
+				origin[i], in.Include[origin[i]], root)
+		}
+	}
 	if err := set.checkLimits(); err != nil {
 		return nil, err
 	}
