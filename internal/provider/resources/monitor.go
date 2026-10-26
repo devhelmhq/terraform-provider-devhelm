@@ -19,7 +19,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
@@ -158,11 +157,11 @@ func (r *MonitorResource) Schema(ctx context.Context, _ resource.SchemaRequest, 
 				},
 			},
 			"enabled": schema.BoolAttribute{
-				Optional: true,
-				Description: "Removed. Pause and mute are overlays, not configuration: use " +
-					"`devhelm monitors pause|resume|mute|unmute <monitor>`. Setting it is an error.",
-				DeprecationMessage: "enabled was removed from devhelm_monitor. Use `devhelm monitors pause <monitor>` / " +
-					"`devhelm monitors resume <monitor>` (or mute / unmute) instead.",
+				Optional: true, Computed: true,
+				Description: "Whether the monitor is active; omit to leave pause state unmanaged",
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"regions": schema.ListAttribute{
 				Optional: true, Computed: true, ElementType: types.StringType,
@@ -269,7 +268,7 @@ func (r *MonitorResource) Schema(ctx context.Context, _ resource.SchemaRequest, 
 				PlanModifiers: []planmodifier.List{listplanmodifier.UseStateForUnknown()},
 			},
 			"test_before_publish": schema.BoolAttribute{
-				Optional: true, Computed: true, Default: booldefault.StaticBool(true),
+				Optional: true,
 				Description: "Run a validation run before new code goes live (default: true). A failed run stops " +
 					"the apply and the old code stays live. false publishes the code untested in one call",
 			},
@@ -616,15 +615,8 @@ func (r *MonitorResource) ValidateConfig(ctx context.Context, req resource.Valid
 
 // validateMonitorKind enforces the per-kind attribute rules: code monitors
 // need `code` and `environment_id`; probes need `config` and can't carry
-// code-only settings. It also turns the removed `enabled` into an upgrade
-// error that names the CLI verbs.
+// code-only settings.
 func validateMonitorKind(diags *diag.Diagnostics, m *MonitorResourceModel) {
-	if !m.Enabled.IsNull() {
-		diags.AddAttributeError(path.Root("enabled"), "enabled was removed from devhelm_monitor",
-			"Pause and mute are overlays on a monitor, not configuration, so Terraform no longer manages them. "+
-				"Remove `enabled` from this resource and use `devhelm monitors pause <monitor>` / "+
-				"`devhelm monitors resume <monitor>` (or `mute` / `unmute`).")
-	}
 	if m.Type.IsUnknown() || m.Type.IsNull() {
 		return
 	}
@@ -1267,6 +1259,7 @@ func (r *MonitorResource) buildCreateRequest(ctx context.Context, plan *MonitorR
 		OwnerEnforced:        &enforce,
 		OwnerDeclaration:     &generated.OwnerDeclaration{Address: stringPtrOrNil(plan.OwnerAddress), Label: &label},
 		FrequencySeconds:     int32PtrOrNil(plan.FrequencySeconds),
+		Enabled:              boolPtrOrNil(plan.Enabled),
 		Regions:              stringSliceToPtr(plan.Regions),
 		EnvironmentId:        envID,
 		AlertChannelIds:      alertChannels,
@@ -1499,9 +1492,7 @@ func (r *MonitorResource) mapToState(ctx context.Context, model *MonitorResource
 	model.Name = types.StringValue(dto.Name)
 	model.Type = types.StringValue(string(dto.Type))
 	model.FrequencySeconds = types.Int64Value(int64(dto.FrequencySeconds))
-	// `enabled` was removed (pause/mute are overlays); refresh clears any
-	// value an older provider version left in state.
-	model.Enabled = types.BoolNull()
+	model.Enabled = types.BoolValue(dto.Enabled)
 	model.PingUrl = stringValue(dto.PingUrl)
 	diags.Append(mapCodeMonitorFields(ctx, model, dto)...)
 
@@ -1814,7 +1805,7 @@ func (r *MonitorResource) Create(ctx context.Context, req resource.CreateRequest
 	if !ok {
 		return
 	}
-	if rc != nil && plan.TestBeforePublish.ValueBool() && !r.validateNewCode(ctx, &plan, rc, &resp.Diagnostics) {
+	if rc != nil && testBeforePublish(plan.TestBeforePublish) && !r.validateNewCode(ctx, &plan, rc, &resp.Diagnostics) {
 		return
 	}
 
@@ -1946,7 +1937,7 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	// untouched). Without it, the PUT carries the code (live, untested).
 	codeChanged := rc != nil && rc.bundle.Digest != state.LiveRevisionDigest.ValueString()
 	var testedDraft *generated.RevisionDto
-	if codeChanged && plan.TestBeforePublish.ValueBool() {
+	if codeChanged && testBeforePublish(plan.TestBeforePublish) {
 		if testedDraft, ok = r.testDraft(ctx, id, rc, &resp.Diagnostics); !ok {
 			return
 		}
@@ -1991,9 +1982,17 @@ func (r *MonitorResource) Update(ctx context.Context, req resource.UpdateRequest
 	r.refreshAfterUpdate(ctx, id, &plan, &state, resp)
 }
 
-// updateBody builds the settings PUT. owner_enforced is sent only when the
-// configuration sets it, so an upgrade never flips enforcement on monitors
-// created before the attribute existed.
+// testBeforePublish reads test_before_publish, which defaults to true. The
+// default lives here, not in the schema, so state written before the
+// attribute existed (v0.2.0-beta.10) plans no diff.
+func testBeforePublish(v types.Bool) bool {
+	return v.IsNull() || v.IsUnknown() || v.ValueBool()
+}
+
+// updateBody builds the settings PUT. owner_enforced and enabled are sent
+// only when the configuration sets them: an upgrade never flips enforcement
+// on monitors created before the attribute existed, and an apply never
+// resumes a monitor paused outside Terraform when `enabled` is omitted.
 func (r *MonitorResource) updateBody(ctx context.Context, req resource.UpdateRequest, plan *MonitorResourceModel, diags *diag.Diagnostics) (*generated.UpdateMonitorRequest, bool) {
 	body, err := r.buildUpdateRequest(ctx, plan)
 	if err != nil {
@@ -2006,6 +2005,9 @@ func (r *MonitorResource) updateBody(ctx context.Context, req resource.UpdateReq
 		v := configured.ValueBool()
 		body.OwnerEnforced = &v
 	}
+	var enabled types.Bool
+	diags.Append(req.Config.GetAttribute(ctx, path.Root("enabled"), &enabled)...)
+	body.Enabled = boolPtrOrNil(enabled)
 	return body, !diags.HasError()
 }
 
@@ -2303,7 +2305,7 @@ func (r *MonitorResource) ImportState(ctx context.Context, req resource.ImportSt
 	model.Code = types.ObjectNull(codeObjectType().AttrTypes)
 	model.CodeHash = types.StringNull()
 	model.CodeFiles = types.MapNull(types.StringType)
-	model.TestBeforePublish = types.BoolValue(true)
+	model.TestBeforePublish = types.BoolNull()
 	model.Timeouts = timeouts.Value{Object: types.ObjectNull(map[string]attr.Type{
 		"create": types.StringType, "update": types.StringType,
 	})}

@@ -85,7 +85,7 @@ func TestBuildCreateRequest_PopulatesEveryRequiredField(t *testing.T) {
 		t.Errorf("FrequencySeconds = %v, want 60", body.FrequencySeconds)
 	}
 	if body.Enabled != nil {
-		t.Errorf("Enabled = %v, want nil (enabled was removed; pause/mute are overlays)", body.Enabled)
+		t.Errorf("Enabled = %v, want nil (omitted enabled must not be sent)", body.Enabled)
 	}
 	if body.OwnerEnforced == nil || !*body.OwnerEnforced {
 		t.Errorf("OwnerEnforced = %v, want true on create", body.OwnerEnforced)
@@ -142,6 +142,39 @@ func TestBuildCreateRequest_AuthOmittedReachesAPIAsNil(t *testing.T) {
 	}
 	if body.Auth != nil {
 		t.Errorf("Auth = %v, want nil (Create has no ClearAuth, so omitted means nil)", body.Auth)
+	}
+}
+
+func TestBuildCreateRequest_EnabledSentOnlyWhenKnown(t *testing.T) {
+	ctx := context.Background()
+	r := &MonitorResource{}
+	for name, tc := range map[string]struct {
+		enabled types.Bool
+		want    *bool
+	}{
+		"false":   {types.BoolValue(false), boolPtr(false)},
+		"true":    {types.BoolValue(true), boolPtr(true)},
+		"unknown": {types.BoolUnknown(), nil},
+		"null":    {types.BoolNull(), nil},
+	} {
+		t.Run(name, func(t *testing.T) {
+			plan := &MonitorResourceModel{
+				Name:           types.StringValue("m"),
+				Type:           types.StringValue("HTTP"),
+				Enabled:        tc.enabled,
+				Config:         types.StringValue(`{"url":"https://example.com"}`),
+				Auth:           types.ObjectNull(monitorAuthObjectType().AttrTypes),
+				Assertions:     types.ListNull(assertionObjectType()),
+				IncidentPolicy: types.ObjectNull(incidentPolicyObjectType().AttrTypes),
+			}
+			body, err := r.buildCreateRequest(ctx, plan, nil, true)
+			if err != nil {
+				t.Fatalf("buildCreateRequest: %v", err)
+			}
+			if (body.Enabled == nil) != (tc.want == nil) || (body.Enabled != nil && *body.Enabled != *tc.want) {
+				t.Errorf("Enabled = %v, want %v", body.Enabled, tc.want)
+			}
+		})
 	}
 }
 
@@ -441,8 +474,8 @@ func TestMonitor_MapToState_PopulatesEveryFieldFromDto(t *testing.T) {
 	if got := model.FrequencySeconds.ValueInt64(); got != 60 {
 		t.Errorf("FrequencySeconds = %d", got)
 	}
-	if !model.Enabled.IsNull() {
-		t.Error("Enabled must refresh to null (attribute removed)")
+	if !model.Enabled.ValueBool() {
+		t.Error("Enabled must refresh to the server value")
 	}
 	if got := len(model.Regions.Elements()); got != 2 {
 		t.Errorf("Regions len = %d", got)

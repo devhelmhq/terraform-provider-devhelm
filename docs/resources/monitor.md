@@ -181,7 +181,7 @@ resource "devhelm_monitor" "orders_api" {
 - `capture_policy` (Attributes) When to keep screenshots, traces, video and network evidence (code monitors) (see [below for nested schema](#nestedatt--capture_policy))
 - `code` (Attributes) Code for a BROWSER or MULTI_STEP_API monitor. The provider uploads the include set (the entry file's directory, or `include`) at plan time; the server resolves the import closure. Forbidden for probes (see [below for nested schema](#nestedatt--code))
 - `config` (String) Monitor configuration as JSON. Shape depends on type (HttpMonitorConfig, DnsMonitorConfig, etc.). Required for probes; optional for BROWSER and MULTI_STEP_API (ScriptMonitorConfig: `timeoutSeconds`, `runtimeId`)
-- `enabled` (Boolean, Deprecated) Removed. Pause and mute are overlays, not configuration: use `devhelm monitors pause|resume|mute|unmute <monitor>`. Setting it is an error.
+- `enabled` (Boolean) Whether the monitor is active; omit to leave pause state unmanaged
 - `environment_id` (String) Environment the monitor runs in (variables and secret values). Required for BROWSER and MULTI_STEP_API monitors
 - `fast_retry_max_attempts` (Number) Fast-retry attempts after a failure; 0 disables
 - `frequency_seconds` (Number) Check frequency in seconds (10–86400); the minimum depends on the plan. The server applies the plan minimum when omitted on create. Omit on update to preserve the current value; the API has no way to clear this field.

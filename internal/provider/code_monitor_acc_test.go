@@ -3,7 +3,7 @@ package provider
 // Framework acceptance tests for BROWSER / MULTI_STEP_API monitors against
 // a stateful mock of the code-monitor routes (doc 42 §7): plan-time bundle
 // upload, validate-then-create, draft → test → publish, a failed test that
-// leaves state alone, rollback drift, the removed `enabled`, and import
+// leaves state alone, rollback drift, `enabled` (sent only when configured), and import
 // transferring ownership.
 
 import (
@@ -41,6 +41,7 @@ type fakeCodeAPI struct {
 	revisions   []map[string]any
 	nextRunPass bool
 	published   []map[string]any
+	creates     []map[string]any
 	puts        []map[string]any
 	transfers   []map[string]any
 	rolledBack  string
@@ -99,12 +100,16 @@ func newFakeCodeAPI(t *testing.T, m *mockAPI) *fakeCodeAPI {
 		if !readBody(w, r, &body) {
 			return
 		}
-		if body["managedBy"] != "TERRAFORM" || body["ownerEnforced"] != true || body["enabled"] != nil {
-			t.Errorf("create body ownership = %v / %v / enabled %v", body["managedBy"], body["ownerEnforced"], body["enabled"])
+		if body["managedBy"] != "TERRAFORM" || body["ownerEnforced"] != true {
+			t.Errorf("create body ownership = %v / %v", body["managedBy"], body["ownerEnforced"])
 		}
 		code := body["code"].(map[string]any)
 		f.mu.Lock()
+		f.creates = append(f.creates, body)
 		f.monitor = codeMonitorFixture(body["name"].(string), "TERRAFORM", true)
+		if e, ok := body["enabled"].(bool); ok {
+			f.monitor["enabled"] = e
+		}
 		f.publishDigest(code["bundle"].(string), code["entrypoint"].(string))
 		mon := f.monitor
 		f.mu.Unlock()
@@ -132,6 +137,9 @@ func newFakeCodeAPI(t *testing.T, m *mockAPI) *fakeCodeAPI {
 		f.puts = append(f.puts, body)
 		if n, ok := body["name"].(string); ok {
 			f.monitor["name"] = n
+		}
+		if e, ok := body["enabled"].(bool); ok {
+			f.monitor["enabled"] = e
 		}
 		if code, ok := body["code"].(map[string]any); ok {
 			f.publishDigest(code["bundle"].(string), code["entrypoint"].(string))
@@ -325,7 +333,7 @@ func TestAccCodeMonitor_CreateChangeFailRollbackDestroy(t *testing.T) {
 					resource.TestCheckResourceAttr("devhelm_monitor.checkout", "code_files.%", "2"),
 					resource.TestCheckResourceAttr("devhelm_monitor.checkout", "owner.type", "TERRAFORM"),
 					resource.TestCheckResourceAttr("devhelm_monitor.checkout", "owner_enforced", "true"),
-					resource.TestCheckResourceAttr("devhelm_monitor.checkout", "test_before_publish", "true"),
+					resource.TestCheckNoResourceAttr("devhelm_monitor.checkout", "test_before_publish"),
 					func(s *terraform.State) error {
 						digestV1 = s.RootModule().Resources["devhelm_monitor.checkout"].Primary.Attributes["code_hash"]
 						return nil
@@ -449,17 +457,93 @@ func TestAccCodeMonitor_UntestedPublishSendsCodeOnPut(t *testing.T) {
 	})
 }
 
-func TestAccCodeMonitor_EnabledIsAnUpgradeError(t *testing.T) {
+// A configured `enabled` is sent on create and update (pause / resume).
+func TestAccCodeMonitor_EnabledConfiguredIsSent(t *testing.T) {
 	requireAcc(t)
 	m := newMockAPI(t)
+	f := newFakeCodeAPI(t, m)
 	dir := t.TempDir()
 	writeSpec(t, dir, "x\n")
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: newProviderFactories(),
-		Steps: []resource.TestStep{{
-			Config:      codeMonitorHCL(m.URL(), dir, "enabled = true"),
-			ExpectError: regexp.MustCompile(`devhelm\s+monitors\s+pause`),
-		}},
+		Steps: []resource.TestStep{
+			{
+				Config: codeMonitorHCL(m.URL(), dir, "enabled = false"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("devhelm_monitor.checkout", "enabled", "false"),
+					func(*terraform.State) error {
+						if got := f.creates[0]["enabled"]; got != false {
+							return fmt.Errorf("create enabled = %v, want false", got)
+						}
+						return nil
+					},
+				),
+			},
+			{
+				Config: codeMonitorHCL(m.URL(), dir, "enabled = true"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("devhelm_monitor.checkout", "enabled", "true"),
+					func(*terraform.State) error {
+						if got := f.puts[len(f.puts)-1]["enabled"]; got != true {
+							return fmt.Errorf("PUT enabled = %v, want true", got)
+						}
+						return nil
+					},
+				),
+			},
+		},
+	})
+}
+
+// An omitted `enabled` is never sent: state takes the server value, a
+// monitor paused elsewhere plans no diff (the v0.2.0-beta.10 upgrade case:
+// enabled in state, absent from config), and an apply doesn't resume it.
+func TestAccCodeMonitor_EnabledOmittedFollowsServer(t *testing.T) {
+	requireAcc(t)
+	m := newMockAPI(t)
+	f := newFakeCodeAPI(t, m)
+	dir := t.TempDir()
+	writeSpec(t, dir, "v1\n")
+	cfg := codeMonitorHCL(m.URL(), dir, "test_before_publish = false")
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: newProviderFactories(),
+		Steps: []resource.TestStep{
+			{
+				Config: cfg,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("devhelm_monitor.checkout", "enabled", "true"),
+					func(*terraform.State) error {
+						if _, sent := f.creates[0]["enabled"]; sent {
+							return fmt.Errorf("create sent enabled = %v; omitted must not be sent", f.creates[0]["enabled"])
+						}
+						return nil
+					},
+				),
+			},
+			{Config: cfg, PlanOnly: true},
+			{
+				PreConfig: func() {
+					f.mu.Lock()
+					f.monitor["enabled"] = false
+					f.mu.Unlock()
+				},
+				Config:   cfg,
+				PlanOnly: true,
+			},
+			{
+				PreConfig: func() { writeSpec(t, dir, "v2\n") },
+				Config:    cfg,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("devhelm_monitor.checkout", "enabled", "false"),
+					func(*terraform.State) error {
+						if _, sent := f.puts[len(f.puts)-1]["enabled"]; sent {
+							return fmt.Errorf("PUT sent enabled; omitted must not resume a paused monitor")
+						}
+						return nil
+					},
+				),
+			},
+		},
 	})
 }
 
