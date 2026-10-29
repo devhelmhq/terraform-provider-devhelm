@@ -277,7 +277,7 @@ func runFixture(id, phase string, outcome *string) map[string]any {
 		"id": id, "organizationId": 1, "monitorId": codeMonitorID, "revisionId": uuid.NewString(),
 		"region": "us-east", "source": "remote_validation", "countsTowardHealth": false,
 		"enqueuedAt": time.Now().Format(time.RFC3339), "phase": phase, "cancelRequested": false,
-		"bundleDigest": "sha256:x", "capturePolicySnapshot": map[string]any{}, "bindingVersionSnapshot": map[string]any{},
+		"bundleDigest": "sha256:x", "capturePolicySnapshot": map[string]any{}, "bindingVersionSnapshot": map[string]any{"keys": []any{}, "attachedKeys": []any{}},
 		"stream": false, "evidence": []any{}, "tabCounts": map[string]any{}, "attempt": 1, "attemptOf": 1,
 		"attempts": []any{}, "executionAttempts": []any{}, "billable": true, "outcome": outcome,
 		"url": "https://app.devhelm.io/runs/" + id,

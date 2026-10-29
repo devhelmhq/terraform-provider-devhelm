@@ -104,7 +104,7 @@ func runJSON(id, phase string, outcome *string) string {
 		"id": id, "organizationId": 1, "monitorId": "00000000-0000-0000-0000-000000000001",
 		"revisionId": "00000000-0000-0000-0000-000000000002", "region": "us-east", "source": "remote_validation",
 		"countsTowardHealth": false, "enqueuedAt": "2026-10-25T00:00:00Z", "phase": phase, "cancelRequested": false,
-		"bundleDigest": "sha256:c", "capturePolicySnapshot": map[string]any{}, "bindingVersionSnapshot": map[string]any{},
+		"bundleDigest": "sha256:c", "capturePolicySnapshot": map[string]any{}, "bindingVersionSnapshot": map[string]any{"keys": []any{}, "attachedKeys": []any{}},
 		"stream": phase != "finished", "evidence": []any{}, "tabCounts": map[string]any{}, "attempt": 1, "attemptOf": 1,
 		"attempts": []any{}, "executionAttempts": []any{}, "billable": true, "outcome": outcome,
 		"url": "https://app.devhelm.io/runs/" + id,
