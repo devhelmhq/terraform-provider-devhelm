@@ -4362,6 +4362,15 @@ type BearerAuthConfig struct {
 // BearerAuthConfigType defines model for BearerAuthConfig.Type.
 type BearerAuthConfigType string
 
+// BindingVersionSnapshot Secret key names frozen when the run was created
+type BindingVersionSnapshot struct {
+	// AttachedKeys Secret key names attached to this run
+	AttachedKeys []string `json:"attachedKeys"`
+
+	// Keys Secret key names resolved for this run
+	Keys []string `json:"keys"`
+}
+
 // BodyContainsAssertion defines model for BodyContainsAssertion.
 type BodyContainsAssertion struct {
 	// Substring Substring that must appear in the response body
@@ -6256,7 +6265,7 @@ type EmailMessageDto struct {
 	Html *string `json:"html,omitempty"`
 
 	// Id Message id
-	Id openapi_types.UUID `json:"id"`
+	Id string `json:"id"`
 
 	// Inbox Local-part the message was addressed to
 	Inbox *string `json:"inbox,omitempty"`
@@ -10333,8 +10342,8 @@ type RunDto struct {
 	// Billable Whether a finished run counts against the included run pool
 	Billable bool `json:"billable"`
 
-	// BindingVersionSnapshot Resolved secret key names frozen at create
-	BindingVersionSnapshot map[string]json.RawMessage `json:"bindingVersionSnapshot"`
+	// BindingVersionSnapshot Secret key names frozen when the run was created
+	BindingVersionSnapshot BindingVersionSnapshot `json:"bindingVersionSnapshot"`
 
 	// BundleDigest Package digest frozen at create
 	BundleDigest string `json:"bundleDigest"`
@@ -10345,8 +10354,8 @@ type RunDto struct {
 	// CancelledBy Who requested cancel
 	CancelledBy *string `json:"cancelledBy,omitempty"`
 
-	// CapturePolicySnapshot Capture settings frozen at create
-	CapturePolicySnapshot map[string]json.RawMessage `json:"capturePolicySnapshot"`
+	// CapturePolicySnapshot When to retain screenshots, traces, video, and network evidence
+	CapturePolicySnapshot CapturePolicy `json:"capturePolicySnapshot"`
 
 	// Cause Platform cause for an execution error, inconclusive finish, or network failure
 	Cause *string `json:"cause,omitempty"`
@@ -10564,7 +10573,7 @@ type RunExecutionDto struct {
 	// RequiredCapabilities Capabilities required by this image
 	RequiredCapabilities []string `json:"requiredCapabilities"`
 
-	// Runtime Default execution environment; null uses the catalog default
+	// Runtime Customer-selectable runtime profile
 	Runtime RuntimeProfileDto `json:"runtime"`
 }
 
@@ -10911,7 +10920,7 @@ type RunnerRegionStatusesDto struct {
 	Regions []RunnerRegionStatusDto `json:"regions"`
 }
 
-// RuntimeProfileDto Default execution environment; null uses the catalog default
+// RuntimeProfileDto Customer-selectable runtime profile
 type RuntimeProfileDto struct {
 	// AvailableAt When this runtime became available
 	AvailableAt *time.Time                 `json:"availableAt,omitempty"`
@@ -10935,14 +10944,29 @@ type RuntimeProfileDto struct {
 	// Packages Pinned npm packages available to checks
 	Packages *map[string]*string `json:"packages,omitempty"`
 
+	// PlatformDefault Whether new checks use this runtime when none is pinned
+	PlatformDefault bool `json:"platformDefault"`
+
 	// PlaywrightVersion Playwright version available to checks
 	PlaywrightVersion string `json:"playwrightVersion"`
+
+	// Regions Whether each region can run this runtime
+	Regions []RuntimeRegionAvailability `json:"regions"`
 
 	// ReservedBindings Environment bindings this runtime reads
 	ReservedBindings *[]string `json:"reservedBindings,omitempty"`
 
 	// Status Runtime support status
 	Status string `json:"status"`
+}
+
+// RuntimeRegionAvailability Whether a runtime can accept new runs in one probe region
+type RuntimeRegionAvailability struct {
+	// Available Whether this runtime can run checks in the region
+	Available bool `json:"available"`
+
+	// Region Check region, such as us-east
+	Region string `json:"region"`
 }
 
 // ScheduledMaintenanceDto A scheduled maintenance window from a vendor status page
@@ -11929,7 +11953,7 @@ type SingleValueResponseRunnerRegionStatusesDto struct {
 
 // SingleValueResponseRuntimeProfileDto defines model for SingleValueResponseRuntimeProfileDto.
 type SingleValueResponseRuntimeProfileDto struct {
-	// Data Default execution environment; null uses the catalog default
+	// Data Customer-selectable runtime profile
 	Data RuntimeProfileDto `json:"data"`
 }
 

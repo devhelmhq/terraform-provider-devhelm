@@ -3,17 +3,17 @@
 page_title: "devhelm_runtime Data Source - DevHelm"
 subcategory: ""
 description: |-
-  Look up a synthetics runtime (Node and Playwright versions, packages) by id, or the newest available runtime when id is omitted. Pin it on a code monitor with config.runtimeId.
+  Look up a synthetics runtime (Node and Playwright versions, packages) by id, or the platform default when id is omitted. Pin it on a code monitor with config.runtimeId.
 ---
 
 # devhelm_runtime (Data Source)
 
-Look up a synthetics runtime (Node and Playwright versions, packages) by id, or the newest available runtime when `id` is omitted. Pin it on a code monitor with `config.runtimeId`.
+Look up a synthetics runtime (Node and Playwright versions, packages) by id, or the platform default when `id` is omitted. Pin it on a code monitor with `config.runtimeId`.
 
 ## Example Usage
 
 ```terraform
-# The newest available runtime; pass `id` to read a specific one.
+# The platform default runtime; pass `id` to read a specific one.
 data "devhelm_runtime" "latest" {}
 
 output "playwright" {
@@ -26,7 +26,7 @@ output "playwright" {
 
 ### Optional
 
-- `id` (String) Runtime id such as 2026.11; omit for the newest available runtime
+- `id` (String) Runtime id such as 2026.11; omit for the platform default runtime
 
 ### Read-Only
 
@@ -36,6 +36,16 @@ output "playwright" {
 - `node_builtins` (List of String) Node built-in modules available to checks
 - `node_version` (String) Node version available to checks
 - `packages` (Map of String) Pinned npm packages available to checks, name to version
+- `platform_default` (Boolean) Whether new checks use this runtime when none is pinned
 - `playwright_version` (String) Playwright version available to checks
+- `regions` (Attributes List) Whether each region can run this runtime (see [below for nested schema](#nestedatt--regions))
 - `reserved_bindings` (List of String) Environment bindings this runtime reads
 - `status` (String) baking, available, deprecated, or retired
+
+<a id="nestedatt--regions"></a>
+### Nested Schema for `regions`
+
+Read-Only:
+
+- `available` (Boolean) Whether this runtime can run checks in the region
+- `region` (String) Check region, such as us-east
