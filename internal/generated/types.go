@@ -6256,7 +6256,7 @@ type EmailMessageDto struct {
 	Html *string `json:"html,omitempty"`
 
 	// Id Message id
-	Id openapi_types.UUID `json:"id"`
+	Id string `json:"id"`
 
 	// Inbox Local-part the message was addressed to
 	Inbox *string `json:"inbox,omitempty"`
