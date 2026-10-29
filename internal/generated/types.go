@@ -10562,7 +10562,7 @@ type RunExecutionDto struct {
 	Harness HarnessReleaseDto `json:"harness"`
 
 	// Id Immutable execution image identifier
-	Id openapi_types.UUID `json:"id"`
+	Id string `json:"id"`
 
 	// ImageDigest Immutable image digest
 	ImageDigest string `json:"imageDigest"`
