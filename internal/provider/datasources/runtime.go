@@ -7,6 +7,7 @@ import (
 
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -34,6 +35,8 @@ type RuntimeDataSourceModel struct {
 	Packages          types.Map    `tfsdk:"packages"`
 	NodeBuiltins      types.List   `tfsdk:"node_builtins"`
 	ReservedBindings  types.List   `tfsdk:"reserved_bindings"`
+	PlatformDefault   types.Bool   `tfsdk:"platform_default"`
+	Regions           types.List   `tfsdk:"regions"`
 }
 
 func NewRuntimeDataSource() datasource.DataSource {
@@ -46,12 +49,12 @@ func (d *RuntimeDataSource) Metadata(_ context.Context, req datasource.MetadataR
 
 func (d *RuntimeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Look up a synthetics runtime (Node and Playwright versions, packages) by id, or the newest " +
-			"available runtime when `id` is omitted. Pin it on a code monitor with `config.runtimeId`.",
+		Description: "Look up a synthetics runtime (Node and Playwright versions, packages) by id, or the " +
+			"platform default when `id` is omitted. Pin it on a code monitor with `config.runtimeId`.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Optional: true, Computed: true,
-				Description: "Runtime id such as 2026.11; omit for the newest available runtime",
+				Description: "Runtime id such as 2026.11; omit for the platform default runtime",
 			},
 			"node_version":       schema.StringAttribute{Computed: true, Description: "Node version available to checks"},
 			"playwright_version": schema.StringAttribute{Computed: true, Description: "Playwright version available to checks"},
@@ -70,6 +73,26 @@ func (d *RuntimeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest
 			"reserved_bindings": schema.ListAttribute{
 				Computed: true, ElementType: types.StringType,
 				Description: "Environment bindings this runtime reads",
+			},
+			"platform_default": schema.BoolAttribute{
+				Computed:    true,
+				Description: "Whether new checks use this runtime when none is pinned",
+			},
+			"regions": schema.ListNestedAttribute{
+				Computed:    true,
+				Description: "Whether each region can run this runtime",
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"region": schema.StringAttribute{
+							Computed:    true,
+							Description: "Check region, such as us-east",
+						},
+						"available": schema.BoolAttribute{
+							Computed:    true,
+							Description: "Whether this runtime can run checks in the region",
+						},
+					},
+				},
 			},
 		},
 	}
@@ -108,15 +131,33 @@ func (d *RuntimeDataSource) Read(ctx context.Context, req datasource.ReadRequest
 			api.AddAPIError(&resp.Diagnostics, "list runtimes", err, path.Empty())
 			return
 		}
-		profile = newestAvailable(all)
+		profile = selectRuntime(all)
 		if profile == nil {
-			resp.Diagnostics.AddError("No available runtime", "The runtime catalog has no runtime with status available.")
+			resp.Diagnostics.AddError("No available runtime", "The runtime catalog has no runtime that can accept a new pin.")
 			return
 		}
 	}
 
 	resp.Diagnostics.Append(mapRuntime(ctx, &model, profile)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+}
+
+// selectRuntime picks the platform default. A retired or baking default is
+// not a pin target. A catalog with no default falls back to the most
+// recently available runtime.
+func selectRuntime(all []generated.RuntimeProfileDto) *generated.RuntimeProfileDto {
+	for i := range all {
+		if !all[i].PlatformDefault {
+			continue
+		}
+		switch all[i].Status {
+		case "retired", "baking":
+			return nil
+		default:
+			return &all[i]
+		}
+	}
+	return newestAvailable(all)
 }
 
 // newestAvailable picks the most recently available runtime with status
@@ -172,7 +213,29 @@ func mapRuntime(ctx context.Context, m *RuntimeDataSourceModel, p *generated.Run
 	diags.Append(dd...)
 	m.ReservedBindings, dd = types.ListValueFrom(ctx, types.StringType, derefSlice(p.ReservedBindings))
 	diags.Append(dd...)
+	m.PlatformDefault = types.BoolValue(p.PlatformDefault)
+	regions := make([]runtimeRegionModel, 0, len(p.Regions))
+	for _, region := range p.Regions {
+		regions = append(regions, runtimeRegionModel{
+			Region:    types.StringValue(region.Region),
+			Available: types.BoolValue(region.Available),
+		})
+	}
+	m.Regions, dd = types.ListValueFrom(ctx, types.ObjectType{AttrTypes: runtimeRegionAttrTypes()}, regions)
+	diags.Append(dd...)
 	return diags
+}
+
+type runtimeRegionModel struct {
+	Region    types.String `tfsdk:"region"`
+	Available types.Bool   `tfsdk:"available"`
+}
+
+func runtimeRegionAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"region":    types.StringType,
+		"available": types.BoolType,
+	}
 }
 
 func timeValue(t *time.Time) types.String {

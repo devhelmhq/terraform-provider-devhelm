@@ -1,4 +1,4 @@
-# The newest available runtime; pass `id` to read a specific one.
+# The platform default runtime; pass `id` to read a specific one.
 data "devhelm_runtime" "latest" {}
 
 output "playwright" {
