@@ -10363,6 +10363,9 @@ type RunDto struct {
 	// CountsTowardHealth Whether this run votes on monitor health
 	CountsTowardHealth bool `json:"countsTowardHealth"`
 
+	// Delayed True while this run's result is on its way but held up by a platform outage
+	Delayed *bool `json:"delayed,omitempty"`
+
 	// DurationMs Wall time from claim to finish
 	DurationMs *int64 `json:"durationMs,omitempty"`
 
@@ -10379,8 +10382,11 @@ type RunDto struct {
 	EvaluationCycleId *openapi_types.UUID `json:"evaluationCycleId,omitempty"`
 
 	// Evidence List evidence chips in SHOT → TRACE → VIDEO → NET order
-	Evidence  []RunEvidenceDto `json:"evidence"`
-	Execution *RunExecutionDto `json:"execution,omitempty"`
+	Evidence []RunEvidenceDto `json:"evidence"`
+
+	// EvidenceIncomplete Whether some run evidence never arrived. The outcome is unaffected
+	EvidenceIncomplete bool             `json:"evidenceIncomplete"`
+	Execution          *RunExecutionDto `json:"execution,omitempty"`
 
 	// ExecutionAttempts Persisted worker execution attempts
 	ExecutionAttempts []RunExecutionAttemptDto `json:"executionAttempts"`
@@ -10562,7 +10568,7 @@ type RunExecutionDto struct {
 	Harness HarnessReleaseDto `json:"harness"`
 
 	// Id Immutable execution image identifier
-	Id openapi_types.UUID `json:"id"`
+	Id string `json:"id"`
 
 	// ImageDigest Immutable image digest
 	ImageDigest string `json:"imageDigest"`
