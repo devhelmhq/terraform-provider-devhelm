@@ -74224,6 +74224,7 @@
           "capturePolicySnapshot",
           "enqueuedAt",
           "evidence",
+          "evidenceIncomplete",
           "executionAttempts",
           "id",
           "phase",
@@ -74486,6 +74487,15 @@
             "format": "int32",
             "nullable": true
           },
+          "delayed": {
+            "type": "boolean",
+            "description": "True while this run's result is on its way but held up by a platform outage",
+            "nullable": true
+          },
+          "evidenceIncomplete": {
+            "type": "boolean",
+            "description": "Whether some run evidence never arrived. The outcome is unaffected"
+          },
           "heartbeatAgeMs": {
             "type": "integer",
             "description": "Milliseconds since the last supervisor heartbeat",
@@ -74602,7 +74612,9 @@
               "lease_cap",
               "open_expired",
               "session_failed",
-              "log_unavailable"
+              "log_unavailable",
+              "result_lost",
+              "cell_restarted"
             ]
           },
           "billable": {
@@ -74791,8 +74803,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Immutable execution image identifier",
-            "format": "uuid"
+            "description": "Immutable execution image identifier"
           },
           "runtime": {
             "$ref": "#/components/schemas/RuntimeProfileDto"
