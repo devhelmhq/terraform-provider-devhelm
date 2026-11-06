@@ -65188,6 +65188,11 @@
               "STATUS_PAGE_SUBSCRIBER_DESTINATION_REQUIRED",
               "STATUS_PAGE_SUBSCRIBER_DESTINATION_INVALID",
               "STATUS_PAGE_SUBSCRIBER_COMPONENT_NOT_FOUND",
+              "STATUS_PAGE_UPTIME_WINDOW_INCOMPLETE",
+              "STATUS_PAGE_UPTIME_FROM_AFTER_TO",
+              "STATUS_PAGE_UPTIME_FROM_IN_FUTURE",
+              "STATUS_PAGE_UPTIME_FROM_TOO_OLD",
+              "STATUS_PAGE_UPTIME_WINDOW_TOO_WIDE",
               "SP_INCIDENT_PUBLISH_RESOLVED",
               "SP_INCIDENT_DISMISS_PUBLISHED",
               "SP_INCIDENT_SCHEDULED_FOR_REQUIRED",
@@ -69287,6 +69292,18 @@
           "lastCheckRegion": {
             "type": "string",
             "description": "Region of the most recent check",
+            "nullable": true
+          },
+          "lastCheckAt": {
+            "type": "string",
+            "description": "When the most recent check in any region ran",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastCheckResponseTimeMs": {
+            "type": "integer",
+            "description": "Response time of the most recent check, in milliseconds",
+            "format": "int32",
             "nullable": true
           },
           "lastFailureSummary": {
@@ -74224,6 +74241,7 @@
           "capturePolicySnapshot",
           "enqueuedAt",
           "evidence",
+          "evidenceIncomplete",
           "executionAttempts",
           "id",
           "phase",
@@ -74486,6 +74504,15 @@
             "format": "int32",
             "nullable": true
           },
+          "delayed": {
+            "type": "boolean",
+            "description": "True while this run's result is on its way but held up by a platform outage",
+            "nullable": true
+          },
+          "evidenceIncomplete": {
+            "type": "boolean",
+            "description": "Whether some run evidence never arrived. The outcome is unaffected"
+          },
           "heartbeatAgeMs": {
             "type": "integer",
             "description": "Milliseconds since the last supervisor heartbeat",
@@ -74602,7 +74629,9 @@
               "lease_cap",
               "open_expired",
               "session_failed",
-              "log_unavailable"
+              "log_unavailable",
+              "result_lost",
+              "cell_restarted"
             ]
           },
           "billable": {
@@ -74791,8 +74820,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Immutable execution image identifier",
-            "format": "uuid"
+            "description": "Immutable execution image identifier"
           },
           "runtime": {
             "$ref": "#/components/schemas/RuntimeProfileDto"
