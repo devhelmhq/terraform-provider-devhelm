@@ -8120,11 +8120,17 @@ type MonitorDto struct {
 	Id             openapi_types.UUID `json:"id"`
 	IncidentPolicy *IncidentPolicyDto `json:"incidentPolicy,omitempty"`
 
+	// LastCheckAt When the most recent check in any region ran
+	LastCheckAt *time.Time `json:"lastCheckAt,omitempty"`
+
 	// LastCheckOutcome Result of the most recent check in any region: PASSED, DEGRADED, or FAILED
 	LastCheckOutcome *string `json:"lastCheckOutcome,omitempty"`
 
 	// LastCheckRegion Region of the most recent check
 	LastCheckRegion *string `json:"lastCheckRegion,omitempty"`
+
+	// LastCheckResponseTimeMs Response time of the most recent check, in milliseconds
+	LastCheckResponseTimeMs *int32 `json:"lastCheckResponseTimeMs,omitempty"`
 
 	// LastFailureSummary Why the latest failing region failed
 	LastFailureSummary *string `json:"lastFailureSummary,omitempty"`
@@ -10363,6 +10369,9 @@ type RunDto struct {
 	// CountsTowardHealth Whether this run votes on monitor health
 	CountsTowardHealth bool `json:"countsTowardHealth"`
 
+	// Delayed True while this run's result is on its way but held up by a platform outage
+	Delayed *bool `json:"delayed,omitempty"`
+
 	// DurationMs Wall time from claim to finish
 	DurationMs *int64 `json:"durationMs,omitempty"`
 
@@ -10379,8 +10388,11 @@ type RunDto struct {
 	EvaluationCycleId *openapi_types.UUID `json:"evaluationCycleId,omitempty"`
 
 	// Evidence List evidence chips in SHOT → TRACE → VIDEO → NET order
-	Evidence  []RunEvidenceDto `json:"evidence"`
-	Execution *RunExecutionDto `json:"execution,omitempty"`
+	Evidence []RunEvidenceDto `json:"evidence"`
+
+	// EvidenceIncomplete Whether some run evidence never arrived. The outcome is unaffected
+	EvidenceIncomplete bool             `json:"evidenceIncomplete"`
+	Execution          *RunExecutionDto `json:"execution,omitempty"`
 
 	// ExecutionAttempts Persisted worker execution attempts
 	ExecutionAttempts []RunExecutionAttemptDto `json:"executionAttempts"`
@@ -10562,7 +10574,7 @@ type RunExecutionDto struct {
 	Harness HarnessReleaseDto `json:"harness"`
 
 	// Id Immutable execution image identifier
-	Id openapi_types.UUID `json:"id"`
+	Id string `json:"id"`
 
 	// ImageDigest Immutable image digest
 	ImageDigest string `json:"imageDigest"`
