@@ -43,6 +43,7 @@ func (e AddIncidentUpdateRequestNewStatus) Valid() bool {
 const (
 	AdminAddSubscriberRequestChannelEMAIL   AdminAddSubscriberRequestChannel = "EMAIL"
 	AdminAddSubscriberRequestChannelSMS     AdminAddSubscriberRequestChannel = "SMS"
+	AdminAddSubscriberRequestChannelTEAMS   AdminAddSubscriberRequestChannel = "TEAMS"
 	AdminAddSubscriberRequestChannelWEBHOOK AdminAddSubscriberRequestChannel = "WEBHOOK"
 )
 
@@ -52,6 +53,8 @@ func (e AdminAddSubscriberRequestChannel) Valid() bool {
 	case AdminAddSubscriberRequestChannelEMAIL:
 		return true
 	case AdminAddSubscriberRequestChannelSMS:
+		return true
+	case AdminAddSubscriberRequestChannelTEAMS:
 		return true
 	case AdminAddSubscriberRequestChannelWEBHOOK:
 		return true
@@ -621,6 +624,24 @@ func (e CreateResourceGroupRequestManagedBy) Valid() bool {
 	}
 }
 
+// Defines values for CreateSsoConnectionRequestSignInScope.
+const (
+	CreateSsoConnectionRequestSignInScopeANYIDPUSER    CreateSsoConnectionRequestSignInScope = "ANY_IDP_USER"
+	CreateSsoConnectionRequestSignInScopeROUTEDDOMAINS CreateSsoConnectionRequestSignInScope = "ROUTED_DOMAINS"
+)
+
+// Valid indicates whether the value is a known member of the CreateSsoConnectionRequestSignInScope enum.
+func (e CreateSsoConnectionRequestSignInScope) Valid() bool {
+	switch e {
+	case CreateSsoConnectionRequestSignInScopeANYIDPUSER:
+		return true
+	case CreateSsoConnectionRequestSignInScopeROUTEDDOMAINS:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CreateStatusPageComponentRequestType.
 const (
 	CreateStatusPageComponentRequestTypeDEPENDENCY CreateStatusPageComponentRequestType = "DEPENDENCY"
@@ -639,6 +660,24 @@ func (e CreateStatusPageComponentRequestType) Valid() bool {
 	case CreateStatusPageComponentRequestTypeMONITOR:
 		return true
 	case CreateStatusPageComponentRequestTypeSTATIC:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateStatusPageGroupRequestMode.
+const (
+	CreateStatusPageGroupRequestModeSEPARATE CreateStatusPageGroupRequestMode = "SEPARATE"
+	CreateStatusPageGroupRequestModeUNIFIED  CreateStatusPageGroupRequestMode = "UNIFIED"
+)
+
+// Valid indicates whether the value is a known member of the CreateStatusPageGroupRequestMode enum.
+func (e CreateStatusPageGroupRequestMode) Valid() bool {
+	switch e {
+	case CreateStatusPageGroupRequestModeSEPARATE:
+		return true
+	case CreateStatusPageGroupRequestModeUNIFIED:
 		return true
 	default:
 		return false
@@ -818,15 +857,18 @@ func (e CreateStatusPageRequestManagedBy) Valid() bool {
 
 // Defines values for CreateStatusPageRequestVisibility.
 const (
-	CreateStatusPageRequestVisibilityIPRESTRICTED CreateStatusPageRequestVisibility = "IP_RESTRICTED"
-	CreateStatusPageRequestVisibilityPASSWORD     CreateStatusPageRequestVisibility = "PASSWORD"
-	CreateStatusPageRequestVisibilityPUBLIC       CreateStatusPageRequestVisibility = "PUBLIC"
+	CreateStatusPageRequestVisibilityIPRESTRICTED  CreateStatusPageRequestVisibility = "IP_RESTRICTED"
+	CreateStatusPageRequestVisibilityLOGINREQUIRED CreateStatusPageRequestVisibility = "LOGIN_REQUIRED"
+	CreateStatusPageRequestVisibilityPASSWORD      CreateStatusPageRequestVisibility = "PASSWORD"
+	CreateStatusPageRequestVisibilityPUBLIC        CreateStatusPageRequestVisibility = "PUBLIC"
 )
 
 // Valid indicates whether the value is a known member of the CreateStatusPageRequestVisibility enum.
 func (e CreateStatusPageRequestVisibility) Valid() bool {
 	switch e {
 	case CreateStatusPageRequestVisibilityIPRESTRICTED:
+		return true
+	case CreateStatusPageRequestVisibilityLOGINREQUIRED:
 		return true
 	case CreateStatusPageRequestVisibilityPASSWORD:
 		return true
@@ -1467,6 +1509,30 @@ func (e IcmpResponseTimeWarnAssertionType) Valid() bool {
 	}
 }
 
+// Defines values for ImportSubscriberRowChannel.
+const (
+	ImportSubscriberRowChannelEMAIL   ImportSubscriberRowChannel = "EMAIL"
+	ImportSubscriberRowChannelSMS     ImportSubscriberRowChannel = "SMS"
+	ImportSubscriberRowChannelTEAMS   ImportSubscriberRowChannel = "TEAMS"
+	ImportSubscriberRowChannelWEBHOOK ImportSubscriberRowChannel = "WEBHOOK"
+)
+
+// Valid indicates whether the value is a known member of the ImportSubscriberRowChannel enum.
+func (e ImportSubscriberRowChannel) Valid() bool {
+	switch e {
+	case ImportSubscriberRowChannelEMAIL:
+		return true
+	case ImportSubscriberRowChannelSMS:
+		return true
+	case ImportSubscriberRowChannelTEAMS:
+		return true
+	case ImportSubscriberRowChannelWEBHOOK:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for IncidentIoChannelConfigChannelType.
 const (
 	IncidentIoChannelConfigChannelTypeIncidentIo IncidentIoChannelConfigChannelType = "incident_io"
@@ -2010,6 +2076,30 @@ func (e RegexBodyAssertionType) Valid() bool {
 	}
 }
 
+// Defines values for RenderStatusPageTemplateRequestStage.
+const (
+	RenderStatusPageTemplateRequestStageIDENTIFIED    RenderStatusPageTemplateRequestStage = "IDENTIFIED"
+	RenderStatusPageTemplateRequestStageINVESTIGATING RenderStatusPageTemplateRequestStage = "INVESTIGATING"
+	RenderStatusPageTemplateRequestStageMONITORING    RenderStatusPageTemplateRequestStage = "MONITORING"
+	RenderStatusPageTemplateRequestStageRESOLVED      RenderStatusPageTemplateRequestStage = "RESOLVED"
+)
+
+// Valid indicates whether the value is a known member of the RenderStatusPageTemplateRequestStage enum.
+func (e RenderStatusPageTemplateRequestStage) Valid() bool {
+	switch e {
+	case RenderStatusPageTemplateRequestStageIDENTIFIED:
+		return true
+	case RenderStatusPageTemplateRequestStageINVESTIGATING:
+		return true
+	case RenderStatusPageTemplateRequestStageMONITORING:
+		return true
+	case RenderStatusPageTemplateRequestStageRESOLVED:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ResponseSizeAssertionType.
 const (
 	ResponseSizeAssertionTypeResponseSize ResponseSizeAssertionType = "response_size"
@@ -2196,6 +2286,99 @@ const (
 func (e StatusCodeAssertionType) Valid() bool {
 	switch e {
 	case StatusCodeAssertionTypeStatusCode:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StatusPageTemplateComponentStatus.
+const (
+	StatusPageTemplateComponentStatusDEGRADEDPERFORMANCE StatusPageTemplateComponentStatus = "DEGRADED_PERFORMANCE"
+	StatusPageTemplateComponentStatusMAJOROUTAGE         StatusPageTemplateComponentStatus = "MAJOR_OUTAGE"
+	StatusPageTemplateComponentStatusOPERATIONAL         StatusPageTemplateComponentStatus = "OPERATIONAL"
+	StatusPageTemplateComponentStatusPARTIALOUTAGE       StatusPageTemplateComponentStatus = "PARTIAL_OUTAGE"
+	StatusPageTemplateComponentStatusUNDERMAINTENANCE    StatusPageTemplateComponentStatus = "UNDER_MAINTENANCE"
+)
+
+// Valid indicates whether the value is a known member of the StatusPageTemplateComponentStatus enum.
+func (e StatusPageTemplateComponentStatus) Valid() bool {
+	switch e {
+	case StatusPageTemplateComponentStatusDEGRADEDPERFORMANCE:
+		return true
+	case StatusPageTemplateComponentStatusMAJOROUTAGE:
+		return true
+	case StatusPageTemplateComponentStatusOPERATIONAL:
+		return true
+	case StatusPageTemplateComponentStatusPARTIALOUTAGE:
+		return true
+	case StatusPageTemplateComponentStatusUNDERMAINTENANCE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StatusPageTemplateRequestImpact.
+const (
+	StatusPageTemplateRequestImpactCRITICAL StatusPageTemplateRequestImpact = "CRITICAL"
+	StatusPageTemplateRequestImpactMAJOR    StatusPageTemplateRequestImpact = "MAJOR"
+	StatusPageTemplateRequestImpactMINOR    StatusPageTemplateRequestImpact = "MINOR"
+	StatusPageTemplateRequestImpactNONE     StatusPageTemplateRequestImpact = "NONE"
+)
+
+// Valid indicates whether the value is a known member of the StatusPageTemplateRequestImpact enum.
+func (e StatusPageTemplateRequestImpact) Valid() bool {
+	switch e {
+	case StatusPageTemplateRequestImpactCRITICAL:
+		return true
+	case StatusPageTemplateRequestImpactMAJOR:
+		return true
+	case StatusPageTemplateRequestImpactMINOR:
+		return true
+	case StatusPageTemplateRequestImpactNONE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StatusPageTemplateRequestInitialStatus.
+const (
+	StatusPageTemplateRequestInitialStatusIDENTIFIED    StatusPageTemplateRequestInitialStatus = "IDENTIFIED"
+	StatusPageTemplateRequestInitialStatusINVESTIGATING StatusPageTemplateRequestInitialStatus = "INVESTIGATING"
+	StatusPageTemplateRequestInitialStatusMONITORING    StatusPageTemplateRequestInitialStatus = "MONITORING"
+	StatusPageTemplateRequestInitialStatusRESOLVED      StatusPageTemplateRequestInitialStatus = "RESOLVED"
+)
+
+// Valid indicates whether the value is a known member of the StatusPageTemplateRequestInitialStatus enum.
+func (e StatusPageTemplateRequestInitialStatus) Valid() bool {
+	switch e {
+	case StatusPageTemplateRequestInitialStatusIDENTIFIED:
+		return true
+	case StatusPageTemplateRequestInitialStatusINVESTIGATING:
+		return true
+	case StatusPageTemplateRequestInitialStatusMONITORING:
+		return true
+	case StatusPageTemplateRequestInitialStatusRESOLVED:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StatusPageTemplateRequestKind.
+const (
+	StatusPageTemplateRequestKindINCIDENT    StatusPageTemplateRequestKind = "INCIDENT"
+	StatusPageTemplateRequestKindMAINTENANCE StatusPageTemplateRequestKind = "MAINTENANCE"
+)
+
+// Valid indicates whether the value is a known member of the StatusPageTemplateRequestKind enum.
+func (e StatusPageTemplateRequestKind) Valid() bool {
+	switch e {
+	case StatusPageTemplateRequestKindINCIDENT:
+		return true
+	case StatusPageTemplateRequestKindMAINTENANCE:
 		return true
 	default:
 		return false
@@ -2676,6 +2859,27 @@ func (e UpdateOpsGenieChannelConfigChannelType) Valid() bool {
 	}
 }
 
+// Defines values for UpdateOrgSsoSettingsRequestDefaultRole.
+const (
+	UpdateOrgSsoSettingsRequestDefaultRoleADMIN  UpdateOrgSsoSettingsRequestDefaultRole = "ADMIN"
+	UpdateOrgSsoSettingsRequestDefaultRoleMEMBER UpdateOrgSsoSettingsRequestDefaultRole = "MEMBER"
+	UpdateOrgSsoSettingsRequestDefaultRoleOWNER  UpdateOrgSsoSettingsRequestDefaultRole = "OWNER"
+)
+
+// Valid indicates whether the value is a known member of the UpdateOrgSsoSettingsRequestDefaultRole enum.
+func (e UpdateOrgSsoSettingsRequestDefaultRole) Valid() bool {
+	switch e {
+	case UpdateOrgSsoSettingsRequestDefaultRoleADMIN:
+		return true
+	case UpdateOrgSsoSettingsRequestDefaultRoleMEMBER:
+		return true
+	case UpdateOrgSsoSettingsRequestDefaultRoleOWNER:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UpdatePagerDutyChannelConfigChannelType.
 const (
 	UpdatePagerDutyChannelConfigChannelTypePagerduty UpdatePagerDutyChannelConfigChannelType = "pagerduty"
@@ -2844,6 +3048,42 @@ func (e UpdateSplunkOnCallChannelConfigChannelType) Valid() bool {
 	}
 }
 
+// Defines values for UpdateSsoConnectionRequestSignInScope.
+const (
+	UpdateSsoConnectionRequestSignInScopeANYIDPUSER    UpdateSsoConnectionRequestSignInScope = "ANY_IDP_USER"
+	UpdateSsoConnectionRequestSignInScopeROUTEDDOMAINS UpdateSsoConnectionRequestSignInScope = "ROUTED_DOMAINS"
+)
+
+// Valid indicates whether the value is a known member of the UpdateSsoConnectionRequestSignInScope enum.
+func (e UpdateSsoConnectionRequestSignInScope) Valid() bool {
+	switch e {
+	case UpdateSsoConnectionRequestSignInScopeANYIDPUSER:
+		return true
+	case UpdateSsoConnectionRequestSignInScopeROUTEDDOMAINS:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UpdateStatusPageGroupRequestMode.
+const (
+	UpdateStatusPageGroupRequestModeSEPARATE UpdateStatusPageGroupRequestMode = "SEPARATE"
+	UpdateStatusPageGroupRequestModeUNIFIED  UpdateStatusPageGroupRequestMode = "UNIFIED"
+)
+
+// Valid indicates whether the value is a known member of the UpdateStatusPageGroupRequestMode enum.
+func (e UpdateStatusPageGroupRequestMode) Valid() bool {
+	switch e {
+	case UpdateStatusPageGroupRequestModeSEPARATE:
+		return true
+	case UpdateStatusPageGroupRequestModeUNIFIED:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UpdateStatusPageIncidentRequestImpact.
 const (
 	UpdateStatusPageIncidentRequestImpactCRITICAL UpdateStatusPageIncidentRequestImpact = "CRITICAL"
@@ -2916,6 +3156,24 @@ func (e UpdateStatusPageIncidentUpdateRequestStatus) Valid() bool {
 	}
 }
 
+// Defines values for UpdateStatusPageRequestEmailSignIn.
+const (
+	UpdateStatusPageRequestEmailSignInMAGICLINK UpdateStatusPageRequestEmailSignIn = "MAGIC_LINK"
+	UpdateStatusPageRequestEmailSignInPASSWORD  UpdateStatusPageRequestEmailSignIn = "PASSWORD"
+)
+
+// Valid indicates whether the value is a known member of the UpdateStatusPageRequestEmailSignIn enum.
+func (e UpdateStatusPageRequestEmailSignIn) Valid() bool {
+	switch e {
+	case UpdateStatusPageRequestEmailSignInMAGICLINK:
+		return true
+	case UpdateStatusPageRequestEmailSignInPASSWORD:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UpdateStatusPageRequestIncidentMode.
 const (
 	UpdateStatusPageRequestIncidentModeAUTOMATIC UpdateStatusPageRequestIncidentMode = "AUTOMATIC"
@@ -2967,17 +3225,44 @@ func (e UpdateStatusPageRequestManagedBy) Valid() bool {
 	}
 }
 
+// Defines values for UpdateStatusPageRequestSubscriberChannels.
+const (
+	UpdateStatusPageRequestSubscriberChannelsEMAIL   UpdateStatusPageRequestSubscriberChannels = "EMAIL"
+	UpdateStatusPageRequestSubscriberChannelsSMS     UpdateStatusPageRequestSubscriberChannels = "SMS"
+	UpdateStatusPageRequestSubscriberChannelsTEAMS   UpdateStatusPageRequestSubscriberChannels = "TEAMS"
+	UpdateStatusPageRequestSubscriberChannelsWEBHOOK UpdateStatusPageRequestSubscriberChannels = "WEBHOOK"
+)
+
+// Valid indicates whether the value is a known member of the UpdateStatusPageRequestSubscriberChannels enum.
+func (e UpdateStatusPageRequestSubscriberChannels) Valid() bool {
+	switch e {
+	case UpdateStatusPageRequestSubscriberChannelsEMAIL:
+		return true
+	case UpdateStatusPageRequestSubscriberChannelsSMS:
+		return true
+	case UpdateStatusPageRequestSubscriberChannelsTEAMS:
+		return true
+	case UpdateStatusPageRequestSubscriberChannelsWEBHOOK:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UpdateStatusPageRequestVisibility.
 const (
-	UpdateStatusPageRequestVisibilityIPRESTRICTED UpdateStatusPageRequestVisibility = "IP_RESTRICTED"
-	UpdateStatusPageRequestVisibilityPASSWORD     UpdateStatusPageRequestVisibility = "PASSWORD"
-	UpdateStatusPageRequestVisibilityPUBLIC       UpdateStatusPageRequestVisibility = "PUBLIC"
+	UpdateStatusPageRequestVisibilityIPRESTRICTED  UpdateStatusPageRequestVisibility = "IP_RESTRICTED"
+	UpdateStatusPageRequestVisibilityLOGINREQUIRED UpdateStatusPageRequestVisibility = "LOGIN_REQUIRED"
+	UpdateStatusPageRequestVisibilityPASSWORD      UpdateStatusPageRequestVisibility = "PASSWORD"
+	UpdateStatusPageRequestVisibilityPUBLIC        UpdateStatusPageRequestVisibility = "PUBLIC"
 )
 
 // Valid indicates whether the value is a known member of the UpdateStatusPageRequestVisibility enum.
 func (e UpdateStatusPageRequestVisibility) Valid() bool {
 	switch e {
 	case UpdateStatusPageRequestVisibilityIPRESTRICTED:
+		return true
+	case UpdateStatusPageRequestVisibilityLOGINREQUIRED:
 		return true
 	case UpdateStatusPageRequestVisibilityPASSWORD:
 		return true
@@ -3819,6 +4104,75 @@ func (e GetServiceUptimeParamsGranularity) Valid() bool {
 	}
 }
 
+// Defines values for ListStatusPageAccessLogParamsEventType.
+const (
+	ListStatusPageAccessLogParamsEventTypeSESSIONREVOKED  ListStatusPageAccessLogParamsEventType = "SESSION_REVOKED"
+	ListStatusPageAccessLogParamsEventTypeSIGNINFAILED    ListStatusPageAccessLogParamsEventType = "SIGN_IN_FAILED"
+	ListStatusPageAccessLogParamsEventTypeSIGNINSUCCEEDED ListStatusPageAccessLogParamsEventType = "SIGN_IN_SUCCEEDED"
+	ListStatusPageAccessLogParamsEventTypeSIGNOUT         ListStatusPageAccessLogParamsEventType = "SIGN_OUT"
+)
+
+// Valid indicates whether the value is a known member of the ListStatusPageAccessLogParamsEventType enum.
+func (e ListStatusPageAccessLogParamsEventType) Valid() bool {
+	switch e {
+	case ListStatusPageAccessLogParamsEventTypeSESSIONREVOKED:
+		return true
+	case ListStatusPageAccessLogParamsEventTypeSIGNINFAILED:
+		return true
+	case ListStatusPageAccessLogParamsEventTypeSIGNINSUCCEEDED:
+		return true
+	case ListStatusPageAccessLogParamsEventTypeSIGNOUT:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ExportStatusPageAccessLogParamsEventType.
+const (
+	ExportStatusPageAccessLogParamsEventTypeSESSIONREVOKED  ExportStatusPageAccessLogParamsEventType = "SESSION_REVOKED"
+	ExportStatusPageAccessLogParamsEventTypeSIGNINFAILED    ExportStatusPageAccessLogParamsEventType = "SIGN_IN_FAILED"
+	ExportStatusPageAccessLogParamsEventTypeSIGNINSUCCEEDED ExportStatusPageAccessLogParamsEventType = "SIGN_IN_SUCCEEDED"
+	ExportStatusPageAccessLogParamsEventTypeSIGNOUT         ExportStatusPageAccessLogParamsEventType = "SIGN_OUT"
+)
+
+// Valid indicates whether the value is a known member of the ExportStatusPageAccessLogParamsEventType enum.
+func (e ExportStatusPageAccessLogParamsEventType) Valid() bool {
+	switch e {
+	case ExportStatusPageAccessLogParamsEventTypeSESSIONREVOKED:
+		return true
+	case ExportStatusPageAccessLogParamsEventTypeSIGNINFAILED:
+		return true
+	case ExportStatusPageAccessLogParamsEventTypeSIGNINSUCCEEDED:
+		return true
+	case ExportStatusPageAccessLogParamsEventTypeSIGNOUT:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListStatusPageEndUsersParamsStatus.
+const (
+	ListStatusPageEndUsersParamsStatusACTIVE      ListStatusPageEndUsersParamsStatus = "ACTIVE"
+	ListStatusPageEndUsersParamsStatusDEACTIVATED ListStatusPageEndUsersParamsStatus = "DEACTIVATED"
+	ListStatusPageEndUsersParamsStatusINVITED     ListStatusPageEndUsersParamsStatus = "INVITED"
+)
+
+// Valid indicates whether the value is a known member of the ListStatusPageEndUsersParamsStatus enum.
+func (e ListStatusPageEndUsersParamsStatus) Valid() bool {
+	switch e {
+	case ListStatusPageEndUsersParamsStatusACTIVE:
+		return true
+	case ListStatusPageEndUsersParamsStatusDEACTIVATED:
+		return true
+	case ListStatusPageEndUsersParamsStatusINVITED:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ListIncidentsParamsStatus.
 const (
 	ListIncidentsParamsStatusIDENTIFIED    ListIncidentsParamsStatus = "IDENTIFIED"
@@ -3872,6 +4226,12 @@ const (
 	ListNotificationDeliveriesParamsEventTypeINCIDENTCREATED          ListNotificationDeliveriesParamsEventType = "INCIDENT_CREATED"
 	ListNotificationDeliveriesParamsEventTypeINCIDENTRESOLVED         ListNotificationDeliveriesParamsEventType = "INCIDENT_RESOLVED"
 	ListNotificationDeliveriesParamsEventTypeINCIDENTUPDATED          ListNotificationDeliveriesParamsEventType = "INCIDENT_UPDATED"
+	ListNotificationDeliveriesParamsEventTypeMAINTENANCECOMPLETED     ListNotificationDeliveriesParamsEventType = "MAINTENANCE_COMPLETED"
+	ListNotificationDeliveriesParamsEventTypeMAINTENANCEREMINDER      ListNotificationDeliveriesParamsEventType = "MAINTENANCE_REMINDER"
+	ListNotificationDeliveriesParamsEventTypeMAINTENANCESCHEDULED     ListNotificationDeliveriesParamsEventType = "MAINTENANCE_SCHEDULED"
+	ListNotificationDeliveriesParamsEventTypeMAINTENANCESTARTED       ListNotificationDeliveriesParamsEventType = "MAINTENANCE_STARTED"
+	ListNotificationDeliveriesParamsEventTypeMAINTENANCEUPDATED       ListNotificationDeliveriesParamsEventType = "MAINTENANCE_UPDATED"
+	ListNotificationDeliveriesParamsEventTypePOSTMORTEMPUBLISHED      ListNotificationDeliveriesParamsEventType = "POSTMORTEM_PUBLISHED"
 	ListNotificationDeliveriesParamsEventTypeSUBSCRIPTIONCONFIRMATION ListNotificationDeliveriesParamsEventType = "SUBSCRIPTION_CONFIRMATION"
 )
 
@@ -3884,7 +4244,37 @@ func (e ListNotificationDeliveriesParamsEventType) Valid() bool {
 		return true
 	case ListNotificationDeliveriesParamsEventTypeINCIDENTUPDATED:
 		return true
+	case ListNotificationDeliveriesParamsEventTypeMAINTENANCECOMPLETED:
+		return true
+	case ListNotificationDeliveriesParamsEventTypeMAINTENANCEREMINDER:
+		return true
+	case ListNotificationDeliveriesParamsEventTypeMAINTENANCESCHEDULED:
+		return true
+	case ListNotificationDeliveriesParamsEventTypeMAINTENANCESTARTED:
+		return true
+	case ListNotificationDeliveriesParamsEventTypeMAINTENANCEUPDATED:
+		return true
+	case ListNotificationDeliveriesParamsEventTypePOSTMORTEMPUBLISHED:
+		return true
 	case ListNotificationDeliveriesParamsEventTypeSUBSCRIPTIONCONFIRMATION:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListStatusPageTemplatesParamsKind.
+const (
+	ListStatusPageTemplatesParamsKindINCIDENT    ListStatusPageTemplatesParamsKind = "INCIDENT"
+	ListStatusPageTemplatesParamsKindMAINTENANCE ListStatusPageTemplatesParamsKind = "MAINTENANCE"
+)
+
+// Valid indicates whether the value is a known member of the ListStatusPageTemplatesParamsKind enum.
+func (e ListStatusPageTemplatesParamsKind) Valid() bool {
+	switch e {
+	case ListStatusPageTemplatesParamsKindINCIDENT:
+		return true
+	case ListStatusPageTemplatesParamsKindMAINTENANCE:
 		return true
 	default:
 		return false
@@ -3958,15 +4348,39 @@ type AddResourceGroupMemberRequest struct {
 	MemberType string `json:"memberType"`
 }
 
+// AddSsoCertificateRequest defines model for AddSsoCertificateRequest.
+type AddSsoCertificateRequest struct {
+	// Certificate IdP signing certificate as PEM or bare base64 DER
+	Certificate string `json:"certificate"`
+}
+
+// AddSsoDomainRequest defines model for AddSsoDomainRequest.
+type AddSsoDomainRequest struct {
+	// Domain Email domain whose users sign in through the connection, e.g. acme.com
+	Domain string `json:"domain"`
+}
+
+// AddStatusPageGroupMemberRequest defines model for AddStatusPageGroupMemberRequest.
+type AddStatusPageGroupMemberRequest struct {
+	// Key Short key that selects this page inside the group, e.g. eu (1-32 characters)
+	Key string `json:"key"`
+
+	// StatusPageId Status page to add; must be in the same workspace as the group
+	StatusPageId openapi_types.UUID `json:"statusPageId"`
+}
+
 // AdminAddSubscriberRequest defines model for AdminAddSubscriberRequest.
 type AdminAddSubscriberRequest struct {
 	// Channel Delivery channel (default: EMAIL)
 	Channel *AdminAddSubscriberRequestChannel `json:"channel,omitempty"`
 
+	// ComponentGroupIds Component group IDs to scope, including components added to them later; omit to leave existing scope
+	ComponentGroupIds *[]openapi_types.UUID `json:"componentGroupIds,omitempty"`
+
 	// ComponentIds Component IDs to scope; omit to leave existing scope; empty list widens to the whole page
 	ComponentIds *[]openapi_types.UUID `json:"componentIds,omitempty"`
 
-	// Destination Channel destination (email, phone, or webhook URL)
+	// Destination Channel destination (email, phone, webhook URL or Teams webhook URL)
 	Destination *string `json:"destination,omitempty"`
 
 	// Email Email for EMAIL channel; legacy clients may send only this
@@ -4438,6 +4852,18 @@ type Bucket struct {
 	TimedOut int64 `json:"timedOut"`
 }
 
+// BulkDeactivateEndUsersRequest defines model for BulkDeactivateEndUsersRequest.
+type BulkDeactivateEndUsersRequest struct {
+	// Emails Emails to deactivate (1–1000)
+	Emails []string `json:"emails"`
+}
+
+// BulkDeleteSubscribersRequest defines model for BulkDeleteSubscribersRequest.
+type BulkDeleteSubscribersRequest struct {
+	// SubscriberIds Subscriber IDs to remove (1–1000); IDs not on this page are reported, not removed
+	SubscriberIds []openapi_types.UUID `json:"subscriberIds"`
+}
+
 // BulkMonitorActionRequest Request body for performing a bulk action on multiple monitors
 type BulkMonitorActionRequest struct {
 	// Action Action to apply to every monitor in the bulk request
@@ -4467,6 +4893,18 @@ type BulkMonitorActionResult struct {
 
 	// Succeeded IDs of monitors on which the action succeeded
 	Succeeded []openapi_types.UUID `json:"succeeded"`
+}
+
+// BulkUpdateSubscriberScopeRequest defines model for BulkUpdateSubscriberScopeRequest.
+type BulkUpdateSubscriberScopeRequest struct {
+	// ComponentGroupIds Component groups to hear about, including components added to them later
+	ComponentGroupIds *[]openapi_types.UUID `json:"componentGroupIds,omitempty"`
+
+	// ComponentIds Components to hear about; empty with no component groups means the whole page
+	ComponentIds *[]openapi_types.UUID `json:"componentIds,omitempty"`
+
+	// SubscriberIds Subscriber IDs to change (1–1000); IDs not on this page are reported, not changed
+	SubscriberIds []openapi_types.UUID `json:"subscriberIds"`
 }
 
 // BundleCheckResultDto defines model for BundleCheckResultDto.
@@ -5269,6 +5707,18 @@ type CreateSecretRequest struct {
 	Value string `json:"value"`
 }
 
+// CreateSsoConnectionRequest defines model for CreateSsoConnectionRequest.
+type CreateSsoConnectionRequest struct {
+	// Name Human-readable connection name, e.g. the IdP it points at
+	Name string `json:"name"`
+
+	// SignInScope Who may sign in through the connection (default: ROUTED_DOMAINS)
+	SignInScope *CreateSsoConnectionRequestSignInScope `json:"signInScope,omitempty"`
+}
+
+// CreateSsoConnectionRequestSignInScope Who may sign in through the connection (default: ROUTED_DOMAINS)
+type CreateSsoConnectionRequestSignInScope string
+
 // CreateStatusPageComponentGroupRequest defines model for CreateStatusPageComponentGroupRequest.
 type CreateStatusPageComponentGroupRequest struct {
 	// DefaultOpen Initial expand/collapse state when a visitor first loads the page; renderer may auto-expand on active incidents (default: true)
@@ -5323,10 +5773,28 @@ type CreateStatusPageComponentRequest struct {
 // CreateStatusPageComponentRequestType Component type: MONITOR, GROUP, STATIC, or DEPENDENCY
 type CreateStatusPageComponentRequestType string
 
+// CreateStatusPageGroupRequest defines model for CreateStatusPageGroupRequest.
+type CreateStatusPageGroupRequest struct {
+	// Mode How member pages are served: SEPARATE or UNIFIED (default: SEPARATE)
+	Mode *CreateStatusPageGroupRequestMode `json:"mode,omitempty"`
+
+	// Name Human-readable name for this group
+	Name string `json:"name"`
+
+	// Slug URL slug served under the first-party status domain (lowercase, hyphens, globally unique)
+	Slug string `json:"slug"`
+}
+
+// CreateStatusPageGroupRequestMode How member pages are served: SEPARATE or UNIFIED (default: SEPARATE)
+type CreateStatusPageGroupRequestMode string
+
 // CreateStatusPageIncidentRequest defines model for CreateStatusPageIncidentRequest.
 type CreateStatusPageIncidentRequest struct {
 	// AffectedComponents Component IDs affected by this incident
 	AffectedComponents *[]AffectedComponent `json:"affectedComponents,omitempty"`
+
+	// Backfill Import a past incident with its original dates: requires startedAt and resolvedAt, never notifies subscribers and leaves component statuses alone
+	Backfill *bool `json:"backfill,omitempty"`
 
 	// Body Initial update body in markdown
 	Body string `json:"body"`
@@ -5340,8 +5808,17 @@ type CreateStatusPageIncidentRequest struct {
 	// NotifySubscribers Whether to email confirmed subscribers about this incident (default: true)
 	NotifySubscribers *bool `json:"notifySubscribers,omitempty"`
 
+	// ResolvedAt Backfill only: when the incident was resolved
+	ResolvedAt *time.Time `json:"resolvedAt,omitempty"`
+
+	// StartedAt Backfill only: when the incident started
+	StartedAt *time.Time `json:"startedAt,omitempty"`
+
 	// Status Initial status (default: INVESTIGATING)
 	Status *CreateStatusPageIncidentRequestStatus `json:"status,omitempty"`
+
+	// TemplateId Incident template the incident is created from; null for none
+	TemplateId *openapi_types.UUID `json:"templateId,omitempty"`
 
 	// Title Customer-facing incident title
 	Title string `json:"title"`
@@ -5360,6 +5837,9 @@ type CreateStatusPageIncidentUpdateRequest struct {
 
 	// Body Update body in markdown
 	Body string `json:"body"`
+
+	// CreatedAt Backfilled incidents only: when the update was posted (original time); never notifies
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
 
 	// NotifySubscribers Whether to email confirmed subscribers about this update (default: true)
 	NotifySubscribers *bool `json:"notifySubscribers,omitempty"`
@@ -5388,6 +5868,9 @@ type CreateStatusPageMaintenanceRequest struct {
 	// NotifySubscribers Whether to email confirmed subscribers about this window (default: true)
 	NotifySubscribers *bool `json:"notifySubscribers,omitempty"`
 
+	// ReminderLeadMinutes Minutes before the window to email subscribers a reminder (5–20160 each, distinct). Default: the template's lead times, else 24 hours and 1 hour; an empty list sends none
+	ReminderLeadMinutes *[]int32 `json:"reminderLeadMinutes,omitempty"`
+
 	// ScheduledFor Maintenance start time
 	ScheduledFor time.Time `json:"scheduledFor"`
 
@@ -5396,6 +5879,9 @@ type CreateStatusPageMaintenanceRequest struct {
 
 	// Status Initial status (default: INVESTIGATING)
 	Status *CreateStatusPageMaintenanceRequestStatus `json:"status,omitempty"`
+
+	// TemplateId Maintenance template the window is created from; its start and completion messages are posted automatically
+	TemplateId *openapi_types.UUID `json:"templateId,omitempty"`
 
 	// Title Customer-facing maintenance title
 	Title string `json:"title"`
@@ -5651,6 +6137,18 @@ type CursorPageServicePollResultDto struct {
 type CursorPageStatusEventDto struct {
 	// Data Items on this page
 	Data []StatusEventDto `json:"data"`
+
+	// HasMore Whether more results exist beyond this page
+	HasMore bool `json:"hasMore"`
+
+	// NextCursor Opaque cursor for the next page; null when there are no more results
+	NextCursor *string `json:"nextCursor,omitempty"`
+}
+
+// CursorPageStatusPageAccessEventDto Cursor-paginated response for time-series and append-only data
+type CursorPageStatusPageAccessEventDto struct {
+	// Data Items on this page
+	Data []StatusPageAccessEventDto `json:"data"`
 
 	// HasMore Whether more results exist beyond this page
 	HasMore bool `json:"hasMore"`
@@ -6445,7 +6943,7 @@ type ErrorResponse struct {
 	// Policy Retention written when the artifact was saved, such as P7D
 	Policy *string `json:"policy,omitempty"`
 
-	// Reason Why permission was refused: scope or role
+	// Reason Why this was refused, such as scope, role, or no_route
 	Reason *string `json:"reason,omitempty"`
 
 	// RequestId Opaque per-request id; same value as the X-Request-Id response header. Use in support tickets.
@@ -6853,6 +7351,30 @@ type IcmpResponseTimeWarnAssertion struct {
 
 // IcmpResponseTimeWarnAssertionType defines model for IcmpResponseTimeWarnAssertion.Type.
 type IcmpResponseTimeWarnAssertionType string
+
+// ImportSubscriberRow Subscribers to import (1–5000 rows)
+type ImportSubscriberRow struct {
+	// Channel Delivery channel (EMAIL, SMS, WEBHOOK, TEAMS)
+	Channel ImportSubscriberRowChannel `json:"channel"`
+
+	// ComponentGroupIds Component groups to hear about, including components added to them later
+	ComponentGroupIds *[]openapi_types.UUID `json:"componentGroupIds,omitempty"`
+
+	// ComponentIds Components to hear about; omit or empty for the whole page
+	ComponentIds *[]openapi_types.UUID `json:"componentIds,omitempty"`
+
+	// Destination Email address, phone number, webhook URL or Teams webhook URL
+	Destination string `json:"destination"`
+}
+
+// ImportSubscriberRowChannel Delivery channel (EMAIL, SMS, WEBHOOK, TEAMS)
+type ImportSubscriberRowChannel string
+
+// ImportSubscribersRequest defines model for ImportSubscribersRequest.
+type ImportSubscribersRequest struct {
+	// Rows Subscribers to import (1–5000 rows)
+	Rows []ImportSubscriberRow `json:"rows"`
+}
 
 // InboundEmailAttachment Attachment metadata
 type InboundEmailAttachment struct {
@@ -7457,6 +7979,12 @@ type InviteDto struct {
 
 	// RoleOffered Role that will be assigned to the invitee on acceptance
 	RoleOffered string `json:"roleOffered"`
+}
+
+// InviteStatusPageEndUsersRequest defines model for InviteStatusPageEndUsersRequest.
+type InviteStatusPageEndUsersRequest struct {
+	// Emails Emails to invite (1–100); invalid ones are skipped
+	Emails []string `json:"emails"`
 }
 
 // Item At most 100 monitor chips; counts cover the complete population
@@ -8120,11 +8648,17 @@ type MonitorDto struct {
 	Id             openapi_types.UUID `json:"id"`
 	IncidentPolicy *IncidentPolicyDto `json:"incidentPolicy,omitempty"`
 
+	// LastCheckAt When the most recent check in any region ran
+	LastCheckAt *time.Time `json:"lastCheckAt,omitempty"`
+
 	// LastCheckOutcome Result of the most recent check in any region: PASSED, DEGRADED, or FAILED
 	LastCheckOutcome *string `json:"lastCheckOutcome,omitempty"`
 
 	// LastCheckRegion Region of the most recent check
 	LastCheckRegion *string `json:"lastCheckRegion,omitempty"`
+
+	// LastCheckResponseTimeMs Response time of the most recent check, in milliseconds
+	LastCheckResponseTimeMs *int32 `json:"lastCheckResponseTimeMs,omitempty"`
 
 	// LastFailureSummary Why the latest failing region failed
 	LastFailureSummary *string `json:"lastFailureSummary,omitempty"`
@@ -8814,6 +9348,24 @@ type MonitorsSummaryDto struct {
 	Up int64 `json:"up"`
 }
 
+// MonthlyUptimeBucketDto Uptime of a component or component group over one calendar month (UTC)
+type MonthlyUptimeBucketDto struct {
+	// MajorOutageSeconds Seconds of major outage in the month
+	MajorOutageSeconds int64 `json:"majorOutageSeconds"`
+
+	// Month Month in ISO format, e.g. 2026-10
+	Month string `json:"month"`
+
+	// PartialOutageSeconds Seconds of partial outage in the month
+	PartialOutageSeconds int64 `json:"partialOutageSeconds"`
+
+	// TrackedDays Days in the month the item was tracked, including today's partial day
+	TrackedDays int32 `json:"trackedDays"`
+
+	// UptimePercentage Mean daily uptime percentage over the tracked days; null when no day was tracked
+	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
+}
+
 // NearestOtherRegion Nearest earlier pass in another region when this region has none
 type NearestOtherRegion struct {
 	// FinishedAt When the passing run finished
@@ -9155,6 +9707,21 @@ type OrgInfo struct {
 
 	// Name Organization name
 	Name string `json:"name"`
+}
+
+// OrgSsoSettingsDto defines model for OrgSsoSettingsDto.
+type OrgSsoSettingsDto struct {
+	// DefaultRole Role of people who join on first sign-in
+	DefaultRole string `json:"defaultRole"`
+
+	// Enforced Members must sign in through SSO; owners keep a break-glass sign-in
+	Enforced bool `json:"enforced"`
+
+	// EnforcementReady Whether the caller may require SSO now: they signed in through it, and a connection works
+	EnforcementReady bool `json:"enforcementReady"`
+
+	// JitEnabled People from a verified domain who are not members yet join on first sign-in
+	JitEnabled bool `json:"jitEnabled"`
 }
 
 // OrganizationDto Organization account details
@@ -9671,6 +10238,21 @@ type RemoveMonitorTagsRequest struct {
 	TagIds []openapi_types.UUID `json:"tagIds"`
 }
 
+// RenderStatusPageTemplateRequest defines model for RenderStatusPageTemplateRequest.
+type RenderStatusPageTemplateRequest struct {
+	// ScheduledFor Maintenance window start, for {{maintenance.start}}
+	ScheduledFor *time.Time `json:"scheduledFor,omitempty"`
+
+	// ScheduledUntil Maintenance window end, for {{maintenance.end}}
+	ScheduledUntil *time.Time `json:"scheduledUntil,omitempty"`
+
+	// Stage Stage to render (default: the template's initial status)
+	Stage *RenderStatusPageTemplateRequestStage `json:"stage,omitempty"`
+}
+
+// RenderStatusPageTemplateRequestStage Stage to render (default: the template's initial status)
+type RenderStatusPageTemplateRequestStage string
+
 // ReorderComponentsRequest Batch component reorder request
 type ReorderComponentsRequest struct {
 	// Positions Ordered list of component IDs with their new positions
@@ -9684,6 +10266,12 @@ type ReorderPageLayoutRequest struct {
 
 	// Sections Top-level sections in their new order
 	Sections []PageSection `json:"sections"`
+}
+
+// ReorderStatusPageGroupMembersRequest defines model for ReorderStatusPageGroupMembersRequest.
+type ReorderStatusPageGroupMembersRequest struct {
+	// StatusPageIds Every member status page id, in the new display order
+	StatusPageIds []openapi_types.UUID `json:"statusPageIds"`
 }
 
 // ResolveIncidentRequest defines model for ResolveIncidentRequest.
@@ -10363,6 +10951,9 @@ type RunDto struct {
 	// CountsTowardHealth Whether this run votes on monitor health
 	CountsTowardHealth bool `json:"countsTowardHealth"`
 
+	// Delayed True while this run's result is on its way but held up by a platform outage
+	Delayed *bool `json:"delayed,omitempty"`
+
 	// DurationMs Wall time from claim to finish
 	DurationMs *int64 `json:"durationMs,omitempty"`
 
@@ -10379,8 +10970,11 @@ type RunDto struct {
 	EvaluationCycleId *openapi_types.UUID `json:"evaluationCycleId,omitempty"`
 
 	// Evidence List evidence chips in SHOT → TRACE → VIDEO → NET order
-	Evidence  []RunEvidenceDto `json:"evidence"`
-	Execution *RunExecutionDto `json:"execution,omitempty"`
+	Evidence []RunEvidenceDto `json:"evidence"`
+
+	// EvidenceIncomplete Whether some run evidence never arrived. The outcome is unaffected
+	EvidenceIncomplete bool             `json:"evidenceIncomplete"`
+	Execution          *RunExecutionDto `json:"execution,omitempty"`
 
 	// ExecutionAttempts Persisted worker execution attempts
 	ExecutionAttempts []RunExecutionAttemptDto `json:"executionAttempts"`
@@ -10562,7 +11156,7 @@ type RunExecutionDto struct {
 	Harness HarnessReleaseDto `json:"harness"`
 
 	// Id Immutable execution image identifier
-	Id openapi_types.UUID `json:"id"`
+	Id string `json:"id"`
 
 	// ImageDigest Immutable image digest
 	ImageDigest string `json:"imageDigest"`
@@ -10573,7 +11167,7 @@ type RunExecutionDto struct {
 	// RequiredCapabilities Capabilities required by this image
 	RequiredCapabilities []string `json:"requiredCapabilities"`
 
-	// Runtime Customer-selectable runtime profile
+	// Runtime Default execution environment; null uses the catalog default
 	Runtime RuntimeProfileDto `json:"runtime"`
 }
 
@@ -10920,7 +11514,7 @@ type RunnerRegionStatusesDto struct {
 	Regions []RunnerRegionStatusDto `json:"regions"`
 }
 
-// RuntimeProfileDto Customer-selectable runtime profile
+// RuntimeProfileDto Default execution environment; null uses the catalog default
 type RuntimeProfileDto struct {
 	// AvailableAt When this runtime became available
 	AvailableAt *time.Time                 `json:"availableAt,omitempty"`
@@ -10960,7 +11554,7 @@ type RuntimeProfileDto struct {
 	Status string `json:"status"`
 }
 
-// RuntimeRegionAvailability Whether a runtime can accept new runs in one probe region
+// RuntimeRegionAvailability Whether each region can run this runtime
 type RuntimeRegionAvailability struct {
 	// Available Whether this runtime can run checks in the region
 	Available bool `json:"available"`
@@ -11010,7 +11604,7 @@ type ScheduledMaintenanceDto struct {
 
 // ScriptMonitorConfig defines model for ScriptMonitorConfig.
 type ScriptMonitorConfig struct {
-	// RuntimeId Runtime pin such as 2026.11; omit to pin the newest runtime that can run
+	// RuntimeId Runtime pin; omit to use the platform default
 	RuntimeId *string `json:"runtimeId,omitempty"`
 
 	// TimeoutSeconds Maximum execution time in seconds (5–240)
@@ -11442,6 +12036,15 @@ type SetEnabledRequest struct {
 	Enabled bool `json:"enabled"`
 }
 
+// SetIdpMetadataRequest defines model for SetIdpMetadataRequest.
+type SetIdpMetadataRequest struct {
+	// Url HTTPS URL of the IdP metadata, re-fetched every 15 minutes; give either xml or url
+	Url *string `json:"url,omitempty"`
+
+	// Xml IdP metadata XML; give either xml or url
+	Xml *string `json:"xml,omitempty"`
+}
+
 // SetMonitorAuthRequest defines model for SetMonitorAuthRequest.
 type SetMonitorAuthRequest struct {
 	Config SetMonitorAuthRequest_Config `json:"config"`
@@ -11466,6 +12069,12 @@ type SetStatusPageComponentOverrideRequest struct {
 
 // SetStatusPageComponentOverrideRequestStatus Override status while active; takes precedence over binding until expiry/clear
 type SetStatusPageComponentOverrideRequestStatus string
+
+// SetStatusPageGroupDefaultPageRequest defines model for SetStatusPageGroupDefaultPageRequest.
+type SetStatusPageGroupDefaultPageRequest struct {
+	// StatusPageId Member status page served at the group's root
+	StatusPageId openapi_types.UUID `json:"statusPageId"`
+}
 
 // SignedDownload Short-lived URL for a stored object
 type SignedDownload struct {
@@ -11838,6 +12447,11 @@ type SingleValueResponseNotificationPolicyDto struct {
 	Data NotificationPolicyDto `json:"data"`
 }
 
+// SingleValueResponseOrgSsoSettingsDto defines model for SingleValueResponseOrgSsoSettingsDto.
+type SingleValueResponseOrgSsoSettingsDto struct {
+	Data OrgSsoSettingsDto `json:"data"`
+}
+
 // SingleValueResponseOrganizationDto defines model for SingleValueResponseOrganizationDto.
 type SingleValueResponseOrganizationDto struct {
 	// Data Organization account details
@@ -11953,7 +12567,7 @@ type SingleValueResponseRunnerRegionStatusesDto struct {
 
 // SingleValueResponseRuntimeProfileDto defines model for SingleValueResponseRuntimeProfileDto.
 type SingleValueResponseRuntimeProfileDto struct {
-	// Data Customer-selectable runtime profile
+	// Data Default execution environment; null uses the catalog default
 	Data RuntimeProfileDto `json:"data"`
 }
 
@@ -12020,6 +12634,38 @@ type SingleValueResponseSignedDownload struct {
 	Data SignedDownload `json:"data"`
 }
 
+// SingleValueResponseSsoCertificateDto defines model for SingleValueResponseSsoCertificateDto.
+type SingleValueResponseSsoCertificateDto struct {
+	// Data IdP signing certificates
+	Data SsoCertificateDto `json:"data"`
+}
+
+// SingleValueResponseSsoConnectionDto defines model for SingleValueResponseSsoConnectionDto.
+type SingleValueResponseSsoConnectionDto struct {
+	Data SsoConnectionDto `json:"data"`
+}
+
+// SingleValueResponseSsoConnectionTestDto defines model for SingleValueResponseSsoConnectionTestDto.
+type SingleValueResponseSsoConnectionTestDto struct {
+	Data SsoConnectionTestDto `json:"data"`
+}
+
+// SingleValueResponseSsoDomainDto defines model for SingleValueResponseSsoDomainDto.
+type SingleValueResponseSsoDomainDto struct {
+	// Data Email domains that sign in through the connection
+	Data SsoDomainDto `json:"data"`
+}
+
+// SingleValueResponseStaffSessionsRevokedDto defines model for SingleValueResponseStaffSessionsRevokedDto.
+type SingleValueResponseStaffSessionsRevokedDto struct {
+	Data StaffSessionsRevokedDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageAccessPolicyDto defines model for SingleValueResponseStatusPageAccessPolicyDto.
+type SingleValueResponseStatusPageAccessPolicyDto struct {
+	Data StatusPageAccessPolicyDto `json:"data"`
+}
+
 // SingleValueResponseStatusPageComponentDto defines model for SingleValueResponseStatusPageComponentDto.
 type SingleValueResponseStatusPageComponentDto struct {
 	Data StatusPageComponentDto `json:"data"`
@@ -12040,6 +12686,31 @@ type SingleValueResponseStatusPageDto struct {
 	Data StatusPageDto `json:"data"`
 }
 
+// SingleValueResponseStatusPageEndUserBulkDeactivationDto defines model for SingleValueResponseStatusPageEndUserBulkDeactivationDto.
+type SingleValueResponseStatusPageEndUserBulkDeactivationDto struct {
+	Data StatusPageEndUserBulkDeactivationDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageEndUserDto defines model for SingleValueResponseStatusPageEndUserDto.
+type SingleValueResponseStatusPageEndUserDto struct {
+	Data StatusPageEndUserDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageEndUserInviteDto defines model for SingleValueResponseStatusPageEndUserInviteDto.
+type SingleValueResponseStatusPageEndUserInviteDto struct {
+	Data StatusPageEndUserInviteDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageEndUserInviteResultDto defines model for SingleValueResponseStatusPageEndUserInviteResultDto.
+type SingleValueResponseStatusPageEndUserInviteResultDto struct {
+	Data StatusPageEndUserInviteResultDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageGroupDto defines model for SingleValueResponseStatusPageGroupDto.
+type SingleValueResponseStatusPageGroupDto struct {
+	Data StatusPageGroupDto `json:"data"`
+}
+
 // SingleValueResponseStatusPageIncidentDto defines model for SingleValueResponseStatusPageIncidentDto.
 type SingleValueResponseStatusPageIncidentDto struct {
 	Data StatusPageIncidentDto `json:"data"`
@@ -12056,15 +12727,46 @@ type SingleValueResponseStatusPageMeasuredComponentUptimeDto struct {
 	Data StatusPageMeasuredComponentUptimeDto `json:"data"`
 }
 
+// SingleValueResponseStatusPageMonthlyUptimeDto defines model for SingleValueResponseStatusPageMonthlyUptimeDto.
+type SingleValueResponseStatusPageMonthlyUptimeDto struct {
+	// Data Monthly uptime per component and per component group, oldest month first
+	Data StatusPageMonthlyUptimeDto `json:"data"`
+}
+
 // SingleValueResponseStatusPageNotificationDeliveryDto defines model for SingleValueResponseStatusPageNotificationDeliveryDto.
 type SingleValueResponseStatusPageNotificationDeliveryDto struct {
 	// Data Delivery receipt for a status page subscriber notification
 	Data StatusPageNotificationDeliveryDto `json:"data"`
 }
 
+// SingleValueResponseStatusPageSubscriberBulkResultDto defines model for SingleValueResponseStatusPageSubscriberBulkResultDto.
+type SingleValueResponseStatusPageSubscriberBulkResultDto struct {
+	Data StatusPageSubscriberBulkResultDto `json:"data"`
+}
+
 // SingleValueResponseStatusPageSubscriberDto defines model for SingleValueResponseStatusPageSubscriberDto.
 type SingleValueResponseStatusPageSubscriberDto struct {
 	Data StatusPageSubscriberDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageSubscriberImportResultDto defines model for SingleValueResponseStatusPageSubscriberImportResultDto.
+type SingleValueResponseStatusPageSubscriberImportResultDto struct {
+	Data StatusPageSubscriberImportResultDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageTemplateDto defines model for SingleValueResponseStatusPageTemplateDto.
+type SingleValueResponseStatusPageTemplateDto struct {
+	Data StatusPageTemplateDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageTemplateRenderDto defines model for SingleValueResponseStatusPageTemplateRenderDto.
+type SingleValueResponseStatusPageTemplateRenderDto struct {
+	Data StatusPageTemplateRenderDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageVisibilityChangePreviewDto defines model for SingleValueResponseStatusPageVisibilityChangePreviewDto.
+type SingleValueResponseStatusPageVisibilityChangePreviewDto struct {
+	Data StatusPageVisibilityChangePreviewDto `json:"data"`
 }
 
 // SingleValueResponseString defines model for SingleValueResponseString.
@@ -12266,6 +12968,141 @@ type SslExpiryAssertion struct {
 // SslExpiryAssertionType defines model for SslExpiryAssertion.Type.
 type SslExpiryAssertionType string
 
+// SsoCertificateDto IdP signing certificates
+type SsoCertificateDto struct {
+	// CreatedAt When the certificate was stored
+	CreatedAt time.Time `json:"createdAt"`
+
+	// FingerprintSha256 SHA-256 fingerprint as lowercase hex
+	FingerprintSha256 string `json:"fingerprintSha256"`
+
+	// Id Certificate identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// NotAfter End of validity
+	NotAfter time.Time `json:"notAfter"`
+
+	// NotBefore Start of validity
+	NotBefore time.Time `json:"notBefore"`
+
+	// Source Whether the IdP metadata or an admin supplied it
+	Source string `json:"source"`
+
+	// Subject Certificate subject
+	Subject string `json:"subject"`
+}
+
+// SsoConnectionDto defines model for SsoConnectionDto.
+type SsoConnectionDto struct {
+	// AcsChangedAt When the ACS URL last moved to a new sign-in host; null if never
+	AcsChangedAt *time.Time `json:"acsChangedAt,omitempty"`
+
+	// AcsUrl Assertion consumer service URL to enter at the IdP
+	AcsUrl string `json:"acsUrl"`
+
+	// Certificates IdP signing certificates
+	Certificates []SsoCertificateDto `json:"certificates"`
+
+	// CreatedAt When the connection was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Domains Email domains that sign in through the connection
+	Domains []SsoDomainDto `json:"domains"`
+
+	// Enabled Whether sign-in through this connection is allowed
+	Enabled bool `json:"enabled"`
+
+	// Id Connection identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// IdpEntityId Entity ID read from the IdP metadata
+	IdpEntityId *string `json:"idpEntityId,omitempty"`
+
+	// IdpMetadataUrl Metadata URL that is re-fetched every 15 minutes
+	IdpMetadataUrl *string `json:"idpMetadataUrl,omitempty"`
+
+	// IdpSsoUrl IdP single sign-on URL read from the metadata
+	IdpSsoUrl *string `json:"idpSsoUrl,omitempty"`
+
+	// MetadataError Why the last metadata refresh failed; null when it worked
+	MetadataError *string `json:"metadataError,omitempty"`
+
+	// MetadataFetchedAt When the metadata was last read
+	MetadataFetchedAt *time.Time `json:"metadataFetchedAt,omitempty"`
+
+	// Name Connection name
+	Name string `json:"name"`
+
+	// SignInScope Who may sign in through the connection
+	SignInScope string `json:"signInScope"`
+
+	// SpEntityId Entity ID to enter at the IdP
+	SpEntityId string `json:"spEntityId"`
+
+	// StatusPageId Status page the connection signs viewers in to; null for the organization's staff sign-in
+	StatusPageId *openapi_types.UUID `json:"statusPageId,omitempty"`
+
+	// UpdatedAt When the connection last changed
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// SsoConnectionTestDto defines model for SsoConnectionTestDto.
+type SsoConnectionTestDto struct {
+	// AssertedEmail Email address the IdP asserted
+	AssertedEmail *string `json:"assertedEmail,omitempty"`
+
+	// AssertedIssuer Entity ID the IdP signed the assertion as
+	AssertedIssuer *string `json:"assertedIssuer,omitempty"`
+
+	// AssertedName Display name the IdP asserted
+	AssertedName *string `json:"assertedName,omitempty"`
+
+	// CompletedAt When the IdP answered; null while pending
+	CompletedAt *time.Time `json:"completedAt,omitempty"`
+
+	// CorrelationId Identifier that finds the failure in the logs; null unless it failed
+	CorrelationId *string `json:"correlationId,omitempty"`
+
+	// CreatedAt When the test was started
+	CreatedAt time.Time `json:"createdAt"`
+
+	// FailureMessage What to change at the IdP or here; null unless the test failed
+	FailureMessage *string `json:"failureMessage,omitempty"`
+
+	// FailureReason Why the test failed; null unless it failed
+	FailureReason *string `json:"failureReason,omitempty"`
+
+	// Id Test identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Status Where the test stands
+	Status string `json:"status"`
+}
+
+// SsoDomainDto Email domains that sign in through the connection
+type SsoDomainDto struct {
+	// CreatedAt When the domain was added
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Domain Email domain, lowercase
+	Domain string `json:"domain"`
+
+	// Id Domain identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// VerificationToken Value for the TXT record at _devhelm-sso.<domain>
+	VerificationToken string `json:"verificationToken"`
+
+	// VerifiedAt When the TXT record was confirmed; null while unverified
+	VerifiedAt *time.Time `json:"verifiedAt,omitempty"`
+}
+
+// StaffSessionsRevokedDto defines model for StaffSessionsRevokedDto.
+type StaffSessionsRevokedDto struct {
+	// Revoked How many SSO sessions were ended
+	Revoked int32 `json:"revoked"`
+}
+
 // StateTransitionDetails Typed metadata about this transition (currently: actor source)
 type StateTransitionDetails struct {
 	// Source Actor that produced this transition (pipeline | public-api)
@@ -12302,6 +13139,45 @@ type StatusEventDto struct {
 
 	// Type Status event row type on the Dependencies Detail rail
 	Type string `json:"type"`
+}
+
+// StatusPageAccessEventDto Items on this page
+type StatusPageAccessEventDto struct {
+	// ClientIp Address the viewer connected from; null when an admin acted
+	ClientIp *string `json:"clientIp,omitempty"`
+
+	// ConnectionId Sign-in connection involved, if any
+	ConnectionId *openapi_types.UUID `json:"connectionId,omitempty"`
+
+	// EndUserEmail Email of the person it happened to; null when no person was identified
+	EndUserEmail *string `json:"endUserEmail,omitempty"`
+
+	// EventType What happened
+	EventType string `json:"eventType"`
+
+	// FailureReason Why a sign-in failed; null for other events
+	FailureReason *string `json:"failureReason,omitempty"`
+
+	// Id Event identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// OccurredAt When it happened
+	OccurredAt time.Time `json:"occurredAt"`
+}
+
+// StatusPageAccessPolicyDto defines model for StatusPageAccessPolicyDto.
+type StatusPageAccessPolicyDto struct {
+	// Explicit Whether the page has its own policy; false means these are the defaults
+	Explicit bool `json:"explicit"`
+
+	// SessionAbsoluteTtlSeconds Seconds a viewer stays signed in after signing in (3600–7776000)
+	SessionAbsoluteTtlSeconds int32 `json:"sessionAbsoluteTtlSeconds"`
+
+	// SessionIdleTtlSeconds Seconds without a request before a viewer is signed out (300–7776000); equal to the session length means no idle timeout
+	SessionIdleTtlSeconds int32 `json:"sessionIdleTtlSeconds"`
+
+	// UpdatedAt When the policy last changed; null for the defaults
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
 
 // StatusPageBindingSnapshot Saved component configuration
@@ -12372,6 +13248,9 @@ type StatusPageBranding struct {
 	// LogoUrl URL for the logo image displayed in the header
 	LogoUrl *string `json:"logoUrl,omitempty"`
 
+	// NoIndex Whether to prevent search engines from indexing the public page (default: false)
+	NoIndex *bool `json:"noIndex,omitempty"`
+
 	// PageBackground Page body background color as hex, e.g. #FAFAFA
 	PageBackground *string `json:"pageBackground,omitempty"`
 
@@ -12386,6 +13265,9 @@ type StatusPageBranding struct {
 
 	// Theme Color theme: light or dark (default: light)
 	Theme *string `json:"theme,omitempty"`
+
+	// TimeZone IANA timezone for displayed status times (default: visitor timezone)
+	TimeZone *string `json:"timeZone,omitempty"`
 }
 
 // StatusPageComponentDto defines model for StatusPageComponentDto.
@@ -12433,16 +13315,21 @@ type StatusPageComponentDto struct {
 
 // StatusPageComponentGroupDto defines model for StatusPageComponentGroupDto.
 type StatusPageComponentGroupDto struct {
-	Components   *[]StatusPageComponentDto `json:"components,omitempty"`
-	CreatedAt    time.Time                 `json:"createdAt"`
-	DefaultOpen  bool                      `json:"defaultOpen"`
-	Description  *string                   `json:"description,omitempty"`
-	DisplayOrder int32                     `json:"displayOrder"`
-	Id           openapi_types.UUID        `json:"id"`
-	Name         string                    `json:"name"`
-	PageOrder    int32                     `json:"pageOrder"`
-	StatusPageId openapi_types.UUID        `json:"statusPageId"`
-	UpdatedAt    time.Time                 `json:"updatedAt"`
+	// ComponentCount Number of components in the group (default: 0)
+	ComponentCount *int32                    `json:"componentCount,omitempty"`
+	Components     *[]StatusPageComponentDto `json:"components,omitempty"`
+	CreatedAt      time.Time                 `json:"createdAt"`
+	DefaultOpen    bool                      `json:"defaultOpen"`
+	Description    *string                   `json:"description,omitempty"`
+	DisplayOrder   int32                     `json:"displayOrder"`
+	Id             openapi_types.UUID        `json:"id"`
+	Name           string                    `json:"name"`
+	PageOrder      int32                     `json:"pageOrder"`
+
+	// Status Worst current status of the group's components (all of them, including those left out of the page's overall status); OPERATIONAL when the group is empty (default: OPERATIONAL)
+	Status       *string            `json:"status,omitempty"`
+	StatusPageId openapi_types.UUID `json:"statusPageId"`
+	UpdatedAt    time.Time          `json:"updatedAt"`
 }
 
 // StatusPageCustomDomainDto defines model for StatusPageCustomDomainDto.
@@ -12470,21 +13357,117 @@ type StatusPageDto struct {
 	ComponentCount *int32             `json:"componentCount,omitempty"`
 	CreatedAt      time.Time          `json:"createdAt"`
 	Description    *string            `json:"description,omitempty"`
-	Enabled        bool               `json:"enabled"`
-	Id             openapi_types.UUID `json:"id"`
-	IncidentMode   string             `json:"incidentMode"`
+
+	// EmailSignIn Email sign-in method besides SSO: PASSWORD or MAGIC_LINK; null when off
+	EmailSignIn  *string            `json:"emailSignIn,omitempty"`
+	Enabled      bool               `json:"enabled"`
+	Id           openapi_types.UUID `json:"id"`
+	IncidentMode string             `json:"incidentMode"`
 
 	// ManagedBy Source that created/owns this status page: DASHBOARD, GIT, TERRAFORM, MCP or API. Null on pages created before this attribution column existed.
-	ManagedBy       *string                           `json:"managedBy,omitempty"`
-	Name            string                            `json:"name"`
-	OpenIncident    *StatusPageOpenIncidentSummaryDto `json:"openIncident,omitempty"`
-	OrganizationId  int32                             `json:"organizationId"`
-	OverallStatus   *string                           `json:"overallStatus,omitempty"`
-	Slug            string                            `json:"slug"`
-	SubscriberCount *int64                            `json:"subscriberCount,omitempty"`
-	UpdatedAt       time.Time                         `json:"updatedAt"`
-	Visibility      string                            `json:"visibility"`
-	WorkspaceId     int32                             `json:"workspaceId"`
+	ManagedBy      *string                           `json:"managedBy,omitempty"`
+	Name           string                            `json:"name"`
+	OpenIncident   *StatusPageOpenIncidentSummaryDto `json:"openIncident,omitempty"`
+	OrganizationId int32                             `json:"organizationId"`
+	OverallStatus  *string                           `json:"overallStatus,omitempty"`
+	Slug           string                            `json:"slug"`
+
+	// SubscriberChannels Channels visitors can subscribe with on the public page (EMAIL, TEAMS, WEBHOOK)
+	SubscriberChannels []string  `json:"subscriberChannels"`
+	SubscriberCount    *int64    `json:"subscriberCount,omitempty"`
+	UpdatedAt          time.Time `json:"updatedAt"`
+	Visibility         string    `json:"visibility"`
+	WorkspaceId        int32     `json:"workspaceId"`
+}
+
+// StatusPageEndUserBulkDeactivationDto defines model for StatusPageEndUserBulkDeactivationDto.
+type StatusPageEndUserBulkDeactivationDto struct {
+	// Matched Emails that belong to people on the page, now deactivated
+	Matched int32 `json:"matched"`
+
+	// Unknown Emails that belong to nobody on the page
+	Unknown int32 `json:"unknown"`
+
+	// UnknownEmails The emails counted in unknown, lowercase
+	UnknownEmails []string `json:"unknownEmails"`
+}
+
+// StatusPageEndUserDto defines model for StatusPageEndUserDto.
+type StatusPageEndUserDto struct {
+	// CreatedAt When the person was first added
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Email Email address, lowercase
+	Email string `json:"email"`
+
+	// Id End user identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// LastSignInAt When the person last signed in; null if never
+	LastSignInAt *time.Time `json:"lastSignInAt,omitempty"`
+
+	// Name Name the identity provider gave, if any
+	Name *string `json:"name,omitempty"`
+
+	// Status Whether the person may sign in
+	Status string `json:"status"`
+}
+
+// StatusPageEndUserInviteDto defines model for StatusPageEndUserInviteDto.
+type StatusPageEndUserInviteDto struct {
+	EndUser StatusPageEndUserDto `json:"endUser"`
+
+	// ExpiresAt When the invite link stops working
+	ExpiresAt time.Time `json:"expiresAt"`
+
+	// Id Invite identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// SentAt When the invite email was sent
+	SentAt time.Time `json:"sentAt"`
+}
+
+// StatusPageEndUserInviteResultDto defines model for StatusPageEndUserInviteResultDto.
+type StatusPageEndUserInviteResultDto struct {
+	// Invited Invites sent, one per email
+	Invited []StatusPageEndUserInviteDto `json:"invited"`
+
+	// Skipped Emails that got no invite, and why
+	Skipped []StatusPageEndUserInviteSkipDto `json:"skipped"`
+}
+
+// StatusPageEndUserInviteSkipDto Emails that got no invite, and why
+type StatusPageEndUserInviteSkipDto struct {
+	// Email The email as given, trimmed
+	Email string `json:"email"`
+
+	// Reason Why no invite was sent
+	Reason string `json:"reason"`
+}
+
+// StatusPageGroupDto defines model for StatusPageGroupDto.
+type StatusPageGroupDto struct {
+	CreatedAt           time.Time                  `json:"createdAt"`
+	CustomDomain        *StatusPageCustomDomainDto `json:"customDomain,omitempty"`
+	DefaultStatusPageId *openapi_types.UUID        `json:"defaultStatusPageId,omitempty"`
+	Id                  openapi_types.UUID         `json:"id"`
+	Members             []StatusPageGroupMemberDto `json:"members"`
+	Mode                string                     `json:"mode"`
+	Name                string                     `json:"name"`
+	OrganizationId      int32                      `json:"organizationId"`
+	Slug                string                     `json:"slug"`
+	UpdatedAt           time.Time                  `json:"updatedAt"`
+	WorkspaceId         int32                      `json:"workspaceId"`
+}
+
+// StatusPageGroupMemberDto defines model for StatusPageGroupMemberDto.
+type StatusPageGroupMemberDto struct {
+	Key          string             `json:"key"`
+	Name         string             `json:"name"`
+	Position     int32              `json:"position"`
+	Slug         string             `json:"slug"`
+	StatusPageId openapi_types.UUID `json:"statusPageId"`
+	Visibility   string             `json:"visibility"`
 }
 
 // StatusPageIncidentComponentDto defines model for StatusPageIncidentComponentDto.
@@ -12498,24 +13481,39 @@ type StatusPageIncidentComponentDto struct {
 type StatusPageIncidentDto struct {
 	AffectedComponents *[]StatusPageIncidentComponentDto `json:"affectedComponents,omitempty"`
 	AutoResolve        bool                              `json:"autoResolve"`
-	CreatedAt          time.Time                         `json:"createdAt"`
-	CreatedByUserId    *int32                            `json:"createdByUserId,omitempty"`
-	Id                 openapi_types.UUID                `json:"id"`
-	Impact             string                            `json:"impact"`
-	IncidentId         *openapi_types.UUID               `json:"incidentId,omitempty"`
-	PostmortemBody     *string                           `json:"postmortemBody,omitempty"`
-	PostmortemUrl      *string                           `json:"postmortemUrl,omitempty"`
-	PublishedAt        *time.Time                        `json:"publishedAt,omitempty"`
-	ResolvedAt         *time.Time                        `json:"resolvedAt,omitempty"`
-	Scheduled          bool                              `json:"scheduled"`
-	ScheduledFor       *time.Time                        `json:"scheduledFor,omitempty"`
-	ScheduledUntil     *time.Time                        `json:"scheduledUntil,omitempty"`
-	StartedAt          time.Time                         `json:"startedAt"`
-	Status             string                            `json:"status"`
-	StatusPageId       openapi_types.UUID                `json:"statusPageId"`
-	Title              string                            `json:"title"`
-	UpdatedAt          time.Time                         `json:"updatedAt"`
-	Updates            *[]StatusPageIncidentUpdateDto    `json:"updates,omitempty"`
+
+	// Backfilled Imported after the fact with its original dates; nobody was notified (default: false)
+	Backfilled      *bool               `json:"backfilled,omitempty"`
+	CreatedAt       time.Time           `json:"createdAt"`
+	CreatedByUserId *int32              `json:"createdByUserId,omitempty"`
+	Id              openapi_types.UUID  `json:"id"`
+	Impact          string              `json:"impact"`
+	IncidentId      *openapi_types.UUID `json:"incidentId,omitempty"`
+	PostmortemBody  *string             `json:"postmortemBody,omitempty"`
+
+	// PostmortemNotifiedAt When subscribers were last emailed the postmortem; null if never
+	PostmortemNotifiedAt *time.Time `json:"postmortemNotifiedAt,omitempty"`
+
+	// PostmortemPublishedAt When the postmortem was first published to subscribers; null if never
+	PostmortemPublishedAt *time.Time `json:"postmortemPublishedAt,omitempty"`
+	PostmortemUrl         *string    `json:"postmortemUrl,omitempty"`
+	PublishedAt           *time.Time `json:"publishedAt,omitempty"`
+
+	// ReminderLeadMinutes Maintenance only: minutes before the window that subscribers are reminded; null for incidents
+	ReminderLeadMinutes *[]int32           `json:"reminderLeadMinutes,omitempty"`
+	ResolvedAt          *time.Time         `json:"resolvedAt,omitempty"`
+	Scheduled           bool               `json:"scheduled"`
+	ScheduledFor        *time.Time         `json:"scheduledFor,omitempty"`
+	ScheduledUntil      *time.Time         `json:"scheduledUntil,omitempty"`
+	StartedAt           time.Time          `json:"startedAt"`
+	Status              string             `json:"status"`
+	StatusPageId        openapi_types.UUID `json:"statusPageId"`
+
+	// TemplateId Template the incident or maintenance window was created from; null for none
+	TemplateId *openapi_types.UUID            `json:"templateId,omitempty"`
+	Title      string                         `json:"title"`
+	UpdatedAt  time.Time                      `json:"updatedAt"`
+	Updates    *[]StatusPageIncidentUpdateDto `json:"updates,omitempty"`
 }
 
 // StatusPageIncidentUpdateDto defines model for StatusPageIncidentUpdateDto.
@@ -12560,6 +13558,15 @@ type StatusPageMeasuredUptimeDayDto struct {
 
 	// UptimePercentage passedChecks / totalChecks × 100; null when totalChecks is 0
 	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
+}
+
+// StatusPageMonthlyUptimeDto Monthly uptime per component and per component group, oldest month first
+type StatusPageMonthlyUptimeDto struct {
+	// Components Map of component ID → monthly buckets
+	Components map[string][]MonthlyUptimeBucketDto `json:"components"`
+
+	// Groups Map of component group ID → monthly buckets
+	Groups map[string][]MonthlyUptimeBucketDto `json:"groups"`
 }
 
 // StatusPageNotificationDeliveryDto Delivery receipt for a status page subscriber notification
@@ -12628,12 +13635,27 @@ type StatusPageOpenIncidentSummaryDto struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+// StatusPageSubscriberBulkResultDto defines model for StatusPageSubscriberBulkResultDto.
+type StatusPageSubscriberBulkResultDto struct {
+	// Matched Subscribers on this page that were changed
+	Matched int32 `json:"matched"`
+
+	// Unknown IDs that are not subscribers of this page
+	Unknown int32 `json:"unknown"`
+
+	// UnknownIds The IDs counted in unknown
+	UnknownIds []openapi_types.UUID `json:"unknownIds"`
+}
+
 // StatusPageSubscriberDto defines model for StatusPageSubscriberDto.
 type StatusPageSubscriberDto struct {
-	// Channel Delivery channel (EMAIL, SMS, WEBHOOK)
+	// Channel Delivery channel (EMAIL, SMS, WEBHOOK, TEAMS)
 	Channel string `json:"channel"`
 
-	// ComponentIds Scoped component IDs; null means whole page
+	// ComponentGroupIds Component groups followed, including components added to them later; null for none
+	ComponentGroupIds *[]openapi_types.UUID `json:"componentGroupIds,omitempty"`
+
+	// ComponentIds Scoped component IDs; null with no component groups means the whole page
 	ComponentIds *[]openapi_types.UUID `json:"componentIds,omitempty"`
 
 	// ConfirmationSent True when this call sent a confirmation email; omitted on list reads
@@ -12645,7 +13667,7 @@ type StatusPageSubscriberDto struct {
 	// CreatedAt When the subscriber was created
 	CreatedAt time.Time `json:"createdAt"`
 
-	// Destination Channel destination (email, phone, or webhook URL)
+	// Destination Channel destination (email, phone, webhook URL or Teams webhook URL)
 	Destination string `json:"destination"`
 
 	// Email Email when channel is EMAIL; null for other channels
@@ -12653,6 +13675,174 @@ type StatusPageSubscriberDto struct {
 
 	// Id Subscriber id
 	Id openapi_types.UUID `json:"id"`
+
+	// Source How the subscriber was added (SELF, ADMIN, IMPORT); null if not recorded
+	Source *string `json:"source,omitempty"`
+}
+
+// StatusPageSubscriberImportErrorDto Rows that were not imported, with the reason
+type StatusPageSubscriberImportErrorDto struct {
+	// Code Why the row was skipped
+	Code string `json:"code"`
+
+	// Field Field of the row that was rejected
+	Field *string `json:"field,omitempty"`
+
+	// Message Human-readable reason
+	Message string `json:"message"`
+
+	// Row Zero-based index of the row in the request
+	Row int32 `json:"row"`
+}
+
+// StatusPageSubscriberImportResultDto defines model for StatusPageSubscriberImportResultDto.
+type StatusPageSubscriberImportResultDto struct {
+	// Created Rows that added a new subscriber
+	Created int32 `json:"created"`
+
+	// Errors Rows that were not imported, with the reason
+	Errors []StatusPageSubscriberImportErrorDto `json:"errors"`
+
+	// Updated Rows that matched an existing subscriber and updated it
+	Updated int32 `json:"updated"`
+}
+
+// StatusPageTemplateComponent Components for this stage; null uses the template's components
+type StatusPageTemplateComponent struct {
+	// ComponentId Status page component ID
+	ComponentId openapi_types.UUID `json:"componentId"`
+
+	// Status Component status while the incident or maintenance is at this stage
+	Status StatusPageTemplateComponentStatus `json:"status"`
+}
+
+// StatusPageTemplateComponentStatus Component status while the incident or maintenance is at this stage
+type StatusPageTemplateComponentStatus string
+
+// StatusPageTemplateDto defines model for StatusPageTemplateDto.
+type StatusPageTemplateDto struct {
+	// AutoResolve Maintenance only: complete the window automatically when it ends
+	AutoResolve *bool `json:"autoResolve,omitempty"`
+
+	// Components Components the template marks, with their status
+	Components []StatusPageTemplateComponent `json:"components"`
+
+	// CreatedAt When the template was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// DefaultDurationMinutes Maintenance only: default window length in minutes
+	DefaultDurationMinutes *int32 `json:"defaultDurationMinutes,omitempty"`
+
+	// Id Template ID
+	Id openapi_types.UUID `json:"id"`
+
+	// Impact Impact level
+	Impact string `json:"impact"`
+
+	// InitialStatus Status the incident starts in
+	InitialStatus string `json:"initialStatus"`
+
+	// Kind INCIDENT or MAINTENANCE
+	Kind string `json:"kind"`
+
+	// Name Name shown in the template picker
+	Name string `json:"name"`
+
+	// NotifySubscribers Whether incidents from this template notify subscribers
+	NotifySubscribers bool `json:"notifySubscribers"`
+
+	// ReminderLeadMinutes Maintenance only: minutes before the window to remind subscribers
+	ReminderLeadMinutes *[]int32 `json:"reminderLeadMinutes,omitempty"`
+
+	// Stages Message per stage, keyed by status
+	Stages map[string]StatusPageTemplateStage `json:"stages"`
+
+	// StatusPageId Status page the template belongs to
+	StatusPageId openapi_types.UUID `json:"statusPageId"`
+
+	// Title Incident or maintenance title, with variables
+	Title string `json:"title"`
+
+	// UpdatedAt When the template last changed
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// StatusPageTemplateRenderDto defines model for StatusPageTemplateRenderDto.
+type StatusPageTemplateRenderDto struct {
+	// Body The stage's message with variables filled in; null when the stage has none
+	Body *string `json:"body,omitempty"`
+
+	// Components Components for the stage, with their status
+	Components []StatusPageTemplateComponent `json:"components"`
+
+	// Title Title with variables filled in
+	Title string `json:"title"`
+}
+
+// StatusPageTemplateRequest defines model for StatusPageTemplateRequest.
+type StatusPageTemplateRequest struct {
+	// AutoResolve Maintenance only: complete the window automatically when it ends
+	AutoResolve *bool `json:"autoResolve,omitempty"`
+
+	// Components Components the template marks, with their status
+	Components *[]StatusPageTemplateComponent `json:"components,omitempty"`
+
+	// DefaultDurationMinutes Maintenance only: default window length in minutes (1–10080)
+	DefaultDurationMinutes *int32 `json:"defaultDurationMinutes,omitempty"`
+
+	// Impact Impact level (default: MAJOR)
+	Impact *StatusPageTemplateRequestImpact `json:"impact,omitempty"`
+
+	// InitialStatus Status the incident starts in (default: INVESTIGATING; always INVESTIGATING for maintenance)
+	InitialStatus *StatusPageTemplateRequestInitialStatus `json:"initialStatus,omitempty"`
+
+	// Kind INCIDENT or MAINTENANCE; ignored when replacing a template
+	Kind StatusPageTemplateRequestKind `json:"kind"`
+
+	// Name Name shown in the template picker, unique per status page
+	Name string `json:"name"`
+
+	// NotifySubscribers Whether incidents from this template notify subscribers (default: true)
+	NotifySubscribers *bool `json:"notifySubscribers,omitempty"`
+
+	// ReminderLeadMinutes Maintenance only: minutes before the window to remind subscribers (5–20160 each)
+	ReminderLeadMinutes *[]int32 `json:"reminderLeadMinutes,omitempty"`
+
+	// Stages Message per stage, keyed by status (INVESTIGATING, IDENTIFIED, MONITORING, RESOLVED)
+	Stages *map[string]*StatusPageTemplateStage `json:"stages,omitempty"`
+
+	// Title Incident or maintenance title; may use {{page.name}} and the maintenance variables
+	Title string `json:"title"`
+}
+
+// StatusPageTemplateRequestImpact Impact level (default: MAJOR)
+type StatusPageTemplateRequestImpact string
+
+// StatusPageTemplateRequestInitialStatus Status the incident starts in (default: INVESTIGATING; always INVESTIGATING for maintenance)
+type StatusPageTemplateRequestInitialStatus string
+
+// StatusPageTemplateRequestKind INCIDENT or MAINTENANCE; ignored when replacing a template
+type StatusPageTemplateRequestKind string
+
+// StatusPageTemplateStage Message per stage, keyed by status (INVESTIGATING, IDENTIFIED, MONITORING, RESOLVED)
+type StatusPageTemplateStage struct {
+	// Body Update message for this stage; may use {{page.name}}, {{maintenance.start}}, {{maintenance.end}} and {{components}}
+	Body string `json:"body"`
+
+	// Components Components for this stage; null uses the template's components
+	Components *[]StatusPageTemplateComponent `json:"components,omitempty"`
+}
+
+// StatusPageVisibilityChangePreviewDto defines model for StatusPageVisibilityChangePreviewDto.
+type StatusPageVisibilityChangePreviewDto struct {
+	// ConvertedSubscribers Email subscribers that become invited end users
+	ConvertedSubscribers int32 `json:"convertedSubscribers"`
+
+	// DroppedUnconfirmed Unconfirmed sign-ups that are dropped
+	DroppedUnconfirmed int32 `json:"droppedUnconfirmed"`
+
+	// InvitedEndUsers End users created for them; the rest already exist
+	InvitedEndUsers int32 `json:"invitedEndUsers"`
 }
 
 // StreamingResponseBody defines model for StreamingResponseBody.
@@ -13031,6 +14221,15 @@ type TableValueResultServiceSubscriptionDto struct {
 	TotalPages    *int32                   `json:"totalPages,omitempty"`
 }
 
+// TableValueResultSsoConnectionDto defines model for TableValueResultSsoConnectionDto.
+type TableValueResultSsoConnectionDto struct {
+	Data          []SsoConnectionDto `json:"data"`
+	HasNext       bool               `json:"hasNext"`
+	HasPrev       bool               `json:"hasPrev"`
+	TotalElements *int64             `json:"totalElements,omitempty"`
+	TotalPages    *int32             `json:"totalPages,omitempty"`
+}
+
 // TableValueResultStatusPageComponentDto defines model for TableValueResultStatusPageComponentDto.
 type TableValueResultStatusPageComponentDto struct {
 	Data          []StatusPageComponentDto `json:"data"`
@@ -13067,6 +14266,33 @@ type TableValueResultStatusPageDto struct {
 	TotalPages    *int32          `json:"totalPages,omitempty"`
 }
 
+// TableValueResultStatusPageEndUserDto defines model for TableValueResultStatusPageEndUserDto.
+type TableValueResultStatusPageEndUserDto struct {
+	Data          []StatusPageEndUserDto `json:"data"`
+	HasNext       bool                   `json:"hasNext"`
+	HasPrev       bool                   `json:"hasPrev"`
+	TotalElements *int64                 `json:"totalElements,omitempty"`
+	TotalPages    *int32                 `json:"totalPages,omitempty"`
+}
+
+// TableValueResultStatusPageEndUserInviteDto defines model for TableValueResultStatusPageEndUserInviteDto.
+type TableValueResultStatusPageEndUserInviteDto struct {
+	Data          []StatusPageEndUserInviteDto `json:"data"`
+	HasNext       bool                         `json:"hasNext"`
+	HasPrev       bool                         `json:"hasPrev"`
+	TotalElements *int64                       `json:"totalElements,omitempty"`
+	TotalPages    *int32                       `json:"totalPages,omitempty"`
+}
+
+// TableValueResultStatusPageGroupDto defines model for TableValueResultStatusPageGroupDto.
+type TableValueResultStatusPageGroupDto struct {
+	Data          []StatusPageGroupDto `json:"data"`
+	HasNext       bool                 `json:"hasNext"`
+	HasPrev       bool                 `json:"hasPrev"`
+	TotalElements *int64               `json:"totalElements,omitempty"`
+	TotalPages    *int32               `json:"totalPages,omitempty"`
+}
+
 // TableValueResultStatusPageIncidentDto defines model for TableValueResultStatusPageIncidentDto.
 type TableValueResultStatusPageIncidentDto struct {
 	Data          []StatusPageIncidentDto `json:"data"`
@@ -13092,6 +14318,15 @@ type TableValueResultStatusPageSubscriberDto struct {
 	HasPrev       bool                      `json:"hasPrev"`
 	TotalElements *int64                    `json:"totalElements,omitempty"`
 	TotalPages    *int32                    `json:"totalPages,omitempty"`
+}
+
+// TableValueResultStatusPageTemplateDto defines model for TableValueResultStatusPageTemplateDto.
+type TableValueResultStatusPageTemplateDto struct {
+	Data          []StatusPageTemplateDto `json:"data"`
+	HasNext       bool                    `json:"hasNext"`
+	HasPrev       bool                    `json:"hasPrev"`
+	TotalElements *int64                  `json:"totalElements,omitempty"`
+	TotalPages    *int32                  `json:"totalPages,omitempty"`
 }
 
 // TableValueResultTagDto defines model for TableValueResultTagDto.
@@ -13895,6 +15130,21 @@ type UpdateOrgDetailsRequest struct {
 	WebsiteUrl *string `json:"websiteUrl,omitempty"`
 }
 
+// UpdateOrgSsoSettingsRequest defines model for UpdateOrgSsoSettingsRequest.
+type UpdateOrgSsoSettingsRequest struct {
+	// DefaultRole Role of people who join on first sign-in (ADMIN or MEMBER); null keeps the current value
+	DefaultRole *UpdateOrgSsoSettingsRequestDefaultRole `json:"defaultRole,omitempty"`
+
+	// Enforced Require SSO for members (owners keep a break-glass sign-in); null keeps the current value
+	Enforced *bool `json:"enforced,omitempty"`
+
+	// JitEnabled Let people from a verified domain join on first sign-in; null keeps the current value
+	JitEnabled *bool `json:"jitEnabled,omitempty"`
+}
+
+// UpdateOrgSsoSettingsRequestDefaultRole Role of people who join on first sign-in (ADMIN or MEMBER); null keeps the current value
+type UpdateOrgSsoSettingsRequestDefaultRole string
+
 // UpdatePagerDutyChannelConfig defines model for UpdatePagerDutyChannelConfig.
 type UpdatePagerDutyChannelConfig struct {
 	ChannelType UpdatePagerDutyChannelConfigChannelType `json:"channelType"`
@@ -14079,6 +15329,36 @@ type UpdateSplunkOnCallChannelConfig struct {
 // UpdateSplunkOnCallChannelConfigChannelType defines model for UpdateSplunkOnCallChannelConfig.ChannelType.
 type UpdateSplunkOnCallChannelConfigChannelType string
 
+// UpdateSsoConnectionRequest defines model for UpdateSsoConnectionRequest.
+type UpdateSsoConnectionRequest struct {
+	// AcsUrl Assertion consumer service URL; fixed at creation, a different value is rejected
+	AcsUrl *string `json:"acsUrl,omitempty"`
+
+	// Enabled Whether sign-in through this connection is allowed; null preserves current
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Name New connection name; null preserves current
+	Name *string `json:"name,omitempty"`
+
+	// SignInScope Who may sign in through the connection; null preserves current
+	SignInScope *UpdateSsoConnectionRequestSignInScope `json:"signInScope,omitempty"`
+
+	// SpEntityId Service provider entity ID; fixed at creation, a different value is rejected
+	SpEntityId *string `json:"spEntityId,omitempty"`
+}
+
+// UpdateSsoConnectionRequestSignInScope Who may sign in through the connection; null preserves current
+type UpdateSsoConnectionRequestSignInScope string
+
+// UpdateStatusPageAccessPolicyRequest defines model for UpdateStatusPageAccessPolicyRequest.
+type UpdateStatusPageAccessPolicyRequest struct {
+	// SessionAbsoluteTtlSeconds Seconds a viewer stays signed in after signing in (3600–7776000)
+	SessionAbsoluteTtlSeconds int32 `json:"sessionAbsoluteTtlSeconds"`
+
+	// SessionIdleTtlSeconds Seconds without a request before a viewer is signed out (300–7776000, at most the session length); equal to the session length means no idle timeout
+	SessionIdleTtlSeconds int32 `json:"sessionIdleTtlSeconds"`
+}
+
 // UpdateStatusPageComponentGroupRequest defines model for UpdateStatusPageComponentGroupRequest.
 type UpdateStatusPageComponentGroupRequest struct {
 	// DefaultOpen Initial expand/collapse state on first page load; null preserves current. Renderer may auto-expand on active incidents
@@ -14121,6 +15401,18 @@ type UpdateStatusPageComponentRequest struct {
 	StartDate *openapi_types.Date `json:"startDate,omitempty"`
 }
 
+// UpdateStatusPageGroupRequest defines model for UpdateStatusPageGroupRequest.
+type UpdateStatusPageGroupRequest struct {
+	// Mode New serving mode: SEPARATE or UNIFIED; null preserves current
+	Mode *UpdateStatusPageGroupRequestMode `json:"mode,omitempty"`
+
+	// Name New name; null preserves current
+	Name *string `json:"name,omitempty"`
+}
+
+// UpdateStatusPageGroupRequestMode New serving mode: SEPARATE or UNIFIED; null preserves current
+type UpdateStatusPageGroupRequestMode string
+
 // UpdateStatusPageIncidentRequest defines model for UpdateStatusPageIncidentRequest.
 type UpdateStatusPageIncidentRequest struct {
 	// AffectedComponents Updated affected components; null preserves current
@@ -14132,6 +15424,9 @@ type UpdateStatusPageIncidentRequest struct {
 	// Impact New impact level; null preserves current
 	Impact *UpdateStatusPageIncidentRequestImpact `json:"impact,omitempty"`
 
+	// NotifySubscribersOfPostmortem Email the postmortem to subscribers (resolved incidents with a postmortem only). Sending the same text again is a no-op; changed text is sent again
+	NotifySubscribersOfPostmortem *bool `json:"notifySubscribersOfPostmortem,omitempty"`
+
 	// PostmortemBody Postmortem body in markdown; empty string clears
 	PostmortemBody *string `json:"postmortemBody,omitempty"`
 
@@ -14140,6 +15435,9 @@ type UpdateStatusPageIncidentRequest struct {
 
 	// Published Whether the incident is published on the public page; null preserves current. true publishes (sets publishedAt); false unpublishes (clears publishedAt)
 	Published *bool `json:"published,omitempty"`
+
+	// ReminderLeadMinutes Maintenance only: minutes before the window to remind subscribers (5–20160 each, distinct); null preserves current, an empty list removes the reminders still to come
+	ReminderLeadMinutes *[]int32 `json:"reminderLeadMinutes,omitempty"`
 
 	// ScheduledFor New maintenance window start; null preserves current. Only for scheduled incidents
 	ScheduledFor *time.Time `json:"scheduledFor,omitempty"`
@@ -14176,8 +15474,20 @@ type UpdateStatusPageIncidentUpdateRequestStatus string
 type UpdateStatusPageRequest struct {
 	Branding *StatusPageBranding `json:"branding,omitempty"`
 
+	// ClearEmailSignIn Set to true to turn email sign-in off
+	ClearEmailSignIn *bool `json:"clearEmailSignIn,omitempty"`
+
+	// ConfirmConvertSubscribers Confirms making a page private converts its email subscribers to invited end users
+	ConfirmConvertSubscribers *bool `json:"confirmConvertSubscribers,omitempty"`
+
+	// ConfirmPublic Confirms making a sign-in page public, which signs out its viewers
+	ConfirmPublic *bool `json:"confirmPublic,omitempty"`
+
 	// Description New description; null preserves current, empty string clears
 	Description *string `json:"description,omitempty"`
+
+	// EmailSignIn Email sign-in method besides SSO: PASSWORD or MAGIC_LINK; null preserves current
+	EmailSignIn *UpdateStatusPageRequestEmailSignIn `json:"emailSignIn,omitempty"`
 
 	// Enabled Whether the page is enabled; null preserves current
 	Enabled *bool `json:"enabled,omitempty"`
@@ -14191,9 +15501,15 @@ type UpdateStatusPageRequest struct {
 	// Name New name; null preserves current
 	Name *string `json:"name,omitempty"`
 
+	// SubscriberChannels Channels visitors can subscribe with (EMAIL, TEAMS, WEBHOOK); null preserves current
+	SubscriberChannels *[]UpdateStatusPageRequestSubscriberChannels `json:"subscriberChannels,omitempty"`
+
 	// Visibility Page visibility; null preserves current
 	Visibility *UpdateStatusPageRequestVisibility `json:"visibility,omitempty"`
 }
+
+// UpdateStatusPageRequestEmailSignIn Email sign-in method besides SSO: PASSWORD or MAGIC_LINK; null preserves current
+type UpdateStatusPageRequestEmailSignIn string
 
 // UpdateStatusPageRequestIncidentMode Incident mode: MANUAL, REVIEW, or AUTOMATIC; null preserves current
 type UpdateStatusPageRequestIncidentMode string
@@ -14201,8 +15517,20 @@ type UpdateStatusPageRequestIncidentMode string
 // UpdateStatusPageRequestManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 type UpdateStatusPageRequestManagedBy string
 
+// UpdateStatusPageRequestSubscriberChannels Channels visitors can subscribe with (EMAIL, TEAMS, WEBHOOK); null preserves current
+type UpdateStatusPageRequestSubscriberChannels string
+
 // UpdateStatusPageRequestVisibility Page visibility; null preserves current
 type UpdateStatusPageRequestVisibility string
+
+// UpdateSubscriberRequest defines model for UpdateSubscriberRequest.
+type UpdateSubscriberRequest struct {
+	// ComponentGroupIds Component groups to hear about, including components added to them later; omit for none
+	ComponentGroupIds *[]openapi_types.UUID `json:"componentGroupIds,omitempty"`
+
+	// ComponentIds Components to hear about; empty with no component groups means the whole page
+	ComponentIds []openapi_types.UUID `json:"componentIds"`
+}
 
 // UpdateTagRequest Request body for updating a tag; null fields are left unchanged
 type UpdateTagRequest struct {
@@ -16642,6 +17970,108 @@ type Update6Params struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
+// ListOrgSsoConnectionsParams defines parameters for ListOrgSsoConnections.
+type ListOrgSsoConnectionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateOrgSsoConnectionParams defines parameters for CreateOrgSsoConnection.
+type CreateOrgSsoConnectionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteOrgSsoConnectionParams defines parameters for DeleteOrgSsoConnection.
+type DeleteOrgSsoConnectionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetOrgSsoConnectionParams defines parameters for GetOrgSsoConnection.
+type GetOrgSsoConnectionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateOrgSsoConnectionParams defines parameters for UpdateOrgSsoConnection.
+type UpdateOrgSsoConnectionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddOrgSsoCertificateParams defines parameters for AddOrgSsoCertificate.
+type AddOrgSsoCertificateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveOrgSsoCertificateParams defines parameters for RemoveOrgSsoCertificate.
+type RemoveOrgSsoCertificateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddOrgSsoDomainParams defines parameters for AddOrgSsoDomain.
+type AddOrgSsoDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveOrgSsoDomainParams defines parameters for RemoveOrgSsoDomain.
+type RemoveOrgSsoDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// VerifyOrgSsoDomainParams defines parameters for VerifyOrgSsoDomain.
+type VerifyOrgSsoDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetOrgSsoIdpMetadataParams defines parameters for SetOrgSsoIdpMetadata.
+type SetOrgSsoIdpMetadataParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetOrgSsoSpMetadataParams defines parameters for GetOrgSsoSpMetadata.
+type GetOrgSsoSpMetadataParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RevokeOrgSsoSessionsParams defines parameters for RevokeOrgSsoSessions.
+type RevokeOrgSsoSessionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetOrgSsoSettingsParams defines parameters for GetOrgSsoSettings.
+type GetOrgSsoSettingsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateOrgSsoSettingsParams defines parameters for UpdateOrgSsoSettings.
+type UpdateOrgSsoSettingsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListRegionsParams defines parameters for ListRegions.
 type ListRegionsParams struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
@@ -17547,6 +18977,81 @@ type GetServiceUptimeParamsPeriod string
 // GetServiceUptimeParamsGranularity defines parameters for GetServiceUptime.
 type GetServiceUptimeParamsGranularity string
 
+// ListStatusPageGroupsParams defines parameters for ListStatusPageGroups.
+type ListStatusPageGroupsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateStatusPageGroupParams defines parameters for CreateStatusPageGroup.
+type CreateStatusPageGroupParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteStatusPageGroupParams defines parameters for DeleteStatusPageGroup.
+type DeleteStatusPageGroupParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetStatusPageGroupParams defines parameters for GetStatusPageGroup.
+type GetStatusPageGroupParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateStatusPageGroupParams defines parameters for UpdateStatusPageGroup.
+type UpdateStatusPageGroupParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetStatusPageGroupDefaultPageParams defines parameters for SetStatusPageGroupDefaultPage.
+type SetStatusPageGroupDefaultPageParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveStatusPageGroupDomainParams defines parameters for RemoveStatusPageGroupDomain.
+type RemoveStatusPageGroupDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AttachStatusPageGroupDomainParams defines parameters for AttachStatusPageGroupDomain.
+type AttachStatusPageGroupDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddStatusPageGroupMemberParams defines parameters for AddStatusPageGroupMember.
+type AddStatusPageGroupMemberParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ReorderStatusPageGroupMembersParams defines parameters for ReorderStatusPageGroupMembers.
+type ReorderStatusPageGroupMembersParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveStatusPageGroupMemberParams defines parameters for RemoveStatusPageGroupMember.
+type RemoveStatusPageGroupMemberParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // List5Params defines parameters for List5.
 type List5Params struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
@@ -17576,6 +19081,46 @@ type Get2Params struct {
 
 // Update3Params defines parameters for Update3.
 type Update3Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListStatusPageAccessLogParams defines parameters for ListStatusPageAccessLog.
+type ListStatusPageAccessLogParams struct {
+	EventType *ListStatusPageAccessLogParamsEventType `form:"eventType,omitempty" json:"eventType,omitempty"`
+	From      *time.Time                              `form:"from,omitempty" json:"from,omitempty"`
+	To        *time.Time                              `form:"to,omitempty" json:"to,omitempty"`
+	Cursor    *string                                 `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit     *int32                                  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListStatusPageAccessLogParamsEventType defines parameters for ListStatusPageAccessLog.
+type ListStatusPageAccessLogParamsEventType string
+
+// ExportStatusPageAccessLogParams defines parameters for ExportStatusPageAccessLog.
+type ExportStatusPageAccessLogParams struct {
+	EventType *ExportStatusPageAccessLogParamsEventType `form:"eventType,omitempty" json:"eventType,omitempty"`
+	From      *time.Time                                `form:"from,omitempty" json:"from,omitempty"`
+	To        *time.Time                                `form:"to,omitempty" json:"to,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ExportStatusPageAccessLogParamsEventType defines parameters for ExportStatusPageAccessLog.
+type ExportStatusPageAccessLogParamsEventType string
+
+// GetStatusPageAccessPolicyParams defines parameters for GetStatusPageAccessPolicy.
+type GetStatusPageAccessPolicyParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateStatusPageAccessPolicyParams defines parameters for UpdateStatusPageAccessPolicy.
+type UpdateStatusPageAccessPolicyParams struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
@@ -17675,6 +19220,108 @@ type SetPrimaryDomainParams struct {
 type VerifyDomainParams struct {
 	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
 	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListStatusPageEndUsersParams defines parameters for ListStatusPageEndUsers.
+type ListStatusPageEndUsersParams struct {
+	Search *string                             `form:"search,omitempty" json:"search,omitempty"`
+	Status *ListStatusPageEndUsersParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListStatusPageEndUsersParamsStatus defines parameters for ListStatusPageEndUsers.
+type ListStatusPageEndUsersParamsStatus string
+
+// BulkDeactivateStatusPageEndUsersParams defines parameters for BulkDeactivateStatusPageEndUsers.
+type BulkDeactivateStatusPageEndUsersParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListStatusPageEndUserInvitesParams defines parameters for ListStatusPageEndUserInvites.
+type ListStatusPageEndUserInvitesParams struct {
+	// Page Zero-based page index (0..N)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Size The size of the page to be returned
+	Size *int `form:"size,omitempty" json:"size,omitempty"`
+
+	// Sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+	Sort *[]string `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// InviteStatusPageEndUsersParams defines parameters for InviteStatusPageEndUsers.
+type InviteStatusPageEndUsersParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RevokeStatusPageEndUserSessionsParams defines parameters for RevokeStatusPageEndUserSessions.
+type RevokeStatusPageEndUserSessionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeactivateStatusPageEndUserParams defines parameters for DeactivateStatusPageEndUser.
+type DeactivateStatusPageEndUserParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RevokeStatusPageEndUserInviteParams defines parameters for RevokeStatusPageEndUserInvite.
+type RevokeStatusPageEndUserInviteParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ResendStatusPageEndUserInviteParams defines parameters for ResendStatusPageEndUserInvite.
+type ResendStatusPageEndUserInviteParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ReactivateStatusPageEndUserParams defines parameters for ReactivateStatusPageEndUser.
+type ReactivateStatusPageEndUserParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ExportStatusPageDataParams defines parameters for ExportStatusPageData.
+type ExportStatusPageDataParams struct {
+	// Format File format: csv or json (default: csv)
+	Format *string `form:"format,omitempty" json:"format,omitempty"`
 
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
@@ -17781,6 +19428,12 @@ type PostIncidentUpdateParams struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
+// DeleteIncidentUpdateParams defines parameters for DeleteIncidentUpdate.
+type DeleteIncidentUpdateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // PatchIncidentUpdateParams defines parameters for PatchIncidentUpdate.
 type PatchIncidentUpdateParams struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
@@ -17867,6 +19520,12 @@ type PostMaintenanceUpdateParams struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
+// DeleteMaintenanceUpdateParams defines parameters for DeleteMaintenanceUpdate.
+type DeleteMaintenanceUpdateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // PatchMaintenanceUpdateParams defines parameters for PatchMaintenanceUpdate.
 type PatchMaintenanceUpdateParams struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
@@ -17900,6 +19559,105 @@ type RetryNotificationDeliveryParams struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
+// ListSsoConnectionsParams defines parameters for ListSsoConnections.
+type ListSsoConnectionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// CreateSsoConnectionParams defines parameters for CreateSsoConnection.
+type CreateSsoConnectionParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteSsoConnectionParams defines parameters for DeleteSsoConnection.
+type DeleteSsoConnectionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetSsoConnectionParams defines parameters for GetSsoConnection.
+type GetSsoConnectionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateSsoConnectionParams defines parameters for UpdateSsoConnection.
+type UpdateSsoConnectionParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddSsoCertificateParams defines parameters for AddSsoCertificate.
+type AddSsoCertificateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveSsoCertificateParams defines parameters for RemoveSsoCertificate.
+type RemoveSsoCertificateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// AddSsoDomainParams defines parameters for AddSsoDomain.
+type AddSsoDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RemoveSsoDomainParams defines parameters for RemoveSsoDomain.
+type RemoveSsoDomainParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// VerifySsoDomainParams defines parameters for VerifySsoDomain.
+type VerifySsoDomainParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SetSsoIdpMetadataParams defines parameters for SetSsoIdpMetadata.
+type SetSsoIdpMetadataParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetSsoSpMetadataParams defines parameters for GetSsoSpMetadata.
+type GetSsoSpMetadataParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// StartSsoConnectionTestParams defines parameters for StartSsoConnectionTest.
+type StartSsoConnectionTestParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetSsoConnectionTestParams defines parameters for GetSsoConnectionTest.
+type GetSsoConnectionTestParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // ListSubscribersParams defines parameters for ListSubscribers.
 type ListSubscribersParams struct {
 	// Page Zero-based page index (0..N)
@@ -17924,8 +19682,104 @@ type AddSubscriberParams struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
+// BulkDeleteStatusPageSubscribersParams defines parameters for BulkDeleteStatusPageSubscribers.
+type BulkDeleteStatusPageSubscribersParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BulkUpdateStatusPageSubscriberScopeParams defines parameters for BulkUpdateStatusPageSubscriberScope.
+type BulkUpdateStatusPageSubscriberScopeParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ImportSubscribersParams defines parameters for ImportSubscribers.
+type ImportSubscribersParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // RemoveSubscriberParams defines parameters for RemoveSubscriber.
 type RemoveSubscriberParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateSubscriberParams defines parameters for UpdateSubscriber.
+type UpdateSubscriberParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListStatusPageTemplatesParams defines parameters for ListStatusPageTemplates.
+type ListStatusPageTemplatesParams struct {
+	// Kind Only INCIDENT or MAINTENANCE templates
+	Kind *ListStatusPageTemplatesParamsKind `form:"kind,omitempty" json:"kind,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListStatusPageTemplatesParamsKind defines parameters for ListStatusPageTemplates.
+type ListStatusPageTemplatesParamsKind string
+
+// CreateStatusPageTemplateParams defines parameters for CreateStatusPageTemplate.
+type CreateStatusPageTemplateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// DeleteStatusPageTemplateParams defines parameters for DeleteStatusPageTemplate.
+type DeleteStatusPageTemplateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetStatusPageTemplateParams defines parameters for GetStatusPageTemplate.
+type GetStatusPageTemplateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// UpdateStatusPageTemplateParams defines parameters for UpdateStatusPageTemplate.
+type UpdateStatusPageTemplateParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// RenderStatusPageTemplateParams defines parameters for RenderStatusPageTemplate.
+type RenderStatusPageTemplateParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetStatusPageMonthlyUptimeParams defines parameters for GetStatusPageMonthlyUptime.
+type GetStatusPageMonthlyUptimeParams struct {
+	// Months Calendar months to return, the current one included (1–24)
+	Months *int32 `form:"months,omitempty" json:"months,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// PreviewStatusPageVisibilityChangeParams defines parameters for PreviewStatusPageVisibilityChange.
+type PreviewStatusPageVisibilityChangeParams struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
@@ -18449,6 +20303,24 @@ type Test1JSONRequestBody = TestNotificationPolicyRequest
 // Update6JSONRequestBody defines body for Update6 for application/json ContentType.
 type Update6JSONRequestBody = UpdateOrgDetailsRequest
 
+// CreateOrgSsoConnectionJSONRequestBody defines body for CreateOrgSsoConnection for application/json ContentType.
+type CreateOrgSsoConnectionJSONRequestBody = CreateSsoConnectionRequest
+
+// UpdateOrgSsoConnectionJSONRequestBody defines body for UpdateOrgSsoConnection for application/json ContentType.
+type UpdateOrgSsoConnectionJSONRequestBody = UpdateSsoConnectionRequest
+
+// AddOrgSsoCertificateJSONRequestBody defines body for AddOrgSsoCertificate for application/json ContentType.
+type AddOrgSsoCertificateJSONRequestBody = AddSsoCertificateRequest
+
+// AddOrgSsoDomainJSONRequestBody defines body for AddOrgSsoDomain for application/json ContentType.
+type AddOrgSsoDomainJSONRequestBody = AddSsoDomainRequest
+
+// SetOrgSsoIdpMetadataJSONRequestBody defines body for SetOrgSsoIdpMetadata for application/json ContentType.
+type SetOrgSsoIdpMetadataJSONRequestBody = SetIdpMetadataRequest
+
+// UpdateOrgSsoSettingsJSONRequestBody defines body for UpdateOrgSsoSettings for application/json ContentType.
+type UpdateOrgSsoSettingsJSONRequestBody = UpdateOrgSsoSettingsRequest
+
 // Create8JSONRequestBody defines body for Create8 for application/json ContentType.
 type Create8JSONRequestBody = CreateResourceGroupRequest
 
@@ -18479,11 +20351,32 @@ type UpdateAlertSensitivityJSONRequestBody = UpdateAlertSensitivityRequest
 // Subscribe1JSONRequestBody defines body for Subscribe1 for application/json ContentType.
 type Subscribe1JSONRequestBody = ServiceSubscribeRequest
 
+// CreateStatusPageGroupJSONRequestBody defines body for CreateStatusPageGroup for application/json ContentType.
+type CreateStatusPageGroupJSONRequestBody = CreateStatusPageGroupRequest
+
+// UpdateStatusPageGroupJSONRequestBody defines body for UpdateStatusPageGroup for application/json ContentType.
+type UpdateStatusPageGroupJSONRequestBody = UpdateStatusPageGroupRequest
+
+// SetStatusPageGroupDefaultPageJSONRequestBody defines body for SetStatusPageGroupDefaultPage for application/json ContentType.
+type SetStatusPageGroupDefaultPageJSONRequestBody = SetStatusPageGroupDefaultPageRequest
+
+// AttachStatusPageGroupDomainJSONRequestBody defines body for AttachStatusPageGroupDomain for application/json ContentType.
+type AttachStatusPageGroupDomainJSONRequestBody = AddCustomDomainRequest
+
+// AddStatusPageGroupMemberJSONRequestBody defines body for AddStatusPageGroupMember for application/json ContentType.
+type AddStatusPageGroupMemberJSONRequestBody = AddStatusPageGroupMemberRequest
+
+// ReorderStatusPageGroupMembersJSONRequestBody defines body for ReorderStatusPageGroupMembers for application/json ContentType.
+type ReorderStatusPageGroupMembersJSONRequestBody = ReorderStatusPageGroupMembersRequest
+
 // Create6JSONRequestBody defines body for Create6 for application/json ContentType.
 type Create6JSONRequestBody = CreateStatusPageRequest
 
 // Update3JSONRequestBody defines body for Update3 for application/json ContentType.
 type Update3JSONRequestBody = UpdateStatusPageRequest
+
+// UpdateStatusPageAccessPolicyJSONRequestBody defines body for UpdateStatusPageAccessPolicy for application/json ContentType.
+type UpdateStatusPageAccessPolicyJSONRequestBody = UpdateStatusPageAccessPolicyRequest
 
 // CreateComponentJSONRequestBody defines body for CreateComponent for application/json ContentType.
 type CreateComponentJSONRequestBody = CreateStatusPageComponentRequest
@@ -18499,6 +20392,12 @@ type SetComponentOverrideJSONRequestBody = SetStatusPageComponentOverrideRequest
 
 // AddDomainJSONRequestBody defines body for AddDomain for application/json ContentType.
 type AddDomainJSONRequestBody = AddCustomDomainRequest
+
+// BulkDeactivateStatusPageEndUsersJSONRequestBody defines body for BulkDeactivateStatusPageEndUsers for application/json ContentType.
+type BulkDeactivateStatusPageEndUsersJSONRequestBody = BulkDeactivateEndUsersRequest
+
+// InviteStatusPageEndUsersJSONRequestBody defines body for InviteStatusPageEndUsers for application/json ContentType.
+type InviteStatusPageEndUsersJSONRequestBody = InviteStatusPageEndUsersRequest
 
 // CreateGroupJSONRequestBody defines body for CreateGroup for application/json ContentType.
 type CreateGroupJSONRequestBody = CreateStatusPageComponentGroupRequest
@@ -18539,8 +20438,44 @@ type PostMaintenanceUpdateJSONRequestBody = CreateStatusPageIncidentUpdateReques
 // PatchMaintenanceUpdateJSONRequestBody defines body for PatchMaintenanceUpdate for application/json ContentType.
 type PatchMaintenanceUpdateJSONRequestBody = UpdateStatusPageIncidentUpdateRequest
 
+// CreateSsoConnectionJSONRequestBody defines body for CreateSsoConnection for application/json ContentType.
+type CreateSsoConnectionJSONRequestBody = CreateSsoConnectionRequest
+
+// UpdateSsoConnectionJSONRequestBody defines body for UpdateSsoConnection for application/json ContentType.
+type UpdateSsoConnectionJSONRequestBody = UpdateSsoConnectionRequest
+
+// AddSsoCertificateJSONRequestBody defines body for AddSsoCertificate for application/json ContentType.
+type AddSsoCertificateJSONRequestBody = AddSsoCertificateRequest
+
+// AddSsoDomainJSONRequestBody defines body for AddSsoDomain for application/json ContentType.
+type AddSsoDomainJSONRequestBody = AddSsoDomainRequest
+
+// SetSsoIdpMetadataJSONRequestBody defines body for SetSsoIdpMetadata for application/json ContentType.
+type SetSsoIdpMetadataJSONRequestBody = SetIdpMetadataRequest
+
 // AddSubscriberJSONRequestBody defines body for AddSubscriber for application/json ContentType.
 type AddSubscriberJSONRequestBody = AdminAddSubscriberRequest
+
+// BulkDeleteStatusPageSubscribersJSONRequestBody defines body for BulkDeleteStatusPageSubscribers for application/json ContentType.
+type BulkDeleteStatusPageSubscribersJSONRequestBody = BulkDeleteSubscribersRequest
+
+// BulkUpdateStatusPageSubscriberScopeJSONRequestBody defines body for BulkUpdateStatusPageSubscriberScope for application/json ContentType.
+type BulkUpdateStatusPageSubscriberScopeJSONRequestBody = BulkUpdateSubscriberScopeRequest
+
+// ImportSubscribersJSONRequestBody defines body for ImportSubscribers for application/json ContentType.
+type ImportSubscribersJSONRequestBody = ImportSubscribersRequest
+
+// UpdateSubscriberJSONRequestBody defines body for UpdateSubscriber for application/json ContentType.
+type UpdateSubscriberJSONRequestBody = UpdateSubscriberRequest
+
+// CreateStatusPageTemplateJSONRequestBody defines body for CreateStatusPageTemplate for application/json ContentType.
+type CreateStatusPageTemplateJSONRequestBody = StatusPageTemplateRequest
+
+// UpdateStatusPageTemplateJSONRequestBody defines body for UpdateStatusPageTemplate for application/json ContentType.
+type UpdateStatusPageTemplateJSONRequestBody = StatusPageTemplateRequest
+
+// RenderStatusPageTemplateJSONRequestBody defines body for RenderStatusPageTemplate for application/json ContentType.
+type RenderStatusPageTemplateJSONRequestBody = RenderStatusPageTemplateRequest
 
 // Create5JSONRequestBody defines body for Create5 for application/json ContentType.
 type Create5JSONRequestBody = CreateTagRequest

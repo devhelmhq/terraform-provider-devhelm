@@ -278,7 +278,12 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 			resource: &StatusPageResource{},
 			dto:      generated.UpdateStatusPageRequest{},
 			allowed: map[string]string{
-				"managed_by": "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+				"managed_by":                  "Hardcoded to TERRAFORM by the provider; not a user-facing knob.",
+				"confirm_public":              "Dashboard confirmation flag for making a sign-in page public; not declarative state. The provider only supports PUBLIC visibility.",
+				"confirm_convert_subscribers": "Dashboard confirmation flag for making a page private (subscriber conversion); not declarative state. The provider only supports PUBLIC visibility.",
+				"clear_email_sign_in":         "Internal clear flag for email_sign_in, which is not exposed (see below).",
+				"email_sign_in":               "Only applies to LOGIN_REQUIRED (private) pages; the provider only supports PUBLIC visibility, so private-page sign-in is a dashboard feature for now.",
+				"subscriber_channels":         "Update-only page setting (absent from CreateStatusPageRequest) managed in the dashboard; exposing it in Terraform is a separate feature decision.",
 			},
 		},
 		{

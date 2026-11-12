@@ -26,17 +26,19 @@ import (
 func statusPageFixture() generated.StatusPageDto {
 	id, _ := uuid.Parse("33333333-3333-3333-3333-333333333333")
 	return generated.StatusPageDto{
-		Id:             openapi_types.UUID(id),
-		Name:           "Initial",
-		Slug:           "initial-slug",
-		Visibility:     "PUBLIC",
-		IncidentMode:   "AUTOMATIC",
-		Enabled:        true,
-		Branding:       generated.StatusPageBranding{},
-		OrganizationId: 1,
-		WorkspaceId:    1,
-		CreatedAt:      time.Now(),
-		UpdatedAt:      time.Now(),
+		Id:           openapi_types.UUID(id),
+		Name:         "Initial",
+		Slug:         "initial-slug",
+		Visibility:   "PUBLIC",
+		IncidentMode: "AUTOMATIC",
+		Enabled:      true,
+		Branding:     generated.StatusPageBranding{},
+		// Required in the API response since mono #1553.
+		SubscriberChannels: []string{"EMAIL"},
+		OrganizationId:     1,
+		WorkspaceId:        1,
+		CreatedAt:          time.Now(),
+		UpdatedAt:          time.Now(),
 	}
 }
 
