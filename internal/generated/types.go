@@ -3729,6 +3729,30 @@ func (e List9ParamsManagedBy) Valid() bool {
 	}
 }
 
+// Defines values for BatchSummaryParamsChartWindow.
+const (
+	BatchSummaryParamsChartWindowN24h BatchSummaryParamsChartWindow = "24h"
+	BatchSummaryParamsChartWindowN30d BatchSummaryParamsChartWindow = "30d"
+	BatchSummaryParamsChartWindowN7d  BatchSummaryParamsChartWindow = "7d"
+	BatchSummaryParamsChartWindowN90d BatchSummaryParamsChartWindow = "90d"
+)
+
+// Valid indicates whether the value is a known member of the BatchSummaryParamsChartWindow enum.
+func (e BatchSummaryParamsChartWindow) Valid() bool {
+	switch e {
+	case BatchSummaryParamsChartWindowN24h:
+		return true
+	case BatchSummaryParamsChartWindowN30d:
+		return true
+	case BatchSummaryParamsChartWindowN7d:
+		return true
+	case BatchSummaryParamsChartWindowN90d:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for FacetsParamsType.
 const (
 	FacetsParamsTypeBROWSER      FacetsParamsType = "BROWSER"
@@ -8494,6 +8518,21 @@ type MonitorBatchHistoryItemDto struct {
 	Ticks []MonitorHistoryTickDto `json:"ticks"`
 }
 
+// MonitorBatchSummaryDto Result summaries for a set of monitors
+type MonitorBatchSummaryDto struct {
+	// Monitors One entry per requested monitor that exists in the workspace
+	Monitors []MonitorBatchSummaryItemDto `json:"monitors"`
+}
+
+// MonitorBatchSummaryItemDto Result summary of one monitor
+type MonitorBatchSummaryItemDto struct {
+	// Id Monitor identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Summary Dashboard summary: current status, per-region latest results, and chart data
+	Summary ResultSummaryDto `json:"summary"`
+}
+
 // MonitorCappedDto Run allowance that is keeping a code monitor from running
 type MonitorCappedDto struct {
 	// Kind Allowance stopping this meter: included or spend_cap
@@ -12332,6 +12371,12 @@ type SingleValueResponseMonitorAuthDto struct {
 type SingleValueResponseMonitorBatchHistoryDto struct {
 	// Data History for a set of monitors
 	Data MonitorBatchHistoryDto `json:"data"`
+}
+
+// SingleValueResponseMonitorBatchSummaryDto defines model for SingleValueResponseMonitorBatchSummaryDto.
+type SingleValueResponseMonitorBatchSummaryDto struct {
+	// Data Result summaries for a set of monitors
+	Data MonitorBatchSummaryDto `json:"data"`
 }
 
 // SingleValueResponseMonitorDriftDto defines model for SingleValueResponseMonitorDriftDto.
@@ -17069,6 +17114,21 @@ type BatchHistoryParams struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
+
+// BatchSummaryParams defines parameters for BatchSummary.
+type BatchSummaryParams struct {
+	// Ids Monitor ids, comma-separated; at most 100
+	Ids []openapi_types.UUID `form:"ids" json:"ids"`
+
+	// ChartWindow Chart window: 24h returns hourly buckets, 7d/30d/90d return daily buckets
+	ChartWindow *BatchSummaryParamsChartWindow `form:"chartWindow,omitempty" json:"chartWindow,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BatchSummaryParamsChartWindow defines parameters for BatchSummary.
+type BatchSummaryParamsChartWindow string
 
 // BulkActionParams defines parameters for BulkAction.
 type BulkActionParams struct {
