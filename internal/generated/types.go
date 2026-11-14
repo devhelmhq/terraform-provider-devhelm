@@ -3729,6 +3729,30 @@ func (e List9ParamsManagedBy) Valid() bool {
 	}
 }
 
+// Defines values for BatchSummaryParamsChartWindow.
+const (
+	BatchSummaryParamsChartWindowN24h BatchSummaryParamsChartWindow = "24h"
+	BatchSummaryParamsChartWindowN30d BatchSummaryParamsChartWindow = "30d"
+	BatchSummaryParamsChartWindowN7d  BatchSummaryParamsChartWindow = "7d"
+	BatchSummaryParamsChartWindowN90d BatchSummaryParamsChartWindow = "90d"
+)
+
+// Valid indicates whether the value is a known member of the BatchSummaryParamsChartWindow enum.
+func (e BatchSummaryParamsChartWindow) Valid() bool {
+	switch e {
+	case BatchSummaryParamsChartWindowN24h:
+		return true
+	case BatchSummaryParamsChartWindowN30d:
+		return true
+	case BatchSummaryParamsChartWindowN7d:
+		return true
+	case BatchSummaryParamsChartWindowN90d:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for FacetsParamsType.
 const (
 	FacetsParamsTypeBROWSER      FacetsParamsType = "BROWSER"
@@ -4167,6 +4191,27 @@ func (e ListStatusPageEndUsersParamsStatus) Valid() bool {
 	case ListStatusPageEndUsersParamsStatusDEACTIVATED:
 		return true
 	case ListStatusPageEndUsersParamsStatusINVITED:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListStatusPageEndUsersParamsSource.
+const (
+	ListStatusPageEndUsersParamsSourceINVITED    ListStatusPageEndUsersParamsSource = "INVITED"
+	ListStatusPageEndUsersParamsSourceSSO        ListStatusPageEndUsersParamsSource = "SSO"
+	ListStatusPageEndUsersParamsSourceSUBSCRIBER ListStatusPageEndUsersParamsSource = "SUBSCRIBER"
+)
+
+// Valid indicates whether the value is a known member of the ListStatusPageEndUsersParamsSource enum.
+func (e ListStatusPageEndUsersParamsSource) Valid() bool {
+	switch e {
+	case ListStatusPageEndUsersParamsSourceINVITED:
+		return true
+	case ListStatusPageEndUsersParamsSourceSSO:
+		return true
+	case ListStatusPageEndUsersParamsSourceSUBSCRIBER:
 		return true
 	default:
 		return false
@@ -4893,6 +4938,12 @@ type BulkMonitorActionResult struct {
 
 	// Succeeded IDs of monitors on which the action succeeded
 	Succeeded []openapi_types.UUID `json:"succeeded"`
+}
+
+// BulkSignOutEndUsersRequest defines model for BulkSignOutEndUsersRequest.
+type BulkSignOutEndUsersRequest struct {
+	// Emails Emails to sign out everywhere (1–1000)
+	Emails []string `json:"emails"`
 }
 
 // BulkUpdateSubscriberScopeRequest defines model for BulkUpdateSubscriberScopeRequest.
@@ -8494,6 +8545,21 @@ type MonitorBatchHistoryItemDto struct {
 	Ticks []MonitorHistoryTickDto `json:"ticks"`
 }
 
+// MonitorBatchSummaryDto Result summaries for a set of monitors
+type MonitorBatchSummaryDto struct {
+	// Monitors One entry per requested monitor that exists in the workspace
+	Monitors []MonitorBatchSummaryItemDto `json:"monitors"`
+}
+
+// MonitorBatchSummaryItemDto Result summary of one monitor
+type MonitorBatchSummaryItemDto struct {
+	// Id Monitor identifier
+	Id openapi_types.UUID `json:"id"`
+
+	// Summary Dashboard summary: current status, per-region latest results, and chart data
+	Summary ResultSummaryDto `json:"summary"`
+}
+
 // MonitorCappedDto Run allowance that is keeping a code monitor from running
 type MonitorCappedDto struct {
 	// Kind Allowance stopping this meter: included or spend_cap
@@ -12041,7 +12107,7 @@ type SetIdpMetadataRequest struct {
 	// Url HTTPS URL of the IdP metadata, re-fetched every 15 minutes; give either xml or url
 	Url *string `json:"url,omitempty"`
 
-	// Xml IdP metadata XML; give either xml or url
+	// Xml IdP metadata XML, at most 1 MiB; give either xml or url
 	Xml *string `json:"xml,omitempty"`
 }
 
@@ -12332,6 +12398,12 @@ type SingleValueResponseMonitorAuthDto struct {
 type SingleValueResponseMonitorBatchHistoryDto struct {
 	// Data History for a set of monitors
 	Data MonitorBatchHistoryDto `json:"data"`
+}
+
+// SingleValueResponseMonitorBatchSummaryDto defines model for SingleValueResponseMonitorBatchSummaryDto.
+type SingleValueResponseMonitorBatchSummaryDto struct {
+	// Data Result summaries for a set of monitors
+	Data MonitorBatchSummaryDto `json:"data"`
 }
 
 // SingleValueResponseMonitorDriftDto defines model for SingleValueResponseMonitorDriftDto.
@@ -12689,6 +12761,11 @@ type SingleValueResponseStatusPageDto struct {
 // SingleValueResponseStatusPageEndUserBulkDeactivationDto defines model for SingleValueResponseStatusPageEndUserBulkDeactivationDto.
 type SingleValueResponseStatusPageEndUserBulkDeactivationDto struct {
 	Data StatusPageEndUserBulkDeactivationDto `json:"data"`
+}
+
+// SingleValueResponseStatusPageEndUserBulkSignOutDto defines model for SingleValueResponseStatusPageEndUserBulkSignOutDto.
+type SingleValueResponseStatusPageEndUserBulkSignOutDto struct {
+	Data StatusPageEndUserBulkSignOutDto `json:"data"`
 }
 
 // SingleValueResponseStatusPageEndUserDto defines model for SingleValueResponseStatusPageEndUserDto.
@@ -13392,6 +13469,18 @@ type StatusPageEndUserBulkDeactivationDto struct {
 	UnknownEmails []string `json:"unknownEmails"`
 }
 
+// StatusPageEndUserBulkSignOutDto defines model for StatusPageEndUserBulkSignOutDto.
+type StatusPageEndUserBulkSignOutDto struct {
+	// Matched Emails that belong to people on the page, now signed out
+	Matched int32 `json:"matched"`
+
+	// Unknown Emails that belong to nobody on the page
+	Unknown int32 `json:"unknown"`
+
+	// UnknownEmails The emails counted in unknown, lowercase
+	UnknownEmails []string `json:"unknownEmails"`
+}
+
 // StatusPageEndUserDto defines model for StatusPageEndUserDto.
 type StatusPageEndUserDto struct {
 	// CreatedAt When the person was first added
@@ -13408,6 +13497,10 @@ type StatusPageEndUserDto struct {
 
 	// Name Name the identity provider gave, if any
 	Name *string `json:"name,omitempty"`
+
+	// Source How the person came onto the page
+	Source        string            `json:"source"`
+	SsoConnection *SsoConnectionDto `json:"ssoConnection,omitempty"`
 
 	// Status Whether the person may sign in
 	Status string `json:"status"`
@@ -13457,7 +13550,10 @@ type StatusPageGroupDto struct {
 	OrganizationId      int32                      `json:"organizationId"`
 	Slug                string                     `json:"slug"`
 	UpdatedAt           time.Time                  `json:"updatedAt"`
-	WorkspaceId         int32                      `json:"workspaceId"`
+
+	// Url Where end users open the group: its served custom domain, else its first-party host
+	Url         string `json:"url"`
+	WorkspaceId int32  `json:"workspaceId"`
 }
 
 // StatusPageGroupMemberDto defines model for StatusPageGroupMemberDto.
@@ -13467,7 +13563,10 @@ type StatusPageGroupMemberDto struct {
 	Position     int32              `json:"position"`
 	Slug         string             `json:"slug"`
 	StatusPageId openapi_types.UUID `json:"statusPageId"`
-	Visibility   string             `json:"visibility"`
+
+	// Url Where end users open this page: the group host and its code, or the page's own host
+	Url        string `json:"url"`
+	Visibility string `json:"visibility"`
 }
 
 // StatusPageIncidentComponentDto defines model for StatusPageIncidentComponentDto.
@@ -17070,6 +17169,21 @@ type BatchHistoryParams struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
+// BatchSummaryParams defines parameters for BatchSummary.
+type BatchSummaryParams struct {
+	// Ids Monitor ids, comma-separated; at most 100
+	Ids []openapi_types.UUID `form:"ids" json:"ids"`
+
+	// ChartWindow Chart window: 24h returns hourly buckets, 7d/30d/90d return daily buckets
+	ChartWindow *BatchSummaryParamsChartWindow `form:"chartWindow,omitempty" json:"chartWindow,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BatchSummaryParamsChartWindow defines parameters for BatchSummary.
+type BatchSummaryParamsChartWindow string
+
 // BulkActionParams defines parameters for BulkAction.
 type BulkActionParams struct {
 	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
@@ -19229,6 +19343,7 @@ type VerifyDomainParams struct {
 type ListStatusPageEndUsersParams struct {
 	Search *string                             `form:"search,omitempty" json:"search,omitempty"`
 	Status *ListStatusPageEndUsersParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+	Source *ListStatusPageEndUsersParamsSource `form:"source,omitempty" json:"source,omitempty"`
 
 	// Page Zero-based page index (0..N)
 	Page *int `form:"page,omitempty" json:"page,omitempty"`
@@ -19246,8 +19361,20 @@ type ListStatusPageEndUsersParams struct {
 // ListStatusPageEndUsersParamsStatus defines parameters for ListStatusPageEndUsers.
 type ListStatusPageEndUsersParamsStatus string
 
+// ListStatusPageEndUsersParamsSource defines parameters for ListStatusPageEndUsers.
+type ListStatusPageEndUsersParamsSource string
+
 // BulkDeactivateStatusPageEndUsersParams defines parameters for BulkDeactivateStatusPageEndUsers.
 type BulkDeactivateStatusPageEndUsersParams struct {
+	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// BulkSignOutStatusPageEndUsersParams defines parameters for BulkSignOutStatusPageEndUsers.
+type BulkSignOutStatusPageEndUsersParams struct {
 	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
 	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
 
@@ -19285,6 +19412,12 @@ type RevokeStatusPageEndUserSessionsParams struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
+// DeleteStatusPageEndUserParams defines parameters for DeleteStatusPageEndUser.
+type DeleteStatusPageEndUserParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // DeactivateStatusPageEndUserParams defines parameters for DeactivateStatusPageEndUser.
 type DeactivateStatusPageEndUserParams struct {
 	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
@@ -19314,6 +19447,12 @@ type ReactivateStatusPageEndUserParams struct {
 	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
 	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
 
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// SignOutStatusPageEndUserParams defines parameters for SignOutStatusPageEndUser.
+type SignOutStatusPageEndUserParams struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
@@ -20395,6 +20534,9 @@ type AddDomainJSONRequestBody = AddCustomDomainRequest
 
 // BulkDeactivateStatusPageEndUsersJSONRequestBody defines body for BulkDeactivateStatusPageEndUsers for application/json ContentType.
 type BulkDeactivateStatusPageEndUsersJSONRequestBody = BulkDeactivateEndUsersRequest
+
+// BulkSignOutStatusPageEndUsersJSONRequestBody defines body for BulkSignOutStatusPageEndUsers for application/json ContentType.
+type BulkSignOutStatusPageEndUsersJSONRequestBody = BulkSignOutEndUsersRequest
 
 // InviteStatusPageEndUsersJSONRequestBody defines body for InviteStatusPageEndUsers for application/json ContentType.
 type InviteStatusPageEndUsersJSONRequestBody = InviteStatusPageEndUsersRequest
