@@ -7,6 +7,7 @@ import (
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/api"
 	"github.com/devhelmhq/terraform-provider-devhelm/internal/generated"
 	"github.com/google/uuid"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -15,12 +16,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 var (
@@ -42,15 +45,24 @@ type StatusPageResource struct {
 }
 
 type StatusPageResourceModel struct {
-	ID           types.String `tfsdk:"id"`
-	Name         types.String `tfsdk:"name"`
-	Slug         types.String `tfsdk:"slug"`
-	Description  types.String `tfsdk:"description"`
-	Visibility   types.String `tfsdk:"visibility"`
-	Enabled      types.Bool   `tfsdk:"enabled"`
-	IncidentMode types.String `tfsdk:"incident_mode"`
-	Branding     types.Object `tfsdk:"branding"`
-	PageURL      types.String `tfsdk:"page_url"`
+	ID                        types.String `tfsdk:"id"`
+	Name                      types.String `tfsdk:"name"`
+	Slug                      types.String `tfsdk:"slug"`
+	Description               types.String `tfsdk:"description"`
+	Visibility                types.String `tfsdk:"visibility"`
+	Enabled                   types.Bool   `tfsdk:"enabled"`
+	IncidentMode              types.String `tfsdk:"incident_mode"`
+	UnresolvedReminderMinutes types.Int64  `tfsdk:"unresolved_reminder_minutes"`
+	EmailSender               types.Object `tfsdk:"email_sender"`
+	Branding                  types.Object `tfsdk:"branding"`
+	PageURL                   types.String `tfsdk:"page_url"`
+}
+
+type statusPageEmailSenderModel struct {
+	SenderDomainID types.String `tfsdk:"sender_domain_id"`
+	FromLocalPart  types.String `tfsdk:"from_local_part"`
+	FromName       types.String `tfsdk:"from_name"`
+	ReplyTo        types.String `tfsdk:"reply_to"`
 }
 
 // statusPageBrandingModel mirrors generated.StatusPageBranding for use with
@@ -156,6 +168,42 @@ func (r *StatusPageResource) Schema(_ context.Context, _ resource.SchemaRequest,
 						string(generated.CreateStatusPageRequestIncidentModeREVIEW),
 						string(generated.CreateStatusPageRequestIncidentModeAUTOMATIC),
 					),
+				},
+			},
+			"unresolved_reminder_minutes": schema.Int64Attribute{
+				Optional: true, Computed: true,
+				Description: "Minutes without an update before the team is reminded (15–1440). " +
+					"0 turns reminders off. Omit to keep the current value; a new page defaults to 60.",
+				PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
+				Validators: []validator.Int64{
+					int64validator.Any(
+						int64validator.OneOf(0),
+						int64validator.Between(15, 1440),
+					),
+				},
+			},
+			"email_sender": schema.SingleNestedAttribute{
+				Optional: true, Computed: true,
+				Description: "Who the page's email comes from. Omit the block to keep the current sender. " +
+					"A new page sends from DevHelm until this block is set.",
+				PlanModifiers: []planmodifier.Object{objectplanmodifier.UseStateForUnknown()},
+				Attributes: map[string]schema.Attribute{
+					"sender_domain_id": schema.StringAttribute{
+						Optional:    true,
+						Description: "Verified sender domain to send from; omit to send from DevHelm",
+					},
+					"from_local_part": schema.StringAttribute{
+						Optional:    true,
+						Description: "Mailbox name before the @ (default: status)",
+					},
+					"from_name": schema.StringAttribute{
+						Optional:    true,
+						Description: "Display name in From, up to 100 characters (default: page name)",
+					},
+					"reply_to": schema.StringAttribute{
+						Optional:    true,
+						Description: "Address replies go to; omit to send no Reply-To",
+					},
 				},
 			},
 			"page_url": schema.StringAttribute{
@@ -301,10 +349,18 @@ func (r *StatusPageResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
+	emailSender, senderDiags := emailSenderRequest(ctx, plan.EmailSender)
+	resp.Diagnostics.Append(senderDiags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	name := plan.Name.ValueString()
 	managedByTF := generated.UpdateStatusPageRequestManagedByTERRAFORM
 	body := generated.UpdateStatusPageRequest{
-		Name: &name,
+		Name:                      &name,
+		UnresolvedReminderMinutes: int32PtrOrNil(plan.UnresolvedReminderMinutes),
+		EmailSender:               emailSender,
 		// Description follows the API's "null preserves, empty string clears"
 		// contract. We always emit so removing the attribute from HCL clears
 		// the server-side value (the Terraform contract is "config is the
@@ -400,6 +456,8 @@ func (r *StatusPageResource) ImportState(ctx context.Context, req resource.Impor
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("visibility"), model.Visibility)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("enabled"), model.Enabled)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("incident_mode"), model.IncidentMode)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("unresolved_reminder_minutes"), model.UnresolvedReminderMinutes)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("email_sender"), model.EmailSender)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("branding"), model.Branding)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("page_url"), model.PageURL)...)
 }
@@ -416,7 +474,10 @@ func (r *StatusPageResource) mapToState(ctx context.Context, model *StatusPageRe
 	model.Visibility = types.StringValue(string(dto.Visibility))
 	model.Enabled = types.BoolValue(dto.Enabled)
 	model.IncidentMode = types.StringValue(string(dto.IncidentMode))
+	model.UnresolvedReminderMinutes = reminderMinutesValue(dto.UnresolvedReminderMinutes)
 	var d diag.Diagnostics
+	model.EmailSender, d = emailSenderObjectFromDto(ctx, dto.EmailSender)
+	diags.Append(d...)
 	model.Branding, d = brandingObjectFromDto(ctx, dto.Branding)
 	diags.Append(d...)
 	// page_url is derived client-side from the slug. The API doesn't return
@@ -547,6 +608,72 @@ func incidentModeCreatePtr(v types.String) *generated.CreateStatusPageRequestInc
 	}
 	out := generated.CreateStatusPageRequestIncidentMode(v.ValueString())
 	return &out
+}
+
+func reminderMinutesValue(v *int32) types.Int64 {
+	if v == nil {
+		return types.Int64Value(0)
+	}
+	return types.Int64Value(int64(*v))
+}
+
+func emailSenderAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"sender_domain_id": types.StringType,
+		"from_local_part":  types.StringType,
+		"from_name":        types.StringType,
+		"reply_to":         types.StringType,
+	}
+}
+
+func emailSenderObjectFromDto(ctx context.Context, sender generated.StatusPageEmailSenderDto) (types.Object, diag.Diagnostics) {
+	model := statusPageEmailSenderModel{
+		SenderDomainID: uuidStringValue(sender.SenderDomainId),
+		FromLocalPart:  stringValue(sender.FromLocalPart),
+		FromName:       stringValue(sender.FromName),
+		ReplyTo:        stringValue(sender.ReplyTo),
+	}
+	return types.ObjectValueFrom(ctx, emailSenderAttrTypes(), model)
+}
+
+func uuidStringValue(id *openapi_types.UUID) types.String {
+	if id == nil {
+		return types.StringNull()
+	}
+	return types.StringValue(id.String())
+}
+
+func emailSenderRequest(ctx context.Context, obj types.Object) (*generated.StatusPageEmailSenderRequest, diag.Diagnostics) {
+	if obj.IsNull() || obj.IsUnknown() {
+		return nil, nil
+	}
+	var model statusPageEmailSenderModel
+	diags := obj.As(ctx, &model, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    false,
+		UnhandledUnknownAsEmpty: true,
+	})
+	if diags.HasError() {
+		return nil, diags
+	}
+	req := &generated.StatusPageEmailSenderRequest{
+		FromLocalPart: stringPtrOrNil(model.FromLocalPart),
+		FromName:      stringPtrOrNil(model.FromName),
+		ReplyTo:       stringPtrOrNil(model.ReplyTo),
+	}
+	id, err := parseUUIDPtrChecked(model.SenderDomainID, "sender_domain_id")
+	if err != nil {
+		diags.AddAttributeError(
+			path.Root("email_sender").AtName("sender_domain_id"),
+			"Invalid sender domain id",
+			err.Error(),
+		)
+		return nil, diags
+	}
+	if id != nil {
+		parsed := openapi_types.UUID(*id)
+		req.SenderDomainId = &parsed
+	}
+	return req, diags
 }
 
 func incidentModeUpdatePtr(v types.String) *generated.UpdateStatusPageRequestIncidentMode {

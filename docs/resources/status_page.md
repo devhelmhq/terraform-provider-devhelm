@@ -111,8 +111,10 @@ resource "devhelm_status_page_component" "api" {
 
 - `branding` (Attributes) Visual branding for the public status page. The block is **declarative** — every sub-field you list is upserted, every sub-field you omit is cleared on the API. To leave branding completely untouched, omit the entire `branding` attribute (or set it to null — Terraform treats those identically). To reset all branding back to defaults, set the attribute to an empty object: `branding = {}`. (see [below for nested schema](#nestedatt--branding))
 - `description` (String) Description shown below the page header. Omit to clear an existing description; empty string is rejected.
+- `email_sender` (Attributes) Who the page's email comes from. Omit the block to keep the current sender. A new page sends from DevHelm until this block is set. (see [below for nested schema](#nestedatt--email_sender))
 - `enabled` (Boolean) Whether the page is enabled (default: true)
 - `incident_mode` (String) Incident mode: MANUAL, REVIEW, or AUTOMATIC (default: AUTOMATIC)
+- `unresolved_reminder_minutes` (Number) Minutes without an update before the team is reminded (15–1440). 0 turns reminders off. Omit to keep the current value; a new page defaults to 60.
 - `visibility` (String) Page visibility. Only PUBLIC is currently supported (default: PUBLIC)
 
 ### Read-Only
@@ -138,6 +140,17 @@ Optional:
 - `report_url` (String) URL where visitors can report a problem
 - `text_color` (String) Primary text color as hex (e.g. #09090B)
 - `theme` (String) Color theme: 'light' or 'dark' (default: light)
+
+
+<a id="nestedatt--email_sender"></a>
+### Nested Schema for `email_sender`
+
+Optional:
+
+- `from_local_part` (String) Mailbox name before the @ (default: status)
+- `from_name` (String) Display name in From, up to 100 characters (default: page name)
+- `reply_to` (String) Address replies go to; omit to send no Reply-To
+- `sender_domain_id` (String) Verified sender domain to send from; omit to send from DevHelm
 
 ## Import
 
