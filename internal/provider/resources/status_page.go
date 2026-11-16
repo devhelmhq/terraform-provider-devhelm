@@ -281,16 +281,24 @@ func (r *StatusPageResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
+	emailSender, senderDiags := emailSenderRequest(ctx, plan.EmailSender)
+	resp.Diagnostics.Append(senderDiags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	managedByTF := generated.CreateStatusPageRequestManagedByTERRAFORM
 	body := generated.CreateStatusPageRequest{
-		Name:         plan.Name.ValueString(),
-		Slug:         plan.Slug.ValueString(),
-		Description:  stringPtrOrNil(plan.Description),
-		Visibility:   visibilityCreatePtr(plan.Visibility),
-		Enabled:      boolPtrOrNil(plan.Enabled),
-		IncidentMode: incidentModeCreatePtr(plan.IncidentMode),
-		Branding:     branding,
-		ManagedBy:    &managedByTF,
+		Name:                      plan.Name.ValueString(),
+		Slug:                      plan.Slug.ValueString(),
+		Description:               stringPtrOrNil(plan.Description),
+		Visibility:                visibilityCreatePtr(plan.Visibility),
+		Enabled:                   boolPtrOrNil(plan.Enabled),
+		IncidentMode:              incidentModeCreatePtr(plan.IncidentMode),
+		Branding:                  branding,
+		ManagedBy:                 &managedByTF,
+		UnresolvedReminderMinutes: int32PtrOrNil(plan.UnresolvedReminderMinutes),
+		EmailSender:               emailSender,
 	}
 
 	page, err := api.Create[generated.StatusPageDto](ctx, r.client, api.PathStatusPages, body)

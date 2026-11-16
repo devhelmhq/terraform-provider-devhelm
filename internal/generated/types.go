@@ -6144,7 +6144,8 @@ type CreateStatusPageRequest struct {
 	Branding *StatusPageBranding `json:"branding,omitempty"`
 
 	// Description Optional description shown below the page header
-	Description *string `json:"description,omitempty"`
+	Description *string                       `json:"description,omitempty"`
+	EmailSender *StatusPageEmailSenderRequest `json:"emailSender,omitempty"`
 
 	// Enabled Whether the page is enabled (default: true)
 	Enabled *bool `json:"enabled,omitempty"`
@@ -6160,6 +6161,9 @@ type CreateStatusPageRequest struct {
 
 	// Slug URL slug (lowercase, hyphens, globally unique)
 	Slug string `json:"slug"`
+
+	// UnresolvedReminderMinutes Minutes without an update before the team is reminded (15–1440), 0 turns off (default: 60)
+	UnresolvedReminderMinutes *int32 `json:"unresolvedReminderMinutes,omitempty"`
 
 	// Visibility Page visibility: PUBLIC, PASSWORD, or IP_RESTRICTED (default: PUBLIC)
 	Visibility *CreateStatusPageRequestVisibility `json:"visibility,omitempty"`
