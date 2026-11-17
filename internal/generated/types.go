@@ -13093,6 +13093,11 @@ type SingleValueResponseStatusPageEndUserInviteResultDto struct {
 	Data StatusPageEndUserInviteResultDto `json:"data"`
 }
 
+// SingleValueResponseStatusPageEndUserStatsDto defines model for SingleValueResponseStatusPageEndUserStatsDto.
+type SingleValueResponseStatusPageEndUserStatsDto struct {
+	Data StatusPageEndUserStatsDto `json:"data"`
+}
+
 // SingleValueResponseStatusPageGroupDto defines model for SingleValueResponseStatusPageGroupDto.
 type SingleValueResponseStatusPageGroupDto struct {
 	Data StatusPageGroupDto `json:"data"`
@@ -13953,6 +13958,30 @@ type StatusPageEndUserInviteSkipDto struct {
 
 	// Reason Why no invite was sent
 	Reason string `json:"reason"`
+}
+
+// StatusPageEndUserStatsDto defines model for StatusPageEndUserStatsDto.
+type StatusPageEndUserStatsDto struct {
+	// Active End users who may sign in
+	Active int64 `json:"active"`
+
+	// ActiveSso Active end users who sign in through SSO
+	ActiveSso int64 `json:"activeSso"`
+
+	// Deactivated End users who may not sign in
+	Deactivated int64 `json:"deactivated"`
+
+	// ExpiredInvites Invites whose link has expired
+	ExpiredInvites int64 `json:"expiredInvites"`
+
+	// FailedSignIns Failed sign-ins in the last 7 days
+	FailedSignIns int64 `json:"failedSignIns"`
+
+	// Invited End users invited who have not signed in yet
+	Invited int64 `json:"invited"`
+
+	// SignIns Successful sign-ins in the last 7 days
+	SignIns int64 `json:"signIns"`
 }
 
 // StatusPageGroupDto defines model for StatusPageGroupDto.
@@ -16104,6 +16133,12 @@ type UpdateStatusPageComponentRequest struct {
 
 	// StartDate Date from which to start showing uptime; null preserves current. Bars never extend earlier than the underlying monitor's createdAt regardless of value
 	StartDate *openapi_types.Date `json:"startDate,omitempty"`
+}
+
+// UpdateStatusPageGroupMemberRequest defines model for UpdateStatusPageGroupMemberRequest.
+type UpdateStatusPageGroupMemberRequest struct {
+	// Key New key that selects this page inside the group, e.g. eu (1-32 characters)
+	Key string `json:"key"`
 }
 
 // UpdateStatusPageGroupRequest defines model for UpdateStatusPageGroupRequest.
@@ -19851,6 +19886,12 @@ type RemoveStatusPageGroupMemberParams struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
+// UpdateStatusPageGroupMemberParams defines parameters for UpdateStatusPageGroupMember.
+type UpdateStatusPageGroupMemberParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
 // List5Params defines parameters for List5.
 type List5Params struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
@@ -19889,8 +19930,11 @@ type ListStatusPageAccessLogParams struct {
 	EventType *ListStatusPageAccessLogParamsEventType `form:"eventType,omitempty" json:"eventType,omitempty"`
 	From      *time.Time                              `form:"from,omitempty" json:"from,omitempty"`
 	To        *time.Time                              `form:"to,omitempty" json:"to,omitempty"`
-	Cursor    *string                                 `form:"cursor,omitempty" json:"cursor,omitempty"`
-	Limit     *int32                                  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// ConnectionId Only sign-ins through this SSO connection
+	ConnectionId *openapi_types.UUID `form:"connectionId,omitempty" json:"connectionId,omitempty"`
+	Cursor       *string             `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit        *int32              `form:"limit,omitempty" json:"limit,omitempty"`
 
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
@@ -20140,6 +20184,12 @@ type InviteStatusPageEndUsersParams struct {
 
 // RevokeStatusPageEndUserSessionsParams defines parameters for RevokeStatusPageEndUserSessions.
 type RevokeStatusPageEndUserSessionsParams struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// GetStatusPageEndUserStatsParams defines parameters for GetStatusPageEndUserStats.
+type GetStatusPageEndUserStatsParams struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
@@ -21326,6 +21376,9 @@ type AddStatusPageGroupMemberJSONRequestBody = AddStatusPageGroupMemberRequest
 
 // ReorderStatusPageGroupMembersJSONRequestBody defines body for ReorderStatusPageGroupMembers for application/json ContentType.
 type ReorderStatusPageGroupMembersJSONRequestBody = ReorderStatusPageGroupMembersRequest
+
+// UpdateStatusPageGroupMemberJSONRequestBody defines body for UpdateStatusPageGroupMember for application/json ContentType.
+type UpdateStatusPageGroupMemberJSONRequestBody = UpdateStatusPageGroupMemberRequest
 
 // Create6JSONRequestBody defines body for Create6 for application/json ContentType.
 type Create6JSONRequestBody = CreateStatusPageRequest
