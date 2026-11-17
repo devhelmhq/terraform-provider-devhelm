@@ -13477,6 +13477,12 @@ type SsoConnectionTestDto struct {
 	// Id Test identifier
 	Id openapi_types.UUID `json:"id"`
 
+	// IdpStatusCode Status codes the IdP refused the sign-in with, e.g. Responder/InvalidNameIDPolicy
+	IdpStatusCode *string `json:"idpStatusCode,omitempty"`
+
+	// IdpStatusMessage Message the IdP sent with its refusal
+	IdpStatusMessage *string `json:"idpStatusMessage,omitempty"`
+
 	// Status Where the test stands
 	Status string `json:"status"`
 }
