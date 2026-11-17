@@ -13562,6 +13562,9 @@ type StatusPageAccessEventDto struct {
 	// ConnectionId Sign-in connection involved, if any
 	ConnectionId *openapi_types.UUID `json:"connectionId,omitempty"`
 
+	// CorrelationId Reference the person saw when their sign-in failed; null for other events
+	CorrelationId *string `json:"correlationId,omitempty"`
+
 	// EndUserEmail Email of the person it happened to; null when no person was identified
 	EndUserEmail *string `json:"endUserEmail,omitempty"`
 
@@ -13573,6 +13576,9 @@ type StatusPageAccessEventDto struct {
 
 	// Id Event identifier
 	Id openapi_types.UUID `json:"id"`
+
+	// IdpStatusCode Status codes the IdP refused the sign-in with, e.g. Responder/InvalidNameIDPolicy
+	IdpStatusCode *string `json:"idpStatusCode,omitempty"`
 
 	// OccurredAt When it happened
 	OccurredAt time.Time `json:"occurredAt"`
