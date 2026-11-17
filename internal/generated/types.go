@@ -8675,7 +8675,7 @@ type MemberRoleChangedMetadata struct {
 	// OldRole Role the member held before the change
 	OldRole string `json:"oldRole"`
 
-	// Source SSO when the identity provider's groups set the role; null for a manual change
+	// Source SSO when the IdP set the role; MANUAL for an admin change or a released mapping
 	Source *string `json:"source,omitempty"`
 }
 
@@ -12395,7 +12395,7 @@ type SetMonitorAuthRequest_Config struct {
 	union json.RawMessage
 }
 
-// SetStatusPageAudiencesRequest Who sees one component or component group, set in one call
+// SetStatusPageAudiencesRequest defines model for SetStatusPageAudiencesRequest.
 type SetStatusPageAudiencesRequest struct {
 	// AudienceIds Audiences that see it; an empty list makes it visible to every viewer
 	AudienceIds []openapi_types.UUID `json:"audienceIds"`
@@ -13128,7 +13128,7 @@ type SingleValueResponseStatusPageNotificationDeliveryDto struct {
 
 // SingleValueResponseStatusPageReportDto defines model for SingleValueResponseStatusPageReportDto.
 type SingleValueResponseStatusPageReportDto struct {
-	// Data Uptime and incidents per component or component group over a date range (UTC days)
+	// Data Uptime and incidents per component group and component over a date range (UTC days)
 	Data StatusPageReportDto `json:"data"`
 }
 
@@ -14181,7 +14181,7 @@ type StatusPageReportComponentDto struct {
 	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
 }
 
-// StatusPageReportDto Uptime and incidents per component or component group over a date range (UTC days)
+// StatusPageReportDto Uptime and incidents per component group and component over a date range (UTC days)
 type StatusPageReportDto struct {
 	// Components Every component of the page in page order, each group's members after it
 	Components []StatusPageReportComponentDto `json:"components"`
@@ -14189,19 +14189,13 @@ type StatusPageReportDto struct {
 	// From First day of the range (UTC)
 	From openapi_types.Date `json:"from"`
 
-	// GroupBy What the rows are grouped by
-	GroupBy string `json:"groupBy"`
-
 	// Groups Component groups of the page, in page order
 	Groups []StatusPageReportGroupDto `json:"groups"`
 
 	// Incidents Published incidents (not maintenance) that overlap the range, oldest first
 	Incidents []StatusPageReportIncidentDto `json:"incidents"`
 
-	// Rows One row per component, or per component group plus each ungrouped component
-	Rows []StatusPageReportRowDto `json:"rows"`
-
-	// To Last day of the range (UTC), capped at today
+	// To Last day of the range (UTC)
 	To openapi_types.Date `json:"to"`
 }
 
@@ -14260,39 +14254,6 @@ type StatusPageReportIncidentDto struct {
 
 	// Title Incident title
 	Title string `json:"title"`
-}
-
-// StatusPageReportRowDto Uptime, downtime and incidents of one component or component group over the report's range
-type StatusPageReportRowDto struct {
-	// DowntimeMinutes Outage minutes weighted like uptime: major outage in full, partial outage at 30%
-	DowntimeMinutes int64 `json:"downtimeMinutes"`
-
-	// Id Component or component group id
-	Id openapi_types.UUID `json:"id"`
-
-	// IncidentCount Published incidents in the range that affected the item
-	IncidentCount int32 `json:"incidentCount"`
-
-	// IncidentIds Ids of those incidents, oldest first; details are in the report's incidents
-	IncidentIds []openapi_types.UUID `json:"incidentIds"`
-
-	// Kind Whether the row is a component or a component group
-	Kind string `json:"kind"`
-
-	// MajorOutageMinutes Minutes of major outage in the range
-	MajorOutageMinutes int64 `json:"majorOutageMinutes"`
-
-	// Name Component or component group name
-	Name string `json:"name"`
-
-	// PartialOutageMinutes Minutes of partial outage in the range
-	PartialOutageMinutes int64 `json:"partialOutageMinutes"`
-
-	// TrackedDays Days in the range the item was tracked, including today's partial day
-	TrackedDays int32 `json:"trackedDays"`
-
-	// UptimePercentage Mean daily uptime percentage over the tracked days; null when no day was tracked
-	UptimePercentage *float64 `json:"uptimePercentage,omitempty"`
 }
 
 // StatusPageSenderTestDto The test email that was sent
@@ -20257,17 +20218,14 @@ type ExportStatusPageReportParams struct {
 	// To Last day of the range (UTC), e.g. 2026-10-31; set with from
 	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
 
-	// GroupBy Rows per component or componentGroup (default: component)
-	GroupBy *string `form:"groupBy,omitempty" json:"groupBy,omitempty"`
-
-	// Format File format: csv or json (default: csv)
-	Format *string `form:"format,omitempty" json:"format,omitempty"`
-
 	// GroupId Component group to export; repeat for more (default: every row)
 	GroupId *[]openapi_types.UUID `form:"groupId,omitempty" json:"groupId,omitempty"`
 
 	// ComponentId Component to export; repeat for more (default: every row)
 	ComponentId *[]openapi_types.UUID `form:"componentId,omitempty" json:"componentId,omitempty"`
+
+	// Format File format: csv or json (default: csv)
+	Format *string `form:"format,omitempty" json:"format,omitempty"`
 
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
@@ -20527,9 +20485,6 @@ type GetStatusPageReportParams struct {
 
 	// To Last day of the range (UTC), e.g. 2026-10-31; set with from
 	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
-
-	// GroupBy Rows per component or componentGroup (default: component)
-	GroupBy *string `form:"groupBy,omitempty" json:"groupBy,omitempty"`
 
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
