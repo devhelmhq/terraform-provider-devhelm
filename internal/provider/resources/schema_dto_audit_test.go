@@ -283,6 +283,7 @@ func TestSchemaVsDTO_Audit(t *testing.T) {
 				"confirm_convert_subscribers": "Dashboard confirmation flag for making a page private (subscriber conversion); not declarative state. The provider only supports PUBLIC visibility.",
 				"clear_email_sign_in":         "Internal clear flag for email_sign_in, which is not exposed (see below).",
 				"email_sign_in":               "Only applies to LOGIN_REQUIRED (private) pages; the provider only supports PUBLIC visibility, so private-page sign-in is a dashboard feature for now.",
+				"sso_routing_mode":            "How a LOGIN_REQUIRED (private) page's sign-in screen reaches its SSO connections; the provider only supports PUBLIC visibility, so it is a dashboard feature for now.",
 				"subscriber_channels":         "Update-only page setting (absent from CreateStatusPageRequest) managed in the dashboard; exposing it in Terraform is a separate feature decision.",
 			},
 		},
