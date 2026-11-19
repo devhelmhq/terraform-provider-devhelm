@@ -3372,6 +3372,24 @@ func (e UpdateStatusPageRequestManagedBy) Valid() bool {
 	}
 }
 
+// Defines values for UpdateStatusPageRequestSsoRoutingMode.
+const (
+	UpdateStatusPageRequestSsoRoutingModeBUTTONS     UpdateStatusPageRequestSsoRoutingMode = "BUTTONS"
+	UpdateStatusPageRequestSsoRoutingModeEMAILDOMAIN UpdateStatusPageRequestSsoRoutingMode = "EMAIL_DOMAIN"
+)
+
+// Valid indicates whether the value is a known member of the UpdateStatusPageRequestSsoRoutingMode enum.
+func (e UpdateStatusPageRequestSsoRoutingMode) Valid() bool {
+	switch e {
+	case UpdateStatusPageRequestSsoRoutingModeBUTTONS:
+		return true
+	case UpdateStatusPageRequestSsoRoutingModeEMAILDOMAIN:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UpdateStatusPageRequestSubscriberChannels.
 const (
 	UpdateStatusPageRequestSubscriberChannelsEMAIL   UpdateStatusPageRequestSubscriberChannels = "EMAIL"
@@ -13844,6 +13862,9 @@ type StatusPageDto struct {
 	OverallStatus  *string                           `json:"overallStatus,omitempty"`
 	Slug           string                            `json:"slug"`
 
+	// SsoRoutingMode How sign-in reaches SSO connections: EMAIL_DOMAIN or BUTTONS
+	SsoRoutingMode *string `json:"ssoRoutingMode,omitempty"`
+
 	// SubscriberChannels Channels visitors can subscribe with on the public page (EMAIL, TEAMS, WEBHOOK)
 	SubscriberChannels []string `json:"subscriberChannels"`
 	SubscriberCount    *int64   `json:"subscriberCount,omitempty"`
@@ -16251,6 +16272,9 @@ type UpdateStatusPageRequest struct {
 	// Name New name; null preserves current
 	Name *string `json:"name,omitempty"`
 
+	// SsoRoutingMode How sign-in reaches SSO connections: EMAIL_DOMAIN or BUTTONS; null preserves current
+	SsoRoutingMode *UpdateStatusPageRequestSsoRoutingMode `json:"ssoRoutingMode,omitempty"`
+
 	// SubscriberChannels Channels visitors can subscribe with (EMAIL, TEAMS, WEBHOOK); null preserves current
 	SubscriberChannels *[]UpdateStatusPageRequestSubscriberChannels `json:"subscriberChannels,omitempty"`
 
@@ -16269,6 +16293,9 @@ type UpdateStatusPageRequestIncidentMode string
 
 // UpdateStatusPageRequestManagedBy New attribution source: DASHBOARD, GIT, TERRAFORM, MCP or API (CLI = GIT until 2027-01-31); null preserves current value.
 type UpdateStatusPageRequestManagedBy string
+
+// UpdateStatusPageRequestSsoRoutingMode How sign-in reaches SSO connections: EMAIL_DOMAIN or BUTTONS; null preserves current
+type UpdateStatusPageRequestSsoRoutingMode string
 
 // UpdateStatusPageRequestSubscriberChannels Channels visitors can subscribe with (EMAIL, TEAMS, WEBHOOK); null preserves current
 type UpdateStatusPageRequestSubscriberChannels string
