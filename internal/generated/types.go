@@ -4752,10 +4752,13 @@ type AlertDeliveryDto struct {
 	// NextRetryAt When the next retry is scheduled (null if not retrying)
 	NextRetryAt *time.Time `json:"nextRetryAt,omitempty"`
 
+	// Route Route that queued this delivery: DIRECT or POLICY
+	Route *string `json:"route,omitempty"`
+
 	// Status Current delivery status
 	Status string `json:"status"`
 
-	// StepNumber 1-based escalation step this delivery belongs to
+	// StepNumber Escalation step (1-based); 0 for direct-channel deliveries
 	StepNumber int32 `json:"stepNumber"`
 }
 
@@ -5876,13 +5879,17 @@ type CreateOrgSsoRoleMappingRequestRole string
 
 // CreateResourceGroupRequest Request body for creating a resource group
 type CreateResourceGroupRequest struct {
-	// AlertPolicyId Optional notification policy to apply for this group
+	// AlertChannelIds Channels notified for this group's incidents
+	AlertChannelIds *[]openapi_types.UUID `json:"alertChannelIds,omitempty"`
+
+	// AlertPolicyId Notification policy that runs for this group's incidents
 	AlertPolicyId *openapi_types.UUID `json:"alertPolicyId,omitempty"`
 
 	// ConfirmationDelaySeconds Confirmation delay in seconds before group incident creation (0–600)
 	ConfirmationDelaySeconds *int32 `json:"confirmationDelaySeconds,omitempty"`
 
-	// DefaultAlertChannels Default alert channel IDs applied to member monitors
+	// DefaultAlertChannels Deprecated alias of alertChannelIds
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	DefaultAlertChannels *[]openapi_types.UUID `json:"defaultAlertChannels,omitempty"`
 
 	// DefaultEnvironmentId Default environment ID applied to member monitors
@@ -6452,7 +6459,7 @@ type DatadogChannelConfig struct {
 	ApiKey      string                          `json:"apiKey"`
 	ChannelType DatadogChannelConfigChannelType `json:"channelType"`
 
-	// Site Datadog site region (e.g. datadoghq.com, datadoghq.eu, us3.datadoghq.com)
+	// Site Datadog site: datadoghq.com (default), us3, us5, eu, ap1, ap2 or gov
 	Site *string `json:"site,omitempty"`
 
 	// Tags Comma-separated tags to attach to events
@@ -6551,24 +6558,6 @@ type DefinitionHeadDto struct {
 
 	// RolledBackDigest Digest the last rollback replaced; cleared by the next publish
 	RolledBackDigest *string `json:"rolledBackDigest,omitempty"`
-}
-
-// DekRotationResultDto Result of a data encryption key rotation operation
-type DekRotationResultDto struct {
-	// ChannelsReEncrypted Number of alert channels re-encrypted with the new DEK
-	ChannelsReEncrypted int32 `json:"channelsReEncrypted"`
-
-	// NewDekVersion DEK version after rotation
-	NewDekVersion int32 `json:"newDekVersion"`
-
-	// PreviousDekVersion DEK version before rotation
-	PreviousDekVersion int32 `json:"previousDekVersion"`
-
-	// RotatedAt Timestamp when the rotation was performed
-	RotatedAt time.Time `json:"rotatedAt"`
-
-	// SecretsReEncrypted Number of secrets re-encrypted with the new DEK
-	SecretsReEncrypted int32 `json:"secretsReEncrypted"`
 }
 
 // DeleteChannelResult Summary of policies affected by channel deletion
@@ -8282,7 +8271,7 @@ type JiraChannelConfig struct {
 	ApiToken    string                       `json:"apiToken"`
 	ChannelType JiraChannelConfigChannelType `json:"channelType"`
 
-	// Domain Atlassian instance domain (e.g. yourteam.atlassian.net)
+	// Domain Atlassian Cloud domain, e.g. yourteam.atlassian.net
 	Domain string `json:"domain"`
 
 	// Email Atlassian account email for API authentication
@@ -10634,7 +10623,10 @@ type ResourceGroupDeleteBlockerDto struct {
 
 // ResourceGroupDto Resource group with health summary and optional member details
 type ResourceGroupDto struct {
-	// AlertPolicyId Notification policy applied to this group
+	// AlertChannelIds Channels notified for this group's incidents
+	AlertChannelIds *[]openapi_types.UUID `json:"alertChannelIds,omitempty"`
+
+	// AlertPolicyId Notification policy that runs for this group's incidents
 	AlertPolicyId *openapi_types.UUID `json:"alertPolicyId,omitempty"`
 
 	// ConfirmationDelaySeconds Seconds to wait after health threshold breach before creating group incident
@@ -10643,7 +10635,8 @@ type ResourceGroupDto struct {
 	// CreatedAt Timestamp when the group was created
 	CreatedAt time.Time `json:"createdAt"`
 
-	// DefaultAlertChannels Default alert channel IDs for member monitors
+	// DefaultAlertChannels Deprecated alias of alertChannelIds
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	DefaultAlertChannels *[]openapi_types.UUID `json:"defaultAlertChannels,omitempty"`
 
 	// DefaultEnvironmentId Default environment ID for member monitors
@@ -12321,6 +12314,9 @@ type ServiceStatusDto struct {
 
 // ServiceSubscribeRequest Optional body for subscribing to a specific component of a service
 type ServiceSubscribeRequest struct {
+	// AlertChannelIds Channels notified for this dependency's incidents
+	AlertChannelIds *[]openapi_types.UUID `json:"alertChannelIds,omitempty"`
+
 	// AlertSensitivity Alert sensitivity: ALL (any status change), INCIDENTS_ONLY (real vendor incidents, page on every one), MAJOR_ONLY (only DOWN-level incidents), AWARENESS (track silently — show on dashboard, never send alerts). Defaults to AWARENESS when not provided — silent tracking is the friendliest first-run choice; switch to one of the paging modes to opt in to alert-channel fan-out.
 	AlertSensitivity *string `json:"alertSensitivity,omitempty"`
 
@@ -12331,6 +12327,9 @@ type ServiceSubscribeRequest struct {
 // ServiceSubscriptionDto An org-level service subscription with current status information
 type ServiceSubscriptionDto struct {
 	AdapterType string `json:"adapterType"`
+
+	// AlertChannelIds Channels notified for this dependency's incidents
+	AlertChannelIds *[]openapi_types.UUID `json:"alertChannelIds,omitempty"`
 
 	// AlertSensitivity Alert sensitivity: ALL (synthetic + real incidents, paged), INCIDENTS_ONLY (real vendor incidents, paged), MAJOR_ONLY (real + DOWN severity, paged), AWARENESS (real vendor incidents tracked silently — visible on dashboard, never paged; default for new subscriptions)
 	AlertSensitivity string `json:"alertSensitivity"`
@@ -12555,12 +12554,6 @@ type SingleValueResponseDefinitionDetailDto struct {
 type SingleValueResponseDefinitionHeadDto struct {
 	// Data Active Head for a definition in one environment
 	Data DefinitionHeadDto `json:"data"`
-}
-
-// SingleValueResponseDekRotationResultDto defines model for SingleValueResponseDekRotationResultDto.
-type SingleValueResponseDekRotationResultDto struct {
-	// Data Result of a data encryption key rotation operation
-	Data DekRotationResultDto `json:"data"`
 }
 
 // SingleValueResponseDeployLockDto defines model for SingleValueResponseDeployLockDto.
@@ -15235,8 +15228,16 @@ type TestAlertChannelRequest_Config struct {
 
 // TestChannelResult defines model for TestChannelResult.
 type TestChannelResult struct {
-	Message string `json:"message"`
-	Success bool   `json:"success"`
+	// ChannelId Channel that was tested
+	ChannelId *openapi_types.UUID `json:"channelId,omitempty"`
+	Message   string              `json:"message"`
+
+	// NoRoute True when the monitor has no route, so an incident would alert nobody
+	NoRoute *bool `json:"noRoute,omitempty"`
+
+	// Route Route that reaches the channel: DIRECT or POLICY
+	Route   *string `json:"route,omitempty"`
+	Success bool    `json:"success"`
 }
 
 // TestMatchResult Result of a dry-run match evaluation against a notification policy
@@ -15526,7 +15527,7 @@ type UpdateDatadogChannelConfig struct {
 	ApiKey      *string                               `json:"apiKey,omitempty"`
 	ChannelType UpdateDatadogChannelConfigChannelType `json:"channelType"`
 
-	// Site Datadog site region (e.g. datadoghq.com, datadoghq.eu, us3.datadoghq.com)
+	// Site Datadog site: datadoghq.com (default), us3, us5, eu, ap1, ap2 or gov
 	Site *string `json:"site,omitempty"`
 
 	// Tags Comma-separated tags to attach to events
@@ -15652,7 +15653,7 @@ type UpdateJiraChannelConfig struct {
 	ApiToken    *string                            `json:"apiToken,omitempty"`
 	ChannelType UpdateJiraChannelConfigChannelType `json:"channelType"`
 
-	// Domain Atlassian instance domain (e.g. yourteam.atlassian.net)
+	// Domain Atlassian Cloud domain, e.g. yourteam.atlassian.net
 	Domain string `json:"domain"`
 
 	// Email Atlassian account email for API authentication
@@ -15953,13 +15954,17 @@ type UpdatePushoverChannelConfigChannelType string
 
 // UpdateResourceGroupRequest Request body for updating a resource group
 type UpdateResourceGroupRequest struct {
-	// AlertPolicyId Optional notification policy to apply for this group; null clears the existing value
+	// AlertChannelIds Channels notified for this group's incidents; null clears the existing value
+	AlertChannelIds *[]openapi_types.UUID `json:"alertChannelIds,omitempty"`
+
+	// AlertPolicyId Notification policy that runs for this group's incidents; null clears the existing value
 	AlertPolicyId *openapi_types.UUID `json:"alertPolicyId,omitempty"`
 
 	// ConfirmationDelaySeconds Confirmation delay in seconds; null clears
 	ConfirmationDelaySeconds *int32 `json:"confirmationDelaySeconds,omitempty"`
 
-	// DefaultAlertChannels Default alert channel IDs for member monitors; null clears
+	// DefaultAlertChannels Deprecated alias of alertChannelIds; null clears the existing value
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	DefaultAlertChannels *[]openapi_types.UUID `json:"defaultAlertChannels,omitempty"`
 
 	// DefaultEnvironmentId Default environment ID for member monitors; null clears
@@ -16017,6 +16022,15 @@ type UpdateRootlyChannelConfigChannelType string
 type UpdateSecretRequest struct {
 	// Value New secret value, stored encrypted (max 32KB)
 	Value string `json:"value"`
+}
+
+// UpdateServiceSubscriptionRequest Request body for updating a service subscription
+type UpdateServiceSubscriptionRequest struct {
+	// AlertChannelIds Channels notified for this dependency's incidents; null preserves current
+	AlertChannelIds *[]openapi_types.UUID `json:"alertChannelIds,omitempty"`
+
+	// AlertSensitivity New sensitivity; null preserves current
+	AlertSensitivity *string `json:"alertSensitivity,omitempty"`
 }
 
 // UpdateSlackChannelConfig defines model for UpdateSlackChannelConfig.
@@ -16962,8 +16976,8 @@ type Delete12Params struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// Update17Params defines parameters for Update17.
-type Update17Params struct {
+// Update18Params defines parameters for Update18.
+type Update18Params struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
@@ -17511,14 +17525,14 @@ type Create13Params struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// Get9Params defines parameters for Get9.
-type Get9Params struct {
+// Get10Params defines parameters for Get10.
+type Get10Params struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// Update16Params defines parameters for Update16.
-type Update16Params struct {
+// Update17Params defines parameters for Update17.
+type Update17Params struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
@@ -17528,6 +17542,12 @@ type AcknowledgeAllParams struct {
 	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
 	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
 
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// ListAlertDeliveriesParams defines parameters for ListAlertDeliveries.
+type ListAlertDeliveriesParams struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
@@ -19568,8 +19588,14 @@ type Unsubscribe1Params struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// Get12Params defines parameters for Get12.
-type Get12Params struct {
+// Get9Params defines parameters for Get9.
+type Get9Params struct {
+	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
+	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
+}
+
+// Update16Params defines parameters for Update16.
+type Update16Params struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
@@ -20847,8 +20873,8 @@ type List17Params struct {
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
 
-// Get11Params defines parameters for Get11.
-type Get11Params struct {
+// Get12Params defines parameters for Get12.
+type Get12Params struct {
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
@@ -20897,15 +20923,6 @@ type GetByIdParams struct {
 
 // Update2Params defines parameters for Update2.
 type Update2Params struct {
-	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
-	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
-}
-
-// RotateDekParams defines parameters for RotateDek.
-type RotateDekParams struct {
-	// IdempotencyKey Replays the stored response for 24h when the same key is sent again (1–255 visible ASCII)
-	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
-
 	// XDevHelmClient Calling surface and version, e.g. cli/1.4.0 or sdk-js/2.0.0
 	XDevHelmClient *string `json:"X-DevHelm-Client,omitempty"`
 }
@@ -21152,8 +21169,8 @@ type SetEnabledJSONRequestBody = SetEnabledRequest
 // Create15JSONRequestBody defines body for Create15 for application/json ContentType.
 type Create15JSONRequestBody = CreateApiKeyRequest
 
-// Update17JSONRequestBody defines body for Update17 for application/json ContentType.
-type Update17JSONRequestBody = UpdateApiKeyRequest
+// Update18JSONRequestBody defines body for Update18 for application/json ContentType.
+type Update18JSONRequestBody = UpdateApiKeyRequest
 
 // Start1JSONRequestBody defines body for Start1 for application/json ContentType.
 type Start1JSONRequestBody = CreateDeviceAuthorizationRequest
@@ -21203,8 +21220,8 @@ type PingPostTextRequestBody = PingPostTextBody
 // Create13JSONRequestBody defines body for Create13 for application/json ContentType.
 type Create13JSONRequestBody = CreateManualIncidentRequest
 
-// Update16JSONRequestBody defines body for Update16 for application/json ContentType.
-type Update16JSONRequestBody = UpdateIncidentRequest
+// Update17JSONRequestBody defines body for Update17 for application/json ContentType.
+type Update17JSONRequestBody = UpdateIncidentRequest
 
 // ResolveJSONRequestBody defines body for Resolve for application/json ContentType.
 type ResolveJSONRequestBody = ResolveIncidentRequest
@@ -21385,6 +21402,9 @@ type WriteEnvironmentValueJSONRequestBody = WriteSecretEnvironmentValueRequest
 
 // CreateSenderDomainJSONRequestBody defines body for CreateSenderDomain for application/json ContentType.
 type CreateSenderDomainJSONRequestBody = CreateSenderDomainRequest
+
+// Update16JSONRequestBody defines body for Update16 for application/json ContentType.
+type Update16JSONRequestBody = UpdateServiceSubscriptionRequest
 
 // UpdateAlertSensitivityJSONRequestBody defines body for UpdateAlertSensitivity for application/json ContentType.
 type UpdateAlertSensitivityJSONRequestBody = UpdateAlertSensitivityRequest
