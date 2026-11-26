@@ -374,8 +374,14 @@ func (c *Client) doRequestOnce(ctx context.Context, r rawRequest, u string) (htt
 // `createdByKind` on drafts) and the opt-out-able surface telemetry.
 func (c *Client) setCommonHeaders(req *http.Request) {
 	req.Header.Set("Authorization", "Bearer "+c.Token)
-	req.Header.Set("x-phelm-org-id", c.OrgID)
-	req.Header.Set("x-phelm-workspace-id", c.WorkspaceID)
+	// Scope headers are sent only when the user set them; otherwise the API
+	// derives the org from the key and uses its default workspace.
+	if c.OrgID != "" {
+		req.Header.Set("x-phelm-org-id", c.OrgID)
+	}
+	if c.WorkspaceID != "" {
+		req.Header.Set("x-phelm-workspace-id", c.WorkspaceID)
+	}
 	req.Header.Set("User-Agent", c.UserAgent)
 	req.Header.Set(clientHeader, c.ClientID)
 	// Devtool surface telemetry — see buildSurfaceHeaders. Empty map (and

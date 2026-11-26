@@ -34,8 +34,8 @@ terraform {
 #
 #   DEVHELM_API_TOKEN     — required; create one at https://app.devhelm.io/settings/tokens
 #   DEVHELM_API_URL       — defaults to https://api.devhelm.io
-#   DEVHELM_ORG_ID        — defaults to "1"; only required for multi-org tokens
-#   DEVHELM_WORKSPACE_ID  — defaults to "1"; only required for multi-workspace tokens
+#   DEVHELM_ORG_ID        — optional; omitted, the API uses the key's organization
+#   DEVHELM_WORKSPACE_ID  — optional; omitted, the API uses the default workspace
 provider "devhelm" {}
 ```
 
@@ -45,6 +45,6 @@ provider "devhelm" {}
 ### Optional
 
 - `base_url` (String) Base URL for the DevHelm API. Can also be set via DEVHELM_API_URL env var. Defaults to https://api.devhelm.io
-- `org_id` (String) Organization ID. Can also be set via DEVHELM_ORG_ID env var. Defaults to "1".
+- `org_id` (String) Organization ID. Can also be set via DEVHELM_ORG_ID env var. Omitted: the API uses the organization of the API key; set it to pin one.
 - `token` (String, Sensitive) API token for authentication. Can also be set via DEVHELM_API_TOKEN env var.
-- `workspace_id` (String) Workspace ID. Can also be set via DEVHELM_WORKSPACE_ID env var. Defaults to "1".
+- `workspace_id` (String) Workspace ID. Can also be set via DEVHELM_WORKSPACE_ID env var. Omitted: the API uses the organization's default workspace; set it to pin one.

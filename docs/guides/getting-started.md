@@ -69,8 +69,8 @@ export DEVHELM_API_TOKEN="dh_live_…"
 |------------------------|-------------------------------------------------------------------------|
 | `DEVHELM_API_TOKEN`    | API token (required).                                                   |
 | `DEVHELM_API_URL`      | API base URL. Defaults to `https://api.devhelm.io`.                     |
-| `DEVHELM_ORG_ID`       | Organization ID. Defaults to `1`. Override for multi-org tokens.        |
-| `DEVHELM_WORKSPACE_ID` | Workspace ID. Defaults to `1`. Override for multi-workspace tokens.     |
+| `DEVHELM_ORG_ID`       | Organization ID. Optional; omitted, the API uses the key's org.|
+| `DEVHELM_WORKSPACE_ID` | Workspace ID. Optional; omitted, the default workspace is used. |
 
 ## 2. Initialize
 

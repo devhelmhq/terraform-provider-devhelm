@@ -20,6 +20,6 @@ terraform {
 #
 #   DEVHELM_API_TOKEN     — required; create one at https://app.devhelm.io/settings/tokens
 #   DEVHELM_API_URL       — defaults to https://api.devhelm.io
-#   DEVHELM_ORG_ID        — defaults to "1"; only required for multi-org tokens
-#   DEVHELM_WORKSPACE_ID  — defaults to "1"; only required for multi-workspace tokens
+#   DEVHELM_ORG_ID        — optional; omitted, the API uses the key's organization
+#   DEVHELM_WORKSPACE_ID  — optional; omitted, the API uses the default workspace
 provider "devhelm" {}
