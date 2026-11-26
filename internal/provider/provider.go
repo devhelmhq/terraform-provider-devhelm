@@ -52,11 +52,11 @@ func (p *DevhelmProvider) Schema(_ context.Context, _ provider.SchemaRequest, re
 				Optional:    true,
 			},
 			"org_id": schema.StringAttribute{
-				Description: "Organization ID. Can also be set via DEVHELM_ORG_ID env var. Defaults to \"1\".",
+				Description: "Organization ID. Can also be set via DEVHELM_ORG_ID env var. Omitted: the API uses the organization of the API key; set it to pin one.",
 				Optional:    true,
 			},
 			"workspace_id": schema.StringAttribute{
-				Description: "Workspace ID. Can also be set via DEVHELM_WORKSPACE_ID env var. Defaults to \"1\".",
+				Description: "Workspace ID. Can also be set via DEVHELM_WORKSPACE_ID env var. Omitted: the API uses the organization's default workspace; set it to pin one.",
 				Optional:    true,
 			},
 		},
@@ -72,8 +72,8 @@ func (p *DevhelmProvider) Configure(ctx context.Context, req provider.ConfigureR
 
 	token := envOrDefault(config.Token, "DEVHELM_API_TOKEN", "")
 	baseURL := envOrDefault(config.BaseURL, "DEVHELM_API_URL", "https://api.devhelm.io")
-	orgID := envOrDefault(config.OrgID, "DEVHELM_ORG_ID", "1")
-	workspaceID := envOrDefault(config.WorkspaceID, "DEVHELM_WORKSPACE_ID", "1")
+	orgID := envOrDefault(config.OrgID, "DEVHELM_ORG_ID", "")
+	workspaceID := envOrDefault(config.WorkspaceID, "DEVHELM_WORKSPACE_ID", "")
 
 	if token == "" {
 		resp.Diagnostics.AddError(

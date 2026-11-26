@@ -85,3 +85,39 @@ func TestSurfaceTelemetryHeaders_StrictEqualityOnZero(t *testing.T) {
 		})
 	}
 }
+
+func TestScopeHeaders_OmittedWhenUnset(t *testing.T) {
+	var got http.Header
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		got = r.Header.Clone()
+		_, _ = w.Write([]byte(`{"data":{}}`))
+	}))
+	defer srv.Close()
+
+	c := NewClient(srv.URL, "test-token", "", "", "test")
+	if _, err := c.doRequest(context.Background(), http.MethodGet, "/api/v1/_", nil); err != nil {
+		t.Fatalf("doRequest: %v", err)
+	}
+	for _, h := range []string{"x-phelm-org-id", "x-phelm-workspace-id"} {
+		if v := got.Values(h); len(v) != 0 {
+			t.Errorf("%s sent as %q, want absent", h, v)
+		}
+	}
+}
+
+func TestScopeHeaders_SentWhenSet(t *testing.T) {
+	var got http.Header
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		got = r.Header.Clone()
+		_, _ = w.Write([]byte(`{"data":{}}`))
+	}))
+	defer srv.Close()
+
+	c := NewClient(srv.URL, "test-token", "5", "7", "test")
+	if _, err := c.doRequest(context.Background(), http.MethodGet, "/api/v1/_", nil); err != nil {
+		t.Fatalf("doRequest: %v", err)
+	}
+	if got.Get("x-phelm-org-id") != "5" || got.Get("x-phelm-workspace-id") != "7" {
+		t.Errorf("scope headers = %q/%q, want 5/7", got.Get("x-phelm-org-id"), got.Get("x-phelm-workspace-id"))
+	}
+}
