@@ -149,8 +149,8 @@ CI, and in Terraform Cloud without modification.
 |----------------|------------------------|-----------------------------|----------|
 | `token`        | `DEVHELM_API_TOKEN`    | —                           | yes      |
 | `base_url`     | `DEVHELM_API_URL`      | `https://api.devhelm.io`    | no       |
-| `org_id`       | `DEVHELM_ORG_ID`       | `1`                         | no       |
-| `workspace_id` | `DEVHELM_WORKSPACE_ID` | `1`                         | no       |
+| `org_id`       | `DEVHELM_ORG_ID`       | not sent (API default)      | no       |
+| `workspace_id` | `DEVHELM_WORKSPACE_ID` | not sent (API default)      | no       |
 
 Create an API token at <https://app.devhelm.io/settings/tokens>. The token
 should be scoped to the workspace you intend to manage from Terraform.
